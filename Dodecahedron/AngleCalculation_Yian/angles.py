@@ -84,3 +84,13 @@ def angles(COM1, COM2, int_site1, int_site2,normal_point1,normal_point2):
         print("Wrong omega angle.")
 
     return theta1, theta2, phi1, phi2, omega, sigma_magnitude, normal_point1, normal_point2
+
+
+COM1 = [0.0, -0.18090169943749, 0.29270509831248]
+COM2 = [0.18090169943749, -0.29270509831248, -0.0]
+int_site1 = [0.12154508497187, -0.32320916362186, 0.20475424859374]
+int_site2 = [0.12654508497187, -0.32629933356561, 0.19666407864999]
+normal_point1 = [0, -0.1809017, 0.2927051]
+normal_point2 = [0.1809017, -0.2927051, -0]
+
+print(angles(COM1, COM2, int_site1, int_site2,normal_point1,normal_point2))
