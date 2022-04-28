@@ -1,0 +1,57 @@
+# Input file
+
+start parameters
+    nItr = 1000000
+    timeStep = 0.1
+
+    timeWrite = 10000
+    pdbWrite = 100000
+    trajWrite = 100000
+    restartWrite = 1000000
+    overlapSepLimit = 0.5
+
+end parameters
+
+start boundaries
+    WaterBox = [1000.0,200.0,200.0] #nm
+end boundaries
+
+start molecules
+    A : 200
+    F : 100
+end molecules
+
+start reactions
+
+    A(dbd) + F(bs) <-> A(dbd!1).F(bs!1)
+    onRate3Dka = 10.0   #ka in nm3/us
+    offRatekb = 10.0   #kb in /s
+    area3Dto1D = 100    # nm^2
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [nan, nan, nan, nan, nan]
+    bindRadSameCom = 1.1
+
+    A(mbs) + A(mbs) <-> A(mbs!1).A(mbs!1)
+    onRate3Dka = 10.0   #ka in nm3/us
+    offRatekb = 1.0   #kb in /s
+    area3Dto1D = 100    # nm^2
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [M_PI, M_PI, nan, nan, M_PI]
+    bindRadSameCom = 1.1
+
+    A(dbs) + A(dbs) <-> A(dbs!1).A(dbs!1)
+    onRate3Dka = 100.0   #ka in nm3/us
+    offRatekb = 0.01   #kb in /s
+    area3Dto1D = 100    # nm^2
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [2.617994, 2.617994, -1.570796, -1.570796, 0.000000]
+    bindRadSameCom = 1.1
+
+end reactions
+
