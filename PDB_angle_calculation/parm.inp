@@ -1,0 +1,75 @@
+ # Input file
+
+start parameters
+    nItr = 1000000
+    timestep = 0.1
+
+
+    timeWrite = 500
+    trajWrite = 500
+    restartWrite = 50000
+    fromRestart = false
+end parameters
+
+start boundaries
+    WaterBox = [494,494,494] #nm
+    implicitLipid = false
+    xBCtype = reflect
+    yBCtype = reflect
+    zBCtype = reflect
+end boundaries
+
+start molecules
+     A:100
+     B:100
+     P:100
+     Q:100
+end molecules
+
+start reactions
+    #### A - B ####
+    A(b) + B(a) <-> A(b!1).B(a!1)
+    onRate3Dka = 10
+    offRatekb = 1
+    sigma = 6.000000
+    norm1 = [0.000000,0.000000,1.000000]
+    norm2 = [0.000000,0.000000,1.000000]
+    assocAngles = [2.567698,2.723163,-2.278042,1.342879,1.175039]
+
+    #### A - P ####
+    A(p) + P(a) <-> A(p!1).P(a!1)
+    onRate3Dka = 10
+    offRatekb = 1
+    sigma = 4.000000
+    norm1 = [1.000000,1.000000,1.000000]
+    norm2 = [1.000000,1.000000,1.000000]
+    assocAngles = [1.775441,1.887546,-1.183045,-2.120224,-2.999397]
+
+    #### A - Q ####
+    A(q) + Q(a) <-> A(q!1).Q(a!1)
+    onRate3Dka = 10
+    offRatekb = 1
+    sigma = 8.153330
+    norm1 = [1.000000,2.000000,3.000000]
+    norm2 = [1.000000,2.000000,3.000000]
+    assocAngles = [1.742053,2.237237,-2.858551,0.809098,0.341086]
+
+    #### B - P ####
+    B(p) + P(b) <-> B(p!1).P(b!1)
+    onRate3Dka = 10
+    offRatekb = 1
+    sigma = 5.437412
+    norm1 = [3.000000,4.000000,5.000000]
+    norm2 = [3.000000,4.000000,5.000000]
+    assocAngles = [2.120900,2.924274,-1.716315,0.134730,1.817207]
+
+    #### B - Q ####
+    B(q) + Q(b) <-> B(q!1).Q(b!1)
+    onRate3Dka = 10
+    offRatekb = 1
+    sigma = 4.626085
+    norm1 = [1.000000,3.000000,5.000000]
+    norm2 = [1.000000,3.000000,5.000000]
+    assocAngles = [2.491726,1.854091,-2.329413,-1.620147,-1.870331]
+
+end reactions
