@@ -10,6 +10,7 @@ import sys
 import copy
 from typing import List, Any
 import numpy as np
+from data_check import data_check
 from chain_int import chain_int
 from angles import angles
 from norm_check import norm_check
@@ -50,12 +51,20 @@ with open(input("Enter pdb file name: "), "r") as filename:
         if id == 'ENDMDL':
             break
         if id == 'ATOM':  # find all 'atom' lines
+            if data_check(data) == 1:
+                pass
+            elif data_check(data) == -2:
+                data[3] = data[3].lstrip(data[3][0])
+            elif data_check(data) == -1:
+                amino_name = data[2][-3:]
+                data.insert(3, amino_name)
+                data[2] = data[2].rstrip(amino_name)
+
             total_atom_count.append(data[1])
             total_chain.append(data[4])
             total_resi_count.append(data[5])
             total_atom_type.append(data[2])
             total_resi_type.append(data[3])
-
             # change all strings into floats for position values, also converting to nm from angstroms
             position_coords = []
             for i in range(3):
@@ -348,41 +357,85 @@ angle = []
 normal_point_lst1 = []
 normal_point_lst2 = []
 
-for i in range(len(reaction_chain)):
-    chain1 = 0
-    chain2 = 0
-    for j in range(len(unique_chain)):
-        if reaction_chain[i][0] == unique_chain[j]:
-            chain1 = j
-        if reaction_chain[i][1] == unique_chain[j]:
-            chain2 = j
-        if reaction_chain[i][0] == unique_chain[chain1] and reaction_chain[i][1] == unique_chain[chain2]:
-            break
-    while True:
-        normal_point_lst1 = norm_input(normal_point_lst1, str(
-            unique_chain[chain1]), str(unique_chain[chain1]), str(unique_chain[chain2]))
-        if norm_check(normal_point_lst1[-1], COM[chain1], new_int_site[i][0]) == False:
-            break
-        else:
-            normal_point_lst1.remove(normal_point_lst1[-1])
-            print(
-                'Wrong input, please try again! (Wrong input format or n colinear with COM-to-site vector)')
-    while True:
-        normal_point_lst2 = norm_input(normal_point_lst2, str(
-            unique_chain[chain2]), str(unique_chain[chain1]), str(unique_chain[chain2]))
-        if norm_check(normal_point_lst2[-1], COM[chain2], new_int_site[i][1]) == False:
-            break
-        else:
-            normal_point_lst2.remove(normal_point_lst2[-1])
-            print(
-                'Wrong input, please try again! (Wrong input format or n colinear with COM-to-site vector)')
-    inner_angle = angles(COM[chain1], COM[chain2], new_int_site[i][0], new_int_site[i][1], np.array(
-        COM[chain1]) + np.array(normal_point_lst1[-1]), np.array(COM[chain2]) + np.array(normal_point_lst2[-1]))
-    angle.append(inner_angle)
-    print("Angles for chain " +
-          str(unique_chain[chain1]) + " & " + str(unique_chain[chain2]))
-    print("Theta1: %.3f, Theta2: %.3f, Phi1: %.3f, Phi2: %.3f, Omega: %.3f" % (
-        inner_angle[0], inner_angle[1], inner_angle[2], inner_angle[3], inner_angle[4]))
+while True:
+    answer_norm = str(input("Would you like to self-generate norm vector? (Type 'yes' or 'no'): "))
+    if answer_norm == 'yes' or answer_norm == 'no':
+        break
+
+# type in norm
+if answer_norm == 'no':
+    for i in range(len(reaction_chain)):
+        chain1 = 0
+        chain2 = 0
+        for j in range(len(unique_chain)):
+            if reaction_chain[i][0] == unique_chain[j]:
+                chain1 = j
+            if reaction_chain[i][1] == unique_chain[j]:
+                chain2 = j
+            if reaction_chain[i][0] == unique_chain[chain1] and reaction_chain[i][1] == unique_chain[chain2]:
+                break
+        while True:
+            normal_point_lst1 = norm_input(normal_point_lst1, str(
+                unique_chain[chain1]), str(unique_chain[chain1]), str(unique_chain[chain2]))
+            if norm_check(normal_point_lst1[-1], COM[chain1], new_int_site[i][0]) == False:
+                break
+            else:
+                normal_point_lst1.remove(normal_point_lst1[-1])
+                print(
+                    'Wrong input, please try again! (Wrong input format or n colinear with COM-to-site vector)')
+        while True:
+            normal_point_lst2 = norm_input(normal_point_lst2, str(
+                unique_chain[chain2]), str(unique_chain[chain1]), str(unique_chain[chain2]))
+            if norm_check(normal_point_lst2[-1], COM[chain2], new_int_site[i][1]) == False:
+                break
+            else:
+                normal_point_lst2.remove(normal_point_lst2[-1])
+                print(
+                    'Wrong input, please try again! (Wrong input format or n colinear with COM-to-site vector)')
+        inner_angle = angles(COM[chain1], COM[chain2], new_int_site[i][0], new_int_site[i][1], np.array(
+            COM[chain1]) + np.array(normal_point_lst1[-1]), np.array(COM[chain2]) + np.array(normal_point_lst2[-1]))
+        angle.append(inner_angle)
+        print("Angles for chain " +
+            str(unique_chain[chain1]) + " & " + str(unique_chain[chain2]))
+        print("Theta1: %.3f, Theta2: %.3f, Phi1: %.3f, Phi2: %.3f, Omega: %.3f" % (
+            inner_angle[0], inner_angle[1], inner_angle[2], inner_angle[3], inner_angle[4]))
+
+# generate norm
+if answer_norm == 'yes':
+    for i in range(len(reaction_chain)):
+        chain1 = 0
+        chain2 = 0
+        for j in range(len(unique_chain)):
+            if reaction_chain[i][0] == unique_chain[j]:
+                chain1 = j
+            if reaction_chain[i][1] == unique_chain[j]:
+                chain2 = j
+            if reaction_chain[i][0] == unique_chain[chain1] and reaction_chain[i][1] == unique_chain[chain2]:
+                break
+        while True:
+            normal_point_lst1.append([0., 0., 1.])
+            if norm_check(normal_point_lst1[-1], COM[chain1], new_int_site[i][0]) == False:
+                break
+            else:
+                normal_point_lst1.remove(normal_point_lst1[-1])
+                normal_point_lst1.append([0., 1., 0.])
+                
+        while True:
+            normal_point_lst2.append([0., 0., 1.])
+            if norm_check(normal_point_lst2[-1], COM[chain2], new_int_site[i][1]) == False:
+                break
+            else:
+                normal_point_lst2.remove(normal_point_lst2[-1])
+                normal_point_lst2.append([0., 1., 0.])
+                
+        inner_angle = angles(COM[chain1], COM[chain2], new_int_site[i][0], new_int_site[i][1], np.array(
+            COM[chain1]) + np.array(normal_point_lst1[-1]), np.array(COM[chain2]) + np.array(normal_point_lst2[-1]))
+        angle.append(inner_angle)
+        print("Angles for chain " +
+            str(unique_chain[chain1]) + " & " + str(unique_chain[chain2]))
+        print("Theta1: %.3f, Theta2: %.3f, Phi1: %.3f, Phi2: %.3f, Omega: %.3f" % (
+            inner_angle[0], inner_angle[1], inner_angle[2], inner_angle[3], inner_angle[4]))
+
 
 # asking whether to center the COM of every chain to origin.
 while True:
@@ -395,7 +448,7 @@ while True:
                     if unique_chain[i] == reaction_chain[k][j]:
                         for l in range(3):
                             new_int_site[k][j][l] = new_int_site[k][j][l] - COM[i][l]
-                            angle[k][j+6][l] = angle[k][j+6][l] - COM[i][l]
+                            # angle[k][j+6][l] = angle[k][j+6][l] - COM[i][l]
             for m in range(3):
                 COM[i][m] = 0.0
         break
@@ -414,6 +467,7 @@ f.write("    nItr = 1000000\n")
 f.write("    timestep = 0.1\n\n\n")
 f.write("    timeWrite = 500\n")
 f.write("    trajWrite = 500\n")
+f.write("    pdbWrite = 500\n")
 f.write("    restartWrite = 50000\n")
 f.write("    fromRestart = false\n")
 f.write("end parameters\n\n")

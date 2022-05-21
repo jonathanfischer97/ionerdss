@@ -83,9 +83,8 @@ def norm_input(normal_point_lst, chain_name, chain_pair1, chain_pair2):
 
     
 
-
-
-norm = [-1.,-2.,3.]
-COM = [1.,0.,0.]
-site = [2.,4.,-6.]
-print(norm_check(norm, COM, site, buffer_ratio = 1e-3))
+if __name__ == '__main__':
+    norm = [0, 0, 1]
+    COM = [9.748769426289028, 50.18218591140158, 35.45303812636183]
+    site = [17.524666666666665, 62.390666666666654, 26.43166666666667]
+    print(norm_check(norm, COM, site))
