@@ -1,0 +1,84 @@
+# Input file
+
+start parameters
+    nItr = 10000000 #iterations
+    timeStep = 0.1 #in us
+    timeWrite = 10000
+    pdbWrite = 100000
+    trajWrite = 100000
+    restartWrite = 50000
+    checkPoint = 1000000
+    overlapSepLimit = 7.0
+end parameters
+
+start boundaries
+    WaterBox = [500,500,500] #nm.
+end boundaries
+
+start molecules
+    dode : 200
+end molecules
+
+start reactions
+    ### DODE - DODE ###
+    dode(lg1) + dode(lg1) <-> dode(lg1!1).dode(lg1!1)
+    onRate3Dka = 0.5
+    offRatekb = 0.8
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [3.14159265,3.14159265,nan,nan,0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg2) + dode(lg2) <-> dode(lg2!1).dode(lg2!1)
+    onRate3Dka = 0.5 
+    offRatekb = 0.8
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [3.14159265,3.14159265,nan,nan,0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg3) + dode(lg3) <-> dode(lg3!1).dode(lg3!1)
+    onRate3Dka = 0.5  
+    offRatekb = 0.8
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [3.14159265,3.14159265,nan,nan,0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg1) + dode(lg2) <-> dode(lg1!1).dode(lg2!1)
+    onRate3Dka = 1  
+    offRatekb = 0.8
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [3.14159265,3.14159265,nan,nan,0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg1) + dode(lg3) <-> dode(lg1!1).dode(lg3!1)
+    onRate3Dka = 1  
+    offRatekb = 0.8
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [3.14159265,3.14159265,nan,nan,0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg2) + dode(lg3) <-> dode(lg2!1).dode(lg3!1)
+    onRate3Dka = 1  
+    offRatekb = 0.8
+    norm1 = [0,0,1]
+    norm2 = [0,0,1]
+    sigma = 1.0
+    assocAngles = [3.14159265,3.14159265,nan,nan,0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+end reactions
