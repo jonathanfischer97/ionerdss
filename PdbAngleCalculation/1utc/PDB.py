@@ -68,7 +68,7 @@ with open(input("Enter pdb file name: "), "r") as filename:
             # change all strings into floats for position values, also converting to nm from angstroms
             position_coords = []
             for i in range(3):
-                position_coords.append(float(data[6+i]))
+                position_coords.append(float(data[6+i])/10)
             total_position.append(position_coords)
             if data[2] == "CA":
                 total_resi_position.append(position_coords)

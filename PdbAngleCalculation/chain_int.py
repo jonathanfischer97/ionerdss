@@ -36,7 +36,7 @@ def chain_int(unique_chain, split_position, split_resi_count, split_atom_count, 
                     distance = math.sqrt((split_position[i][m][0]-split_position[j][n][0])**2
                                          + (split_position[i][m][1]-split_position[j][n][1])**2
                                          + (split_position[i][m][2]-split_position[j][n][2])**2)
-                    if distance <= 3.0:
+                    if distance <= 0.3:
                         inner_atom.append([split_atom_count[i][m], split_atom_count[j][n]])
                         inner_atom_distance.append(distance)
                         inner_atom_position.append([split_position[i][m], split_position[j][n]])
