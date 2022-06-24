@@ -1,0 +1,25 @@
+##
+# Cube (vertex-centered) information file.
+##
+
+Name = cube
+checkOverlap = true
+
+# translational diffusion constants
+D = [13.0, 13.0, 13.0]
+
+# rotational diffusion constants
+Dr = [0.03, 0.03, 0.03]
+
+# Coordinates
+COM   0   0   0
+lg1   -11.89389533   -6.86694367   -9.71132487
+lg2   11.89389533   -6.86694367   -9.71132487
+lg3   0.0   13.73388734   -9.71132487
+
+# bonds
+bonds = 3
+com lg1
+com lg2
+com lg3
+

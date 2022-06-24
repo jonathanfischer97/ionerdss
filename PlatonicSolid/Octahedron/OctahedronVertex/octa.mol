@@ -1,0 +1,27 @@
+##
+# Octahedron (vertex-centered) information file.
+##
+
+Name = octa
+checkOverlap = true
+
+# translational diffusion constants
+D = [13.0, 13.0, 13.0]
+
+# rotational diffusion constants
+Dr = [0.03, 0.03, 0.03]
+
+# Coordinates
+COM   0.0   0.0   0.0
+lg1   -14.64644661   0.0   -14.64644661
+lg2   0.0   14.64644661   -14.64644661
+lg3   14.64644661   0.0   -14.64644661
+lg4   0.0   -14.64644661   -14.64644661
+
+# bonds
+bonds = 4
+com lg1
+com lg2
+com lg3
+com lg4
+

@@ -1,0 +1,83 @@
+ # Input file (tetrahedron vertex-centered)
+
+start parameters
+    nItr = 10000000 #iterations
+    timeStep = 0.1
+    timeWrite = 10000
+    pdbWrite = 10000
+    trajWrite = 10000
+    restartWrite = 50000
+    checkPoint = 1000000
+    overlapSepLimit = 7.0
+end parameters
+
+start boundaries
+    WaterBox = [500,500,500]
+end boundaries
+
+start molecules
+    tetr : 200
+end molecules
+
+start reactions
+    tetr(lg1) + tetr(lg1) <-> tetr(lg1!1).tetr(lg1!1)
+    onRate3Dka = 2
+    offRatekb = 2
+    norm1 = [0, 0, 1]
+    norm2 = [0, 0, 1]
+    sigma = 1.0
+    assocAngles = [M_PI, M_PI, nan, nan, 0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    tetr(lg2) + tetr(lg2) <-> tetr(lg2!1).tetr(lg2!1)
+    onRate3Dka = 2
+    offRatekb = 2
+    norm1 = [0, 0, 1]
+    norm2 = [0, 0, 1]
+    sigma = 1.0
+    assocAngles = [M_PI, M_PI, nan, nan, 0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    tetr(lg3) + tetr(lg3) <-> tetr(lg3!1).tetr(lg3!1)
+    onRate3Dka = 2
+    offRatekb = 2
+    norm1 = [0, 0, 1]
+    norm2 = [0, 0, 1]
+    sigma = 1.0
+    assocAngles = [M_PI, M_PI, nan, nan, 0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    tetr(lg1) + tetr(lg2) <-> tetr(lg1!1).tetr(lg2!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [0, 0, 1]
+    norm2 = [0, 0, 1]
+    sigma = 1.0
+    assocAngles = [M_PI, M_PI, nan, nan, 0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    tetr(lg1) + tetr(lg3) <-> tetr(lg1!1).tetr(lg3!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [0, 0, 1]
+    norm2 = [0, 0, 1]
+    sigma = 1.0
+    assocAngles = [M_PI, M_PI, nan, nan, 0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    tetr(lg2) + tetr(lg3) <-> tetr(lg2!1).tetr(lg3!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [0, 0, 1]
+    norm2 = [0, 0, 1]
+    sigma = 1.0
+    assocAngles = [M_PI, M_PI, nan, nan, 0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+end reactions
