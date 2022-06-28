@@ -1,5 +1,0 @@
-setup.py
-platonics.egg-info/PKG-INFO
-platonics.egg-info/SOURCES.txt
-platonics.egg-info/dependency_links.txt
-platonics.egg-info/top_level.txt

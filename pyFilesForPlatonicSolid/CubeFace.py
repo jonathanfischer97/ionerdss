@@ -348,5 +348,3 @@ def cube_face(radius, sigma):
     f.write('com lg3\n')
     f.write('com lg4\n')
     f.write('\n')
-
-cube_face(radius = 40, sigma = 1)
