@@ -2987,12 +2987,12 @@ def icos_vert(radius, sigma):
 # -----------------------------------Data Visualization------------------------------
 
 
-def read_file(file_name, speic_name):
+def read_file(FileName, SpeciesName):
     hist = []
     hist_temp = []
     hist_conv = []
     hist_count = []
-    with open(file_name, 'r') as file:
+    with open(FileName, 'r') as file:
         for line in file.readlines():
             if line[0:4] == 'Time':
                 if hist_count != [] and hist_conv != []:
@@ -3004,7 +3004,7 @@ def read_file(file_name, speic_name):
                 hist_temp = []
                 hist_temp.append(float(line.strip('Time (s): ')))
             else:
-                string = '	' + str(speic_name) + ': '
+                string = '	' + str(SpeciesName) + ': '
                 line = line.strip('. \n').split(string)
                 if len(line) != 2:
                     print('Wrong species name!')
@@ -3018,23 +3018,23 @@ def read_file(file_name, speic_name):
         return hist
 
 
-def time_valid(file_name, t_i, t_f, speic_name):
-    hist = read_file(file_name, speic_name)
+def time_valid(FileName, InitialTime, FinalTime, SpeciesName):
+    hist = read_file(FileName, SpeciesName)
     min_time = hist[0][0]
     max_time = hist[-1][0]
-    if t_i == -1 and t_f == -1:
+    if InitialTime == -1 and FinalTime == -1:
         return min_time, max_time
-    elif min_time <= t_i <= max_time and t_i <= t_f <= max_time:
-        return t_i, t_f
+    elif min_time <= InitialTime <= max_time and InitialTime <= FinalTime <= max_time:
+        return InitialTime, FinalTime
     else:
         print('Wrong input time period!')
         return -1.0, -1.0
 
 
-def hist(file_name, t_i, t_f, speic_name):
-    t_i, t_f = time_valid(file_name, t_i, t_f, speic_name)
+def hist(FileName, InitialTime, FinalTime, SpeciesName):
+    t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
-        hist = read_file(file_name, speic_name)
+        hist = read_file(FileName, SpeciesName)
         plot_count = []
         plot_conv = []
         tot = 0
@@ -3054,8 +3054,8 @@ def hist(file_name, t_i, t_f, speic_name):
         print('Start time(s): ', t_i)
         print('End time(s): ', t_f)
         plt.bar(plot_conv, plot_count_mean)
-        plt.title('Histogram of ' + str(speic_name))
-        plt.xlabel('# of ' + speic_name + ' in sigle complex')
+        plt.title('Histogram of ' + str(SpeciesName))
+        plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
         plt.ylabel('Count')
         plt.show()
         return 0
@@ -3063,10 +3063,10 @@ def hist(file_name, t_i, t_f, speic_name):
         return 0
 
 
-def max_complex(file_name, t_i, t_f, speic_name):
-    t_i, t_f = time_valid(file_name, t_i, t_f, speic_name)
+def max_complex(FileName, InitialTime, FinalTime, SpeciesName):
+    t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
-        hist = read_file(file_name, speic_name)
+        hist = read_file(FileName, SpeciesName)
         plot_time = []
         plot_conv = []
         for i in hist:
@@ -3077,19 +3077,19 @@ def max_complex(file_name, t_i, t_f, speic_name):
         print('End time(s): ', t_f)
         plt.plot(plot_time, plot_conv)
         plt.title('Maximum Number of ' +
-                  str(speic_name) + ' in Single Complex')
+                  str(SpeciesName) + ' in Single Complex')
         plt.xlabel('Time')
-        plt.ylabel('Maximum Number of ' + str(speic_name))
+        plt.ylabel('Maximum Number of ' + str(SpeciesName))
         plt.show()
         return 0
     else:
         return 0
 
 
-def mean_complex(file_name, t_i, t_f, speic_name, ExcludeNum=0):
-    t_i, t_f = time_valid(file_name, t_i, t_f, speic_name)
+def mean_complex(FileName, InitialTime, FinalTime, SpeciesName, ExcludeNum=0):
+    t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
-        hist = read_file(file_name, speic_name)
+        hist = read_file(FileName, SpeciesName)
         plot_time = []
         plot_conv = []
         if ExcludeNum == 0:
@@ -3122,19 +3122,19 @@ def mean_complex(file_name, t_i, t_f, speic_name, ExcludeNum=0):
         print('Exclude Number: ', ExcludeNum)
         plt.plot(plot_time, plot_conv)
         plt.title('Average Number of ' +
-                  str(speic_name) + ' in Single Complex')
+                  str(SpeciesName) + ' in Single Complex')
         plt.xlabel('Time (s)')
-        plt.ylabel('Average Number of ' + str(speic_name))
+        plt.ylabel('Average Number of ' + str(SpeciesName))
         plt.show()
         return 0
     else:
         return 0
 
 
-def hist_to_df(file_name, speic_name_list=[]):
+def hist_to_df(FileName, SpeciesNameList=[]):
     df = pd.DataFrame(columns=['Time(s)'])
     index = -1
-    with open(file_name, 'r') as file:
+    with open(FileName, 'r') as file:
         for line in file.readlines():
             pos = 0
             if line[0:4] == 'Time':
@@ -3149,8 +3149,8 @@ def hist_to_df(file_name, speic_name_list=[]):
                         break
                 num = int(line[0:pos])
                 name = line[pos+1:-2]
-                if speic_name_list != []:
-                    if name in speic_name_list:
+                if SpeciesNameList != []:
+                    if name in SpeciesNameList:
                         if name not in df.columns:
                             df[name] = -1
                         df.loc[index, name] = num
@@ -3164,10 +3164,10 @@ def hist_to_df(file_name, speic_name_list=[]):
     return df
 
 
-def hist_temp(file_name, t_i, t_f, speic_name):
-    t_i, t_f = time_valid(file_name, t_i, t_f, speic_name)
+def hist_temp(FileName, InitialTime, FinalTime, SpeciesName):
+    t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
-        hist = read_file(file_name, speic_name)
+        hist = read_file(FileName, SpeciesName)
         plot_count = []
         plot_conv = []
         tot = 0
@@ -3189,9 +3189,9 @@ def hist_temp(file_name, t_i, t_f, speic_name):
         return 0
 
 
-def hist_3d_time(file_name, t_i, t_f, speic_name, time_bins):
-    t_arr = np.arange(t_i, t_f, (t_f-t_i)/time_bins)
-    t_arr = np.append(t_arr, t_f)
+def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, time_bins):
+    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/time_bins)
+    t_arr = np.append(t_arr, FinalTime)
     max_num = 0
     x_lst = []
     z_lst = []
@@ -3199,7 +3199,7 @@ def hist_3d_time(file_name, t_i, t_f, speic_name, time_bins):
     i = 0
     for i in range(0, len(t_arr)-1):
         t_plt[i] = (t_arr[i]+t_arr[i+1])/2
-        x, z = hist_temp(file_name, t_arr[i], t_arr[i+1], speic_name)
+        x, z = hist_temp(FileName, t_arr[i], t_arr[i+1], SpeciesName)
         x_lst.append(x)
         z_lst.append(z)
         if max(x) > max_num:
@@ -3222,16 +3222,16 @@ def hist_3d_time(file_name, t_i, t_f, speic_name, time_bins):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
-    ax.set_xlabel('# of ' + speic_name + ' in sigle complex')
+    ax.set_xlabel('# of ' + SpeciesName + ' in sigle complex')
     ax.set_ylabel('Averaged Time')
     ax.set_zlabel('Relative Occurrence Probability')
     plt.show()
     return 0
 
 
-def hist_time_heatmap(file_name, t_i, t_f, speic_name, time_bins, show_num=True):
-    t_arr = np.arange(t_i, t_f, (t_f-t_i)/time_bins)
-    t_arr = np.append(t_arr, t_f)
+def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, time_bins, show_num=True):
+    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/time_bins)
+    t_arr = np.append(t_arr, FinalTime)
     max_num = 0
     x_lst = []
     z_lst = []
@@ -3240,7 +3240,7 @@ def hist_time_heatmap(file_name, t_i, t_f, speic_name, time_bins, show_num=True)
     for i in range(0, len(t_arr)-1):
         t_plt.append(str(round(t_arr[i], 2)) +
                      's ~ ' + str(round(t_arr[i+1], 2)) + 's')
-        x, z = hist_temp(file_name, t_arr[i], t_arr[i+1], speic_name)
+        x, z = hist_temp(FileName, t_arr[i], t_arr[i+1], SpeciesName)
         x_lst.append(x)
         z_lst.append(z)
         if max(x) > max_num:
@@ -3274,9 +3274,9 @@ def hist_time_heatmap(file_name, t_i, t_f, speic_name, time_bins, show_num=True)
     return 0
 
 
-def hist_time_heatmap_mono_count(file_name, t_i, t_f, speic_name, time_bins, show_num=True):
-    t_arr = np.arange(t_i, t_f, (t_f-t_i)/time_bins)
-    t_arr = np.append(t_arr, t_f)
+def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, time_bins, show_num=True):
+    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/time_bins)
+    t_arr = np.append(t_arr, FinalTime)
     max_num = 0
     x_lst = []
     z_lst = []
@@ -3285,7 +3285,7 @@ def hist_time_heatmap_mono_count(file_name, t_i, t_f, speic_name, time_bins, sho
     for i in range(0, len(t_arr)-1):
         t_plt.append(str(round(t_arr[i], 2)) +
                      's ~ ' + str(round(t_arr[i+1], 2)) + 's')
-        x, z = hist_temp(file_name, t_arr[i], t_arr[i+1], speic_name)
+        x, z = hist_temp(FileName, t_arr[i], t_arr[i+1], SpeciesName)
         x_lst.append(x)
         z_lst.append(z)
         if max(x) > max_num:
@@ -3327,10 +3327,10 @@ def hist_time_heatmap_mono_count(file_name, t_i, t_f, speic_name, time_bins, sho
     return 0
 
 
-def hist_time_heatmap_fraction(file_name, t_i, t_f, speic_name, time_bins, show_num=True):
-    t_arr = np.arange(t_i, t_f, (t_f-t_i)/time_bins)
-    t_arr = np.append(t_arr, t_f)
-    xx, zz = hist_temp(file_name, 0, 0, speic_name)
+def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, time_bins, show_num=True):
+    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/time_bins)
+    t_arr = np.append(t_arr, FinalTime)
+    xx, zz = hist_temp(FileName, 0, 0, SpeciesName)
     n_tot = sum(zz)
     max_num = 0
     x_lst = []
@@ -3340,7 +3340,7 @@ def hist_time_heatmap_fraction(file_name, t_i, t_f, speic_name, time_bins, show_
     for i in range(0, len(t_arr)-1):
         t_plt.append(str(round(t_arr[i], 2)) +
                      's ~ ' + str(round(t_arr[i+1], 2)) + 's')
-        x, z = hist_temp(file_name, t_arr[i], t_arr[i+1], speic_name)
+        x, z = hist_temp(FileName, t_arr[i], t_arr[i+1], SpeciesName)
         x_lst.append(x)
         z_lst.append(z)
         if max(x) > max_num:
