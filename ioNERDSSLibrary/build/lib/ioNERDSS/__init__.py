@@ -3189,13 +3189,14 @@ def hist_temp(FileName, InitialTime, FinalTime, SpeciesName):
         return 0
 
 
-def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, time_bins):
-    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/time_bins)
+def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, TimeBins):
+    InitialTime, FinalTime = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
+    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     max_num = 0
     x_lst = []
     z_lst = []
-    t_plt = np.zeros(time_bins)
+    t_plt = np.zeros(TimeBins)
     i = 0
     for i in range(0, len(t_arr)-1):
         t_plt[i] = (t_arr[i]+t_arr[i+1])/2
@@ -3204,7 +3205,7 @@ def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, time_bins):
         z_lst.append(z)
         if max(x) > max_num:
             max_num = max(x)
-    z_plt = np.zeros(shape=(max_num, time_bins))
+    z_plt = np.zeros(shape=(max_num, TimeBins))
     k = 0
     for i in x_lst:
         l = 0
@@ -3218,7 +3219,7 @@ def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, time_bins):
     Z = z_plt.ravel()
     bottom = np.zeros_like(Z)
     width = 1
-    depth = 1/time_bins
+    depth = 1/TimeBins
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
@@ -3229,8 +3230,9 @@ def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, time_bins):
     return 0
 
 
-def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, time_bins, show_num=True):
-    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/time_bins)
+def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
+    InitialTime, FinalTime = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
+    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     max_num = 0
     x_lst = []
@@ -3245,7 +3247,7 @@ def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, time_bins, 
         z_lst.append(z)
         if max(x) > max_num:
             max_num = max(x)
-    z_plt = np.zeros(shape=(max_num, time_bins))
+    z_plt = np.zeros(shape=(max_num, TimeBins))
     k = 0
     for i in x_lst:
         l = 0
@@ -3262,7 +3264,7 @@ def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, time_bins, 
     ax.set_yticks(np.arange(len(t_plt)))
     ax.set_xticklabels(x_plt)
     ax.set_yticklabels(t_plt)
-    if show_num:
+    if ShowNum:
         for i in range(len(t_plt)):
             for j in range(len(x_plt)):
                 text = ax.text(j, i, round(
@@ -3270,12 +3272,15 @@ def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, time_bins, 
     ax.set_title('N-mers distribution vs. Time')
     fig.tight_layout()
     plt.colorbar(im)
+    plt.xlabel('Size of N-mers')
+    plt.ylabel('Averaged Time')
     plt.show()
     return 0
 
 
-def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, time_bins, show_num=True):
-    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/time_bins)
+def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
+    InitialTime, FinalTime = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
+    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     max_num = 0
     x_lst = []
@@ -3290,7 +3295,7 @@ def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, 
         z_lst.append(z)
         if max(x) > max_num:
             max_num = max(x)
-    z_plt = np.zeros(shape=(max_num, time_bins))
+    z_plt = np.zeros(shape=(max_num, TimeBins))
     k = 0
     for i in x_lst:
         l = 0
@@ -3315,7 +3320,7 @@ def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, 
     ax.set_yticks(np.arange(len(t_plt)))
     ax.set_xticklabels(x_plt)
     ax.set_yticklabels(t_plt)
-    if show_num:
+    if ShowNum:
         for i in range(len(t_plt)):
             for j in range(len(x_plt)):
                 text = ax.text(j, i, round(
@@ -3323,12 +3328,15 @@ def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, 
     ax.set_title('Total Number of Monomers in Complexes  vs. Time')
     fig.tight_layout()
     plt.colorbar(im)
+    plt.xlabel('Size of N-mers')
+    plt.ylabel('Averaged Time')
     plt.show()
     return 0
 
 
-def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, time_bins, show_num=True):
-    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/time_bins)
+def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
+    InitialTime, FinalTime = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
+    t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     xx, zz = hist_temp(FileName, 0, 0, SpeciesName)
     n_tot = sum(zz)
@@ -3345,7 +3353,7 @@ def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, ti
         z_lst.append(z)
         if max(x) > max_num:
             max_num = max(x)
-    z_plt = np.zeros(shape=(max_num, time_bins))
+    z_plt = np.zeros(shape=(max_num, TimeBins))
     k = 0
     for i in x_lst:
         l = 0
@@ -3369,7 +3377,7 @@ def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, ti
     ax.set_yticks(np.arange(len(t_plt)))
     ax.set_xticklabels(x_plt)
     ax.set_yticklabels(t_plt)
-    if show_num:
+    if ShowNum:
         for i in range(len(t_plt)):
             for j in range(len(x_plt)):
                 text = ax.text(j, i, round(
@@ -3377,8 +3385,11 @@ def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, ti
     ax.set_title('Franction of Monomers in Complexes vs. Time')
     fig.tight_layout()
     plt.colorbar(im)
+    plt.xlabel('Size of N-mers')
+    plt.ylabel('Averaged Time')
     plt.show()
     return 0
+
 
 # --------------------------------Locate Position by Pdb or Restart----------------------------------
 
@@ -3606,27 +3617,27 @@ def PDB_binding_info_df(inp_name):
     return binding_info
 
 
-def locate_position_PDB(pdb_name, num_lst, inp_name='parms.inp', buffer_ratio=0.01):
-    print('Reading files...')
-    pdb_df = PDB_pdb_to_df(pdb_name)
+def locate_position_PDB(FileNamePdb, NumList, FileNameInp, BufferRatio=0.01):
+    print('Reading files......')
+    pdb_df = PDB_pdb_to_df(FileNamePdb)
     print('Reading files complete!')
-    print('Extracting binding information...')
-    binding_info = PDB_binding_info_df(inp_name)
+    print('Extracting binding information......')
+    binding_info = PDB_binding_info_df(FileNameInp)
     print('Extracting complete!')
-    print('Calculating distance...')
+    print('Calculating distance......')
     dis_df = PDB_dis_df_gen(pdb_df, binding_info)
     print('Calculation complete!')
-    print('Finding bonds...')
-    bind_df = PDB_bind_df_gen(dis_df, buffer_ratio)
+    print('Finding bonds......')
+    bind_df = PDB_bind_df_gen(dis_df, BufferRatio)
     bond_lst = PDB_find_bond(bind_df)
     print('Finding bonds complete!')
-    print('Finding complexes...')
+    print('Finding complexes......')
     complex_lst = PDB_find_complex(pdb_df, bond_lst)
     complex_df = PDB_complex_df_gen(pdb_df, complex_lst)
     print('Finding complexes complete!')
-    print('Writing new PDB files...')
-    protein_remain = PDB_find_complex_df(complex_df, num_lst, pdb_df)
-    PDB_new_pdb(pdb_name, protein_remain)
+    print('Writing new PDB files......')
+    protein_remain = PDB_find_complex_df(complex_df, NumList, pdb_df)
+    PDB_new_pdb(FileNamePdb, protein_remain)
     print('PDB writing complete!(named as output_file.pdb)')
     return 0
 
@@ -3750,18 +3761,18 @@ def RESTART_new_pdb(file_name_pdb, protein_remain):
     return 0
 
 
-def locate_position_restart(file_name_pdb, num_lst, file_name_restart='restart.dat'):
-    print('Reading restart.dat...')
-    complex_lst = RESTART_read_restart(file_name_restart)
+def locate_position_restart(FileNamePdb, NumList, FileNameRestart='restart.dat'):
+    print('Reading restart.dat......')
+    complex_lst = RESTART_read_restart(FileNameRestart)
     print('Reading files complete!')
-    print('Reading PDB files...')
-    pdb_df = RESTART_pdb_to_df(file_name_pdb)
+    print('Reading PDB files......')
+    pdb_df = RESTART_pdb_to_df(FileNamePdb)
     print('Reading files complete!')
-    print('Finding complexes...')
+    print('Finding complexes......')
     complex_df = RESTART_complex_df_gen(pdb_df, complex_lst)
     print('Finding complexes complete!')
-    print('Writing new PDB files...')
-    protein_remain = RESTART_find_complex_df(complex_df, num_lst, pdb_df)
-    RESTART_new_pdb(file_name_pdb, protein_remain)
+    print('Writing new PDB files......')
+    protein_remain = RESTART_find_complex_df(complex_df, NumList, pdb_df)
+    RESTART_new_pdb(FileNamePdb, protein_remain)
     print('PDB writing complete!(named as output_file.pdb)')
     return 0
