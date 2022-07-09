@@ -61,4 +61,27 @@ Change Log
 - Corrected input name argumrnts for 'FileNameInp'.
 
 0.2.0 (07/06/2022)
-- Adapted package with to tutorial
+------------------
+- Adapted package with to tutorial.
+
+0.2.1 (07/08.2022)
+------------------
+- Optimized hist_to_df function.
+- Added hist_to_csv function. 
+
+0.2.2 (07/08/2022)
+------------------
+- Optimized hist_to_csv function.
+
+0.2.3 (07/08/2022)
+------------------
+- Deleted os from requirements.
+
+0.2.4 (07/08/2022)
+------------------
+- Fixed bug for hist_to_csv function.
+
+0.2.5 (07/08/2022)
+------------------
+- Fixed bug for hist_to_csv function.
+- Fixed typo for CHANGELOG.

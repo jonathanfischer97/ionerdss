@@ -2,6 +2,7 @@ import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 # ---------------------------------Platonic Solid Model--------------------------------------
 
@@ -3131,36 +3132,74 @@ def mean_complex(FileName, InitialTime, FinalTime, SpeciesName, ExcludeNum=0):
         return 0
 
 
-def hist_to_df(FileName, SpeciesNameList=[]):
-    df = pd.DataFrame(columns=['Time(s)'])
-    index = -1
+def hist_to_csv(FileName):
+    name_list = ['Time (s)']
     with open(FileName, 'r') as file:
         for line in file.readlines():
-            pos = 0
-            if line[0:4] == 'Time':
-                index += 1
-                time = float(line.replace('Time (s): ', ''))
-                df.loc[index, 'Time(s)'] = time
-            else:
-                for i in line:
-                    if i in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']:
-                        pos += 1
-                    else:
-                        break
-                num = int(line[0:pos])
-                name = line[pos+1:-2]
-                if SpeciesNameList != []:
-                    if name in SpeciesNameList:
-                        if name not in df.columns:
-                            df[name] = -1
-                        df.loc[index, name] = num
+            if line[0:9] != 'Time (s):':
+                name = line.split('	')[1].strip(' \n')
+                name_num = int(line.split('	')[1].split(' ')[1].strip('.'))
+                if name_list != ['Time (s)']:
+                    last_num = int(name_list[-1].split(' ')[1].strip('.'))
                 else:
-                    if name not in df.columns:
-                        df[name] = -1
-                    df.loc[index, name] = num
-    df = df.replace({-1: 0})
-    df = df.fillna(0)
-    df.to_csv('hist_to_df.csv')
+                    last_num = 0
+                if name not in name_list:
+                    if name_num-last_num == 1:
+                        name_list.append(name)
+                    else:
+                        fill = range(last_num+1, name_num)
+                        for i in fill:
+                            name = str(line.split('	')[1].split(' ')[0]) + ' ' + str(i) + '.'
+                            name_list.append(name)
+    file.close()
+    with open(FileName, 'r') as read_file, open('histogram.csv', 'w') as write_file:
+        head = ''
+        for i in name_list:
+            head += i
+            if i != name_list[-1]:
+                head += ','
+            else:
+                head += '\n'
+        write_file.write(head)
+        stat = np.zeros(len(name_list))
+        for line in read_file.readlines():
+            if line[0:9] == 'Time (s):':
+                if line != 'Time (s): 0\n':
+                    write_line = ''
+                    for i in range(len(stat)):
+                        write_line += str(stat[i])
+                        if i != len(stat)-1:
+                            write_line += ','
+                        else:
+                            write_line += '\n'
+                    write_file.write(write_line)
+                stat = np.zeros(len(name_list))
+                write_line = ''
+                info = float(line.split(' ')[-1])
+                stat[0] += info
+            else:
+                name = line.split('	')[-1].strip(' \n')
+                num = float(line.split('	')[0])
+                index = name_list.index(name)
+                stat[index] += num
+        for i in range(len(stat)):
+            write_line += str(stat[i])
+            if i != len(stat)-1:
+                write_line += ','
+            else:
+                write_line += '\n'
+        write_file.write(write_line)
+    read_file.close()
+    write_file.close()
+    return 0
+
+
+def hist_to_df(FileName, SaveCsv=True):
+    hist_to_csv(FileName)
+    df = pd.read_csv('histogram.csv')
+    if not SaveCsv:
+        os.remove('histogram.csv')
+        print('CSV deleted!')
     return df
 
 
@@ -3190,7 +3229,8 @@ def hist_temp(FileName, InitialTime, FinalTime, SpeciesName):
 
 
 def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, TimeBins):
-    InitialTime, FinalTime = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
+    InitialTime, FinalTime = time_valid(
+        FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     max_num = 0
@@ -3231,7 +3271,8 @@ def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, TimeBins):
 
 
 def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
-    InitialTime, FinalTime = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
+    InitialTime, FinalTime = time_valid(
+        FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     max_num = 0
@@ -3279,7 +3320,8 @@ def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, S
 
 
 def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
-    InitialTime, FinalTime = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
+    InitialTime, FinalTime = time_valid(
+        FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     max_num = 0
@@ -3335,7 +3377,8 @@ def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, 
 
 
 def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
-    InitialTime, FinalTime = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
+    InitialTime, FinalTime = time_valid(
+        FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     xx, zz = hist_temp(FileName, 0, 0, SpeciesName)
