@@ -3149,7 +3149,8 @@ def hist_to_csv(FileName):
                     else:
                         fill = range(last_num+1, name_num)
                         for i in fill:
-                            name = str(line.split('	')[1].split(' ')[0]) + ' ' + str(i) + '.'
+                            name = str(line.split('	')[1].split(
+                                ' ')[0]) + ' ' + str(i) + '.'
                             name_list.append(name)
     file.close()
     with open(FileName, 'r') as read_file, open('histogram.csv', 'w') as write_file:
@@ -3191,6 +3192,7 @@ def hist_to_csv(FileName):
         write_file.write(write_line)
     read_file.close()
     write_file.close()
+    print('CSV writing completed!')
     return 0
 
 

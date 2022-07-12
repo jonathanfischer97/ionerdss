@@ -85,3 +85,8 @@ Change Log
 ------------------
 - Fixed bug for hist_to_csv function.
 - Fixed typo for CHANGELOG.
+
+0.2.6 (07/11/2022)
+------------------
+- Added interface notification for csv writing.
+- Formated code.
