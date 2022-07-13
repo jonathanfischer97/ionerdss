@@ -90,3 +90,7 @@ Change Log
 ------------------
 - Added interface notification for csv writing.
 - Formated code.
+
+0.2.7 (07/13/2022)
+------------------
+- Added multi_hist_to_csv and multi_hist_to df function.
