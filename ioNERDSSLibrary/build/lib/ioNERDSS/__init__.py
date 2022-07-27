@@ -3032,7 +3032,7 @@ def time_valid(FileName, InitialTime, FinalTime, SpeciesName):
         return -1.0, -1.0
 
 
-def hist(FileName, InitialTime, FinalTime, SpeciesName):
+def hist(FileName, InitialTime, FinalTime, SpeciesName, SaveFig = False):
     t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
         hist = read_file(FileName, SpeciesName)
@@ -3058,13 +3058,15 @@ def hist(FileName, InitialTime, FinalTime, SpeciesName):
         plt.title('Histogram of ' + str(SpeciesName))
         plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
         plt.ylabel('Count')
+        if SaveFig:
+            plt.savefig('Histogram.png', dpi = 500)
         plt.show()
         return 0
     else:
         return 0
 
 
-def max_complex(FileName, InitialTime, FinalTime, SpeciesName):
+def max_complex(FileName, InitialTime, FinalTime, SpeciesName, SaveFig = False):
     t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
         hist = read_file(FileName, SpeciesName)
@@ -3081,13 +3083,15 @@ def max_complex(FileName, InitialTime, FinalTime, SpeciesName):
                   str(SpeciesName) + ' in Single Complex')
         plt.xlabel('Time')
         plt.ylabel('Maximum Number of ' + str(SpeciesName))
+        if SaveFig:
+            plt.savefig('max_complex.png', dpi = 500)
         plt.show()
         return 0
     else:
         return 0
 
 
-def mean_complex(FileName, InitialTime, FinalTime, SpeciesName, ExcludeNum=0):
+def mean_complex(FileName, InitialTime, FinalTime, SpeciesName, ExcludeNum=0, SaveFig = False):
     t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
         hist = read_file(FileName, SpeciesName)
@@ -3126,6 +3130,8 @@ def mean_complex(FileName, InitialTime, FinalTime, SpeciesName, ExcludeNum=0):
                   str(SpeciesName) + ' in Single Complex')
         plt.xlabel('Time (s)')
         plt.ylabel('Average Number of ' + str(SpeciesName))
+        if SaveFig:
+            plt.savefig('mean_complex.png', dpi = 500)
         plt.show()
         return 0
     else:
@@ -3331,7 +3337,7 @@ def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, TimeBins):
     return 0
 
 
-def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
+def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True, SaveFig = False):
     InitialTime, FinalTime = time_valid(
         FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
@@ -3376,11 +3382,13 @@ def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, S
     plt.colorbar(im)
     plt.xlabel('Size of N-mers')
     plt.ylabel('Averaged Time')
+    if SaveFig:
+        plt.savefig('hist_heatmap.png', dpi = 500, bbox_inches = 'tight')
     plt.show()
     return 0
 
 
-def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
+def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True, SaveFig = False):
     InitialTime, FinalTime = time_valid(
         FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
@@ -3433,11 +3441,13 @@ def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, 
     plt.colorbar(im)
     plt.xlabel('Size of N-mers')
     plt.ylabel('Averaged Time')
+    if SaveFig:
+        plt.savefig('hist_heatmap_count.png', dpi = 500, bbox_inches = 'tight')
     plt.show()
     return 0
 
 
-def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True):
+def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True, SaveFig = False):
     InitialTime, FinalTime = time_valid(
         FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
@@ -3491,6 +3501,8 @@ def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, Ti
     plt.colorbar(im)
     plt.xlabel('Size of N-mers')
     plt.ylabel('Averaged Time')
+    if SaveFig:
+        plt.savefig('hist_heatmap_fraction.png', dpi = 500, bbox_inches = 'tight')
     plt.show()
     return 0
 

@@ -94,3 +94,11 @@ Change Log
 0.2.7 (07/13/2022)
 ------------------
 - Added multi_hist_to_csv and multi_hist_to df function.
+
+0.2.8 (07/27/2022)
+------------------
+- Added SaveFig input to all data visualization functions.
+
+0.2.9 (07/27/2022)
+------------------
+- Fixed bugs of not saving full plot for heatmaps.
