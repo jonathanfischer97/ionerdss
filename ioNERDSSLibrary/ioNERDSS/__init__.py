@@ -3,23 +3,24 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import warnings
 
 # ---------------------------------Platonic Solid Model--------------------------------------
 
 
-def distance(a, b):
+def distance(a: float, b: float):
     # a seperated function for calculating the distance between two coordinates
     n = 15
     return round(((a[0] - b[0])**2 + (a[1] - b[1])**2 + (a[2] - b[2])**2)**0.5, n)
 
 
-def mid_pt(a, b):
+def mid_pt(a: float, b: float):
     # this is a seperate function for calculating mid point of two coords
     n = 15
     return [round((a[0]+b[0])/2, n), round((a[1]+b[1])/2, n), round((a[2]+b[2])/2, n)]
 
 
-def angle_cal(COM1, leg1, COM2, leg2):
+def angle_cal(COM1: float, leg1: float, COM2: float, leg2: float):
     n = 8
     c1 = np.array(COM1)
     p1 = np.array(leg1)
@@ -53,7 +54,7 @@ def angle_cal(COM1, leg1, COM2, leg2):
 
 # DODECAHEDEON FACE AS COM
 
-def dode_face_dodecahedron_coord(radius):
+def dode_face_dodecahedron_coord(radius: float):
     # Setup coordinates of 20 verticies when scaler = 1
     scaler = radius/(3**0.5)
     m = (1+5**(0.5))/2
@@ -90,7 +91,7 @@ def dode_face_dodecahedron_coord(radius):
     return coord_
 
 
-def dode_face_COM_coor(a, b, c, d, e):
+def dode_face_COM_coor(a: float, b: float, c: float, d: float, e: float):
     # calculate the center of mass(COM) according to 5 coords on the same face
     n = 10
     mid_a = mid_pt(c, d)
@@ -116,7 +117,7 @@ def dode_face_COM_coor(a, b, c, d, e):
         return COM_a
 
 
-def dode_face_COM_list_gen(radius):
+def dode_face_COM_list_gen(radius: float):
     # generate the list of COM of all 12 faces
     coord = dode_face_dodecahedron_coord(radius)
     COM_list = []
@@ -147,7 +148,7 @@ def dode_face_COM_list_gen(radius):
     return COM_list
 
 
-def dode_face_COM_leg_coor(a, b, c, d, e):
+def dode_face_COM_leg_coor(a: float, b: float, c: float, d: float, e: float):
     # calculate COM and 5 legs of one protein, 6 coords in total [COM, lg1, lg2, lg3, lg4, lg5]
     COM_leg = []
     COM_leg.append(dode_face_COM_coor(a, b, c, d, e))
@@ -159,7 +160,7 @@ def dode_face_COM_leg_coor(a, b, c, d, e):
     return COM_leg
 
 
-def dode_face_COM_leg_list_gen(radius):
+def dode_face_COM_leg_list_gen(radius: float):
     # generate all COM and leg coords of 12 faces as a large list
     coord = dode_face_dodecahedron_coord(radius)
     COM_leg_list = []
@@ -190,7 +191,7 @@ def dode_face_COM_leg_list_gen(radius):
     return COM_leg_list
 
 
-def dode_face_leg_reduce(COM, leg, sigma):
+def dode_face_leg_reduce(COM: float, leg: float, sigma: float):
     # calculate the recuced length when considering the sigma value
     n = 14
     m = (1+5**(0.5))/2
@@ -203,7 +204,7 @@ def dode_face_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def dode_face_leg_reduce_coor_gen(radius, sigma):
+def dode_face_leg_reduce_coor_gen(radius: float, sigma: float):
     # Generating all the coords of COM and legs when sigma exists
     COM_leg_list = dode_face_COM_leg_list_gen(radius)
     COM_leg_red_list = []
@@ -219,7 +220,7 @@ def dode_face_leg_reduce_coor_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def dode_face_input_coord(radius, sigma):
+def dode_face_input_coord(radius: float, sigma: float):
     coor = dode_face_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = coor_[0] - coor_[0]
@@ -232,7 +233,7 @@ def dode_face_input_coord(radius, sigma):
     return COM, lg1, lg2, lg3, lg4, lg5, n
 
 
-def dode_face_write(radius, sigma):
+def dode_face_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, lg4, lg5, n = dode_face_input_coord(radius, sigma)
     coord = dode_face_leg_reduce_coor_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
@@ -490,7 +491,7 @@ def dode_face_write(radius, sigma):
 
 # DODECAHEDEON VERTEX AS COM
 
-def dode_vert_coord(radius):
+def dode_vert_coord(radius: float):
     scaler = radius/(3**0.5)
     m = (1+5**(0.5))/2
     V0 = [0, m, 1/m]
@@ -525,14 +526,14 @@ def dode_vert_coord(radius):
     return coord_
 
 
-def dode_vert_COM_leg(COM, a, b, c):
+def dode_vert_COM_leg(COM: float, a: float, b: float, c: float):
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)
     return [np.around(COM, 10), np.around(lega, 10), np.around(legb, 10), np.around(legc, 10)]
 
 
-def dode_vert_COM_leg_gen(radius):
+def dode_vert_COM_leg_gen(radius: float):
     coord = dode_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(dode_vert_COM_leg(
@@ -578,7 +579,7 @@ def dode_vert_COM_leg_gen(radius):
     return COM_leg_list
 
 
-def dode_vert_leg_reduce(COM, leg, sigma):
+def dode_vert_leg_reduce(COM: float, leg: float, sigma: float):
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -587,7 +588,7 @@ def dode_vert_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def dode_vert_leg_reduce_coor_gen(radius, sigma):
+def dode_vert_leg_reduce_coor_gen(radius: float, sigma: float):
     COM_leg_list = dode_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
@@ -602,7 +603,7 @@ def dode_vert_leg_reduce_coor_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def dode_vert_input_coord(radius, sigma):
+def dode_vert_input_coord(radius: float, sigma: float):
     coor = dode_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = np.around(coor_[0] - coor_[0], 12)
@@ -613,7 +614,7 @@ def dode_vert_input_coord(radius, sigma):
     return COM, lg1, lg2, lg3, n
 
 
-def dode_vert_norm_input(radius, sigma):
+def dode_vert_norm_input(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = dode_vert_input_coord(radius, sigma)
     length = distance(lg1, lg2)
     dis1 = ((-length/2)**2+(-((length/2)*(3**0.5))/3)**2)**0.5
@@ -627,7 +628,7 @@ def dode_vert_norm_input(radius, sigma):
     return COM_, lg1_, lg2_, lg3_, n_
 
 
-def dode_vert_write(radius, sigma):
+def dode_vert_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = dode_vert_norm_input(radius, sigma)
     f = open('parm.inp', 'w')
     f.write(' # Input file (dodecahedron vertex-centered)\n\n')
@@ -752,7 +753,7 @@ def dode_vert_write(radius, sigma):
 
 # ICOSAHEDRON FACE AS COM
 
-def icos_face_vert_coord(radius):
+def icos_face_vert_coord(radius: float):
     scaler = radius/(2*math.sin(2*math.pi/5))
     m = (1+5**0.5)/2
     v0 = [0, 1, m]
@@ -778,7 +779,7 @@ def icos_face_vert_coord(radius):
     return VertCoord_
 
 
-def icos_face_COM_coord(a, b, c):
+def icos_face_COM_coord(a: float, b: float, c: float):
     mid_a = mid_pt(b, c)
     mid_b = mid_pt(a, c)
     mid_c = mid_pt(a, b)
@@ -798,7 +799,7 @@ def icos_face_COM_coord(a, b, c):
         return COM_a
 
 
-def icos_face_COM_list_gen(radius):
+def icos_face_COM_list_gen(radius: float):
     coord = icos_face_vert_coord(radius)
     COM_list = []
     COM_list.append(icos_face_COM_coord(coord[0], coord[2], coord[8]))
@@ -824,7 +825,7 @@ def icos_face_COM_list_gen(radius):
     return COM_list
 
 
-def icos_face_COM_leg_coord(a, b, c):
+def icos_face_COM_leg_coord(a: float, b: float, c: float):
     COM_leg = []
     COM_leg.append(icos_face_COM_coord(a, b, c))
     COM_leg.append(mid_pt(a, b))
@@ -833,7 +834,7 @@ def icos_face_COM_leg_coord(a, b, c):
     return COM_leg
 
 
-def COM_leg_list_gen(radius):
+def COM_leg_list_gen(radius: float):
     coord = icos_face_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(icos_face_COM_leg_coord(coord[0], coord[2], coord[8]))
@@ -861,7 +862,7 @@ def COM_leg_list_gen(radius):
     return COM_leg_list
 
 
-def icos_face_leg_reduce(COM, leg, sigma):
+def icos_face_leg_reduce(COM: float, leg: float, sigma: float):
     n = 12
     angle = math.acos(-5**0.5/3)
     red_len = sigma/(2*math.sin(angle/2))
@@ -872,7 +873,7 @@ def icos_face_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def icos_face_leg_reduce_coord_gen(radius, sigma):
+def icos_face_leg_reduce_coord_gen(radius: float, sigma: float):
     COM_leg_list = COM_leg_list_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
@@ -887,7 +888,7 @@ def icos_face_leg_reduce_coord_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def icos_face_input_coord(radius, sigma):
+def icos_face_input_coord(radius: float, sigma: float):
     coor = icos_face_leg_reduce_coord_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = coor_[0] - coor_[0]
@@ -898,7 +899,7 @@ def icos_face_input_coord(radius, sigma):
     return [COM, lg1, lg2, lg3, n]
 
 
-def icos_face_write(radius, sigma):
+def icos_face_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = icos_face_input_coord(radius, sigma)
     coord = icos_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
@@ -1033,7 +1034,7 @@ def icos_face_write(radius, sigma):
 
 # ICOSAHEDRON VERTEX AS COM
 
-def icos_vert_coord(radius):
+def icos_vert_coord(radius: float):
     scaler = radius/(2*math.sin(2*math.pi/5))
     m = (1+5**0.5)/2
     v0 = [0, 1, m]
@@ -1059,7 +1060,7 @@ def icos_vert_coord(radius):
     return VertCoord_
 
 
-def icos_vert_COM_leg(COM, a, b, c, d, e):
+def icos_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float, e: float):
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)
@@ -1070,7 +1071,7 @@ def icos_vert_COM_leg(COM, a, b, c, d, e):
     return result
 
 
-def icos_vert_COM_leg_gen(radius):
+def icos_vert_COM_leg_gen(radius: float):
     coord = icos_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(icos_vert_COM_leg(
@@ -1100,7 +1101,7 @@ def icos_vert_COM_leg_gen(radius):
     return COM_leg_list
 
 
-def icos_vert_leg_reduce(COM, leg, sigma):
+def icos_vert_leg_reduce(COM: float, leg: float, sigma: float):
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -1109,7 +1110,7 @@ def icos_vert_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def icos_vert_leg_reduce_coor_gen(radius, sigma):
+def icos_vert_leg_reduce_coor_gen(radius: float, sigma: float):
     COM_leg_list = icos_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
@@ -1124,7 +1125,7 @@ def icos_vert_leg_reduce_coor_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def icos_vert_input_coord(radius, sigma):
+def icos_vert_input_coord(radius: float, sigma: float):
     coor = icos_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = np.around(coor_[0] - coor_[0], 12)
@@ -1137,7 +1138,7 @@ def icos_vert_input_coord(radius, sigma):
     return COM, lg1, lg2, lg3, lg4, lg5, n
 
 
-def icos_vert_center_coor(a, b, c, d, e):
+def icos_vert_center_coor(a: float, b: float, c: float, d: float, e: float):
     n = 8
     mid_a = mid_pt(c, d)
     mid_b = mid_pt(d, e)
@@ -1160,7 +1161,7 @@ def icos_vert_center_coor(a, b, c, d, e):
         return COM_a
 
 
-def icos_vert_check_dis(cen, COM, lg1, lg2, lg3, lg4, lg5):
+def icos_vert_check_dis(cen: float, COM: float, lg1: float, lg2: float, lg3: float, lg4: float, lg5: float):
     dis1 = round(distance(cen, lg1), 8)
     dis2 = round(distance(cen, lg2), 8)
     dis3 = round(distance(cen, lg3), 8)
@@ -1173,7 +1174,7 @@ def icos_vert_check_dis(cen, COM, lg1, lg2, lg3, lg4, lg5):
         return dis1, dis_
 
 
-def icos_vert_norm_input(scaler, dis_):
+def icos_vert_norm_input(scaler: float, dis_: float):
     c1 = math.cos(2*math.pi/5)
     c2 = math.cos(math.pi/5)
     s1 = math.sin(2*math.pi/5)
@@ -1193,7 +1194,7 @@ def icos_vert_norm_input(scaler, dis_):
     return COM, lg1, lg2, lg3, lg4, lg5, n
 
 
-def icos_vert_write(radius, sigma):
+def icos_vert_write(radius: float, sigma: float):
     COM_, lg1_, lg2_, lg3_, lg4_, lg5_, n_ = icos_vert_input_coord(
         radius, sigma)
     cen_ = icos_vert_center_coor(lg1_, lg2_, lg3_, lg4_, lg5_)
@@ -1438,7 +1439,7 @@ def icos_vert_write(radius, sigma):
 
 # OCTAHEDRON FACE AS COM
 
-def octa_face_vert_coord(radius):
+def octa_face_vert_coord(radius: float):
     scaler = radius
     v0 = [1, 0, 0]
     v1 = [-1, 0, 0]
@@ -1457,7 +1458,7 @@ def octa_face_vert_coord(radius):
     return VertCoord_
 
 
-def octa_face_COM_coord(a, b, c):
+def octa_face_COM_coord(a: float, b: float, c: float):
     mid_a = mid_pt(b, c)
     mid_b = mid_pt(a, c)
     mid_c = mid_pt(a, b)
@@ -1477,7 +1478,7 @@ def octa_face_COM_coord(a, b, c):
         return COM_a
 
 
-def octa_face_COM_list_gen(radius):
+def octa_face_COM_list_gen(radius: float):
     coord = octa_face_vert_coord(radius)
     COM_list = []
     COM_list.append(octa_face_COM_coord(coord[0], coord[2], coord[4]))
@@ -1491,7 +1492,7 @@ def octa_face_COM_list_gen(radius):
     return COM_list
 
 
-def octa_face_COM_leg_coord(a, b, c):
+def octa_face_COM_leg_coord(a: float, b: float, c: float):
     COM_leg = []
     COM_leg.append(octa_face_COM_coord(a, b, c))
     COM_leg.append(mid_pt(a, b))
@@ -1500,7 +1501,7 @@ def octa_face_COM_leg_coord(a, b, c):
     return COM_leg
 
 
-def octa_face_COM_leg_list_gen(radius):
+def octa_face_COM_leg_list_gen(radius: float):
     coord = octa_face_vert_coord(radius)
     COM_leg_list = []
 
@@ -1515,7 +1516,7 @@ def octa_face_COM_leg_list_gen(radius):
     return COM_leg_list
 
 
-def octa_face_leg_reduce(COM, leg, sigma):
+def octa_face_leg_reduce(COM: float, leg: float, sigma: float):
     n = 12
     angle = math.acos(-1/3)
     red_len = sigma/(2*math.sin(angle/2))
@@ -1526,7 +1527,7 @@ def octa_face_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def octa_face_leg_reduce_coord_gen(radius, sigma):
+def octa_face_leg_reduce_coord_gen(radius: float, sigma: float):
     COM_leg_list = octa_face_COM_leg_list_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
@@ -1541,7 +1542,7 @@ def octa_face_leg_reduce_coord_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def octa_face_input_coord(radius, sigma):
+def octa_face_input_coord(radius: float, sigma: float):
     coor = octa_face_leg_reduce_coord_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = coor_[0] - coor_[0]
@@ -1552,7 +1553,7 @@ def octa_face_input_coord(radius, sigma):
     return [COM, lg1, lg2, lg3, n]
 
 
-def octa_face_write(radius, sigma):
+def octa_face_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = octa_face_input_coord(radius, sigma)
     coord = octa_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
@@ -1686,7 +1687,7 @@ def octa_face_write(radius, sigma):
 
 # OCTAHEDRON VERTEX AS COM
 
-def octa_vert_coord(radius):
+def octa_vert_coord(radius: float):
     scaler = radius
     v0 = [1, 0, 0]
     v1 = [-1, 0, 0]
@@ -1705,7 +1706,7 @@ def octa_vert_coord(radius):
     return VertCoord_
 
 
-def octa_vert_COM_leg(COM, a, b, c, d):
+def octa_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float):
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)
@@ -1713,7 +1714,7 @@ def octa_vert_COM_leg(COM, a, b, c, d):
     return [np.around(COM, 10), np.around(lega, 10), np.around(legb, 10), np.around(legc, 10), np.around(legd, 10)]
 
 
-def octa_vert_COM_leg_gen(radius):
+def octa_vert_COM_leg_gen(radius: float):
     coord = octa_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(octa_vert_COM_leg(
@@ -1731,7 +1732,7 @@ def octa_vert_COM_leg_gen(radius):
     return COM_leg_list
 
 
-def octa_vert_leg_reduce(COM, leg, sigma):
+def octa_vert_leg_reduce(COM: float, leg: float, sigma: float):
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -1740,7 +1741,7 @@ def octa_vert_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def octa_vert_leg_reduce_coor_gen(radius, sigma):
+def octa_vert_leg_reduce_coor_gen(radius: float, sigma: float):
     COM_leg_list = octa_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
@@ -1755,7 +1756,7 @@ def octa_vert_leg_reduce_coor_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def octa_vert_input_coord(radius, sigma):
+def octa_vert_input_coord(radius: float, sigma: float):
     coor = octa_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[4])
     COM = np.around(coor_[0] - coor_[0], 8)
@@ -1767,7 +1768,7 @@ def octa_vert_input_coord(radius, sigma):
     return COM, lg1, lg2, lg3, lg4, n
 
 
-def octa_vert_write(radius, sigma):
+def octa_vert_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, lg4, n = octa_vert_input_coord(radius, sigma)
     f = open('parm.inp', 'w')
     f.write(' # Input file (octahedron vertex-centered)\n\n')
@@ -1943,7 +1944,7 @@ def octa_vert_write(radius, sigma):
 
 # CUBE FACE AS COM
 
-def cube_face_vert_coord(radius):
+def cube_face_vert_coord(radius: float):
     scaler = radius/3**0.5
     v0 = [1, 1, 1]
     v1 = [-1, 1, 1]
@@ -1964,7 +1965,7 @@ def cube_face_vert_coord(radius):
     return VertCoord_
 
 
-def cube_face_COM_coord(a, b, c, d):
+def cube_face_COM_coord(a: float, b: float, c: float, d: float):
     mid_a = mid_pt(a, b)
     mid_b = mid_pt(b, c)
     mid_c = mid_pt(c, d)
@@ -1977,7 +1978,7 @@ def cube_face_COM_coord(a, b, c, d):
         return COM_a
 
 
-def cube_face_COM_list_gen(radius):
+def cube_face_COM_list_gen(radius: float):
     coord = cube_face_vert_coord(radius)
     COM_list = []
     COM_list.append(cube_face_COM_coord(
@@ -1995,7 +1996,7 @@ def cube_face_COM_list_gen(radius):
     return COM_list
 
 
-def cube_face_COM_leg_coord(a, b, c, d):
+def cube_face_COM_leg_coord(a: float, b: float, c: float, d: float):
     COM_leg = []
     COM_leg.append(cube_face_COM_coord(a, b, c, d))
     COM_leg.append(mid_pt(a, b))
@@ -2005,7 +2006,7 @@ def cube_face_COM_leg_coord(a, b, c, d):
     return COM_leg
 
 
-def cube_face_COM_leg_list_gen(radius):
+def cube_face_COM_leg_list_gen(radius: float):
     coord = cube_face_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(cube_face_COM_leg_coord(
@@ -2023,7 +2024,7 @@ def cube_face_COM_leg_list_gen(radius):
     return COM_leg_list
 
 
-def cube_face_leg_reduce(COM, leg, sigma):
+def cube_face_leg_reduce(COM: float, leg: float, sigma: float):
     n = 12
     angle = math.acos(0)
     red_len = sigma/(2*math.sin(angle/2))
@@ -2034,7 +2035,7 @@ def cube_face_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def cube_face_leg_reduce_coord_gen(radius, sigma):
+def cube_face_leg_reduce_coord_gen(radius: float, sigma: float):
     COM_leg_list = cube_face_COM_leg_list_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
@@ -2049,7 +2050,7 @@ def cube_face_leg_reduce_coord_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def cube_face_input_coord(radius, sigma):
+def cube_face_input_coord(radius: float, sigma: float):
     coor = cube_face_leg_reduce_coord_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = np.around(coor_[0] - coor_[0], 7)
@@ -2061,7 +2062,7 @@ def cube_face_input_coord(radius, sigma):
     return [COM, lg1, lg2, lg3, lg4, n]
 
 
-def cube_face_write(radius, sigma):
+def cube_face_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, lg4, n = cube_face_input_coord(radius, sigma)
     coord = cube_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
@@ -2251,7 +2252,7 @@ def cube_face_write(radius, sigma):
 
 # CUBE VERTEX AS COM
 
-def cube_vert_coord(radius):
+def cube_vert_coord(radius: float):
     scaler = radius/3**0.5
     v0 = [1, 1, 1]
     v1 = [-1, 1, 1]
@@ -2272,14 +2273,14 @@ def cube_vert_coord(radius):
     return VertCoord_
 
 
-def cube_vert_COM_leg(COM, a, b, c):
+def cube_vert_COM_leg(COM: float, a: float, b: float, c: float):
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)
     return [np.around(COM, 10), np.around(lega, 10), np.around(legb, 10), np.around(legc, 10)]
 
 
-def cube_vert_COM_leg_gen(radius):
+def cube_vert_COM_leg_gen(radius: float):
     coord = cube_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(cube_vert_COM_leg(
@@ -2301,7 +2302,7 @@ def cube_vert_COM_leg_gen(radius):
     return COM_leg_list
 
 
-def cube_vert_leg_reduce(COM, leg, sigma):
+def cube_vert_leg_reduce(COM: float, leg: float, sigma: float):
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -2310,7 +2311,7 @@ def cube_vert_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def cube_vert_leg_reduce_coor_gen(radius, sigma):
+def cube_vert_leg_reduce_coor_gen(radius: float, sigma: float):
     COM_leg_list = cube_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
@@ -2325,7 +2326,7 @@ def cube_vert_leg_reduce_coor_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def cube_vert_input_coord(radius, sigma):
+def cube_vert_input_coord(radius: float, sigma: float):
     coor = cube_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = np.around(coor_[0] - coor_[0], 8)
@@ -2336,7 +2337,7 @@ def cube_vert_input_coord(radius, sigma):
     return COM, lg1, lg2, lg3, n
 
 
-def cube_vert_norm_input(radius, sigma):
+def cube_vert_norm_input(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = cube_vert_input_coord(radius, sigma)
     length = distance(lg1, lg2)
     dis1 = ((-length/2)**2+(-((length/2)*(3**0.5))/3)**2)**0.5
@@ -2350,7 +2351,7 @@ def cube_vert_norm_input(radius, sigma):
     return COM_, lg1_, lg2_, lg3_, n_
 
 
-def cube_vert_write(radius, sigma):
+def cube_vert_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = cube_vert_norm_input(radius, sigma)
     f = open('parm.inp', 'w')
     f.write(' # Input file (cube vertex-centered)\n\n')
@@ -2475,7 +2476,7 @@ def cube_vert_write(radius, sigma):
 
 # TETRAHETRON FACE AS COM
 
-def tetr_face_coord(radius):
+def tetr_face_coord(radius: float):
     scaler = radius/(3/8)**0.5/2
     v0 = [1, 0, -1/2**0.5]
     v1 = [-1, 0, -1/2**0.5]
@@ -2492,7 +2493,7 @@ def tetr_face_coord(radius):
     return VertCoord_
 
 
-def tetr_face_COM_coord(a, b, c):
+def tetr_face_COM_coord(a: float, b: float, c: float):
     n = 10
     mid_a = mid_pt(b, c)
     mid_b = mid_pt(a, c)
@@ -2514,7 +2515,7 @@ def tetr_face_COM_coord(a, b, c):
         return COM_a
 
 
-def tetr_face_COM_list_gen(radius):
+def tetr_face_COM_list_gen(radius: float):
     coord = tetr_face_coord(radius)
     COM_list = []
     COM_list.append(tetr_face_COM_coord(coord[0], coord[1], coord[2]))
@@ -2524,7 +2525,7 @@ def tetr_face_COM_list_gen(radius):
     return COM_list
 
 
-def tetr_face_COM_leg_coord(a, b, c):
+def tetr_face_COM_leg_coord(a: float, b: float, c: float):
     COM_leg = []
     COM_leg.append(tetr_face_COM_coord(a, b, c))
     COM_leg.append(mid_pt(a, b))
@@ -2533,7 +2534,7 @@ def tetr_face_COM_leg_coord(a, b, c):
     return COM_leg
 
 
-def tetr_face_COM_leg_list_gen(radius):
+def tetr_face_COM_leg_list_gen(radius: float):
     coord = tetr_face_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(tetr_face_COM_leg_coord(coord[0], coord[1], coord[2]))
@@ -2543,7 +2544,7 @@ def tetr_face_COM_leg_list_gen(radius):
     return COM_leg_list
 
 
-def tetr_face_leg_reduce(COM, leg, sigma):
+def tetr_face_leg_reduce(COM: float, leg: float, sigma: float):
     n = 12
     angle = math.acos(1/3)
     red_len = sigma/(2*math.sin(angle/2))
@@ -2554,7 +2555,7 @@ def tetr_face_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def tetr_face_leg_reduce_coord_gen(radius, sigma):
+def tetr_face_leg_reduce_coord_gen(radius: float, sigma: float):
     COM_leg_list = tetr_face_COM_leg_list_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
@@ -2569,7 +2570,7 @@ def tetr_face_leg_reduce_coord_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def tetr_face_input_coord(radius, sigma):
+def tetr_face_input_coord(radius: float, sigma: float):
     coor = tetr_face_leg_reduce_coord_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = coor_[0] - coor_[0]
@@ -2580,7 +2581,7 @@ def tetr_face_input_coord(radius, sigma):
     return [COM, lg1, lg2, lg3, n]
 
 
-def tetr_face_write(radius, sigma):
+def tetr_face_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = tetr_face_input_coord(radius, sigma)
     coord = tetr_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
@@ -2715,7 +2716,7 @@ def tetr_face_write(radius, sigma):
 
 # TETRAHEDRON VERTEX AS COM
 
-def tetr_vert_coord(radius):
+def tetr_vert_coord(radius: float):
     scaler = radius/(3/8)**0.5/2
     v0 = [1, 0, -1/2**0.5]
     v1 = [-1, 0, -1/2**0.5]
@@ -2732,14 +2733,14 @@ def tetr_vert_coord(radius):
     return VertCoord_
 
 
-def tetr_vert_COM_leg(COM, a, b, c):
+def tetr_vert_COM_leg(COM: float, a: float, b: float, c: float):
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)
     return [np.around(COM, 10), np.around(lega, 10), np.around(legb, 10), np.around(legc, 10)]
 
 
-def tetr_vert_COM_leg_gen(radius):
+def tetr_vert_COM_leg_gen(radius: float):
     coord = tetr_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(tetr_vert_COM_leg(
@@ -2753,7 +2754,7 @@ def tetr_vert_COM_leg_gen(radius):
     return COM_leg_list
 
 
-def tetr_vert_leg_reduce(COM, leg, sigma):
+def tetr_vert_leg_reduce(COM: float, leg: float, sigma: float):
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -2762,7 +2763,7 @@ def tetr_vert_leg_reduce(COM, leg, sigma):
     return leg_red
 
 
-def tetr_vert_leg_reduce_coor_gen(radius, sigma):
+def tetr_vert_leg_reduce_coor_gen(radius: float, sigma: float):
     # Generating all the coords of COM and legs when sigma exists
     COM_leg_list = tetr_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
@@ -2778,7 +2779,7 @@ def tetr_vert_leg_reduce_coor_gen(radius, sigma):
     return COM_leg_red_list
 
 
-def tetr_vert_input_coord(radius, sigma):
+def tetr_vert_input_coord(radius: float, sigma: float):
     coor = tetr_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = np.around(coor_[0] - coor_[0], 8)
@@ -2789,7 +2790,7 @@ def tetr_vert_input_coord(radius, sigma):
     return COM, lg1, lg2, lg3, n
 
 
-def tetr_vert_norm_input(radius, sigma):
+def tetr_vert_norm_input(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = tetr_vert_input_coord(radius, sigma)
     length = distance(lg1, lg2)
     dis1 = ((-length/2)**2+(-((length/2)*(3**0.5))/3)**2)**0.5
@@ -2803,7 +2804,7 @@ def tetr_vert_norm_input(radius, sigma):
     return COM_, lg1_, lg2_, lg3_, n_
 
 
-def tetr_vert_write(radius, sigma):
+def tetr_vert_write(radius: float, sigma: float):
     COM, lg1, lg2, lg3, n = tetr_vert_norm_input(radius, sigma)
     f = open('parm.inp', 'w')
     f.write(' # Input file (tetrahedron vertex-centered)\n\n')
@@ -2926,69 +2927,71 @@ def tetr_vert_write(radius, sigma):
     f.write('\n')
 
 
-def tetr_face(radius, sigma):
+def tetr_face(radius: float, sigma: float):
     tetr_face_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def cube_face(radius, sigma):
+def cube_face(radius: float, sigma: float):
     cube_face_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def octa_face(radius, sigma):
+def octa_face(radius: float, sigma: float):
     octa_face_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def dode_face(radius, sigma):
+def dode_face(radius: float, sigma: float):
     dode_face_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def icos_face(radius, sigma):
+def icos_face(radius: float, sigma: float):
     icos_face_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def tetr_vert(radius, sigma):
+def tetr_vert(radius: float, sigma: float):
     tetr_vert_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def cube_vert(radius, sigma):
+def cube_vert(radius: float, sigma: float):
     cube_vert_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def octa_vert(radius, sigma):
+def octa_vert(radius: float, sigma: float):
     octa_vert_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def dode_vert(radius, sigma):
+def dode_vert(radius: float, sigma: float):
     dode_vert_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 
-def icos_vert(radius, sigma):
+def icos_vert(radius: float, sigma: float):
     icos_vert_write(radius, sigma)
     print('File writing complete!')
     return 0
 
 # -----------------------------------Data Visualization------------------------------
 
+# Analysis tools for 'histogram_complexes_time.dat' file
 
-def read_file(FileName, SpeciesName):
+
+def read_file(FileName: str, SpeciesName: str):
     hist = []
     hist_temp = []
     hist_conv = []
@@ -3019,7 +3022,7 @@ def read_file(FileName, SpeciesName):
         return hist
 
 
-def time_valid(FileName, InitialTime, FinalTime, SpeciesName):
+def time_valid(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
     hist = read_file(FileName, SpeciesName)
     min_time = hist[0][0]
     max_time = hist[-1][0]
@@ -3032,7 +3035,7 @@ def time_valid(FileName, InitialTime, FinalTime, SpeciesName):
         return -1.0, -1.0
 
 
-def hist(FileName, InitialTime, FinalTime, SpeciesName, SaveFig = False):
+def hist(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
     t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
         hist = read_file(FileName, SpeciesName)
@@ -3059,14 +3062,14 @@ def hist(FileName, InitialTime, FinalTime, SpeciesName, SaveFig = False):
         plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
         plt.ylabel('Count')
         if SaveFig:
-            plt.savefig('Histogram.png', dpi = 500)
+            plt.savefig('Histogram.png', dpi=500)
         plt.show()
         return 0
     else:
         return 0
 
 
-def max_complex(FileName, InitialTime, FinalTime, SpeciesName, SaveFig = False):
+def max_complex(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
     t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
         hist = read_file(FileName, SpeciesName)
@@ -3084,14 +3087,14 @@ def max_complex(FileName, InitialTime, FinalTime, SpeciesName, SaveFig = False):
         plt.xlabel('Time')
         plt.ylabel('Maximum Number of ' + str(SpeciesName))
         if SaveFig:
-            plt.savefig('max_complex.png', dpi = 500)
+            plt.savefig('max_complex.png', dpi=500)
         plt.show()
         return 0
     else:
         return 0
 
 
-def mean_complex(FileName, InitialTime, FinalTime, SpeciesName, ExcludeNum=0, SaveFig = False):
+def mean_complex(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, ExcludeNum: int = 0, SaveFig: bool = False):
     t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
         hist = read_file(FileName, SpeciesName)
@@ -3131,14 +3134,14 @@ def mean_complex(FileName, InitialTime, FinalTime, SpeciesName, ExcludeNum=0, Sa
         plt.xlabel('Time (s)')
         plt.ylabel('Average Number of ' + str(SpeciesName))
         if SaveFig:
-            plt.savefig('mean_complex.png', dpi = 500)
+            plt.savefig('mean_complex.png', dpi=500)
         plt.show()
         return 0
     else:
         return 0
 
 
-def single_hist_to_csv(FileName):
+def single_hist_to_csv(FileName: str):
     name_list = ['Time (s)']
     with open(FileName, 'r') as file:
         for line in file.readlines():
@@ -3198,19 +3201,18 @@ def single_hist_to_csv(FileName):
         write_file.write(write_line)
     read_file.close()
     write_file.close()
-    print('CSV writing completed!')
     return 0
 
 
-def single_hist_to_df(FileName, SaveCsv=True):
+def single_hist_to_df(FileName: str, SaveCsv: bool = True):
     single_hist_to_csv(FileName)
     df = pd.read_csv('histogram.csv')
     if not SaveCsv:
         os.remove('histogram.csv')
-        print('CSV deleted!')
     return df
 
-def multi_hist_to_csv(FileName):
+
+def multi_hist_to_csv(FileName: str):
     name_list = ['Time (s)']
     with open(FileName, 'r') as file:
         for line in file.readlines():
@@ -3258,19 +3260,18 @@ def multi_hist_to_csv(FileName):
         write_file.write(write_line)
     read_file.close()
     write_file.close()
-    print('CSV writing completed!')
     return 0
 
-def multi_hist_to_df(FileName, SaveCsv = True):
+
+def multi_hist_to_df(FileName: str, SaveCsv: bool = True):
     multi_hist_to_csv(FileName)
     df = pd.read_csv('histogram.csv')
     if not SaveCsv:
         os.remove('histogram.csv')
-        print('CSV deleted!')
     return df
 
 
-def hist_temp(FileName, InitialTime, FinalTime, SpeciesName):
+def hist_temp(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
     t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
     if t_i != -1 and t_f != -1:
         hist = read_file(FileName, SpeciesName)
@@ -3295,7 +3296,7 @@ def hist_temp(FileName, InitialTime, FinalTime, SpeciesName):
         return 0
 
 
-def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, TimeBins):
+def hist_3d_time(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int):
     InitialTime, FinalTime = time_valid(
         FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
@@ -3337,7 +3338,7 @@ def hist_3d_time(FileName, InitialTime, FinalTime, SpeciesName, TimeBins):
     return 0
 
 
-def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True, SaveFig = False):
+def hist_time_heatmap(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, ShowNum: bool = True, SaveFig: bool = False):
     InitialTime, FinalTime = time_valid(
         FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
@@ -3383,12 +3384,12 @@ def hist_time_heatmap(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, S
     plt.xlabel('Size of N-mers')
     plt.ylabel('Averaged Time')
     if SaveFig:
-        plt.savefig('hist_heatmap.png', dpi = 500, bbox_inches = 'tight')
+        plt.savefig('hist_heatmap.png', dpi=500, bbox_inches='tight')
     plt.show()
     return 0
 
 
-def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True, SaveFig = False):
+def hist_time_heatmap_mono_count(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, ShowNum: bool = True, SaveFig: bool = False):
     InitialTime, FinalTime = time_valid(
         FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
@@ -3442,12 +3443,12 @@ def hist_time_heatmap_mono_count(FileName, InitialTime, FinalTime, SpeciesName, 
     plt.xlabel('Size of N-mers')
     plt.ylabel('Averaged Time')
     if SaveFig:
-        plt.savefig('hist_heatmap_count.png', dpi = 500, bbox_inches = 'tight')
+        plt.savefig('hist_heatmap_count.png', dpi=500, bbox_inches='tight')
     plt.show()
     return 0
 
 
-def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, TimeBins, ShowNum=True, SaveFig = False):
+def hist_time_heatmap_fraction(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, ShowNum: bool = True, SaveFig: bool = False):
     InitialTime, FinalTime = time_valid(
         FileName, InitialTime, FinalTime, SpeciesName)
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
@@ -3502,7 +3503,803 @@ def hist_time_heatmap_fraction(FileName, InitialTime, FinalTime, SpeciesName, Ti
     plt.xlabel('Size of N-mers')
     plt.ylabel('Averaged Time')
     if SaveFig:
-        plt.savefig('hist_heatmap_fraction.png', dpi = 500, bbox_inches = 'tight')
+        plt.savefig('hist_heatmap_fraction.png', dpi=500, bbox_inches='tight')
+    plt.show()
+    return 0
+
+# Analysing tools for 'transition_matrix_time.dat'
+
+
+def read_transition_matrix(FileName: str, SpeciesName: str, InitialTime: float, FinalTime: float):
+    ti_switch = False
+    tf_switch = False
+    spec_switch = False
+    ti_matrix = []
+    tf_matrix = []
+    with open(FileName, 'r') as file:
+        for line in file.readlines():
+            if line[0:5] == 'time:':
+                if float(line.split(' ')[1]) == InitialTime:
+                    ti_switch = True
+                if float(line.split(' ')[1]) == FinalTime:
+                    tf_switch = True
+                if float(line.split(' ')[1]) != InitialTime:
+                    ti_switch = False
+                if float(line.split(' ')[1]) != FinalTime:
+                    tf_switch = False
+            if line[0:8] == 'lifetime':
+                ti_switch = False
+                tf_switch = False
+                spec_switch = False
+            if line[0:4] == 'size':
+                ti_switch = False
+                tf_switch = False
+                spec_switch = False
+            if line[0:4] == SpeciesName:
+                spec_switch = True
+            if ti_switch and spec_switch:
+                if line != SpeciesName + '\n':
+                    info = line.strip(' ').strip('\n').split(' ')
+                    temp_list = []
+                    for i in info:
+                        temp_list.append(int(i))
+                    ti_matrix.append(temp_list)
+            if tf_switch and spec_switch:
+                if line != SpeciesName + '\n':
+                    info = line.strip(' ').strip('\n').split(' ')
+                    temp_list = []
+                    for i in info:
+                        temp_list.append(int(i))
+                    tf_matrix.append(temp_list)
+    ti_matrix = np.array(ti_matrix)
+    tf_matrix = np.array(tf_matrix)
+    return ti_matrix, tf_matrix
+
+
+def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
+    warnings.filterwarnings('ignore')
+    matrix_list = []
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'transition_matrix_time.dat'
+        ti_matrix, tf_matrix = read_transition_matrix(
+            temp_file_name, SpeciesName, InitialTime, FinalTime)
+        matrix = tf_matrix - ti_matrix
+        matrix_list.append(matrix)
+    sum_list_list = []
+    for k in range(len(matrix_list)):
+        sum_list = np.zeros(len(matrix))
+        i = 0
+        while i < len(matrix_list[k]):
+            j = 0
+            while j < len(matrix_list[k][i]):
+                if i == j:
+                    sum_list[i] += matrix_list[k][i][j]
+                elif i > j:
+                    if i % 2 == 0:
+                        if j <= (i-1)/2:
+                            sum_list[i] += matrix_list[k][i][j]
+                    else:
+                        if j <= i/2:
+                            if (i-1)/2 == j:
+                                sum_list[i] += matrix_list[k][i][j]/2
+                            else:
+                                sum_list[i] += matrix_list[k][i][j]
+                else:
+                    if j % 2 != 0:
+                        if i <= j/2:
+                            if (j-1)/2 == i:
+                                sum_list[i] += matrix_list[k][i][j]/2
+                            else:
+                                sum_list[i] += matrix_list[k][i][j]
+                        else:
+                            sum_list[i] += matrix_list[k][i][j]
+                    else:
+                        sum_list[i] += matrix_list[k][i][j]
+                j += 1
+            i += 1
+        sum_list_list.append(sum_list)
+    energy_list_list = []
+    for i in range(len(sum_list_list)):
+        sum_arr = np.array(sum_list_list[i])
+        sum_arr = sum_arr/sum_arr.sum()
+        energy_list = np.asarray([])
+        for i in sum_arr:
+            if i > 0:
+                energy_list = np.append(energy_list, -math.log(i))
+            else:
+                energy_list = np.append(energy_list, np.nan)
+        energy_list_list.append(energy_list)
+    n_list = list(range(1, 1 + len(matrix_list[0])))
+    energy_list_list_rev = []
+    for i in range(len(energy_list_list[0])):
+        temp = []
+        for j in range(len(energy_list_list)):
+            temp.append(energy_list_list[j][i])
+        energy_list_list_rev.append(temp)
+    mean_energy_list = np.array([])
+    std_energy_list = np.array([])
+    for i in energy_list_list_rev:
+        mean_energy_list = np.append(mean_energy_list, np.nanmean(i))
+        if FileNum != 1:
+            std_energy_list = np.append(std_energy_list, np.nanstd(i))
+    errorbar_color = '#c9e3f6'
+    plt.plot(n_list, mean_energy_list, 'C0')
+    if FileNum != 1:
+        plt.errorbar(n_list, mean_energy_list, yerr=std_energy_list,
+                     ecolor=errorbar_color, capsize=2)
+    plt.title('Free Energy Vs. Time from ' + str(float(InitialTime)
+                                                 ) + 's to ' + str(float(FinalTime)) + 's')
+    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+    plt.ylabel('-ln(p(N)) ($k_B$T)')
+    plt.xticks(ticks=n_list)
+    if SaveFig:
+        plt.savefig('free_energy.png', dpi=500)
+    plt.show()
+    return 0
+
+
+def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
+    warnings.filterwarnings('ignore')
+    matrix_list = []
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'transition_matrix_time.dat'
+        ti_matrix, tf_matrix = read_transition_matrix(
+            temp_file_name, SpeciesName, InitialTime, FinalTime)
+        matrix = tf_matrix - ti_matrix
+        matrix_list.append(matrix)
+    above = []
+    equal = []
+    below = []
+    for k in range(len(matrix_list)):
+        above_temp = np.zeros(len(matrix_list[0][0]))
+        equal_temp = np.zeros(len(matrix_list[0][0]))
+        below_temp = np.zeros(len(matrix_list[0][0]))
+        i = 0
+        while i < len(matrix_list[k]):
+            j = 0
+            while j < len(matrix_list[k][i]):
+                if i > j:
+                    if i - j == DivideSize:
+                        equal_temp[j] += matrix_list[k][i][j]
+                    elif i - j > DivideSize:
+                        above_temp[j] += matrix_list[k][i][j]
+                    else:
+                        below_temp[j] += matrix_list[k][i][j]
+                j += 1
+            i += 1
+        above.append(above_temp)
+        equal.append(equal_temp)
+        below.append(below_temp)
+    above_prob = []
+    equal_prob = []
+    below_prob = []
+    for i in range(len(above)):
+        above_prob_temp = np.array([])
+        equal_prob_temp = np.array([])
+        below_prob_temp = np.array([])
+        for j in range(len(above[0])):
+            sum = above[i][j] + equal[i][j] + below[i][j]
+            if sum != 0:
+                above_prob_temp = np.append(above_prob_temp, above[i][j]/sum)
+                equal_prob_temp = np.append(equal_prob_temp, equal[i][j]/sum)
+                below_prob_temp = np.append(below_prob_temp, below[i][j]/sum)
+            else:
+                above_prob_temp = np.append(above_prob_temp, np.nan)
+                equal_prob_temp = np.append(equal_prob_temp, np.nan)
+                below_prob_temp = np.append(below_prob_temp, np.nan)
+        above_prob.append(above_prob_temp)
+        equal_prob.append(equal_prob_temp)
+        below_prob.append(below_prob_temp)
+    above_prob_rev = []
+    for i in range(len(above_prob[0])):
+        temp = []
+        for j in range(len(above_prob)):
+            temp.append(above_prob[j][i])
+        above_prob_rev.append(temp)
+    equal_prob_rev = []
+    for i in range(len(equal_prob[0])):
+        temp = []
+        for j in range(len(equal_prob)):
+            temp.append(equal_prob[j][i])
+        equal_prob_rev.append(temp)
+    below_prob_rev = []
+    for i in range(len(below_prob[0])):
+        temp = []
+        for j in range(len(below_prob)):
+            temp.append(below_prob[j][i])
+        below_prob_rev.append(temp)
+    mean_above = []
+    mean_equal = []
+    mean_below = []
+    std_above = []
+    std_equal = []
+    std_below = []
+    for i in range(len(above_prob_rev)):
+        mean_above.append(np.nanmean(above_prob_rev[i]))
+        mean_equal.append(np.nanmean(equal_prob_rev[i]))
+        mean_below.append(np.nanmean(below_prob_rev[i]))
+        if FileNum != 1:
+            std_above.append(np.nanstd(above_prob_rev[i]))
+            std_equal.append(np.nanstd(equal_prob_rev[i]))
+            std_below.append(np.nanstd(below_prob_rev[i]))
+    n_list = list(range(1, 1 + len(matrix_list[0])))
+    errorbar_color_1 = '#c9e3f6'
+    errorbar_color_2 = '#ffe7d2'
+    errorbar_color_3 = '#d7f4d7'
+    plt.plot(n_list, mean_above, 'C0')
+    plt.plot(n_list, mean_equal, 'C1')
+    plt.plot(n_list, mean_below, 'C2')
+    if FileNum != 1:
+        plt.errorbar(n_list, mean_above, yerr=std_above,
+                     ecolor=errorbar_color_1, capsize=2)
+        plt.errorbar(n_list, mean_equal, yerr=std_equal,
+                     ecolor=errorbar_color_2, capsize=2)
+        plt.errorbar(n_list, mean_below, yerr=std_below,
+                     ecolor=errorbar_color_3, capsize=2)
+    plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
+               str(DivideSize), 'Associate Size < ' + str(DivideSize)])
+    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+    plt.ylabel('Probability')
+    plt.xticks(ticks=n_list)
+    plt.title('Remodeling of Complex')
+    if SaveFig:
+        plt.savefig('associate_probability_symmetric.png', dpi=500)
+    plt.show()
+    return 0
+
+
+def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
+    warnings.filterwarnings('ignore')
+    matrix_list = []
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'transition_matrix_time.dat'
+        ti_matrix, tf_matrix = read_transition_matrix(
+            temp_file_name, SpeciesName, InitialTime, FinalTime)
+        matrix = tf_matrix - ti_matrix
+        matrix_list.append(matrix)
+    above = []
+    equal = []
+    below = []
+    for k in range(len(matrix_list)):
+        above_temp = np.zeros(len(matrix_list[0][0]))
+        equal_temp = np.zeros(len(matrix_list[0][0]))
+        below_temp = np.zeros(len(matrix_list[0][0]))
+        i = 0
+        while i < len(matrix_list[k]):
+            j = 0
+            while j < len(matrix_list[k][i]):
+                if i > j:
+                    if i % 2 == 0:
+                        if j >= (i-1)/2:
+                            if i - j == DivideSize:
+                                equal_temp[j] += matrix_list[k][i][j]
+                            elif i - j > DivideSize:
+                                above_temp[j] += matrix_list[k][i][j]
+                            else:
+                                below_temp[j] += matrix_list[k][i][j]
+                    else:
+                        if j >= int(i/2):
+                            if (i-1)/2 == j:
+                                if i - j == DivideSize:
+                                    equal_temp[j] += matrix_list[k][i][j]/2
+                                elif i - j > DivideSize:
+                                    above_temp[j] += matrix_list[k][i][j]/2
+                                else:
+                                    below_temp[j] += matrix_list[k][i][j]/2
+                            else:
+                                if i - j == DivideSize:
+                                    equal_temp[j] += matrix_list[k][i][j]
+                                elif i - j > DivideSize:
+                                    above_temp[j] += matrix_list[k][i][j]
+                                else:
+                                    below_temp[j] += matrix_list[k][i][j]
+                j += 1
+            i += 1
+        above.append(above_temp)
+        equal.append(equal_temp)
+        below.append(below_temp)
+    above_prob = []
+    equal_prob = []
+    below_prob = []
+    for i in range(len(above)):
+        above_prob_temp = np.array([])
+        equal_prob_temp = np.array([])
+        below_prob_temp = np.array([])
+        for j in range(len(above[0])):
+            sum = above[i][j] + equal[i][j] + below[i][j]
+            if sum != 0:
+                above_prob_temp = np.append(above_prob_temp, above[i][j]/sum)
+                equal_prob_temp = np.append(equal_prob_temp, equal[i][j]/sum)
+                below_prob_temp = np.append(below_prob_temp, below[i][j]/sum)
+            else:
+                above_prob_temp = np.append(above_prob_temp, np.nan)
+                equal_prob_temp = np.append(equal_prob_temp, np.nan)
+                below_prob_temp = np.append(below_prob_temp, np.nan)
+        above_prob.append(above_prob_temp)
+        equal_prob.append(equal_prob_temp)
+        below_prob.append(below_prob_temp)
+    above_prob_rev = []
+    for i in range(len(above_prob[0])):
+        temp = []
+        for j in range(len(above_prob)):
+            temp.append(above_prob[j][i])
+        above_prob_rev.append(temp)
+    equal_prob_rev = []
+    for i in range(len(equal_prob[0])):
+        temp = []
+        for j in range(len(equal_prob)):
+            temp.append(equal_prob[j][i])
+        equal_prob_rev.append(temp)
+    below_prob_rev = []
+    for i in range(len(below_prob[0])):
+        temp = []
+        for j in range(len(below_prob)):
+            temp.append(below_prob[j][i])
+        below_prob_rev.append(temp)
+    mean_above = []
+    mean_equal = []
+    mean_below = []
+    std_above = []
+    std_equal = []
+    std_below = []
+    for i in range(len(above_prob_rev)):
+        mean_above.append(np.nanmean(above_prob_rev[i]))
+        mean_equal.append(np.nanmean(equal_prob_rev[i]))
+        mean_below.append(np.nanmean(below_prob_rev[i]))
+        if FileNum != 1:
+            std_above.append(np.nanstd(above_prob_rev[i]))
+            std_equal.append(np.nanstd(equal_prob_rev[i]))
+            std_below.append(np.nanstd(below_prob_rev[i]))
+    n_list = list(range(1, 1 + len(matrix_list[0])))
+    errorbar_color_1 = '#c9e3f6'
+    errorbar_color_2 = '#ffe7d2'
+    errorbar_color_3 = '#d7f4d7'
+    plt.plot(n_list, mean_above, 'C0')
+    plt.plot(n_list, mean_equal, 'C1')
+    plt.plot(n_list, mean_below, 'C2')
+    if FileNum != 1:
+        plt.errorbar(n_list, mean_above, yerr=std_above,
+                     ecolor=errorbar_color_1, capsize=2)
+        plt.errorbar(n_list, mean_equal, yerr=std_equal,
+                     ecolor=errorbar_color_2, capsize=2)
+        plt.errorbar(n_list, mean_below, yerr=std_below,
+                     ecolor=errorbar_color_3, capsize=2)
+    plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
+               str(DivideSize), 'Associate Size < ' + str(DivideSize)])
+    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+    plt.ylabel('Probability')
+    plt.xticks(ticks=n_list)
+    plt.title('Remodeling of Complex')
+    if SaveFig:
+        plt.savefig('associate_probability_asymmetric.png', dpi=500)
+    plt.show()
+    return 0
+
+
+def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
+    warnings.filterwarnings('ignore')
+    matrix_list = []
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'transition_matrix_time.dat'
+        ti_matrix, tf_matrix = read_transition_matrix(
+            temp_file_name, SpeciesName, InitialTime, FinalTime)
+        matrix = tf_matrix - ti_matrix
+        matrix_list.append(matrix)
+    above = []
+    equal = []
+    below = []
+    for k in range(len(matrix_list)):
+        above_temp = np.zeros(len(matrix_list[0][0]))
+        equal_temp = np.zeros(len(matrix_list[0][0]))
+        below_temp = np.zeros(len(matrix_list[0][0]))
+        i = 0
+        while i < len(matrix_list[k][0]):
+            j = 0
+            while j < len(matrix_list[k][i]):
+                if i > j:
+                    if j + 1 == DivideSize:
+                        equal_temp[i] += matrix_list[k][j][i]
+                    elif j + 1 > DivideSize:
+                        above_temp[i] += matrix_list[k][j][i]
+                    else:
+                        below_temp[i] += matrix_list[k][j][i]
+                j += 1
+            i += 1
+        above.append(above_temp)
+        equal.append(equal_temp)
+        below.append(below_temp)
+    above_prob = []
+    equal_prob = []
+    below_prob = []
+    for i in range(len(above)):
+        above_prob_temp = np.array([])
+        equal_prob_temp = np.array([])
+        below_prob_temp = np.array([])
+        for j in range(len(above[0])):
+            sum = above[i][j] + equal[i][j] + below[i][j]
+            if sum != 0:
+                above_prob_temp = np.append(above_prob_temp, above[i][j]/sum)
+                equal_prob_temp = np.append(equal_prob_temp, equal[i][j]/sum)
+                below_prob_temp = np.append(below_prob_temp, below[i][j]/sum)
+            else:
+                above_prob_temp = np.append(above_prob_temp, np.nan)
+                equal_prob_temp = np.append(equal_prob_temp, np.nan)
+                below_prob_temp = np.append(below_prob_temp, np.nan)
+        above_prob.append(above_prob_temp)
+        equal_prob.append(equal_prob_temp)
+        below_prob.append(below_prob_temp)
+    above_prob_rev = []
+    for i in range(len(above_prob[0])):
+        temp = []
+        for j in range(len(above_prob)):
+            temp.append(above_prob[j][i])
+        above_prob_rev.append(temp)
+    equal_prob_rev = []
+    for i in range(len(equal_prob[0])):
+        temp = []
+        for j in range(len(equal_prob)):
+            temp.append(equal_prob[j][i])
+        equal_prob_rev.append(temp)
+    below_prob_rev = []
+    for i in range(len(below_prob[0])):
+        temp = []
+        for j in range(len(below_prob)):
+            temp.append(below_prob[j][i])
+        below_prob_rev.append(temp)
+    mean_above = []
+    mean_equal = []
+    mean_below = []
+    std_above = []
+    std_equal = []
+    std_below = []
+    for i in range(len(above_prob_rev)):
+        mean_above.append(np.nanmean(above_prob_rev[i]))
+        mean_equal.append(np.nanmean(equal_prob_rev[i]))
+        mean_below.append(np.nanmean(below_prob_rev[i]))
+        if FileNum != 1:
+            std_above.append(np.nanstd(above_prob_rev[i]))
+            std_equal.append(np.nanstd(equal_prob_rev[i]))
+            std_below.append(np.nanstd(below_prob_rev[i]))
+    mean_above = np.nan_to_num(mean_above)
+    mean_equal = np.nan_to_num(mean_equal)
+    mean_below = np.nan_to_num(mean_below)
+    n_list = list(range(1, 1 + len(matrix_list[0])))
+    errorbar_color_1 = '#c9e3f6'
+    errorbar_color_2 = '#ffe7d2'
+    errorbar_color_3 = '#d7f4d7'
+    plt.plot(n_list, mean_above, 'C0')
+    plt.plot(n_list, mean_equal, 'C1')
+    plt.plot(n_list, mean_below, 'C2')
+    if FileNum != 1:
+        plt.errorbar(n_list, mean_above, yerr=std_above,
+                     ecolor=errorbar_color_1, capsize=2)
+        plt.errorbar(n_list, mean_equal, yerr=std_equal,
+                     ecolor=errorbar_color_2, capsize=2)
+        plt.errorbar(n_list, mean_below, yerr=std_below,
+                     ecolor=errorbar_color_3, capsize=2)
+    plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
+               str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
+    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+    plt.ylabel('Probability')
+    plt.xticks(ticks=n_list)
+    plt.title('Remodeling of Complex')
+    if SaveFig:
+        plt.savefig('dissociate_probability_symmetric.png', dpi=500)
+    plt.show()
+    return 0
+
+
+def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
+    warnings.filterwarnings('ignore')
+    matrix_list = []
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'transition_matrix_time.dat'
+        ti_matrix, tf_matrix = read_transition_matrix(
+            temp_file_name, SpeciesName, InitialTime, FinalTime)
+        matrix = tf_matrix - ti_matrix
+        matrix_list.append(matrix)
+    above = []
+    equal = []
+    below = []
+    for k in range(len(matrix_list)):
+        above_temp = np.zeros(len(matrix_list[0][0]))
+        equal_temp = np.zeros(len(matrix_list[0][0]))
+        below_temp = np.zeros(len(matrix_list[0][0]))
+        i = 0
+        while i < len(matrix_list[k][0]):
+            j = 0
+            while j < len(matrix_list[k][i]):
+                if i > j:
+                    if i % 2 == 0:
+                        if j <= (i-1)/2:
+                            if j + 1 == DivideSize:
+                                equal_temp[i] += matrix_list[k][j][i]
+                            elif j + 1 > DivideSize:
+                                above_temp[i] += matrix_list[k][j][i]
+                            else:
+                                below_temp[i] += matrix_list[k][j][i]
+                    else:
+                        if j <= int(i/2):
+                            if (i-1)/2 == j:
+                                if j + 1 == DivideSize:
+                                    equal_temp[i] += matrix_list[k][j][i]/2
+                                elif j + 1 > DivideSize:
+                                    above_temp[i] += matrix_list[k][j][i]/2
+                                else:
+                                    below_temp[i] += matrix_list[k][j][i]/2
+                            else:
+                                if j + 1 == DivideSize:
+                                    equal_temp[i] += matrix_list[k][j][i]
+                                elif j + 1 > DivideSize:
+                                    above_temp[i] += matrix_list[k][j][i]
+                                else:
+                                    below_temp[i] += matrix_list[k][j][i]
+                j += 1
+            i += 1
+        above.append(above_temp)
+        equal.append(equal_temp)
+        below.append(below_temp)
+    above_prob = []
+    equal_prob = []
+    below_prob = []
+    for i in range(len(above)):
+        above_prob_temp = np.array([])
+        equal_prob_temp = np.array([])
+        below_prob_temp = np.array([])
+        for j in range(len(above[0])):
+            sum = above[i][j] + equal[i][j] + below[i][j]
+            if sum != 0:
+                above_prob_temp = np.append(above_prob_temp, above[i][j]/sum)
+                equal_prob_temp = np.append(equal_prob_temp, equal[i][j]/sum)
+                below_prob_temp = np.append(below_prob_temp, below[i][j]/sum)
+            else:
+                above_prob_temp = np.append(above_prob_temp, np.nan)
+                equal_prob_temp = np.append(equal_prob_temp, np.nan)
+                below_prob_temp = np.append(below_prob_temp, np.nan)
+        above_prob.append(above_prob_temp)
+        equal_prob.append(equal_prob_temp)
+        below_prob.append(below_prob_temp)
+    above_prob_rev = []
+    for i in range(len(above_prob[0])):
+        temp = []
+        for j in range(len(above_prob)):
+            temp.append(above_prob[j][i])
+        above_prob_rev.append(temp)
+    equal_prob_rev = []
+    for i in range(len(equal_prob[0])):
+        temp = []
+        for j in range(len(equal_prob)):
+            temp.append(equal_prob[j][i])
+        equal_prob_rev.append(temp)
+    below_prob_rev = []
+    for i in range(len(below_prob[0])):
+        temp = []
+        for j in range(len(below_prob)):
+            temp.append(below_prob[j][i])
+        below_prob_rev.append(temp)
+    mean_above = []
+    mean_equal = []
+    mean_below = []
+    std_above = []
+    std_equal = []
+    std_below = []
+    for i in range(len(above_prob_rev)):
+        mean_above.append(np.nanmean(above_prob_rev[i]))
+        mean_equal.append(np.nanmean(equal_prob_rev[i]))
+        mean_below.append(np.nanmean(below_prob_rev[i]))
+        if FileNum != 1:
+            std_above.append(np.nanstd(above_prob_rev[i]))
+            std_equal.append(np.nanstd(equal_prob_rev[i]))
+            std_below.append(np.nanstd(below_prob_rev[i]))
+    mean_above = np.nan_to_num(mean_above)
+    mean_equal = np.nan_to_num(mean_equal)
+    mean_below = np.nan_to_num(mean_below)
+    n_list = list(range(1, 1 + len(matrix_list[0])))
+    errorbar_color_1 = '#c9e3f6'
+    errorbar_color_2 = '#ffe7d2'
+    errorbar_color_3 = '#d7f4d7'
+    plt.plot(n_list, mean_above, 'C0')
+    plt.plot(n_list, mean_equal, 'C1')
+    plt.plot(n_list, mean_below, 'C2')
+    if FileNum != 1:
+        plt.errorbar(n_list, mean_above, yerr=std_above,
+                     ecolor=errorbar_color_1, capsize=2)
+        plt.errorbar(n_list, mean_equal, yerr=std_equal,
+                     ecolor=errorbar_color_2, capsize=2)
+        plt.errorbar(n_list, mean_below, yerr=std_below,
+                     ecolor=errorbar_color_3, capsize=2)
+    plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
+               str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
+    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+    plt.ylabel('Probability')
+    plt.xticks(ticks=n_list)
+    plt.title('Remodeling of Complex')
+    if SaveFig:
+        plt.savefig('dissociate_probability_asymmetric.png', dpi=500)
+    plt.show()
+    return 0
+
+
+def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
+    warnings.filterwarnings('ignore')
+    matrix_list = []
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'transition_matrix_time.dat'
+        ti_matrix, tf_matrix = read_transition_matrix(
+            temp_file_name, SpeciesName, InitialTime, FinalTime)
+        matrix = tf_matrix - ti_matrix
+        matrix_list.append(matrix)
+    growth_list_list = []
+    tot_list_list = []
+    for k in range(len(matrix_list)):
+        growth_list = []
+        tot_list = []
+        i = 0
+        while i < len(matrix_list[k][0]):
+            j = 0
+            growth_sum = 0
+            tot_sum = 0
+            while j < len(matrix_list[k][i]):
+                if i != j:
+                    tot_sum += matrix_list[k][j][i]
+                    if i < j:
+                        growth_sum += matrix_list[k][j][i]
+                j += 1
+            growth_list.append(growth_sum)
+            tot_list.append(tot_sum)
+            i += 1
+        growth_list_list.append(growth_list)
+        tot_list_list.append(tot_list)
+    growth_prob = []
+    for i in range(len(growth_list_list)):
+        growth_prob_temp = []
+        for j in range(len(growth_list_list[i])):
+            if tot_list_list[i][j] != 0:
+                growth_prob_temp.append(
+                    growth_list_list[i][j]/tot_list_list[i][j])
+            else:
+                growth_prob_temp.append(0.0)
+        growth_prob.append(growth_prob_temp)
+    growth_prob_rev = []
+    for i in range(len(growth_prob[0])):
+        temp = []
+        for j in range(len(growth_prob)):
+            temp.append(growth_prob[j][i])
+        growth_prob_rev.append(temp)
+    mean = []
+    std = []
+    for i in growth_prob_rev:
+        mean.append(np.nanmean(i))
+        std.append(np.nanstd(i))
+    n_list = list(range(1, 1 + len(matrix_list[0])))
+    errorbar_color = '#c9e3f6'
+    plt.plot(n_list, mean, color='C0')
+    if FileNum != 1:
+        plt.errorbar(n_list, mean, yerr=std, ecolor=errorbar_color, capsize=2)
+    plt.axhline(y=1/2, c='black', lw=1.0)
+    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+    plt.ylabel('$P_{growth}$')
+    plt.xticks(ticks=n_list)
+    plt.yticks((0, 0.25, 0.5, 0.75, 1))
+    plt.title('Growth Probability')
+    if SaveFig:
+        plt.savefig('growth_probability.png', dpi=500)
+    plt.show()
+    return 0
+
+
+def read_cluster_lifetime(FileName: str, SpeciesName: str, InitialTime: float, FinalTime: float):
+    ti_switch = False
+    tf_switch = False
+    spec_switch = False
+    lifetime_switch = False
+    size_list = []
+    ti_lifetime = []
+    tf_lifetime = []
+    with open(FileName, 'r') as file:
+        for line in file.readlines():
+            if line[0:6] == 'time: ':
+                lifetime_switch = False
+                spec_switch = False
+                if float(line.split(' ')[1].strip('\n')) == InitialTime:
+                    ti_switch = True
+                if float(line.split(' ')[1].strip('\n')) == FinalTime:
+                    tf_switch = True
+                if float(line.split(' ')[1].strip('\n')) != InitialTime:
+                    ti_switch = False
+                if float(line.split(' ')[1].strip('\n')) != FinalTime:
+                    tf_switch = False
+            if line == 'lifetime for each mol type: \n':
+                lifetime_switch = True
+            if line == str(SpeciesName) + '\n':
+                spec_switch = True
+            if ti_switch and lifetime_switch and spec_switch:
+                if line != str(SpeciesName) + '\n' and line != 'lifetime for each mol type: \n':
+                    if line[0:20] == 'size of the cluster:':
+                        size_list.append(int(line.split(':')[1].strip('\n')))
+                    else:
+                        str_list = line.strip('\n').strip(' ').split(' ')
+                        temp = np.array([])
+                        for i in str_list:
+                            if i != '':
+                                temp = np.append(temp, float(i))
+                        ti_lifetime.append(temp)
+            if tf_switch and lifetime_switch and spec_switch:
+                if line != str(SpeciesName) + '\n' and line != 'lifetime for each mol type: \n':
+                    if line[0:20] != 'size of the cluster:':
+                        str_list = line.strip('\n').strip(' ').split(' ')
+                        temp = np.array([])
+                        for i in str_list:
+                            if i != '':
+                                temp = np.append(temp, float(i))
+                        tf_lifetime.append(temp)
+    return ti_lifetime, tf_lifetime, size_list
+
+
+def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
+    warnings.filterwarnings('ignore')
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    mean_lifetime = []
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'transition_matrix_time.dat'
+        ti_lifetime, tf_lifetime, size_list = read_cluster_lifetime(
+            temp_file_name, SpeciesName, InitialTime, FinalTime)
+        mean_temp = []
+        for i in range(len(tf_lifetime)):
+            tf_lifetime[i] = np.delete(
+                tf_lifetime[i], range(0, len(ti_lifetime[i])), axis=0)
+            mean_temp.append(tf_lifetime[i].mean())
+        mean_lifetime.append(mean_temp)
+    mean_lifetime_rev = []
+    for i in range(len(mean_lifetime[0])):
+        temp = []
+        for j in range(len(mean_lifetime)):
+            temp.append(mean_lifetime[j][i])
+        mean_lifetime_rev.append(temp)
+    mean = []
+    std = []
+    for i in mean_lifetime_rev:
+        mean.append(np.nanmean(i))
+        if FileNum != 1:
+            std.append(np.nanstd(i))
+    errorbar_color = '#c9e3f6'
+    plt.plot(size_list, mean, color='C0')
+    if FileNum != 1:
+        plt.errorbar(size_list, mean, yerr=std,
+                     ecolor=errorbar_color, capsize=2)
+    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+    plt.ylabel('Lifetime (s)')
+    plt.xticks(ticks=size_list)
+    plt.title('Lifetime of Complex')
+    if SaveFig:
+        plt.savefig('complex_lifetime.png', dpi=500)
     plt.show()
     return 0
 

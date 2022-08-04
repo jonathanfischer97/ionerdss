@@ -102,3 +102,12 @@ Change Log
 0.2.9 (07/27/2022)
 ------------------
 - Fixed bugs of not saving full plot for heatmaps.
+
+0.3.0 (08/03/2022)
+------------------
+- Added functions for analysing 'transition_matrix_time.dat' file.
+- Added input data type requirements for all functions.
+
+0.3.1 (08/04/2022)
+------------------
+- Updated hist_to_csv function.
