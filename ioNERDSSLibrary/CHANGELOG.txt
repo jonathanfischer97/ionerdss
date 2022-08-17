@@ -111,3 +111,7 @@ Change Log
 0.3.1 (08/04/2022)
 ------------------
 - Updated hist_to_csv function.
+
+0.3.2 (08/17/2022)
+------------------
+- Added histogram analysing multi-components system.
