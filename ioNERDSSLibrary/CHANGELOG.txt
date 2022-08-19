@@ -114,4 +114,9 @@ Change Log
 
 0.3.2 (08/17/2022)
 ------------------
-- Added histogram analysing multi-components system.
+- Added histogram analysing multi-component system.
+
+0.3.3 (08/19/2022)
+------------------
+- Fixed bugs for multi-component histogram function.
+- Added features for single-component functions to analyze multiple files.

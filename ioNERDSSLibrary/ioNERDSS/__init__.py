@@ -3019,7 +3019,15 @@ def read_file(FileName: str, SpeciesName: str):
             hist_temp.append(hist_count)
             hist_temp.append(hist_conv)
             hist.append(hist_temp)
-        return hist
+    hist_ = []
+    time_list = []
+    for i in range(len(hist)):
+        temp = []
+        if hist[i][0] not in time_list:
+            time_list.append(hist[i][0])
+            temp = [hist[i][0], hist[i][1], hist[i][2]]
+            hist_.append(temp)
+    return hist_
 
 
 def time_valid(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
@@ -3035,110 +3043,212 @@ def time_valid(FileName: str, InitialTime: float, FinalTime: float, SpeciesName:
         return -1.0, -1.0
 
 
-def hist(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
-    t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
-    if t_i != -1 and t_f != -1:
-        hist = read_file(FileName, SpeciesName)
-        plot_count = []
-        plot_conv = []
-        tot = 0
+def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, BarSize:int = 1, SaveFig: bool = False):
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    count_list = []
+    size_list = []
+    for k in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat' 
+        total_size_list = []
+        total_count_list = []
+        hist = read_file(temp_file_name, SpeciesName)
+        data_count = 0
         for i in hist:
-            if t_i <= i[0] <= t_f:
-                tot += 1
+            if InitialTime <= i[0] <= FinalTime:
+                data_count += 1
                 for j in i[2]:
-                    if j not in plot_conv:
-                        plot_conv.append(j)
-                        plot_count.append(i[1][i[2].index(j)])
+                    if j not in total_size_list:
+                        total_size_list.append(j)
+                        total_count_list.append(i[1][i[2].index(j)])
                     else:
-                        index = plot_conv.index(j)
-                        plot_count[index] += i[1][i[2].index(j)]
-        plot_count_mean = []
-        for i in plot_count:
-            plot_count_mean.append(i/tot)
-        print('Start time(s): ', t_i)
-        print('End time(s): ', t_f)
-        plt.bar(plot_conv, plot_count_mean)
-        plt.title('Histogram of ' + str(SpeciesName))
-        plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
-        plt.ylabel('Count')
-        if SaveFig:
-            plt.savefig('Histogram.png', dpi=500)
-        plt.show()
-        return 0
+                        index = total_size_list.index(j)
+                        total_count_list[index] += i[1][i[2].index(j)]
+        total_count_list = np.array(total_count_list)/data_count
+        if len(total_size_list) != 0:
+            total_size_list_sorted = np.arange(1, max(total_size_list)+1, 1)
+        else:
+            total_size_list_sorted = np.array([])
+        total_count_list_sorted = []
+        for i in total_size_list_sorted:
+            if i in total_size_list:
+                index = total_size_list.index(i)
+                total_count_list_sorted.append(total_count_list[index])
+            else:
+                total_count_list_sorted.append(0.0)
+        size_list.append(total_size_list_sorted)
+        count_list.append(total_count_list_sorted)
+    max_size = 0
+    for i in size_list:
+        if max_size < len(i):
+            max_size = len(i)
+            n_list = i
+    count_list_filled = np.zeros([FileNum, max_size])
+    count_list_arr = np.array([])
+    for i in range(len(count_list)):
+        for j in range(len(count_list[i])):
+            count_list_filled[i][j] += count_list[i][j]
+    count_list_rev = []
+    for i in range(len(count_list_filled[0])):
+        temp = []
+        for j in range(len(count_list_filled)):
+            temp.append(count_list_filled[j][i])
+        count_list_rev.append(temp)
+    mean = []
+    std = []
+    for i in count_list_rev:
+        mean.append(np.nanmean(i))
+        std.append(np.nanstd(i))
+    mean_ = []
+    std_ = []
+    n_list_ = []
+    temp_mean = 0
+    temp_std = 0
+    bar_size_count = 0
+    for i in range(len(mean)):
+        temp_mean += mean[i]
+        temp_std += std[i]
+        bar_size_count += 1
+        if i+1 == len(mean):
+            mean_.append(temp_mean)
+            std_.append(temp_std)
+            n_list_.append(n_list[i])
+        elif bar_size_count >= BarSize:
+            mean_.append(temp_mean)
+            std_.append(temp_std)
+            n_list_.append(n_list[i])
+            temp_mean = 0
+            temp_std = 0
+            bar_size_count = 0
+    mean_ = np.array(mean_)
+    std_ = np.array(std_)
+    n_list_ = np.array(n_list_)
+    if FileNum != 1:
+        plt.bar(n_list_, mean_, width = BarSize, color = 'C0', yerr = std_, ecolor = 'C1', capsize = 2)
     else:
-        return 0
+        plt.bar(n_list_, mean_, width = BarSize)
+    plt.title('Histogram of ' + str(SpeciesName))
+    plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
+    plt.ylabel('Count')
+    if SaveFig:
+        plt.savefig('Histogram.png', dpi=500)
+    plt.show()
+    return 0
 
 
-def max_complex(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
-    t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
-    if t_i != -1 and t_f != -1:
-        hist = read_file(FileName, SpeciesName)
-        plot_time = []
-        plot_conv = []
+def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                SpeciesName: str, SaveFig: bool = False):
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    time_list = []
+    size_list = []
+    for k in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat' 
+        total_size_list = []
+        total_time_list = []
+        hist = read_file(temp_file_name, SpeciesName)
         for i in hist:
-            if t_i <= i[0] <= t_f:
-                plot_time.append(i[0])
-                plot_conv.append(max(i[2]))
-        print('Start time(s): ', t_i)
-        print('End time(s): ', t_f)
-        plt.plot(plot_time, plot_conv)
-        plt.title('Maximum Number of ' +
-                  str(SpeciesName) + ' in Single Complex')
-        plt.xlabel('Time')
-        plt.ylabel('Maximum Number of ' + str(SpeciesName))
-        if SaveFig:
-            plt.savefig('max_complex.png', dpi=500)
-        plt.show()
-        return 0
-    else:
-        return 0
+            if InitialTime <= i[0] <= FinalTime:
+                total_time_list.append(i[0])
+                total_size_list.append(max(i[2]))
+        time_list.append(total_time_list)
+        size_list.append(total_size_list)
+
+    size_list_rev = []
+    for i in range(len(size_list[0])):
+        temp = []
+        for j in range(len(size_list)):
+            temp.append(size_list[j][i])
+        size_list_rev.append(temp)
+    mean = []
+    std = []
+    for i in range(len(size_list_rev)):
+        mean.append(np.mean(size_list_rev[i]))
+        if FileNum > 1:
+            std.append(np.std(size_list_rev[i]))
+    errorbar_color = '#c9e3f6'
+    plt.plot(time_list[0], mean, color = 'C0')
+    if FileNum > 1:
+        plt.errorbar(time_list[0], mean, color = 'C0', yerr = std, ecolor = errorbar_color)
+    plt.title('Maximum Number of ' +
+              str(SpeciesName) + ' in Single Complex')
+    plt.xlabel('Time')
+    plt.ylabel('Maximum Number of ' + str(SpeciesName))
+    if SaveFig:
+        plt.savefig('max_complex.png', dpi=500)
+    plt.show()
+    return 0
 
 
-def mean_complex(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, ExcludeSize: int = 0, SaveFig: bool = False):
-    t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
-    if t_i != -1 and t_f != -1:
-        hist = read_file(FileName, SpeciesName)
-        plot_time = []
-        plot_conv = []
+def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, \
+                 ExcludeSize: int = 0, SaveFig: bool = False):
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    time_list = []
+    size_list = []
+    for k in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat' 
+        total_size_list = []
+        total_time_list = []
+        hist = read_file(temp_file_name, SpeciesName)
         if ExcludeSize == 0:
             for i in hist:
-                if t_i <= i[0] <= t_f:
-                    plot_time.append(i[0])
-                    plot_conv.append(np.mean(i[2]))
+                if InitialTime <= i[0] <= FinalTime:
+                    total_time_list.append(i[0])
+                    total_size_list.append(np.mean(i[2]))
         elif ExcludeSize > 0:
             for i in hist:
-                if t_i <= i[0] <= t_f:
+                if InitialTime <= i[0] <= FinalTime:
                     count = 1
                     N = 0
                     temp_sum = 0
-                    plot_time.append(i[0])
+                    total_time_list.append(i[0])
                     while count <= len(i[1]):
                         if i[2][count-1] >= ExcludeSize:
                             temp_sum += i[2][count-1]
                             N += 1
                         if count == len(i[1]):
                             if N != 0:
-                                plot_conv.append(temp_sum/N)
+                                total_size_list.append(temp_sum/N)
                             else:
-                                plot_conv.append(0)
+                                total_size_list.append(0)
                         count += 1
         else:
             print('ExcludeSize cannot smaller than 0!')
             return 0
-        print('Start time(s): ', t_i)
-        print('End time(s): ', t_f)
-        print('Exclude Size: ', ExcludeSize)
-        plt.plot(plot_time, plot_conv)
-        plt.title('Average Number of ' +
-                  str(SpeciesName) + ' in Single Complex')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Average Number of ' + str(SpeciesName))
-        if SaveFig:
-            plt.savefig('mean_complex.png', dpi=500)
-        plt.show()
-        return 0
-    else:
-        return 0
+        time_list.append(total_time_list)
+        size_list.append(total_size_list)
+    size_list_rev = []
+    for i in range(len(size_list[0])):
+        temp = []
+        for j in range(len(size_list)):
+            temp.append(size_list[j][i])
+        size_list_rev.append(temp)
+    mean = []
+    std = []
+    for i in range(len(size_list_rev)):
+        mean.append(np.mean(size_list_rev[i]))
+        if FileNum > 1:
+            std.append(np.std(size_list_rev[i]))
+    errorbar_color = '#c9e3f6'
+    plt.plot(time_list[0], mean, color = 'C0')
+    if FileNum > 1:
+        plt.errorbar(time_list[0], mean, color = 'C0', yerr = std, ecolor = errorbar_color)
+    plt.title('Average Number of ' +
+              str(SpeciesName) + ' in Single Complex')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Average Number of ' + str(SpeciesName))
+    if SaveFig:
+        plt.savefig('mean_complex.png', dpi=500)
+    plt.show()
+    return 0
+
 
 
 def single_hist_to_csv(FileName: str):
@@ -4428,7 +4538,7 @@ def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float
             mean_.append(temp_mean)
             std_.append(temp_std)
             n_list_.append(n_list[i])
-        if bar_size_count >= BarSize:
+        elif bar_size_count >= BarSize:
             mean_.append(temp_mean)
             std_.append(temp_std)
             n_list_.append(n_list[i])
@@ -4677,7 +4787,7 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
             std_equal_.append(temp_std_equal)
             std_below_.append(temp_std_below)
             n_list_.append(n_list[i])
-        if bar_size_count >= BarSize:
+        elif bar_size_count >= BarSize:
             mean_above_.append(temp_mean_above)
             mean_equal_.append(temp_mean_equal)
             mean_below_.append(temp_mean_below)
