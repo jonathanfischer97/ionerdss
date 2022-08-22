@@ -3043,7 +3043,7 @@ def time_valid(FileName: str, InitialTime: float, FinalTime: float, SpeciesName:
         return -1.0, -1.0
 
 
-def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, BarSize:int = 1, SaveFig: bool = False):
+def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, BarSize: int = 1, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     count_list = []
@@ -3051,7 +3051,7 @@ def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, Spec
     for k in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat' 
+            temp_file_name = 'histogram_complexes_time.dat'
         total_size_list = []
         total_count_list = []
         hist = read_file(temp_file_name, SpeciesName)
@@ -3126,9 +3126,10 @@ def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, Spec
     std_ = np.array(std_)
     n_list_ = np.array(n_list_)
     if FileNum != 1:
-        plt.bar(n_list_, mean_, width = BarSize, color = 'C0', yerr = std_, ecolor = 'C1', capsize = 2)
+        plt.bar(n_list_, mean_, width=BarSize, color='C0',
+                yerr=std_, ecolor='C1', capsize=2)
     else:
-        plt.bar(n_list_, mean_, width = BarSize)
+        plt.bar(n_list_, mean_, width=BarSize)
     plt.title('Histogram of ' + str(SpeciesName))
     plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
     plt.ylabel('Count')
@@ -3138,8 +3139,7 @@ def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, Spec
     return 0
 
 
-def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
-                SpeciesName: str, SaveFig: bool = False):
+def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     time_list = []
@@ -3147,7 +3147,7 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     for k in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat' 
+            temp_file_name = 'histogram_complexes_time.dat'
         total_size_list = []
         total_time_list = []
         hist = read_file(temp_file_name, SpeciesName)
@@ -3171,9 +3171,10 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         if FileNum > 1:
             std.append(np.std(size_list_rev[i]))
     errorbar_color = '#c9e3f6'
-    plt.plot(time_list[0], mean, color = 'C0')
+    plt.plot(time_list[0], mean, color='C0')
     if FileNum > 1:
-        plt.errorbar(time_list[0], mean, color = 'C0', yerr = std, ecolor = errorbar_color)
+        plt.errorbar(time_list[0], mean, color='C0',
+                     yerr=std, ecolor=errorbar_color)
     plt.title('Maximum Number of ' +
               str(SpeciesName) + ' in Single Complex')
     plt.xlabel('Time')
@@ -3184,8 +3185,7 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     return 0
 
 
-def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, \
-                 ExcludeSize: int = 0, SaveFig: bool = False):
+def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, ExcludeSize: int = 0, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     time_list = []
@@ -3193,7 +3193,7 @@ def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
     for k in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat' 
+            temp_file_name = 'histogram_complexes_time.dat'
         total_size_list = []
         total_time_list = []
         hist = read_file(temp_file_name, SpeciesName)
@@ -3237,9 +3237,10 @@ def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
         if FileNum > 1:
             std.append(np.std(size_list_rev[i]))
     errorbar_color = '#c9e3f6'
-    plt.plot(time_list[0], mean, color = 'C0')
+    plt.plot(time_list[0], mean, color='C0')
     if FileNum > 1:
-        plt.errorbar(time_list[0], mean, color = 'C0', yerr = std, ecolor = errorbar_color)
+        plt.errorbar(time_list[0], mean, color='C0',
+                     yerr=std, ecolor=errorbar_color)
     plt.title('Average Number of ' +
               str(SpeciesName) + ' in Single Complex')
     plt.xlabel('Time (s)')
@@ -3248,7 +3249,6 @@ def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
         plt.savefig('mean_complex.png', dpi=500)
     plt.show()
     return 0
-
 
 
 def single_hist_to_csv(FileName: str):
@@ -3406,37 +3406,82 @@ def hist_temp(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: 
         return 0
 
 
-def hist_3d_time(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int):
-    InitialTime, FinalTime = time_valid(
-        FileName, InitialTime, FinalTime, SpeciesName)
+def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, SaveFig: bool = False):
+    warnings.filterwarnings('ignore')
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
-    max_num = 0
-    x_lst = []
-    z_lst = []
-    t_plt = np.zeros(TimeBins)
-    i = 0
-    for i in range(0, len(t_arr)-1):
-        t_plt[i] = (t_arr[i]+t_arr[i+1])/2
-        x, z = hist_temp(FileName, t_arr[i], t_arr[i+1], SpeciesName)
-        x_lst.append(x)
-        z_lst.append(z)
-        if max(x) > max_num:
-            max_num = max(x)
-    z_plt = np.zeros(shape=(max_num, TimeBins))
-    k = 0
-    for i in x_lst:
-        l = 0
-        for j in i:
-            z_plt[j-1, k] = z_lst[k][l]
-            l += 1
-        k += 1
-    x_plt = np.arange(0, max_num, 1)+1
-    xx, yy = np.meshgrid(x_plt, t_plt)
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    z_list_tot = []
+    x_list_tot = []
+    for p in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(p) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat'
+        max_num = 0
+        x_lst = []
+        z_lst = []
+        t_plt = np.zeros(TimeBins)
+        i = 0
+        for i in range(0, len(t_arr)-1):
+            t_plt[i] = (t_arr[i]+t_arr[i+1])/2
+            x, z = hist_temp(temp_file_name, t_arr[i], t_arr[i+1], SpeciesName)
+            x_lst.append(x)
+            z_lst.append(z)
+            if max(x) > max_num:
+                max_num = max(x)
+        z_plt = np.zeros(shape=(max_num, TimeBins))
+        k = 0
+        for i in x_lst:
+            l = 0
+            for j in i:
+                z_plt[j-1, k] = z_lst[k][l]
+                l += 1
+            k += 1
+        z_plt = z_plt.T
+        z_plt_ = []
+        for i in range(len(z_plt)):
+            z_plt_temp = []
+            x_count = 0
+            sum_ = 0.0
+            for j in range(len(z_plt[i])):
+                x_count += 1
+                sum_ += z_plt[i][j]
+                if j == len(z_plt) - 1:
+                    z_plt_temp.append(sum_)
+                    x_count = 0
+                    sum_ = 0
+                elif x_count == xBarSize:
+                    z_plt_temp.append(sum_)
+                    x_count = 0
+                    sum_ = 0
+            z_plt_.append(z_plt_temp)
+        z_plt_ = np.array(z_plt_)
+        x_plt = np.arange(0, max_num, xBarSize)+1
+        x_list_tot.append(x_plt)
+        z_list_tot.append(list(z_plt_))
+    max_x_num = 0
+    for i in range(len(x_list_tot)):
+        if len(x_list_tot[i]) > max_x_num:
+            max_x_num = len(x_list_tot[i])
+            n_list = x_list_tot[i]
+    for i in range(len(z_list_tot)):
+        for j in range(len(z_list_tot[i])):
+            if len(z_list_tot[i][j]) < len(n_list):
+                for k in range(0, 1 + len(n_list) - len(z_list_tot[i][j])):
+                    z_list_tot[i][j] = np.append(z_list_tot[i][j], 0.0)
+    count_list_mean = np.zeros([TimeBins, len(n_list)])
+    for i in range(len(z_list_tot[0])):
+        for j in range(len(z_list_tot[0][0])):
+            temp_list = []
+            for k in range(len(z_list_tot)):
+                temp_list.append(z_list_tot[k][i][j])
+            count_list_mean[i][j] += np.mean(temp_list)
+    xx, yy = np.meshgrid(n_list, t_plt)
     X, Y = xx.ravel(), yy.ravel()
-    Z = z_plt.ravel()
+    Z = np.array(count_list_mean.ravel())
     bottom = np.zeros_like(Z)
-    width = 1
+    width = xBarSize
     depth = 1/TimeBins
     fig = plt.figure()
     ax = fig.gca(projection='3d')
@@ -3444,50 +3489,106 @@ def hist_3d_time(FileName: str, InitialTime: float, FinalTime: float, SpeciesNam
     ax.set_xlabel('# of ' + SpeciesName + ' in sigle complex')
     ax.set_ylabel('Averaged Time')
     ax.set_zlabel('Relative Occurrence Probability')
+    if SaveFig:
+        plt.savefig('histogram_3D.png', dpi=500)
     plt.show()
     return 0
 
 
-def hist_time_heatmap(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, ShowNum: bool = True, SaveFig: bool = False):
-    InitialTime, FinalTime = time_valid(
-        FileName, InitialTime, FinalTime, SpeciesName)
+def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
-    max_num = 0
-    x_lst = []
-    z_lst = []
-    t_plt = []
-    i = 0
-    for i in range(0, len(t_arr)-1):
-        t_plt.append(str(round(t_arr[i], 2)) +
-                     's ~ ' + str(round(t_arr[i+1], 2)) + 's')
-        x, z = hist_temp(FileName, t_arr[i], t_arr[i+1], SpeciesName)
-        x_lst.append(x)
-        z_lst.append(z)
-        if max(x) > max_num:
-            max_num = max(x)
-    z_plt = np.zeros(shape=(max_num, TimeBins))
-    k = 0
-    for i in x_lst:
-        l = 0
-        for j in i:
-            z_plt[j-1, k] = z_lst[k][l]
-            l += 1
-        k += 1
-    x_plt = np.arange(0, max_num, 1)+1
-    z_plt_ = np.array(z_plt).T
-
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    z_list_tot = []
+    x_list_tot = []
+    for p in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(p) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat'
+        max_num = 0
+        x_lst = []
+        z_lst = []
+        t_plt = []
+        i = 0
+        for i in range(0, len(t_arr)-1):
+            t_plt.append(str(round(t_arr[i], 2)) +
+                         's ~ ' + str(round(t_arr[i+1], 2)) + 's')
+            x, z = hist_temp(temp_file_name, t_arr[i], t_arr[i+1], SpeciesName)
+            x_lst.append(x)
+            z_lst.append(z)
+            if max(x) > max_num:
+                max_num = max(x)
+        z_plt = np.zeros(shape=(max_num, TimeBins))
+        k = 0
+        for i in x_lst:
+            l = 0
+            for j in i:
+                z_plt[j-1, k] = z_lst[k][l]
+                l += 1
+            k += 1
+        x_plt = np.arange(0, max_num, 1)+1
+        z_plt = np.array(z_plt).T
+        z_plt_ = []
+        for i in range(len(z_plt)):
+            z_plt_temp = []
+            x_count = 0
+            sum_ = 0.0
+            for j in range(len(z_plt[i])):
+                x_count += 1
+                sum_ += z_plt[i][j]
+                if j == len(z_plt) - 1:
+                    z_plt_temp.append(sum_)
+                    x_count = 0
+                    sum_ = 0
+                elif x_count == xBarSize:
+                    z_plt_temp.append(sum_)
+                    x_count = 0
+                    sum_ = 0
+            z_plt_.append(z_plt_temp)
+        z_plt_ = np.array(z_plt_)
+        x_plt = np.arange(0, max_num, xBarSize)+1
+        x_list_tot.append(x_plt)
+        z_list_tot.append(list(z_plt_))
+    max_x_num = 0
+    for i in range(len(x_list_tot)):
+        if len(x_list_tot[i]) > max_x_num:
+            max_x_num = len(x_list_tot[i])
+            n_list = x_list_tot[i]
+    for i in range(len(z_list_tot)):
+        for j in range(len(z_list_tot[i])):
+            if len(z_list_tot[i][j]) < len(n_list):
+                for k in range(0, 1 + len(n_list) - len(z_list_tot[i][j])):
+                    z_list_tot[i][j] = np.append(z_list_tot[i][j], 0.0)
+    count_list_mean = np.zeros([TimeBins, len(n_list)])
+    count_list_std = np.zeros([TimeBins, len(n_list)])
+    for i in range(len(z_list_tot[0])):
+        for j in range(len(z_list_tot[0][0])):
+            temp_list = []
+            for k in range(len(z_list_tot)):
+                temp_list.append(z_list_tot[k][i][j])
+            count_list_mean[i][j] += np.mean(temp_list)
+            count_list_std[i][j] += np.std(temp_list)
     fig, ax = plt.subplots()
-    im = ax.imshow(z_plt_)
-    ax.set_xticks(np.arange(len(x_plt)))
+    im = ax.imshow(count_list_mean)
+    ax.set_xticks(np.arange(len(n_list)))
     ax.set_yticks(np.arange(len(t_plt)))
-    ax.set_xticklabels(x_plt)
+    ax.set_xticklabels(n_list)
     ax.set_yticklabels(t_plt)
-    if ShowNum:
+    if ShowMean and ShowStd:
+        print('Cannot show both maen and std!')
+        return 0
+    if ShowMean:
         for i in range(len(t_plt)):
-            for j in range(len(x_plt)):
+            for j in range(len(n_list)):
                 text = ax.text(j, i, round(
-                    z_plt_[i, j], 1), ha='center', va='center', color='w')
+                    count_list_mean[i, j], 1), ha='center', va='center', color='w')
+    elif ShowStd and FileNum != 1:
+        for i in range(len(t_plt)):
+            for j in range(len(n_list)):
+                text = ax.text(j, i, round(
+                    count_list_std[i, j], 1), ha='center', va='center', color='w')
     ax.set_title('N-mers distribution vs. Time')
     fig.tight_layout()
     plt.colorbar(im)
@@ -3499,54 +3600,107 @@ def hist_time_heatmap(FileName: str, InitialTime: float, FinalTime: float, Speci
     return 0
 
 
-def hist_time_heatmap_mono_count(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, ShowNum: bool = True, SaveFig: bool = False):
-    InitialTime, FinalTime = time_valid(
-        FileName, InitialTime, FinalTime, SpeciesName)
+def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
-    max_num = 0
-    x_lst = []
-    z_lst = []
-    t_plt = []
-    i = 0
-    for i in range(0, len(t_arr)-1):
-        t_plt.append(str(round(t_arr[i], 2)) +
-                     's ~ ' + str(round(t_arr[i+1], 2)) + 's')
-        x, z = hist_temp(FileName, t_arr[i], t_arr[i+1], SpeciesName)
-        x_lst.append(x)
-        z_lst.append(z)
-        if max(x) > max_num:
-            max_num = max(x)
-    z_plt = np.zeros(shape=(max_num, TimeBins))
-    k = 0
-    for i in x_lst:
-        l = 0
-        for j in i:
-            z_plt[j-1, k] = z_lst[k][l]
-            l += 1
-        k += 1
-    x_plt = np.arange(0, max_num, 1)+1
-    const = 1
-    z_plt_mod = []
-    for i in z_plt:
-        z_plt_mod_temp = []
-        for j in i:
-            z_plt_mod_temp.append(j * const)
-        const += 1
-        z_plt_mod.append(z_plt_mod_temp)
-    z_plt_ = np.array(z_plt_mod).T
-
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    z_list_tot = []
+    x_list_tot = []
+    for p in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(p) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat'
+        max_num = 0
+        x_lst = []
+        z_lst = []
+        t_plt = []
+        i = 0
+        for i in range(0, len(t_arr)-1):
+            t_plt.append(str(round(t_arr[i], 2)) +
+                         's ~ ' + str(round(t_arr[i+1], 2)) + 's')
+            x, z = hist_temp(temp_file_name, t_arr[i], t_arr[i+1], SpeciesName)
+            x_lst.append(x)
+            z_lst.append(z)
+            if max(x) > max_num:
+                max_num = max(x)
+        z_plt = np.zeros(shape=(max_num, TimeBins))
+        k = 0
+        for i in x_lst:
+            l = 0
+            for j in i:
+                z_plt[j-1, k] = z_lst[k][l]
+                l += 1
+            k += 1
+        x_plt = np.arange(0, max_num, 1)+1
+        const = 1
+        z_plt_mod = []
+        for i in z_plt:
+            z_plt_mod_temp = []
+            for j in i:
+                z_plt_mod_temp.append(j * const)
+            const += 1
+            z_plt_mod.append(z_plt_mod_temp)
+        z_plt = np.array(z_plt_mod).T
+        z_plt_ = []
+        for i in range(len(z_plt)):
+            z_plt_temp = []
+            x_count = 0
+            sum_ = 0.0
+            for j in range(len(z_plt[i])):
+                x_count += 1
+                sum_ += z_plt[i][j]
+                if j == len(z_plt) - 1:
+                    z_plt_temp.append(sum_)
+                    x_count = 0
+                    sum_ = 0
+                elif x_count == xBarSize:
+                    z_plt_temp.append(sum_)
+                    x_count = 0
+                    sum_ = 0
+            z_plt_.append(z_plt_temp)
+        z_plt_ = np.array(z_plt_)
+        x_plt = np.arange(0, max_num, xBarSize)+1
+        x_list_tot.append(x_plt)
+        z_list_tot.append(list(z_plt_))
+    max_x_num = 0
+    for i in range(len(x_list_tot)):
+        if len(x_list_tot[i]) > max_x_num:
+            max_x_num = len(x_list_tot[i])
+            n_list = x_list_tot[i]
+    for i in range(len(z_list_tot)):
+        for j in range(len(z_list_tot[i])):
+            if len(z_list_tot[i][j]) < len(n_list):
+                for k in range(0, 1 + len(n_list) - len(z_list_tot[i][j])):
+                    z_list_tot[i][j] = np.append(z_list_tot[i][j], 0.0)
+    count_list_mean = np.zeros([TimeBins, len(n_list)])
+    count_list_std = np.zeros([TimeBins, len(n_list)])
+    for i in range(len(z_list_tot[0])):
+        for j in range(len(z_list_tot[0][0])):
+            temp_list = []
+            for k in range(len(z_list_tot)):
+                temp_list.append(z_list_tot[k][i][j])
+            count_list_mean[i][j] += np.mean(temp_list)
+            count_list_std[i][j] += np.std(temp_list)
     fig, ax = plt.subplots()
     im = ax.imshow(z_plt_)
-    ax.set_xticks(np.arange(len(x_plt)))
+    ax.set_xticks(np.arange(len(n_list)))
     ax.set_yticks(np.arange(len(t_plt)))
-    ax.set_xticklabels(x_plt)
+    ax.set_xticklabels(n_list)
     ax.set_yticklabels(t_plt)
-    if ShowNum:
+    if ShowMean and ShowStd:
+        print('Cannot show both maen and std!')
+        return 0
+    if ShowMean:
         for i in range(len(t_plt)):
-            for j in range(len(x_plt)):
+            for j in range(len(n_list)):
                 text = ax.text(j, i, round(
-                    z_plt_[i, j], 1), ha='center', va='center', color='w')
+                    count_list_mean[i, j], 1), ha='center', va='center', color='w')
+    elif ShowStd and FileNum != 1:
+        for i in range(len(t_plt)):
+            for j in range(len(n_list)):
+                text = ax.text(j, i, round(
+                    count_list_std[i, j], 1), ha='center', va='center', color='w')
     ax.set_title('Total Number of Monomers in Complexes  vs. Time')
     fig.tight_layout()
     plt.colorbar(im)
@@ -3558,55 +3712,109 @@ def hist_time_heatmap_mono_count(FileName: str, InitialTime: float, FinalTime: f
     return 0
 
 
-def hist_time_heatmap_fraction(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, ShowNum: bool = True, SaveFig: bool = False):
-    InitialTime, FinalTime = time_valid(
-        FileName, InitialTime, FinalTime, SpeciesName)
+def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
-    xx, zz = hist_temp(FileName, 0, 0, SpeciesName)
-    n_tot = sum(zz)
-    max_num = 0
-    x_lst = []
-    z_lst = []
-    t_plt = []
-    i = 0
-    for i in range(0, len(t_arr)-1):
-        t_plt.append(str(round(t_arr[i], 2)) +
-                     's ~ ' + str(round(t_arr[i+1], 2)) + 's')
-        x, z = hist_temp(FileName, t_arr[i], t_arr[i+1], SpeciesName)
-        x_lst.append(x)
-        z_lst.append(z)
-        if max(x) > max_num:
-            max_num = max(x)
-    z_plt = np.zeros(shape=(max_num, TimeBins))
-    k = 0
-    for i in x_lst:
-        l = 0
-        for j in i:
-            z_plt[j-1, k] = z_lst[k][l]
-            l += 1
-        k += 1
-    x_plt = np.arange(0, max_num, 1)+1
-    const = 1
-    z_plt_mod = []
-    for i in z_plt:
-        z_plt_mod_temp = []
-        for j in i:
-            z_plt_mod_temp.append(j * const / n_tot)
-        const += 1
-        z_plt_mod.append(z_plt_mod_temp)
-    z_plt_ = np.array(z_plt_mod).T
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    z_list_tot = []
+    x_list_tot = []
+    for p in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(p) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat'
+        xx, zz = hist_temp(temp_file_name, 0, 0, SpeciesName)
+        n_tot = sum(zz)
+        max_num = 0
+        x_lst = []
+        z_lst = []
+        t_plt = []
+        i = 0
+        for i in range(0, len(t_arr)-1):
+            t_plt.append(str(round(t_arr[i], 2)) +
+                         's ~ ' + str(round(t_arr[i+1], 2)) + 's')
+            x, z = hist_temp(temp_file_name, t_arr[i], t_arr[i+1], SpeciesName)
+            x_lst.append(x)
+            z_lst.append(z)
+            if max(x) > max_num:
+                max_num = max(x)
+        z_plt = np.zeros(shape=(max_num, TimeBins))
+        k = 0
+        for i in x_lst:
+            l = 0
+            for j in i:
+                z_plt[j-1, k] = z_lst[k][l]
+                l += 1
+            k += 1
+        x_plt = np.arange(0, max_num, 1)+1
+        const = 1
+        z_plt_mod = []
+        for i in z_plt:
+            z_plt_mod_temp = []
+            for j in i:
+                z_plt_mod_temp.append(j * const / n_tot)
+            const += 1
+            z_plt_mod.append(z_plt_mod_temp)
+        z_plt = np.array(z_plt_mod).T
+        z_plt_ = []
+        for i in range(len(z_plt)):
+            z_plt_temp = []
+            x_count = 0
+            sum_ = 0.0
+            for j in range(len(z_plt[i])):
+                x_count += 1
+                sum_ += z_plt[i][j]
+                if j == len(z_plt) - 1:
+                    z_plt_temp.append(sum_)
+                    x_count = 0
+                    sum_ = 0
+                elif x_count == xBarSize:
+                    z_plt_temp.append(sum_)
+                    x_count = 0
+                    sum_ = 0
+            z_plt_.append(z_plt_temp)
+        z_plt_ = np.array(z_plt_)
+        x_plt = np.arange(0, max_num, xBarSize)+1
+        x_list_tot.append(x_plt)
+        z_list_tot.append(list(z_plt_))
+    max_x_num = 0
+    for i in range(len(x_list_tot)):
+        if len(x_list_tot[i]) > max_x_num:
+            max_x_num = len(x_list_tot[i])
+            n_list = x_list_tot[i]
+    for i in range(len(z_list_tot)):
+        for j in range(len(z_list_tot[i])):
+            if len(z_list_tot[i][j]) < len(n_list):
+                for k in range(0, 1 + len(n_list) - len(z_list_tot[i][j])):
+                    z_list_tot[i][j] = np.append(z_list_tot[i][j], 0.0)
+    count_list_mean = np.zeros([TimeBins, len(n_list)])
+    count_list_std = np.zeros([TimeBins, len(n_list)])
+    for i in range(len(z_list_tot[0])):
+        for j in range(len(z_list_tot[0][0])):
+            temp_list = []
+            for k in range(len(z_list_tot)):
+                temp_list.append(z_list_tot[k][i][j])
+            count_list_mean[i][j] += np.mean(temp_list)
+            count_list_std[i][j] += np.std(temp_list)
     fig, ax = plt.subplots()
     im = ax.imshow(z_plt_)
-    ax.set_xticks(np.arange(len(x_plt)))
+    ax.set_xticks(np.arange(len(n_list)))
     ax.set_yticks(np.arange(len(t_plt)))
-    ax.set_xticklabels(x_plt)
+    ax.set_xticklabels(n_list)
     ax.set_yticklabels(t_plt)
-    if ShowNum:
+    if ShowMean and ShowStd:
+        print('Cannot show both maen and std!')
+        return 0
+    if ShowMean:
         for i in range(len(t_plt)):
-            for j in range(len(x_plt)):
+            for j in range(len(n_list)):
                 text = ax.text(j, i, round(
-                    z_plt_[i, j], 2), ha='center', va='center', color='w')
+                    count_list_mean[i, j], 1), ha='center', va='center', color='w')
+    elif ShowStd and FileNum != 1:
+        for i in range(len(t_plt)):
+            for j in range(len(n_list)):
+                text = ax.text(j, i, round(
+                    count_list_std[i, j], 1), ha='center', va='center', color='w')
     ax.set_title('Franction of Monomers in Complexes vs. Time')
     fig.tight_layout()
     plt.colorbar(im)
@@ -4844,6 +5052,246 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
     fig_name = 'stacked_histogram_of_' + xAxis + '_divided_by_' + DivideSpecies
     if SaveFig:
         plt.savefig(fig_name, dpi=500)
+    plt.show()
+    return 0
+
+
+def multi_heatmap(FileName:str, FileNum:int, InitialTime:float, FinalTime:float, SpeciesList:list, xAxis:str, yAxis:str, xBarSize:int = 1, yBarSize:int = 1, ShowMean:bool = False, ShowStd:bool = False, SaveFig:bool = False):
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    count_list_sum = []
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat'
+        x_size_list = []
+        y_size_list = []
+        hist_list = read_multi_hist(temp_file_name, SpeciesList = SpeciesList)
+        for j in range(len(hist_list)):
+            if hist_list[j] != []:
+                time = hist_list[j][0]
+                if InitialTime <= time <= FinalTime:
+                    for k in range(len(hist_list[j])):
+                        if k != 0:
+                            if xAxis in SpeciesList and yAxis in SpeciesList:
+                                x_name_index = SpeciesList.index(xAxis)
+                                x_size = hist_list[j][k][x_name_index]
+                                x_size = int(x_size / xBarSize)
+                                y_name_index = SpeciesList.index(yAxis)
+                                y_size = hist_list[j][k][y_name_index]
+                                y_size = int(y_size / yBarSize)
+                                if x_size not in x_size_list:
+                                    if len(x_size_list) == 0:
+                                        for m in range(0, x_size+1):
+                                            x_size_list.append(m)
+                                    else:
+                                        if x_size - x_size_list[-1] == 1:
+                                            x_size_list.append(x_size)
+                                        else:
+                                            diff = x_size - x_size_list[-1]
+                                            for m in range(x_size_list[-1]+1, x_size+1):
+                                                x_size_list.append(m)
+                                if y_size not in y_size_list:
+                                    if len(y_size_list) == 0:
+                                        for m in range(0, y_size+1):
+                                            y_size_list.append(m)
+                                    else:
+                                        if y_size - y_size_list[-1] == 1:
+                                            y_size_list.append(y_size)
+                                        else:
+                                            for m in range(y_size_list[-1]+1, y_size+1):
+                                                y_size_list.append(m)
+                            else:
+                                print('xAxis or yAxos not in SpeciesList!')
+                                return 0
+        count_list = np.zeros([len(y_size_list), len(x_size_list)])
+        data_count = 0
+        for j in range(len(hist_list)):
+            if hist_list[j] != []:
+                time = hist_list[j][0]
+                if InitialTime <= time <= FinalTime:
+                    data_count += 1
+                    for k in range(len(hist_list[j])):
+                        if k != 0:
+                            count = hist_list[j][k][-1]
+                            x_name_index = SpeciesList.index(xAxis)
+                            x_size = hist_list[j][k][x_name_index]
+                            x_size = int(x_size / xBarSize)
+                            y_name_index = SpeciesList.index(yAxis)
+                            y_size = hist_list[j][k][y_name_index]
+                            y_size = int(y_size / yBarSize)
+                            count_list[y_size][x_size] += count
+        count_list = count_list/data_count
+        count_list_sum.append(count_list)
+    max_x = 0
+    max_y = 0
+    for i in count_list_sum:
+        if len(i[0]) > max_x:
+            max_x = len(i[0])
+        if len(i) > max_y:
+            max_y = len(i)
+    count_list_sum_ = []
+    for i in range(len(count_list_sum)):
+        temp_matrix = np.zeros([max_y, max_x])
+        for j in range(len(count_list_sum[i])):
+            for k in range(len(count_list_sum[i][j])):
+                temp_matrix[j][k] += count_list_sum[i][j][k]
+        count_list_sum_.append(temp_matrix)
+    count_list_mean = np.zeros([max_y, max_x])
+    count_list_std = np.zeros([max_y, max_x])
+    for i in range(len(count_list_sum_[0])):
+        for j in range(len(count_list_sum_[0][0])):
+            temp_list = []
+            for k in range(len(count_list_sum_)):
+                temp_list.append(count_list_sum_[k][i][j])
+            count_list_mean[i][j] += np.mean(temp_list)
+            count_list_std[i][j] += np.std(temp_list)
+    x_list = np.arange(0, max_x) * xBarSize
+    y_list = np.arange(0, max_y) * yBarSize
+    
+    fig, ax = plt.subplots()
+    im = ax.imshow(count_list_mean)
+    ax.set_xticks(np.arange(len(x_list)))
+    ax.set_yticks(np.arange(len(y_list)))
+    ax.set_xticklabels(x_list)
+    ax.set_yticklabels(y_list)
+    if ShowMean and ShowStd:
+        print('Cannot show both maen and std!')
+        return 0
+    if ShowMean:
+        fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_mean'
+        for i in range(len(y_list)):
+            for j in range(len(x_list)):
+                text = ax.text(j, i, round(count_list_mean[i, j],1),ha='center', va='center', color='w')
+    elif ShowStd and FileNum != 1:
+        fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_std'
+        for i in range(len(y_list)):
+            for j in range(len(x_list)):
+                text = ax.text(j, i, round(count_list_std[i, j],1),ha='center', va='center', color='w')
+    else:
+        fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis
+    ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
+    fig.tight_layout()
+    plt.colorbar(im)
+    plt.xlabel('Count of ' + xAxis)
+    plt.ylabel('Count of ' + yAxis)
+    if SaveFig:
+        plt.savefig(fig_name, dpi = 500,  bbox_inches='tight')
+    plt.show()
+    return 0
+
+
+def multi_3D_hist(FileName:str, FileNum:int, InitialTime:float, FinalTime:float, SpeciesList:list, xAxis:str, yAxis:str, xBarSize:int = 1, yBarSize:int = 1, SaveFig:bool = False):
+    warnings.filterwarnings('ignore')
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    count_list_sum = []
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = 'histogram_complexes_time.dat'
+        x_size_list = []
+        y_size_list = []
+        hist_list = read_multi_hist(temp_file_name, SpeciesList = SpeciesList)
+        for j in range(len(hist_list)):
+            if hist_list[j] != []:
+                time = hist_list[j][0]
+                if InitialTime <= time <= FinalTime:
+                    for k in range(len(hist_list[j])):
+                        if k != 0:
+                            if xAxis in SpeciesList and yAxis in SpeciesList:
+                                x_name_index = SpeciesList.index(xAxis)
+                                true_x_size = hist_list[j][k][x_name_index]
+                                x_size = int(true_x_size / xBarSize)
+                                y_name_index = SpeciesList.index(yAxis)
+                                true_y_size = hist_list[j][k][y_name_index]
+                                y_size = int(true_y_size / yBarSize)
+                                if x_size not in x_size_list:
+                                    if len(x_size_list) == 0:
+                                        for m in range(0, x_size+1):
+                                            x_size_list.append(m)
+                                    else:
+                                        if x_size - x_size_list[-1] == 1:
+                                            x_size_list.append(x_size)
+                                        else:
+                                            diff = x_size - x_size_list[-1]
+                                            for m in range(x_size_list[-1]+1, x_size+1):
+                                                x_size_list.append(m)
+                                if y_size not in y_size_list:
+                                    if len(y_size_list) == 0:
+                                        for m in range(0, y_size+1):
+                                            y_size_list.append(m)
+                                    else:
+                                        if y_size - y_size_list[-1] == 1:
+                                            y_size_list.append(y_size)
+                                        else:
+                                            for m in range(y_size_list[-1]+1, y_size+1):
+                                                y_size_list.append(m)
+                            else:
+                                print('xAxis or yAxos not in SpeciesList!')
+                                return 0
+        count_list = np.zeros([len(y_size_list), len(x_size_list)])
+        data_count = 0
+        for j in range(len(hist_list)):
+            if hist_list[j] != []:
+                time = hist_list[j][0]
+                if InitialTime <= time <= FinalTime:
+                    data_count += 1
+                    for k in range(len(hist_list[j])):
+                        if k != 0:
+                            count = hist_list[j][k][-1]
+                            x_name_index = SpeciesList.index(xAxis)
+                            x_size = hist_list[j][k][x_name_index]
+                            x_size = int(x_size / xBarSize)
+                            y_name_index = SpeciesList.index(yAxis)
+                            y_size = hist_list[j][k][y_name_index]
+                            y_size = int(y_size / yBarSize)
+                            count_list[y_size][x_size] += count
+        count_list = count_list/data_count
+        count_list_sum.append(count_list)
+    max_x = 0
+    max_y = 0
+    for i in count_list_sum:
+        if len(i[0]) > max_x:
+            max_x = len(i[0])
+        if len(i) > max_y:
+            max_y = len(i)
+    count_list_sum_ = []
+    for i in range(len(count_list_sum)):
+        temp_matrix = np.zeros([max_y, max_x])
+        for j in range(len(count_list_sum[i])):
+            for k in range(len(count_list_sum[i][j])):
+                temp_matrix[j][k] += count_list_sum[i][j][k]
+        count_list_sum_.append(temp_matrix)
+    count_list_mean = np.zeros([max_y, max_x])
+    count_list_std = np.zeros([max_y, max_x])
+    for i in range(len(count_list_sum_[0])):
+        for j in range(len(count_list_sum_[0][0])):
+            temp_list = []
+            for k in range(len(count_list_sum_)):
+                temp_list.append(count_list_sum_[k][i][j])
+            count_list_mean[i][j] += np.mean(temp_list)
+            count_list_std[i][j] += np.std(temp_list)
+    x_list = np.arange(0, max_x) * xBarSize
+    y_list = np.arange(0, max_y) * yBarSize
+    xx, yy = np.meshgrid(x_list, y_list)
+    X, Y = xx.ravel(), yy.ravel()
+    Z = count_list_mean.ravel()
+    width = xBarSize
+    depth = yBarSize
+    bottom = np.zeros_like(Z)
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
+    ax.set_xlabel('# of ' + xAxis + ' in sigle complex')
+    ax.set_ylabel('# of ' + yAxis + ' in sigle complex')
+    ax.set_zlabel('Relative Occurrence Probability')
+    ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
+    fig.tight_layout()
+    plt.xlabel('Count of ' + xAxis)
+    plt.ylabel('Count of ' + yAxis)
+    if SaveFig:
+        plt.savefig('3D_hisogram_of_' + xAxis + '_and_' + yAxis, dpi = 500,  bbox_inches='tight')
     plt.show()
     return 0
 

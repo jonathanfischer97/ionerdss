@@ -119,4 +119,13 @@ Change Log
 0.3.3 (08/19/2022)
 ------------------
 - Fixed bugs for multi-component histogram function.
-- Added features for single-component functions to analyze multiple files.
+- Added features for single-component functions to analyze multiple files (histogram and line plots).
+
+0.3.4 (08/22/2022)
+------------------
+- Added features for single-component functions to analyze multiple files (3D plot and heatmaps).
+- Added 3D plot anf heatmap function for multi-component.
+
+0.3.5 (08/22/2022)
+------------------
+- Fixed bugs for single-component functions to analyze multiple files (3D plot and heatmaps).
