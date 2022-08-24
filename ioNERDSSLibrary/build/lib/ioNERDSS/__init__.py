@@ -3030,17 +3030,17 @@ def read_file(FileName: str, SpeciesName: str):
     return hist_
 
 
-def time_valid(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
-    hist = read_file(FileName, SpeciesName)
-    min_time = hist[0][0]
-    max_time = hist[-1][0]
-    if InitialTime == -1 and FinalTime == -1:
-        return min_time, max_time
-    elif min_time <= InitialTime <= max_time and InitialTime <= FinalTime <= max_time:
-        return InitialTime, FinalTime
-    else:
-        print('Wrong input time period!')
-        return -1.0, -1.0
+# def time_valid(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
+#     hist = read_file(FileName, SpeciesName)
+#     min_time = hist[0][0]
+#     max_time = hist[-1][0]
+#     if InitialTime == -1 and FinalTime == -1:
+#         return min_time, max_time
+#     elif min_time <= InitialTime <= max_time and InitialTime <= FinalTime <= max_time:
+#         return InitialTime, FinalTime
+#     else:
+#         print('Wrong input time period!')
+#         return -1.0, -1.0
 
 
 def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, BarSize: int = 1, SaveFig: bool = False):
@@ -3382,28 +3382,24 @@ def multi_hist_to_df(FileName: str, SaveCsv: bool = True):
 
 
 def hist_temp(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
-    t_i, t_f = time_valid(FileName, InitialTime, FinalTime, SpeciesName)
-    if t_i != -1 and t_f != -1:
-        hist = read_file(FileName, SpeciesName)
-        plot_count = []
-        plot_conv = []
-        tot = 0
-        for i in hist:
-            if t_i <= i[0] <= t_f:
-                tot += 1
-                for j in i[2]:
-                    if j not in plot_conv:
-                        plot_conv.append(j)
-                        plot_count.append(i[1][i[2].index(j)])
-                    else:
-                        index = plot_conv.index(j)
-                        plot_count[index] += i[1][i[2].index(j)]
-        plot_count_mean = []
-        for i in plot_count:
-            plot_count_mean.append(i/tot)
-        return plot_conv, plot_count_mean
-    else:
-        return 0
+    hist = read_file(FileName, SpeciesName)
+    plot_count = []
+    plot_conv = []
+    tot = 0
+    for i in hist:
+        if InitialTime <= i[0] <= FinalTime:
+            tot += 1
+            for j in i[2]:
+                if j not in plot_conv:
+                    plot_conv.append(j)
+                    plot_count.append(i[1][i[2].index(j)])
+                else:
+                    index = plot_conv.index(j)
+                    plot_count[index] += i[1][i[2].index(j)]
+    plot_count_mean = []
+    for i in plot_count:
+        plot_count_mean.append(i/tot)
+    return plot_conv, plot_count_mean
 
 
 def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, SaveFig: bool = False):
@@ -3683,7 +3679,7 @@ def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float
             count_list_mean[i][j] += np.mean(temp_list)
             count_list_std[i][j] += np.std(temp_list)
     fig, ax = plt.subplots()
-    im = ax.imshow(z_plt_)
+    im = ax.imshow(count_list_mean)
     ax.set_xticks(np.arange(len(n_list)))
     ax.set_yticks(np.arange(len(t_plt)))
     ax.set_xticklabels(n_list)
@@ -3797,7 +3793,7 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
             count_list_mean[i][j] += np.mean(temp_list)
             count_list_std[i][j] += np.std(temp_list)
     fig, ax = plt.subplots()
-    im = ax.imshow(z_plt_)
+    im = ax.imshow(count_list_mean)
     ax.set_xticks(np.arange(len(n_list)))
     ax.set_yticks(np.arange(len(t_plt)))
     ax.set_xticklabels(n_list)
@@ -5056,7 +5052,7 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
     return 0
 
 
-def multi_heatmap(FileName:str, FileNum:int, InitialTime:float, FinalTime:float, SpeciesList:list, xAxis:str, yAxis:str, xBarSize:int = 1, yBarSize:int = 1, ShowMean:bool = False, ShowStd:bool = False, SaveFig:bool = False):
+def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     count_list_sum = []
@@ -5066,7 +5062,7 @@ def multi_heatmap(FileName:str, FileNum:int, InitialTime:float, FinalTime:float,
             temp_file_name = 'histogram_complexes_time.dat'
         x_size_list = []
         y_size_list = []
-        hist_list = read_multi_hist(temp_file_name, SpeciesList = SpeciesList)
+        hist_list = read_multi_hist(temp_file_name, SpeciesList=SpeciesList)
         for j in range(len(hist_list)):
             if hist_list[j] != []:
                 time = hist_list[j][0]
@@ -5148,7 +5144,7 @@ def multi_heatmap(FileName:str, FileNum:int, InitialTime:float, FinalTime:float,
             count_list_std[i][j] += np.std(temp_list)
     x_list = np.arange(0, max_x) * xBarSize
     y_list = np.arange(0, max_y) * yBarSize
-    
+
     fig, ax = plt.subplots()
     im = ax.imshow(count_list_mean)
     ax.set_xticks(np.arange(len(x_list)))
@@ -5162,12 +5158,14 @@ def multi_heatmap(FileName:str, FileNum:int, InitialTime:float, FinalTime:float,
         fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_mean'
         for i in range(len(y_list)):
             for j in range(len(x_list)):
-                text = ax.text(j, i, round(count_list_mean[i, j],1),ha='center', va='center', color='w')
+                text = ax.text(j, i, round(
+                    count_list_mean[i, j], 1), ha='center', va='center', color='w')
     elif ShowStd and FileNum != 1:
         fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_std'
         for i in range(len(y_list)):
             for j in range(len(x_list)):
-                text = ax.text(j, i, round(count_list_std[i, j],1),ha='center', va='center', color='w')
+                text = ax.text(j, i, round(
+                    count_list_std[i, j], 1), ha='center', va='center', color='w')
     else:
         fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis
     ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
@@ -5176,12 +5174,12 @@ def multi_heatmap(FileName:str, FileNum:int, InitialTime:float, FinalTime:float,
     plt.xlabel('Count of ' + xAxis)
     plt.ylabel('Count of ' + yAxis)
     if SaveFig:
-        plt.savefig(fig_name, dpi = 500,  bbox_inches='tight')
+        plt.savefig(fig_name, dpi=500,  bbox_inches='tight')
     plt.show()
     return 0
 
 
-def multi_3D_hist(FileName:str, FileNum:int, InitialTime:float, FinalTime:float, SpeciesList:list, xAxis:str, yAxis:str, xBarSize:int = 1, yBarSize:int = 1, SaveFig:bool = False):
+def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -5192,7 +5190,7 @@ def multi_3D_hist(FileName:str, FileNum:int, InitialTime:float, FinalTime:float,
             temp_file_name = 'histogram_complexes_time.dat'
         x_size_list = []
         y_size_list = []
-        hist_list = read_multi_hist(temp_file_name, SpeciesList = SpeciesList)
+        hist_list = read_multi_hist(temp_file_name, SpeciesList=SpeciesList)
         for j in range(len(hist_list)):
             if hist_list[j] != []:
                 time = hist_list[j][0]
@@ -5291,7 +5289,8 @@ def multi_3D_hist(FileName:str, FileNum:int, InitialTime:float, FinalTime:float,
     plt.xlabel('Count of ' + xAxis)
     plt.ylabel('Count of ' + yAxis)
     if SaveFig:
-        plt.savefig('3D_hisogram_of_' + xAxis + '_and_' + yAxis, dpi = 500,  bbox_inches='tight')
+        plt.savefig('3D_hisogram_of_' + xAxis + '_and_' +
+                    yAxis, dpi=500,  bbox_inches='tight')
     plt.show()
     return 0
 

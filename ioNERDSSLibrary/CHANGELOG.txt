@@ -129,3 +129,7 @@ Change Log
 0.3.5 (08/22/2022)
 ------------------
 - Fixed bugs for single-component functions to analyze multiple files (3D plot and heatmaps).
+
+0.3.6 (08/22/2022)
+------------------
+- Fixed bugs for single-component functions to analyze multiple files (3D plot and heatmaps).
