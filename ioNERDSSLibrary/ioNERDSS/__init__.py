@@ -3030,18 +3030,6 @@ def read_file(FileName: str, SpeciesName: str):
     return hist_
 
 
-# def time_valid(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
-#     hist = read_file(FileName, SpeciesName)
-#     min_time = hist[0][0]
-#     max_time = hist[-1][0]
-#     if InitialTime == -1 and FinalTime == -1:
-#         return min_time, max_time
-#     elif min_time <= InitialTime <= max_time and InitialTime <= FinalTime <= max_time:
-#         return InitialTime, FinalTime
-#     else:
-#         print('Wrong input time period!')
-#         return -1.0, -1.0
-
 
 def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, BarSize: int = 1, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
@@ -3051,7 +3039,7 @@ def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, Spec
     for k in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         total_size_list = []
         total_count_list = []
         hist = read_file(temp_file_name, SpeciesName)
@@ -3147,7 +3135,7 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     for k in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         total_size_list = []
         total_time_list = []
         hist = read_file(temp_file_name, SpeciesName)
@@ -3193,7 +3181,7 @@ def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
     for k in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         total_size_list = []
         total_time_list = []
         hist = read_file(temp_file_name, SpeciesName)
@@ -3413,7 +3401,7 @@ def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
     for p in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(p) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         max_num = 0
         x_lst = []
         z_lst = []
@@ -3492,7 +3480,6 @@ def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
 
 
 def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
-
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     file_name_head = FileName.split('.')[0]
@@ -3502,7 +3489,7 @@ def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime
     for p in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(p) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         max_num = 0
         x_lst = []
         z_lst = []
@@ -3606,7 +3593,7 @@ def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float
     for p in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(p) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         max_num = 0
         x_lst = []
         z_lst = []
@@ -3718,7 +3705,7 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
     for p in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(p) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         xx, zz = hist_temp(temp_file_name, 0, 0, SpeciesName)
         n_tot = sum(zz)
         max_num = 0
@@ -3878,7 +3865,7 @@ def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'transition_matrix_time.dat'
+            temp_file_name = FileName
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
@@ -3964,7 +3951,7 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'transition_matrix_time.dat'
+            temp_file_name = FileName
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
@@ -4078,7 +4065,7 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'transition_matrix_time.dat'
+            temp_file_name = FileName
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
@@ -4210,7 +4197,7 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'transition_matrix_time.dat'
+            temp_file_name = FileName
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
@@ -4327,7 +4314,7 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'transition_matrix_time.dat'
+            temp_file_name = FileName
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
@@ -4462,7 +4449,7 @@ def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'transition_matrix_time.dat'
+            temp_file_name = FileName
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
@@ -4582,7 +4569,7 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'transition_matrix_time.dat'
+            temp_file_name = FileName
         ti_lifetime, tf_lifetime, size_list = read_cluster_lifetime(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         mean_temp = []
@@ -4654,7 +4641,7 @@ def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         total_size_list = []
         total_count_list = []
         hist_list = read_multi_hist(temp_file_name, SpeciesList=SpeciesList)
@@ -4787,7 +4774,7 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         total_size_list = []
         total_above_list = []
         total_equal_list = []
@@ -5059,7 +5046,7 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         x_size_list = []
         y_size_list = []
         hist_list = read_multi_hist(temp_file_name, SpeciesList=SpeciesList)
@@ -5187,7 +5174,7 @@ def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
     for i in range(1, FileNum+1):
         temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
-            temp_file_name = 'histogram_complexes_time.dat'
+            temp_file_name = FileName
         x_size_list = []
         y_size_list = []
         hist_list = read_multi_hist(temp_file_name, SpeciesList=SpeciesList)
