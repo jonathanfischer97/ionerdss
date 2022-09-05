@@ -3124,7 +3124,7 @@ def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, Spec
     if SaveFig:
         plt.savefig('Histogram.png', dpi=500)
     plt.show()
-    return 0
+    return n_list_, mean_, std_
 
 
 def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
@@ -3170,7 +3170,7 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     if SaveFig:
         plt.savefig('max_complex.png', dpi=500)
     plt.show()
-    return 0
+    return time_list[0], mean, std
 
 
 def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, ExcludeSize: int = 0, SaveFig: bool = False):
@@ -3236,7 +3236,7 @@ def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
     if SaveFig:
         plt.savefig('mean_complex.png', dpi=500)
     plt.show()
-    return 0
+    return time_list[0], mean, std
 
 
 def single_hist_to_csv(FileName: str):
@@ -3476,7 +3476,7 @@ def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
     if SaveFig:
         plt.savefig('histogram_3D.png', dpi=500)
     plt.show()
-    return 0
+    return Z
 
 
 def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
@@ -3580,7 +3580,7 @@ def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime
     if SaveFig:
         plt.savefig('hist_heatmap.png', dpi=500, bbox_inches='tight')
     plt.show()
-    return 0
+    return count_list_mean, count_list_std
 
 
 def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
@@ -3692,7 +3692,7 @@ def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float
     if SaveFig:
         plt.savefig('hist_heatmap_count.png', dpi=500, bbox_inches='tight')
     plt.show()
-    return 0
+    return count_list_mean, count_list_std
 
 
 def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
@@ -3806,7 +3806,7 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
     if SaveFig:
         plt.savefig('hist_heatmap_fraction.png', dpi=500, bbox_inches='tight')
     plt.show()
-    return 0
+    return count_list_mean, count_list_std
 
 # Analysing tools for 'transition_matrix_time.dat'
 
@@ -3940,7 +3940,7 @@ def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     if SaveFig:
         plt.savefig('free_energy.png', dpi=500)
     plt.show()
-    return 0
+    return n_list, mean_energy_list, std_energy_list
 
 
 def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
@@ -4054,7 +4054,7 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
     if SaveFig:
         plt.savefig('associate_probability_symmetric.png', dpi=500)
     plt.show()
-    return 0
+    return n_list, mean_above, mean_equal, mean_below, std_above, std_equal, std_below
 
 
 def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
@@ -4186,7 +4186,7 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
     if SaveFig:
         plt.savefig('associate_probability_asymmetric.png', dpi=500)
     plt.show()
-    return 0
+    return n_list, mean_above, mean_equal, mean_below, std_above, std_equal, std_below
 
 
 def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
@@ -4303,7 +4303,7 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
     if SaveFig:
         plt.savefig('dissociate_probability_symmetric.png', dpi=500)
     plt.show()
-    return 0
+    return n_list, mean_above, mean_equal, mean_below, std_above, std_equal, std_below
 
 
 def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
@@ -4438,7 +4438,7 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
     if SaveFig:
         plt.savefig('dissociate_probability_asymmetric.png', dpi=500)
     plt.show()
-    return 0
+    return n_list, mean_above, mean_equal, mean_below, std_above, std_equal, std_below
 
 
 def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
@@ -4510,7 +4510,7 @@ def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     if SaveFig:
         plt.savefig('growth_probability.png', dpi=500)
     plt.show()
-    return 0
+    return n_list, mean, std
 
 
 def read_cluster_lifetime(FileName: str, SpeciesName: str, InitialTime: float, FinalTime: float):
@@ -4602,7 +4602,7 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
     if SaveFig:
         plt.savefig('complex_lifetime.png', dpi=500)
     plt.show()
-    return 0
+    return size_list, mean, std
 
 
 def read_multi_hist(FileName: str, SpeciesList: list):
@@ -4759,7 +4759,7 @@ def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float
     if SaveFig:
         plt.savefig(fig_name, dpi=500)
     plt.show()
-    return 0
+    return n_list_, mean_, std_
 
 
 def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
@@ -5036,7 +5036,7 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
     if SaveFig:
         plt.savefig(fig_name, dpi=500)
     plt.show()
-    return 0
+    return n_list_, mean_below_, mean_equal_, mean_above_, std_below_, std_equal_, std_above_
 
 
 def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
@@ -5163,7 +5163,7 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
     if SaveFig:
         plt.savefig(fig_name, dpi=500,  bbox_inches='tight')
     plt.show()
-    return 0
+    return count_list_mean, count_list_std
 
 
 def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, SaveFig: bool = False):
@@ -5279,7 +5279,7 @@ def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
         plt.savefig('3D_hisogram_of_' + xAxis + '_and_' +
                     yAxis, dpi=500,  bbox_inches='tight')
     plt.show()
-    return 0
+    return Z
 
 
 # --------------------------------Locate Position by Pdb or Restart----------------------------------

@@ -137,3 +137,7 @@ Change Log
 0.3.7 (08/30/2022)
 ------------------
 - Fixed bugs for all functions about naming issues.
+
+0.3.8 (09/05/2022)
+------------------
+- Added returns for all visualization functions.
