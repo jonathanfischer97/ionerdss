@@ -141,3 +141,11 @@ Change Log
 0.3.8 (09/05/2022)
 ------------------
 - Added returns for all visualization functions.
+
+0.3.9 (09/06/2022)
+------------------
+- Added functions for max and mean complexes for multi-component system.
+
+0.3.10 (09/06/2022)
+-------------------
+- Fixed bugs for newly added functions.
