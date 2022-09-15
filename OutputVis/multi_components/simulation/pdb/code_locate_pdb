@@ -1,0 +1,3 @@
+import ioNERDSS as io
+
+io.locate_position_PDB(FileNamePdb = '6600000.pdb', NumList = [5, 5], FileNameInp = 'parm.inp', BufferRatio = 0.01)

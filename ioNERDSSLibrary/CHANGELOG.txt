@@ -149,3 +149,15 @@ Change Log
 0.3.10 (09/06/2022)
 -------------------
 - Fixed bugs for newly added functions.
+
+0.4.0 (09/14/2022)
+------------------
+- Added reading real PDB file and generating input for NERDSS.
+
+0.4.1 (09/14/2022)
+------------------
+- Fixed bugs of not converting unit from A to nm.
+
+0.4.2 (09/14/2022)
+------------------
+- Corrected name of axis.
