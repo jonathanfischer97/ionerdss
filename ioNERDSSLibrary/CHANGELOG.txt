@@ -1,5 +1,5 @@
-Change Log
-==========
+ioNERDSS Change Log
+===================
 
 0.0.1 (06/27/2022)
 ------------------
@@ -161,3 +161,8 @@ Change Log
 0.4.2 (09/14/2022)
 ------------------
 - Corrected name of axis.
+
+0.4.3 (09/15/2022)
+------------------
+- Formated returns for all visualization functions.
+- Added data extraction class.
