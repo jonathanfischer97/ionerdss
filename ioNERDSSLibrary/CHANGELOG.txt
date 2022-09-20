@@ -166,3 +166,23 @@ ioNERDSS Change Log
 ------------------
 - Formated returns for all visualization functions.
 - Added data extraction class.
+
+0.4.4 (09/16/2022)
+------------------
+- Added function 'single_locate_position_restart'.
+
+0.4.5 (09/20/2022)
+------------------
+- Added seperated functions for reading real PDB files.
+
+0.4.6 (09/20/2022)
+------------------
+- Corrected names of newly added functions.
+
+0.4.7 (09/20/2022)
+------------------
+- Fixed bugs for newly added functions.
+
+0.4.8 (09/20/2022)
+------------------
+- Corrected typos of function names.
