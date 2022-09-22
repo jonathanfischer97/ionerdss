@@ -1,5 +1,4 @@
-TITLE  PDB TIMESTEP                                                          9999999 CREATED Thu Jun 30 23:43:40 2022
-CRYST1  500      500      500      90     90     90      P1   
+TITLE  PDB 
 ATOM      0  COM dod    0          500     500     500     0     0CL
 ATOM      1  COM dod    0      193.519 302.502 448.137     0     0CL
 ATOM      2  lg1 dod    0      186.806 314.752 435.173     0     0CL

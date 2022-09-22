@@ -186,3 +186,7 @@ ioNERDSS Change Log
 0.4.8 (09/20/2022)
 ------------------
 - Corrected typos of function names.
+
+0.4.9 (09/22/2022)
+------------------
+- Added functions 'real_PDB_show'.
