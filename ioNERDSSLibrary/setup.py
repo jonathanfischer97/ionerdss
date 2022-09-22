@@ -10,7 +10,7 @@ classifiers = [
 
 setup(
     name='ioNERDSS',
-    version='0.4.9',
+    version='0.5.0',
     description='Package for analysing NERDSS inputs and outputs.',
     long_description='A python package for analysing inputs and outputs for NERDSS simulator, including generating input files for Platonic solids and output visualization, etc.',
     url='',
