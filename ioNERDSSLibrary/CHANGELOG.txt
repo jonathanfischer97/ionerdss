@@ -194,3 +194,7 @@ ioNERDSS Change Log
 0.5.0 (09/22/2022)
 ------------------
 - Added finctions 'real_PDB_3D'.
+
+0.5.1 (09/22/2022)
+------------------
+- Changed names for newly updated functions.

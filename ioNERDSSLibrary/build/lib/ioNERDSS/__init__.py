@@ -7142,7 +7142,7 @@ def real_PDB_separate_write(Result: tuple):
     return 0
 
 
-def real_PDB_show(Result: bool):
+def real_PDB_show_PDB(Result: bool):
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     f = open('show_structure.pdb', 'w')
     f.write('TITLE  PDB\n')
@@ -7177,7 +7177,7 @@ def real_PDB_show(Result: bool):
     print('PDB writing complete! (named as show_structure.pdb)')
     return 0
 
-def real_PDB_3D(Result:bool):
+def real_PDB_show_3D(Result:bool):
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     coord_list = []
     for i in range(len(unique_chain)):
