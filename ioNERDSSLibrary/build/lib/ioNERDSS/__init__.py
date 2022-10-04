@@ -3044,7 +3044,8 @@ def read_file(FileName: str, SpeciesName: str):
     return hist_
 
 
-def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, BarSize: int = 1, SaveFig: bool = False):
+def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, \
+         BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     count_list = []
@@ -3125,21 +3126,23 @@ def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, Spec
     mean_ = np.array(mean_)
     std_ = np.array(std_)
     n_list_ = np.array(n_list_)
-    if FileNum != 1:
-        plt.bar(n_list_, mean_, width=BarSize, color='C0',
-                yerr=std_, ecolor='C1', capsize=2)
-    else:
-        plt.bar(n_list_, mean_, width=BarSize)
-    plt.title('Histogram of ' + str(SpeciesName))
-    plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
-    plt.ylabel('Count')
-    if SaveFig:
-        plt.savefig('Histogram.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        if FileNum != 1:
+            plt.bar(n_list_, mean_, width=BarSize, color='C0',
+                    yerr=std_, ecolor='C1', capsize=2)
+        else:
+            plt.bar(n_list_, mean_, width=BarSize)
+        plt.title('Histogram of ' + str(SpeciesName))
+        plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
+        plt.ylabel('Count')
+        if SaveFig:
+            plt.savefig('Histogram.png', dpi=500)
+        plt.show()
     return n_list_, mean_, 'Nan', std_
 
 
-def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
+def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     time_list = []
@@ -3157,7 +3160,6 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
                 total_size_list.append(max(i[2]))
         time_list.append(total_time_list)
         size_list.append(total_size_list)
-
     size_list_rev = []
     for i in range(len(size_list[0])):
         temp = []
@@ -3170,22 +3172,24 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         mean.append(np.mean(size_list_rev[i]))
         if FileNum > 1:
             std.append(np.std(size_list_rev[i]))
-    errorbar_color = '#c9e3f6'
-    plt.plot(time_list[0], mean, color='C0')
-    if FileNum > 1:
-        plt.errorbar(time_list[0], mean, color='C0',
-                     yerr=std, ecolor=errorbar_color)
-    plt.title('Maximum Number of ' +
-              str(SpeciesName) + ' in Single Complex')
-    plt.xlabel('Time')
-    plt.ylabel('Maximum Number of ' + str(SpeciesName))
-    if SaveFig:
-        plt.savefig('max_complex.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color = '#c9e3f6'
+        plt.plot(time_list[0], mean, color='C0')
+        if FileNum > 1:
+            plt.errorbar(time_list[0], mean, color='C0',
+                        yerr=std, ecolor=errorbar_color)
+        plt.title('Maximum Number of ' +
+                str(SpeciesName) + ' in Single Complex')
+        plt.xlabel('Time')
+        plt.ylabel('Maximum Number of ' + str(SpeciesName))
+        if SaveFig:
+            plt.savefig('max_complex.png', dpi=500)
+        plt.show()
     return time_list[0], mean, 'Nan', std
 
 
-def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, ExcludeSize: int = 0, SaveFig: bool = False):
+def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                 SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     time_list = []
@@ -3236,18 +3240,19 @@ def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
         mean.append(np.mean(size_list_rev[i]))
         if FileNum > 1:
             std.append(np.std(size_list_rev[i]))
-    errorbar_color = '#c9e3f6'
-    plt.plot(time_list[0], mean, color='C0')
-    if FileNum > 1:
-        plt.errorbar(time_list[0], mean, color='C0',
-                     yerr=std, ecolor=errorbar_color)
-    plt.title('Average Number of ' +
-              str(SpeciesName) + ' in Single Complex')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Average Number of ' + str(SpeciesName))
-    if SaveFig:
-        plt.savefig('mean_complex.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color = '#c9e3f6'
+        plt.plot(time_list[0], mean, color='C0')
+        if FileNum > 1:
+            plt.errorbar(time_list[0], mean, color='C0',
+                        yerr=std, ecolor=errorbar_color)
+        plt.title('Average Number of ' +
+                str(SpeciesName) + ' in Single Complex')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Average Number of ' + str(SpeciesName))
+        if SaveFig:
+            plt.savefig('mean_complex.png', dpi=500)
+        plt.show()
     return time_list[0], mean, 'Nan', std
 
 
@@ -3402,7 +3407,8 @@ def hist_temp(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: 
     return plot_conv, plot_count_mean
 
 
-def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, SaveFig: bool = False):
+def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                 SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
@@ -3473,25 +3479,28 @@ def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
             for k in range(len(z_list_tot)):
                 temp_list.append(z_list_tot[k][i][j])
             count_list_mean[i][j] += np.mean(temp_list)
-    xx, yy = np.meshgrid(n_list, t_plt)
-    X, Y = xx.ravel(), yy.ravel()
-    Z = np.array(count_list_mean.ravel())
-    bottom = np.zeros_like(Z)
-    width = xBarSize
-    depth = 1/TimeBins
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
-    ax.set_xlabel('# of ' + SpeciesName + ' in sigle complex')
-    ax.set_ylabel('Time')
-    ax.set_zlabel('Count')
-    if SaveFig:
-        plt.savefig('histogram_3D.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        xx, yy = np.meshgrid(n_list, t_plt)
+        X, Y = xx.ravel(), yy.ravel()
+        Z = np.array(count_list_mean.ravel())
+        bottom = np.zeros_like(Z)
+        width = xBarSize
+        depth = 1/TimeBins
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
+        ax.set_xlabel('# of ' + SpeciesName + ' in sigle complex')
+        ax.set_ylabel('Time')
+        ax.set_zlabel('Count')
+        if SaveFig:
+            plt.savefig('histogram_3D.png', dpi=500)
+        plt.show()
     return n_list, t_plt, count_list_mean, 'Nan'
 
 
-def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                      SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, \
+                      ShowFig: bool = True, ShowStd: bool = False, SaveFig: bool = False):
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     file_name_head = FileName.split('.')[0]
@@ -3565,37 +3574,40 @@ def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime
                 temp_list.append(z_list_tot[k][i][j])
             count_list_mean[i][j] += np.mean(temp_list)
             count_list_std[i][j] += np.std(temp_list)
-    fig, ax = plt.subplots()
-    im = ax.imshow(count_list_mean)
-    ax.set_xticks(np.arange(len(n_list)))
-    ax.set_yticks(np.arange(len(t_plt)))
-    ax.set_xticklabels(n_list)
-    ax.set_yticklabels(t_plt)
-    if ShowMean and ShowStd:
-        print('Cannot show both maen and std!')
-        return 0
-    if ShowMean:
-        for i in range(len(t_plt)):
-            for j in range(len(n_list)):
-                text = ax.text(j, i, round(
-                    count_list_mean[i, j], 1), ha='center', va='center', color='w')
-    elif ShowStd and FileNum != 1:
-        for i in range(len(t_plt)):
-            for j in range(len(n_list)):
-                text = ax.text(j, i, round(
-                    count_list_std[i, j], 1), ha='center', va='center', color='w')
-    ax.set_title('N-mers distribution vs. Time')
-    fig.tight_layout()
-    plt.colorbar(im)
-    plt.xlabel('Size of N-mers')
-    plt.ylabel('Time')
-    if SaveFig:
-        plt.savefig('hist_heatmap.png', dpi=500, bbox_inches='tight')
-    plt.show()
+    if ShowFig:
+        fig, ax = plt.subplots()
+        im = ax.imshow(count_list_mean)
+        ax.set_xticks(np.arange(len(n_list)))
+        ax.set_yticks(np.arange(len(t_plt)))
+        ax.set_xticklabels(n_list)
+        ax.set_yticklabels(t_plt)
+        if ShowMean and ShowStd:
+            print('Cannot show both maen and std!')
+            return 0
+        if ShowMean:
+            for i in range(len(t_plt)):
+                for j in range(len(n_list)):
+                    text = ax.text(j, i, round(
+                        count_list_mean[i, j], 1), ha='center', va='center', color='w')
+        elif ShowStd and FileNum != 1:
+            for i in range(len(t_plt)):
+                for j in range(len(n_list)):
+                    text = ax.text(j, i, round(
+                        count_list_std[i, j], 1), ha='center', va='center', color='w')
+        ax.set_title('N-mers distribution vs. Time')
+        fig.tight_layout()
+        plt.colorbar(im)
+        plt.xlabel('Size of N-mers')
+        plt.ylabel('Time')
+        if SaveFig:
+            plt.savefig('hist_heatmap.png', dpi=500, bbox_inches='tight')
+        plt.show()
     return n_list, t_plt, count_list_mean, count_list_std
 
 
-def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                                 SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, \
+                                 ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     file_name_head = FileName.split('.')[0]
@@ -3677,37 +3689,40 @@ def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float
                 temp_list.append(z_list_tot[k][i][j])
             count_list_mean[i][j] += np.mean(temp_list)
             count_list_std[i][j] += np.std(temp_list)
-    fig, ax = plt.subplots()
-    im = ax.imshow(count_list_mean)
-    ax.set_xticks(np.arange(len(n_list)))
-    ax.set_yticks(np.arange(len(t_plt)))
-    ax.set_xticklabels(n_list)
-    ax.set_yticklabels(t_plt)
-    if ShowMean and ShowStd:
-        print('Cannot show both maen and std!')
-        return 0
-    if ShowMean:
-        for i in range(len(t_plt)):
-            for j in range(len(n_list)):
-                text = ax.text(j, i, round(
-                    count_list_mean[i, j], 1), ha='center', va='center', color='w')
-    elif ShowStd and FileNum != 1:
-        for i in range(len(t_plt)):
-            for j in range(len(n_list)):
-                text = ax.text(j, i, round(
-                    count_list_std[i, j], 1), ha='center', va='center', color='w')
-    ax.set_title('Total Number of Monomers in Complexes  vs. Time')
-    fig.tight_layout()
-    plt.colorbar(im)
-    plt.xlabel('Size of N-mers')
-    plt.ylabel('Time')
-    if SaveFig:
-        plt.savefig('hist_heatmap_count.png', dpi=500, bbox_inches='tight')
-    plt.show()
+    if ShowFig:
+        fig, ax = plt.subplots()
+        im = ax.imshow(count_list_mean)
+        ax.set_xticks(np.arange(len(n_list)))
+        ax.set_yticks(np.arange(len(t_plt)))
+        ax.set_xticklabels(n_list)
+        ax.set_yticklabels(t_plt)
+        if ShowMean and ShowStd:
+            print('Cannot show both maen and std!')
+            return 0
+        if ShowMean:
+            for i in range(len(t_plt)):
+                for j in range(len(n_list)):
+                    text = ax.text(j, i, round(
+                        count_list_mean[i, j], 1), ha='center', va='center', color='w')
+        elif ShowStd and FileNum != 1:
+            for i in range(len(t_plt)):
+                for j in range(len(n_list)):
+                    text = ax.text(j, i, round(
+                        count_list_std[i, j], 1), ha='center', va='center', color='w')
+        ax.set_title('Total Number of Monomers in Complexes  vs. Time')
+        fig.tight_layout()
+        plt.colorbar(im)
+        plt.xlabel('Size of N-mers')
+        plt.ylabel('Time')
+        if SaveFig:
+            plt.savefig('hist_heatmap_count.png', dpi=500, bbox_inches='tight')
+        plt.show()
     return n_list, t_plt, count_list_mean, count_list_std
 
 
-def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                               SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, \
+                               ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     file_name_head = FileName.split('.')[0]
@@ -3791,33 +3806,34 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
                 temp_list.append(z_list_tot[k][i][j])
             count_list_mean[i][j] += np.mean(temp_list)
             count_list_std[i][j] += np.std(temp_list)
-    fig, ax = plt.subplots()
-    im = ax.imshow(count_list_mean)
-    ax.set_xticks(np.arange(len(n_list)))
-    ax.set_yticks(np.arange(len(t_plt)))
-    ax.set_xticklabels(n_list)
-    ax.set_yticklabels(t_plt)
-    if ShowMean and ShowStd:
-        print('Cannot show both maen and std!')
-        return 0
-    if ShowMean:
-        for i in range(len(t_plt)):
-            for j in range(len(n_list)):
-                text = ax.text(j, i, round(
-                    count_list_mean[i, j], 1), ha='center', va='center', color='w')
-    elif ShowStd and FileNum != 1:
-        for i in range(len(t_plt)):
-            for j in range(len(n_list)):
-                text = ax.text(j, i, round(
-                    count_list_std[i, j], 1), ha='center', va='center', color='w')
-    ax.set_title('Franction of Monomers in Complexes vs. Time')
-    fig.tight_layout()
-    plt.colorbar(im)
-    plt.xlabel('Size of N-mers')
-    plt.ylabel('Time')
-    if SaveFig:
-        plt.savefig('hist_heatmap_fraction.png', dpi=500, bbox_inches='tight')
-    plt.show()
+    if ShowFig:
+        fig, ax = plt.subplots()
+        im = ax.imshow(count_list_mean)
+        ax.set_xticks(np.arange(len(n_list)))
+        ax.set_yticks(np.arange(len(t_plt)))
+        ax.set_xticklabels(n_list)
+        ax.set_yticklabels(t_plt)
+        if ShowMean and ShowStd:
+            print('Cannot show both maen and std!')
+            return 0
+        if ShowMean:
+            for i in range(len(t_plt)):
+                for j in range(len(n_list)):
+                    text = ax.text(j, i, round(
+                        count_list_mean[i, j], 1), ha='center', va='center', color='w')
+        elif ShowStd and FileNum != 1:
+            for i in range(len(t_plt)):
+                for j in range(len(n_list)):
+                    text = ax.text(j, i, round(
+                        count_list_std[i, j], 1), ha='center', va='center', color='w')
+        ax.set_title('Franction of Monomers in Complexes vs. Time')
+        fig.tight_layout()
+        plt.colorbar(im)
+        plt.xlabel('Size of N-mers')
+        plt.ylabel('Time')
+        if SaveFig:
+            plt.savefig('hist_heatmap_fraction.png', dpi=500, bbox_inches='tight')
+        plt.show()
     return n_list, t_plt, count_list_mean, count_list_std
 
 # Analysing tools for 'transition_matrix_time.dat'
@@ -3869,7 +3885,8 @@ def read_transition_matrix(FileName: str, SpeciesName: str, InitialTime: float, 
     return ti_matrix, tf_matrix
 
 
-def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
+def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]
@@ -3939,23 +3956,25 @@ def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         mean_energy_list = np.append(mean_energy_list, np.nanmean(i))
         if FileNum != 1:
             std_energy_list = np.append(std_energy_list, np.nanstd(i))
-    errorbar_color = '#c9e3f6'
-    plt.plot(n_list, mean_energy_list, 'C0')
-    if FileNum != 1:
-        plt.errorbar(n_list, mean_energy_list, yerr=std_energy_list,
-                     ecolor=errorbar_color, capsize=2)
-    plt.title('Free Energy Vs. Time from ' + str(float(InitialTime)
-                                                 ) + 's to ' + str(float(FinalTime)) + 's')
-    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
-    plt.ylabel('-ln(p(N)) ($k_B$T)')
-    plt.xticks(ticks=n_list)
-    if SaveFig:
-        plt.savefig('free_energy.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color = '#c9e3f6'
+        plt.plot(n_list, mean_energy_list, 'C0')
+        if FileNum != 1:
+            plt.errorbar(n_list, mean_energy_list, yerr=std_energy_list,
+                        ecolor=errorbar_color, capsize=2)
+        plt.title('Free Energy Vs. Time from ' + str(float(InitialTime)
+                                                    ) + 's to ' + str(float(FinalTime)) + 's')
+        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.ylabel('-ln(p(N)) ($k_B$T)')
+        plt.xticks(ticks=n_list)
+        if SaveFig:
+            plt.savefig('free_energy.png', dpi=500)
+        plt.show()
     return n_list, mean_energy_list, 'Nan', std_energy_list
 
 
-def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
+def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                             SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]
@@ -4044,32 +4063,34 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
             std_equal.append(np.nanstd(equal_prob_rev[i]))
             std_below.append(np.nanstd(below_prob_rev[i]))
     n_list = list(range(1, 1 + len(matrix_list[0])))
-    errorbar_color_1 = '#c9e3f6'
-    errorbar_color_2 = '#ffe7d2'
-    errorbar_color_3 = '#d7f4d7'
-    plt.plot(n_list, mean_above, 'C0')
-    plt.plot(n_list, mean_equal, 'C1')
-    plt.plot(n_list, mean_below, 'C2')
-    if FileNum != 1:
-        plt.errorbar(n_list, mean_above, yerr=std_above,
-                     ecolor=errorbar_color_1, capsize=2)
-        plt.errorbar(n_list, mean_equal, yerr=std_equal,
-                     ecolor=errorbar_color_2, capsize=2)
-        plt.errorbar(n_list, mean_below, yerr=std_below,
-                     ecolor=errorbar_color_3, capsize=2)
-    plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
-               str(DivideSize), 'Associate Size < ' + str(DivideSize)])
-    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
-    plt.ylabel('Probability')
-    plt.xticks(ticks=n_list)
-    plt.title('Remodeling of Complex')
-    if SaveFig:
-        plt.savefig('associate_probability_symmetric.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color_1 = '#c9e3f6'
+        errorbar_color_2 = '#ffe7d2'
+        errorbar_color_3 = '#d7f4d7'
+        plt.plot(n_list, mean_above, 'C0')
+        plt.plot(n_list, mean_equal, 'C1')
+        plt.plot(n_list, mean_below, 'C2')
+        if FileNum != 1:
+            plt.errorbar(n_list, mean_above, yerr=std_above,
+                        ecolor=errorbar_color_1, capsize=2)
+            plt.errorbar(n_list, mean_equal, yerr=std_equal,
+                        ecolor=errorbar_color_2, capsize=2)
+            plt.errorbar(n_list, mean_below, yerr=std_below,
+                        ecolor=errorbar_color_3, capsize=2)
+        plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
+                str(DivideSize), 'Associate Size < ' + str(DivideSize)])
+        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.ylabel('Probability')
+        plt.xticks(ticks=n_list)
+        plt.title('Remodeling of Complex')
+        if SaveFig:
+            plt.savefig('associate_probability_symmetric.png', dpi=500)
+        plt.show()
     return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
 
 
-def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
+def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]
@@ -4176,32 +4197,34 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
             std_equal.append(np.nanstd(equal_prob_rev[i]))
             std_below.append(np.nanstd(below_prob_rev[i]))
     n_list = list(range(1, 1 + len(matrix_list[0])))
-    errorbar_color_1 = '#c9e3f6'
-    errorbar_color_2 = '#ffe7d2'
-    errorbar_color_3 = '#d7f4d7'
-    plt.plot(n_list, mean_above, 'C0')
-    plt.plot(n_list, mean_equal, 'C1')
-    plt.plot(n_list, mean_below, 'C2')
-    if FileNum != 1:
-        plt.errorbar(n_list, mean_above, yerr=std_above,
-                     ecolor=errorbar_color_1, capsize=2)
-        plt.errorbar(n_list, mean_equal, yerr=std_equal,
-                     ecolor=errorbar_color_2, capsize=2)
-        plt.errorbar(n_list, mean_below, yerr=std_below,
-                     ecolor=errorbar_color_3, capsize=2)
-    plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
-               str(DivideSize), 'Associate Size < ' + str(DivideSize)])
-    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
-    plt.ylabel('Probability')
-    plt.xticks(ticks=n_list)
-    plt.title('Remodeling of Complex')
-    if SaveFig:
-        plt.savefig('associate_probability_asymmetric.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color_1 = '#c9e3f6'
+        errorbar_color_2 = '#ffe7d2'
+        errorbar_color_3 = '#d7f4d7'
+        plt.plot(n_list, mean_above, 'C0')
+        plt.plot(n_list, mean_equal, 'C1')
+        plt.plot(n_list, mean_below, 'C2')
+        if FileNum != 1:
+            plt.errorbar(n_list, mean_above, yerr=std_above,
+                        ecolor=errorbar_color_1, capsize=2)
+            plt.errorbar(n_list, mean_equal, yerr=std_equal,
+                        ecolor=errorbar_color_2, capsize=2)
+            plt.errorbar(n_list, mean_below, yerr=std_below,
+                        ecolor=errorbar_color_3, capsize=2)
+        plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
+                str(DivideSize), 'Associate Size < ' + str(DivideSize)])
+        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.ylabel('Probability')
+        plt.xticks(ticks=n_list)
+        plt.title('Remodeling of Complex')
+        if SaveFig:
+            plt.savefig('associate_probability_asymmetric.png', dpi=500)
+        plt.show()
     return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
 
 
-def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
+def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]
@@ -4293,32 +4316,34 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
     mean_equal = np.nan_to_num(mean_equal)
     mean_below = np.nan_to_num(mean_below)
     n_list = list(range(1, 1 + len(matrix_list[0])))
-    errorbar_color_1 = '#c9e3f6'
-    errorbar_color_2 = '#ffe7d2'
-    errorbar_color_3 = '#d7f4d7'
-    plt.plot(n_list, mean_above, 'C0')
-    plt.plot(n_list, mean_equal, 'C1')
-    plt.plot(n_list, mean_below, 'C2')
-    if FileNum != 1:
-        plt.errorbar(n_list, mean_above, yerr=std_above,
-                     ecolor=errorbar_color_1, capsize=2)
-        plt.errorbar(n_list, mean_equal, yerr=std_equal,
-                     ecolor=errorbar_color_2, capsize=2)
-        plt.errorbar(n_list, mean_below, yerr=std_below,
-                     ecolor=errorbar_color_3, capsize=2)
-    plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
-               str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
-    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
-    plt.ylabel('Probability')
-    plt.xticks(ticks=n_list)
-    plt.title('Remodeling of Complex')
-    if SaveFig:
-        plt.savefig('dissociate_probability_symmetric.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color_1 = '#c9e3f6'
+        errorbar_color_2 = '#ffe7d2'
+        errorbar_color_3 = '#d7f4d7'
+        plt.plot(n_list, mean_above, 'C0')
+        plt.plot(n_list, mean_equal, 'C1')
+        plt.plot(n_list, mean_below, 'C2')
+        if FileNum != 1:
+            plt.errorbar(n_list, mean_above, yerr=std_above,
+                        ecolor=errorbar_color_1, capsize=2)
+            plt.errorbar(n_list, mean_equal, yerr=std_equal,
+                        ecolor=errorbar_color_2, capsize=2)
+            plt.errorbar(n_list, mean_below, yerr=std_below,
+                        ecolor=errorbar_color_3, capsize=2)
+        plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
+                str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
+        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.ylabel('Probability')
+        plt.xticks(ticks=n_list)
+        plt.title('Remodeling of Complex')
+        if SaveFig:
+            plt.savefig('dissociate_probability_symmetric.png', dpi=500)
+        plt.show()
     return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
 
 
-def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, DivideSize: int = 2, SaveFig: bool = False):
+def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                               SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]
@@ -4428,32 +4453,34 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
     mean_equal = np.nan_to_num(mean_equal)
     mean_below = np.nan_to_num(mean_below)
     n_list = list(range(1, 1 + len(matrix_list[0])))
-    errorbar_color_1 = '#c9e3f6'
-    errorbar_color_2 = '#ffe7d2'
-    errorbar_color_3 = '#d7f4d7'
-    plt.plot(n_list, mean_above, 'C0')
-    plt.plot(n_list, mean_equal, 'C1')
-    plt.plot(n_list, mean_below, 'C2')
-    if FileNum != 1:
-        plt.errorbar(n_list, mean_above, yerr=std_above,
-                     ecolor=errorbar_color_1, capsize=2)
-        plt.errorbar(n_list, mean_equal, yerr=std_equal,
-                     ecolor=errorbar_color_2, capsize=2)
-        plt.errorbar(n_list, mean_below, yerr=std_below,
-                     ecolor=errorbar_color_3, capsize=2)
-    plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
-               str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
-    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
-    plt.ylabel('Probability')
-    plt.xticks(ticks=n_list)
-    plt.title('Remodeling of Complex')
-    if SaveFig:
-        plt.savefig('dissociate_probability_asymmetric.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color_1 = '#c9e3f6'
+        errorbar_color_2 = '#ffe7d2'
+        errorbar_color_3 = '#d7f4d7'
+        plt.plot(n_list, mean_above, 'C0')
+        plt.plot(n_list, mean_equal, 'C1')
+        plt.plot(n_list, mean_below, 'C2')
+        if FileNum != 1:
+            plt.errorbar(n_list, mean_above, yerr=std_above,
+                        ecolor=errorbar_color_1, capsize=2)
+            plt.errorbar(n_list, mean_equal, yerr=std_equal,
+                        ecolor=errorbar_color_2, capsize=2)
+            plt.errorbar(n_list, mean_below, yerr=std_below,
+                        ecolor=errorbar_color_3, capsize=2)
+        plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
+                str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
+        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.ylabel('Probability')
+        plt.xticks(ticks=n_list)
+        plt.title('Remodeling of Complex')
+        if SaveFig:
+            plt.savefig('dissociate_probability_asymmetric.png', dpi=500)
+        plt.show()
     return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
 
 
-def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
+def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]
@@ -4509,19 +4536,20 @@ def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         mean.append(np.nanmean(i))
         std.append(np.nanstd(i))
     n_list = list(range(1, 1 + len(matrix_list[0])))
-    errorbar_color = '#c9e3f6'
-    plt.plot(n_list, mean, color='C0')
-    if FileNum != 1:
-        plt.errorbar(n_list, mean, yerr=std, ecolor=errorbar_color, capsize=2)
-    plt.axhline(y=1/2, c='black', lw=1.0)
-    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
-    plt.ylabel('$P_{growth}$')
-    plt.xticks(ticks=n_list)
-    plt.yticks((0, 0.25, 0.5, 0.75, 1))
-    plt.title('Growth Probability')
-    if SaveFig:
-        plt.savefig('growth_probability.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color = '#c9e3f6'
+        plt.plot(n_list, mean, color='C0')
+        if FileNum != 1:
+            plt.errorbar(n_list, mean, yerr=std, ecolor=errorbar_color, capsize=2)
+        plt.axhline(y=1/2, c='black', lw=1.0)
+        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.ylabel('$P_{growth}$')
+        plt.xticks(ticks=n_list)
+        plt.yticks((0, 0.25, 0.5, 0.75, 1))
+        plt.title('Growth Probability')
+        if SaveFig:
+            plt.savefig('growth_probability.png', dpi=500)
+        plt.show()
     return n_list, mean, 'Nan', std
 
 
@@ -4573,7 +4601,8 @@ def read_cluster_lifetime(FileName: str, SpeciesName: str, InitialTime: float, F
     return ti_lifetime, tf_lifetime, size_list
 
 
-def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, SaveFig: bool = False):
+def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                     SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -4602,18 +4631,19 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
         mean.append(np.nanmean(i))
         if FileNum != 1:
             std.append(np.nanstd(i))
-    errorbar_color = '#c9e3f6'
-    plt.plot(size_list, mean, color='C0')
-    if FileNum != 1:
-        plt.errorbar(size_list, mean, yerr=std,
-                     ecolor=errorbar_color, capsize=2)
-    plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
-    plt.ylabel('Lifetime (s)')
-    plt.xticks(ticks=size_list)
-    plt.title('Lifetime of Complex')
-    if SaveFig:
-        plt.savefig('complex_lifetime.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color = '#c9e3f6'
+        plt.plot(size_list, mean, color='C0')
+        if FileNum != 1:
+            plt.errorbar(size_list, mean, yerr=std,
+                        ecolor=errorbar_color, capsize=2)
+        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.ylabel('Lifetime (s)')
+        plt.xticks(ticks=size_list)
+        plt.title('Lifetime of Complex')
+        if SaveFig:
+            plt.savefig('complex_lifetime.png', dpi=500)
+        plt.show()
     return size_list, mean, 'Nan', std
 
 
@@ -4644,8 +4674,8 @@ def read_multi_hist(FileName: str, SpeciesList: list):
 
 
 def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
-               SpeciesList: list, xAxis: str, BarSize: int = 1, ExcludeSize: int = 0,
-               SaveFig: bool = False):
+               SpeciesList: list, xAxis: str, BarSize: int = 1, ExcludeSize: int = 0, \
+               ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     count_list = []
@@ -4726,7 +4756,6 @@ def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float
     for i in count_list_rev:
         mean.append(np.nanmean(i))
         std.append(np.nanstd(i))
-
     mean_ = []
     std_ = []
     n_list_ = []
@@ -4751,32 +4780,32 @@ def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float
     mean_ = np.array(mean_)
     std_ = np.array(std_)
     n_list_ = np.array(n_list_)
-
-    if FileNum != 1:
-        plt.bar(n_list_, mean_, width=BarSize, color='C0',
-                yerr=std_, ecolor='C1', capsize=2)
-    else:
-        plt.bar(n_list_, mean_, width=BarSize)
-    if xAxis == 'tot':
-        label_name = 'total monomers'
-    else:
-        label_name = xAxis
-    plt.xlabel('# of ' + label_name + ' in sigle complex (count)')
-    plt.ylabel('Count')
-    plt.title('Histogram of Multi-component Assemblies')
-    fig_species = xAxis
-    if xAxis == 'tot':
-        fig_species = 'total_components'
-    fig_name = 'histogram_of_' + fig_species
-    if SaveFig:
-        plt.savefig(fig_name, dpi=500)
-    plt.show()
+    if ShowFig:
+        if FileNum != 1:
+            plt.bar(n_list_, mean_, width=BarSize, color='C0',
+                    yerr=std_, ecolor='C1', capsize=2)
+        else:
+            plt.bar(n_list_, mean_, width=BarSize)
+        if xAxis == 'tot':
+            label_name = 'total monomers'
+        else:
+            label_name = xAxis
+        plt.xlabel('# of ' + label_name + ' in sigle complex (count)')
+        plt.ylabel('Count')
+        plt.title('Histogram of Multi-component Assemblies')
+        fig_species = xAxis
+        if xAxis == 'tot':
+            fig_species = 'total_components'
+        fig_name = 'histogram_of_' + fig_species
+        if SaveFig:
+            plt.savefig(fig_name, dpi=500)
+        plt.show()
     return n_list_, mean_, 'Nan', std_
 
 
 def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                        SpeciesList: list, xAxis: str, DivideSpecies: str, DivideSize: int,
-                       BarSize: int = 1, ExcludeSize: int = 0, SaveFig: bool = False):
+                       BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     above_list = []
@@ -4959,7 +4988,6 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
     for i in below_list_rev:
         mean_below.append(np.nanmean(i))
         std_below.append(np.nanstd(i))
-
     mean_above_ = []
     mean_equal_ = []
     mean_below_ = []
@@ -5012,47 +5040,47 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
     std_equal_ = np.array(std_equal_)
     std_below_ = np.array(std_below_)
     n_list_ = np.array(n_list_)
-
-    if DivideSize != 0:
-        below_label = DivideSpecies + '<' + str(DivideSize)
-        equal_label = DivideSpecies + '=' + str(DivideSize)
-        above_label = DivideSpecies + '>' + str(DivideSize)
-    else:
-        above_label = 'With ' + DivideSpecies
-        equal_label = 'Without ' + DivideSpecies
-    if FileNum != 1:
+    if ShowFig:
         if DivideSize != 0:
-            plt.bar(n_list_, mean_below_, width=BarSize, color='C0',
-                    yerr=std_below_, label=below_label, ecolor='C3', capsize=2)
-        plt.bar(n_list_, mean_equal_, width=BarSize, color='C1', yerr=std_equal_,
-                bottom=mean_below_, label=equal_label, ecolor='C3', capsize=2)
-        plt.bar(n_list_, mean_above_, width=BarSize, color='C2', yerr=std_above_,
-                bottom=mean_below_+mean_equal_, label=above_label, ecolor='C3', capsize=2)
-    else:
-        if DivideSize != 0:
-            plt.bar(n_list_, mean_below_, width=BarSize,
-                    color='C0', label=below_label, capsize=2)
-        plt.bar(n_list_, mean_equal_, width=BarSize, color='C1',
-                bottom=mean_below_, label=equal_label, capsize=2)
-        plt.bar(n_list_, mean_above_, width=BarSize, color='C2',
-                bottom=mean_below_+mean_equal_, label=above_label, capsize=2)
-    if xAxis == 'tot':
-        x_label_name = 'total monomers'
-    else:
-        x_label_name = xAxis
-    plt.xlabel('# of ' + x_label_name + ' in sigle complex')
-    plt.ylabel('Count')
-    plt.legend()
-    plt.title('Histogram of Multi-component Assemblies')
-    fig_name = 'stacked_histogram_of_' + xAxis + '_divided_by_' + DivideSpecies
-    if SaveFig:
-        plt.savefig(fig_name, dpi=500)
-    plt.show()
+            below_label = DivideSpecies + '<' + str(DivideSize)
+            equal_label = DivideSpecies + '=' + str(DivideSize)
+            above_label = DivideSpecies + '>' + str(DivideSize)
+        else:
+            above_label = 'With ' + DivideSpecies
+            equal_label = 'Without ' + DivideSpecies
+        if FileNum != 1:
+            if DivideSize != 0:
+                plt.bar(n_list_, mean_below_, width=BarSize, color='C0',
+                        yerr=std_below_, label=below_label, ecolor='C3', capsize=2)
+            plt.bar(n_list_, mean_equal_, width=BarSize, color='C1', yerr=std_equal_,
+                    bottom=mean_below_, label=equal_label, ecolor='C3', capsize=2)
+            plt.bar(n_list_, mean_above_, width=BarSize, color='C2', yerr=std_above_,
+                    bottom=mean_below_+mean_equal_, label=above_label, ecolor='C3', capsize=2)
+        else:
+            if DivideSize != 0:
+                plt.bar(n_list_, mean_below_, width=BarSize,
+                        color='C0', label=below_label, capsize=2)
+            plt.bar(n_list_, mean_equal_, width=BarSize, color='C1',
+                    bottom=mean_below_, label=equal_label, capsize=2)
+            plt.bar(n_list_, mean_above_, width=BarSize, color='C2',
+                    bottom=mean_below_+mean_equal_, label=above_label, capsize=2)
+        if xAxis == 'tot':
+            x_label_name = 'total monomers'
+        else:
+            x_label_name = xAxis
+        plt.xlabel('# of ' + x_label_name + ' in sigle complex')
+        plt.ylabel('Count')
+        plt.legend()
+        plt.title('Histogram of Multi-component Assemblies')
+        fig_name = 'stacked_histogram_of_' + xAxis + '_divided_by_' + DivideSpecies
+        if SaveFig:
+            plt.savefig(fig_name, dpi=500)
+        plt.show()
     return n_list_, [mean_below_, mean_equal_, mean_above_], 'Nan', [std_below_, std_equal_, std_above_]
 
 
-def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesList: list, SpeciesName: str, SaveFig: bool = False):
-
+def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                      SpeciesList: list, SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     time_list = []
@@ -5097,26 +5125,27 @@ def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime
         std.append(np.nanstd(i))
     mean = np.array(mean)
     std = np.array(std)
-
-    errorbar_color = '#c9e3f6'
-    plt.plot(time_list[0], mean, color='C0')
-    if FileNum > 1:
-        plt.errorbar(time_list[0], mean, color='C0',
-                     yerr=std, ecolor=errorbar_color)
-    if SpeciesName == 'tot':
-        title_spec = 'Total Species'
-    else:
-        title_spec = SpeciesName
-    plt.title('Maximum Number of ' + str(title_spec) + ' in Single Complex')
-    plt.xlabel('Time')
-    plt.ylabel('Maximum Number of ' + str(title_spec))
-    if SaveFig:
-        plt.savefig('multi_max_complex.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color = '#c9e3f6'
+        plt.plot(time_list[0], mean, color='C0')
+        if FileNum > 1:
+            plt.errorbar(time_list[0], mean, color='C0',
+                        yerr=std, ecolor=errorbar_color)
+        if SpeciesName == 'tot':
+            title_spec = 'Total Species'
+        else:
+            title_spec = SpeciesName
+        plt.title('Maximum Number of ' + str(title_spec) + ' in Single Complex')
+        plt.xlabel('Time')
+        plt.ylabel('Maximum Number of ' + str(title_spec))
+        if SaveFig:
+            plt.savefig('multi_max_complex.png', dpi=500)
+        plt.show()
     return time_list[0], mean, 'Nan', std
 
 
-def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesList: list, SpeciesName: str, ExcludeSize: int = 0, SaveFig: bool = False):
+def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                       SpeciesList: list, SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
 
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -5170,26 +5199,28 @@ def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTim
         std.append(np.nanstd(i))
     mean = np.array(mean)
     std = np.array(std)
-
-    errorbar_color = '#c9e3f6'
-    plt.plot(time_list[0], mean, color='C0')
-    if FileNum > 1:
-        plt.errorbar(time_list[0], mean, color='C0',
-                     yerr=std, ecolor=errorbar_color)
-    if SpeciesName == 'tot':
-        title_spec = 'Total Species'
-    else:
-        title_spec = SpeciesName
-    plt.title('Maximum Number of ' + str(title_spec) + ' in Single Complex')
-    plt.xlabel('Time')
-    plt.ylabel('Maximum Number of ' + str(title_spec))
-    if SaveFig:
-        plt.savefig('multi_max_complex.png', dpi=500)
-    plt.show()
+    if ShowFig:
+        errorbar_color = '#c9e3f6'
+        plt.plot(time_list[0], mean, color='C0')
+        if FileNum > 1:
+            plt.errorbar(time_list[0], mean, color='C0',
+                        yerr=std, ecolor=errorbar_color)
+        if SpeciesName == 'tot':
+            title_spec = 'Total Species'
+        else:
+            title_spec = SpeciesName
+        plt.title('Maximum Number of ' + str(title_spec) + ' in Single Complex')
+        plt.xlabel('Time')
+        plt.ylabel('Maximum Number of ' + str(title_spec))
+        if SaveFig:
+            plt.savefig('multi_max_complex.png', dpi=500)
+        plt.show()
     return time_list[0], mean, 'Nan', std
 
 
-def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                  SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, \
+                  ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     count_list_sum = []
@@ -5281,42 +5312,44 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
             count_list_std[i][j] += np.std(temp_list)
     x_list = np.arange(0, max_x) * xBarSize
     y_list = np.arange(0, max_y) * yBarSize
-
-    fig, ax = plt.subplots()
-    im = ax.imshow(count_list_mean)
-    ax.set_xticks(np.arange(len(x_list)))
-    ax.set_yticks(np.arange(len(y_list)))
-    ax.set_xticklabels(x_list)
-    ax.set_yticklabels(y_list)
-    if ShowMean and ShowStd:
-        print('Cannot show both maen and std!')
-        return 0
-    if ShowMean:
-        fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_mean'
-        for i in range(len(y_list)):
-            for j in range(len(x_list)):
-                text = ax.text(j, i, round(
-                    count_list_mean[i, j], 1), ha='center', va='center', color='w')
-    elif ShowStd and FileNum != 1:
-        fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_std'
-        for i in range(len(y_list)):
-            for j in range(len(x_list)):
-                text = ax.text(j, i, round(
-                    count_list_std[i, j], 1), ha='center', va='center', color='w')
-    else:
-        fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis
-    ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
-    fig.tight_layout()
-    plt.colorbar(im)
-    plt.xlabel('Count of ' + xAxis)
-    plt.ylabel('Count of ' + yAxis)
-    if SaveFig:
-        plt.savefig(fig_name, dpi=500,  bbox_inches='tight')
-    plt.show()
+    if ShowFig:
+        fig, ax = plt.subplots()
+        im = ax.imshow(count_list_mean)
+        ax.set_xticks(np.arange(len(x_list)))
+        ax.set_yticks(np.arange(len(y_list)))
+        ax.set_xticklabels(x_list)
+        ax.set_yticklabels(y_list)
+        if ShowMean and ShowStd:
+            print('Cannot show both maen and std!')
+            return 0
+        if ShowMean:
+            fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_mean'
+            for i in range(len(y_list)):
+                for j in range(len(x_list)):
+                    text = ax.text(j, i, round(
+                        count_list_mean[i, j], 1), ha='center', va='center', color='w')
+        elif ShowStd and FileNum != 1:
+            fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_std'
+            for i in range(len(y_list)):
+                for j in range(len(x_list)):
+                    text = ax.text(j, i, round(
+                        count_list_std[i, j], 1), ha='center', va='center', color='w')
+        else:
+            fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis
+        ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
+        fig.tight_layout()
+        plt.colorbar(im)
+        plt.xlabel('Count of ' + xAxis)
+        plt.ylabel('Count of ' + yAxis)
+        if SaveFig:
+            plt.savefig(fig_name, dpi=500,  bbox_inches='tight')
+        plt.show()
     return x_list, y_list, count_list_mean, count_list_std
 
 
-def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, SaveFig: bool = False):
+def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+                  SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, \
+                  ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -5409,33 +5442,34 @@ def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
             count_list_std[i][j] += np.std(temp_list)
     x_list = np.arange(0, max_x) * xBarSize
     y_list = np.arange(0, max_y) * yBarSize
-    xx, yy = np.meshgrid(x_list, y_list)
-    X, Y = xx.ravel(), yy.ravel()
-    Z = count_list_mean.ravel()
-    width = xBarSize
-    depth = yBarSize
-    bottom = np.zeros_like(Z)
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
-    ax.set_xlabel('# of ' + xAxis + ' in sigle complex')
-    ax.set_ylabel('# of ' + yAxis + ' in sigle complex')
-    ax.set_zlabel('Relative Occurrence Probability')
-    ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
-    fig.tight_layout()
-    plt.xlabel('Count of ' + xAxis)
-    plt.ylabel('Count of ' + yAxis)
-    if SaveFig:
-        plt.savefig('3D_hisogram_of_' + xAxis + '_and_' +
-                    yAxis, dpi=500,  bbox_inches='tight')
-    plt.show()
+    if ShowFig:
+        xx, yy = np.meshgrid(x_list, y_list)
+        X, Y = xx.ravel(), yy.ravel()
+        Z = count_list_mean.ravel()
+        width = xBarSize
+        depth = yBarSize
+        bottom = np.zeros_like(Z)
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
+        ax.set_xlabel('# of ' + xAxis + ' in sigle complex')
+        ax.set_ylabel('# of ' + yAxis + ' in sigle complex')
+        ax.set_zlabel('Relative Occurrence Probability')
+        ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
+        fig.tight_layout()
+        plt.xlabel('Count of ' + xAxis)
+        plt.ylabel('Count of ' + yAxis)
+        if SaveFig:
+            plt.savefig('3D_hisogram_of_' + xAxis + '_and_' +
+                        yAxis, dpi=500,  bbox_inches='tight')
+        plt.show()
     return x_list, y_list, count_list_mean, 'Nan'
 
 
 # --------------------------------Locate Position by Pdb or Restart----------------------------------
 
 
-def PDB_pdb_to_df(file_name):
+def PDB_pdb_to_df(file_name, drop_COM):
     df = pd.DataFrame(columns=['Protein_Num', 'Protein_Name',
                       'Cite_Name', 'x_coord', 'y_coord', 'z_coord'])
     with open(file_name, 'r') as file:
@@ -5455,7 +5489,8 @@ def PDB_pdb_to_df(file_name):
                 df.loc[index, 'z_coord'] = float(info[7])
             index += 1
         df = df.dropna()
-        df = df.drop(index=df[(df.Cite_Name == 'COM')].index.tolist())
+        if drop_COM:
+            df = df.drop(index=df[(df.Cite_Name == 'COM')].index.tolist())
         df = df.reset_index(drop=True)
     return df
 
@@ -5660,7 +5695,7 @@ def PDB_binding_info_df(inp_name):
 
 def locate_position_PDB(FileNamePdb, NumList, FileNameInp, BufferRatio=0.01):
     print('Reading files......')
-    pdb_df = PDB_pdb_to_df(FileNamePdb)
+    pdb_df = PDB_pdb_to_df(FileNamePdb, True)
     print('Reading files complete!')
     print('Extracting binding information......')
     binding_info = PDB_binding_info_df(FileNameInp)
@@ -7247,4 +7282,30 @@ def real_PDB_show_3D(Result:bool):
     ax.set_ylabel('y (nm)')
     ax.set_zlabel('z (nm)')
     plt.show()
+    return 0
+
+
+def xyz_to_csv(FileName: str, LitNum: int):
+    lit_switch = False
+    write_file_name = 'trajectory_' + str(LitNum) + '.csv'
+    with open(FileName, 'r') as read_file, open(write_file_name, 'w') as write_file:
+        head = 'name,x,y,z\n'
+        write_file.write(head)
+        for line in read_file.readlines():
+            if line[0:11] == 'iteration: ':
+                if int(line.split(' ')[1]) == LitNum:
+                    lit_switch = True
+                else:
+                    lit_switch = False
+            if lit_switch:
+                if len(line.strip(' ').strip('\n').split()) == 4:
+                    info = line.strip(' ').strip('\n').split()
+                    write_info = ''
+                    for i in range(len(info)):
+                        write_info += info[i]
+                        if i != len(info)-1:
+                            write_info += ','
+                        else:
+                            write_info += '\n'
+                    write_file.write(write_info)
     return 0

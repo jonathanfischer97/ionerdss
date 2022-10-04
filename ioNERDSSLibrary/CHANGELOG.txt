@@ -202,3 +202,15 @@ ioNERDSS Change Log
 0.5.2 (09/27/2022)
 ------------------
 - Added function 'real_PDB_separate_filter'.
+
+0.5.3 (09/27/2022)
+------------------
+- Added input variables to 'PDB_pdb_to_df' for future modifications.
+
+0.5.4 (09/28/2022)
+------------------
+- Added input 'ShowFig' for all visualization functions.
+
+0.5.5 (10/04/2022)
+------------------
+- Added function 'xyz_to_csv'.
