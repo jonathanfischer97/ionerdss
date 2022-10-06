@@ -7285,22 +7285,34 @@ def real_PDB_show_3D(Result:bool):
     return 0
 
 
+#-------------------------------------Reading xyz file-----------------------------------------
+
 def xyz_to_csv(FileName: str, LitNum: int):
-    lit_switch = False
-    write_file_name = 'trajectory_' + str(LitNum) + '.csv'
+    if LitNum != -1:
+        lit_switch = False
+        write_file_name = 'trajectory_' + str(LitNum) + '.csv'
+    else:
+        lit_switch = True
+        write_file_name = 'trajectory_full.csv'
     with open(FileName, 'r') as read_file, open(write_file_name, 'w') as write_file:
-        head = 'name,x,y,z\n'
+        head = 'literation,name,x,y,z\n'
         write_file.write(head)
         for line in read_file.readlines():
-            if line[0:11] == 'iteration: ':
-                if int(line.split(' ')[1]) == LitNum:
-                    lit_switch = True
-                else:
-                    lit_switch = False
+            if  LitNum != -1:
+                if line[0:11] == 'iteration: ':
+                    if int(line.split(' ')[1]) == LitNum:
+                        lit_switch = True
+                    else:
+                        lit_switch = False
+                    literation = LitNum
+            else:
+                if line[0:11] == 'iteration: ':
+                    literation = int(line.split(' ')[1])
+            
             if lit_switch:
                 if len(line.strip(' ').strip('\n').split()) == 4:
                     info = line.strip(' ').strip('\n').split()
-                    write_info = ''
+                    write_info = str(literation) + ','
                     for i in range(len(info)):
                         write_info += info[i]
                         if i != len(info)-1:
@@ -7309,3 +7321,36 @@ def xyz_to_csv(FileName: str, LitNum: int):
                             write_info += '\n'
                     write_file.write(write_info)
     return 0
+
+
+def xyz_to_df(FileName: str, LitNum: int, SaveCsv: bool = True):
+    xyz_to_csv(FileName, LitNum)
+    if LitNum != -1:
+        write_file_name = 'trajectory_' + str(LitNum) + '.csv'
+    else:
+        write_file_name = 'trajectory_full.csv'
+    df = pd.read_csv(write_file_name)
+    if not SaveCsv:
+        os.remove(write_file_name)
+    return df
+
+
+def traj_track(FileName: str, SiteNum: int, MolIndex: list):
+    array = []
+    for i in range(len(MolIndex)):
+        array.append([])
+    with open(FileName, 'r') as file:
+        for line in file.readlines():
+            if line[0:11] == 'iteration: ':
+                index = 0
+            if len(line.strip(' ').strip('\n').split()) == 4:
+                if (index//SiteNum)+1 in MolIndex and index%SiteNum == 0:
+                    info = line.strip(' ').strip('\n').split()
+                    x = float(info[1])
+                    y = float(info[2])
+                    z = float(info[3])
+                    coord = [x, y, z]
+                    list_index = MolIndex.index((index//SiteNum)+1)
+                    array[list_index].append(coord)
+                index += 1
+    return array
