@@ -223,3 +223,16 @@ ioNERDSS Change Log
 0.5.7 (10/05/2022)
 ------------------
 - Fixed bugs in function 'traj_track'.
+
+0.5.8 (10/14/2022)
+------------------
+- Improved 'read_file' function.
+- Added gag (sphere) regularization index analysis.
+
+0.6.0 (10/14/2022)
+------------------
+- Corrected function name for gag (sphere) regularization index analysis.
+
+0.6.1 (10/14/2022)
+------------------
+- Fixed bugs for function 'read_file'.

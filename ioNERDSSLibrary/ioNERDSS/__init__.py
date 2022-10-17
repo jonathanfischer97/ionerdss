@@ -2992,18 +2992,22 @@ def icos_vert(radius: float, sigma: float):
 # -----------------------------------Data Extraction--------------------------------
 
 class data_type:
-    def x(data:tuple):
+    def x(data: tuple):
         return data[0]
-    def y(data:tuple):
+
+    def y(data: tuple):
         return data[1]
-    def z(data:tuple):
+
+    def z(data: tuple):
         return data[2]
-    def std(data:tuple):
+
+    def std(data: tuple):
         return data[3]
 
 # -----------------------------------Data Visualization------------------------------
 
 # Analysis tools for 'histogram_complexes_time.dat' file
+
 
 def read_file(FileName: str, SpeciesName: str):
     hist = []
@@ -3030,21 +3034,17 @@ def read_file(FileName: str, SpeciesName: str):
                 else:
                     hist_count.append(int(line[0]))
                     hist_conv.append(int(line[1]))
-            hist_temp.append(hist_count)
-            hist_temp.append(hist_conv)
-            hist.append(hist_temp)
-    hist_ = []
-    time_list = []
-    for i in range(len(hist)):
-        temp = []
-        if hist[i][0] not in time_list:
-            time_list.append(hist[i][0])
-            temp = [hist[i][0], hist[i][1], hist[i][2]]
-            hist_.append(temp)
-    return hist_
+            if len(hist_temp) == 0:
+                hist_temp.append(hist_count)
+                hist_temp.append(hist_conv)
+                hist.append(hist_temp)
+    hist_temp.append(hist_count)
+    hist_temp.append(hist_conv)
+    hist.append(hist_temp)
+    return hist
 
 
-def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str, \
+def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
          BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -3141,7 +3141,7 @@ def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, Spec
     return n_list_, mean_, 'Nan', std_
 
 
-def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                 SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -3177,9 +3177,9 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         plt.plot(time_list[0], mean, color='C0')
         if FileNum > 1:
             plt.errorbar(time_list[0], mean, color='C0',
-                        yerr=std, ecolor=errorbar_color)
+                         yerr=std, ecolor=errorbar_color)
         plt.title('Maximum Number of ' +
-                str(SpeciesName) + ' in Single Complex')
+                  str(SpeciesName) + ' in Single Complex')
         plt.xlabel('Time')
         plt.ylabel('Maximum Number of ' + str(SpeciesName))
         if SaveFig:
@@ -3188,7 +3188,7 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     return time_list[0], mean, 'Nan', std
 
 
-def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                  SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -3245,9 +3245,9 @@ def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
         plt.plot(time_list[0], mean, color='C0')
         if FileNum > 1:
             plt.errorbar(time_list[0], mean, color='C0',
-                        yerr=std, ecolor=errorbar_color)
+                         yerr=std, ecolor=errorbar_color)
         plt.title('Average Number of ' +
-                str(SpeciesName) + ' in Single Complex')
+                  str(SpeciesName) + ' in Single Complex')
         plt.xlabel('Time (s)')
         plt.ylabel('Average Number of ' + str(SpeciesName))
         if SaveFig:
@@ -3407,7 +3407,7 @@ def hist_temp(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: 
     return plot_conv, plot_count_mean
 
 
-def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                  SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
@@ -3498,9 +3498,9 @@ def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
     return n_list, t_plt, count_list_mean, 'Nan'
 
 
-def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
-                      SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowMean: bool = False, \
-                      ShowFig: bool = True, ShowStd: bool = False, SaveFig: bool = False):
+def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+                      SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
+                      ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
     file_name_head = FileName.split('.')[0]
@@ -3605,8 +3605,8 @@ def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime
     return n_list, t_plt, count_list_mean, count_list_std
 
 
-def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
-                                 SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, \
+def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+                                 SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
                                  ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
@@ -3720,8 +3720,8 @@ def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float
     return n_list, t_plt, count_list_mean, count_list_std
 
 
-def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
-                               SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, \
+def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+                               SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
                                ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
@@ -3832,12 +3832,13 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
         plt.xlabel('Size of N-mers')
         plt.ylabel('Time')
         if SaveFig:
-            plt.savefig('hist_heatmap_fraction.png', dpi=500, bbox_inches='tight')
+            plt.savefig('hist_heatmap_fraction.png',
+                        dpi=500, bbox_inches='tight')
         plt.show()
     return n_list, t_plt, count_list_mean, count_list_std
 
-# Analysing tools for 'transition_matrix_time.dat'
 
+# Analysing tools for 'transition_matrix_time.dat'
 
 def read_transition_matrix(FileName: str, SpeciesName: str, InitialTime: float, FinalTime: float):
     ti_switch = False
@@ -3885,7 +3886,7 @@ def read_transition_matrix(FileName: str, SpeciesName: str, InitialTime: float, 
     return ti_matrix, tf_matrix
 
 
-def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                 SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
@@ -3961,9 +3962,9 @@ def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         plt.plot(n_list, mean_energy_list, 'C0')
         if FileNum != 1:
             plt.errorbar(n_list, mean_energy_list, yerr=std_energy_list,
-                        ecolor=errorbar_color, capsize=2)
+                         ecolor=errorbar_color, capsize=2)
         plt.title('Free Energy Vs. Time from ' + str(float(InitialTime)
-                                                    ) + 's to ' + str(float(FinalTime)) + 's')
+                                                     ) + 's to ' + str(float(FinalTime)) + 's')
         plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
         plt.ylabel('-ln(p(N)) ($k_B$T)')
         plt.xticks(ticks=n_list)
@@ -3973,7 +3974,7 @@ def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     return n_list, mean_energy_list, 'Nan', std_energy_list
 
 
-def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
@@ -4072,13 +4073,13 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
         plt.plot(n_list, mean_below, 'C2')
         if FileNum != 1:
             plt.errorbar(n_list, mean_above, yerr=std_above,
-                        ecolor=errorbar_color_1, capsize=2)
+                         ecolor=errorbar_color_1, capsize=2)
             plt.errorbar(n_list, mean_equal, yerr=std_equal,
-                        ecolor=errorbar_color_2, capsize=2)
+                         ecolor=errorbar_color_2, capsize=2)
             plt.errorbar(n_list, mean_below, yerr=std_below,
-                        ecolor=errorbar_color_3, capsize=2)
+                         ecolor=errorbar_color_3, capsize=2)
         plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
-                str(DivideSize), 'Associate Size < ' + str(DivideSize)])
+                    str(DivideSize), 'Associate Size < ' + str(DivideSize)])
         plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
         plt.ylabel('Probability')
         plt.xticks(ticks=n_list)
@@ -4089,7 +4090,7 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
     return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
 
 
-def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                               SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
@@ -4206,13 +4207,13 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
         plt.plot(n_list, mean_below, 'C2')
         if FileNum != 1:
             plt.errorbar(n_list, mean_above, yerr=std_above,
-                        ecolor=errorbar_color_1, capsize=2)
+                         ecolor=errorbar_color_1, capsize=2)
             plt.errorbar(n_list, mean_equal, yerr=std_equal,
-                        ecolor=errorbar_color_2, capsize=2)
+                         ecolor=errorbar_color_2, capsize=2)
             plt.errorbar(n_list, mean_below, yerr=std_below,
-                        ecolor=errorbar_color_3, capsize=2)
+                         ecolor=errorbar_color_3, capsize=2)
         plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
-                str(DivideSize), 'Associate Size < ' + str(DivideSize)])
+                    str(DivideSize), 'Associate Size < ' + str(DivideSize)])
         plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
         plt.ylabel('Probability')
         plt.xticks(ticks=n_list)
@@ -4223,7 +4224,7 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
     return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
 
 
-def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                               SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
@@ -4325,13 +4326,13 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
         plt.plot(n_list, mean_below, 'C2')
         if FileNum != 1:
             plt.errorbar(n_list, mean_above, yerr=std_above,
-                        ecolor=errorbar_color_1, capsize=2)
+                         ecolor=errorbar_color_1, capsize=2)
             plt.errorbar(n_list, mean_equal, yerr=std_equal,
-                        ecolor=errorbar_color_2, capsize=2)
+                         ecolor=errorbar_color_2, capsize=2)
             plt.errorbar(n_list, mean_below, yerr=std_below,
-                        ecolor=errorbar_color_3, capsize=2)
+                         ecolor=errorbar_color_3, capsize=2)
         plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
-                str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
+                    str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
         plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
         plt.ylabel('Probability')
         plt.xticks(ticks=n_list)
@@ -4342,7 +4343,7 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
     return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
 
 
-def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                                SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
@@ -4462,13 +4463,13 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
         plt.plot(n_list, mean_below, 'C2')
         if FileNum != 1:
             plt.errorbar(n_list, mean_above, yerr=std_above,
-                        ecolor=errorbar_color_1, capsize=2)
+                         ecolor=errorbar_color_1, capsize=2)
             plt.errorbar(n_list, mean_equal, yerr=std_equal,
-                        ecolor=errorbar_color_2, capsize=2)
+                         ecolor=errorbar_color_2, capsize=2)
             plt.errorbar(n_list, mean_below, yerr=std_below,
-                        ecolor=errorbar_color_3, capsize=2)
+                         ecolor=errorbar_color_3, capsize=2)
         plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
-                str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
+                    str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
         plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
         plt.ylabel('Probability')
         plt.xticks(ticks=n_list)
@@ -4479,7 +4480,7 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
     return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
 
 
-def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                 SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     matrix_list = []
@@ -4540,7 +4541,8 @@ def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         errorbar_color = '#c9e3f6'
         plt.plot(n_list, mean, color='C0')
         if FileNum != 1:
-            plt.errorbar(n_list, mean, yerr=std, ecolor=errorbar_color, capsize=2)
+            plt.errorbar(n_list, mean, yerr=std,
+                         ecolor=errorbar_color, capsize=2)
         plt.axhline(y=1/2, c='black', lw=1.0)
         plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
         plt.ylabel('$P_{growth}$')
@@ -4601,7 +4603,7 @@ def read_cluster_lifetime(FileName: str, SpeciesName: str, InitialTime: float, F
     return ti_lifetime, tf_lifetime, size_list
 
 
-def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                      SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     file_name_head = FileName.split('.')[0]
@@ -4636,7 +4638,7 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
         plt.plot(size_list, mean, color='C0')
         if FileNum != 1:
             plt.errorbar(size_list, mean, yerr=std,
-                        ecolor=errorbar_color, capsize=2)
+                         ecolor=errorbar_color, capsize=2)
         plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
         plt.ylabel('Lifetime (s)')
         plt.xticks(ticks=size_list)
@@ -4674,7 +4676,7 @@ def read_multi_hist(FileName: str, SpeciesList: list):
 
 
 def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
-               SpeciesList: list, xAxis: str, BarSize: int = 1, ExcludeSize: int = 0, \
+               SpeciesList: list, xAxis: str, BarSize: int = 1, ExcludeSize: int = 0,
                ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -5079,7 +5081,7 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
     return n_list_, [mean_below_, mean_equal_, mean_above_], 'Nan', [std_below_, std_equal_, std_above_]
 
 
-def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                       SpeciesList: list, SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -5130,12 +5132,13 @@ def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime
         plt.plot(time_list[0], mean, color='C0')
         if FileNum > 1:
             plt.errorbar(time_list[0], mean, color='C0',
-                        yerr=std, ecolor=errorbar_color)
+                         yerr=std, ecolor=errorbar_color)
         if SpeciesName == 'tot':
             title_spec = 'Total Species'
         else:
             title_spec = SpeciesName
-        plt.title('Maximum Number of ' + str(title_spec) + ' in Single Complex')
+        plt.title('Maximum Number of ' +
+                  str(title_spec) + ' in Single Complex')
         plt.xlabel('Time')
         plt.ylabel('Maximum Number of ' + str(title_spec))
         if SaveFig:
@@ -5144,7 +5147,7 @@ def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime
     return time_list[0], mean, 'Nan', std
 
 
-def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
+def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                        SpeciesList: list, SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
 
     file_name_head = FileName.split('.')[0]
@@ -5204,12 +5207,13 @@ def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTim
         plt.plot(time_list[0], mean, color='C0')
         if FileNum > 1:
             plt.errorbar(time_list[0], mean, color='C0',
-                        yerr=std, ecolor=errorbar_color)
+                         yerr=std, ecolor=errorbar_color)
         if SpeciesName == 'tot':
             title_spec = 'Total Species'
         else:
             title_spec = SpeciesName
-        plt.title('Maximum Number of ' + str(title_spec) + ' in Single Complex')
+        plt.title('Maximum Number of ' +
+                  str(title_spec) + ' in Single Complex')
         plt.xlabel('Time')
         plt.ylabel('Maximum Number of ' + str(title_spec))
         if SaveFig:
@@ -5218,8 +5222,8 @@ def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTim
     return time_list[0], mean, 'Nan', std
 
 
-def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
-                  SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, \
+def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+                  SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1,
                   ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
@@ -5347,8 +5351,8 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
     return x_list, y_list, count_list_mean, count_list_std
 
 
-def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, \
-                  SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1, \
+def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+                  SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1,
                   ShowFig: bool = True, SaveFig: bool = False):
     warnings.filterwarnings('ignore')
     file_name_head = FileName.split('.')[0]
@@ -5854,7 +5858,7 @@ def locate_position_restart(FileNamePdb, NumList, FileNameRestart='restart.dat')
     return 0
 
 
-def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart = 'restart.dat'):
+def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart='restart.dat'):
     print('Reading restart.dat...')
     complex_lst = RESTART_read_restart(FileNameRestart)
     print('Reading files complete!')
@@ -5869,7 +5873,6 @@ def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart = '
     RESTART_new_pdb(FileNamePdb, protein_remain_flat)
     print('PDB writing complete!(named as output_file.pdb)')
     return 0
-
 
 
 # ---------------------------Reading Real PDB File and Generating NERDSS inputs-----------------------------------
@@ -6704,7 +6707,8 @@ def real_PDB_UI():
 
 # --------------------------------------Seperated functions (same as above)----------------------------------------
 
-def real_PDB_separate_read(FileName:str):
+
+def real_PDB_separate_read(FileName: str):
     total_atom_count = []
     # specific chain the atom belongs to (such as A or B or C, etc).
     total_chain = []
@@ -6805,7 +6809,8 @@ def real_PDB_separate_read(FileName:str):
             split_position.append(inner_position)
             split_atom_type.append(inner_atom_type)
             split_resi_type.append(inner_resi_type)
-            split_resi_position_every_atom.append(inner_resi_position_every_atom)
+            split_resi_position_every_atom.append(
+                inner_resi_position_every_atom)
             inner_atom_count = []
             inner_chain = []
             inner_resi_count = []
@@ -6833,7 +6838,8 @@ def real_PDB_separate_read(FileName:str):
             split_position.append(inner_position)
             split_atom_type.append(inner_atom_type)
             split_resi_type.append(inner_resi_type)
-            split_resi_position_every_atom.append(inner_resi_position_every_atom)
+            split_resi_position_every_atom.append(
+                inner_resi_position_every_atom)
             chain_end_atom.append(len(split_atom_count[chain_counter]))
 
     print('Each of them has ' + str(chain_end_atom) + ' atoms.')
@@ -6843,7 +6849,7 @@ def real_PDB_separate_read(FileName:str):
     # reaction_atom_distance, reaction_resi_count, reaction_resi_type and  reaction_atom_type
 
     interaction = real_PDB_chain_int(unique_chain, split_position, split_resi_count, split_atom_count,
-                            split_resi_type, split_atom_type, split_resi_position_every_atom)
+                                     split_resi_type, split_atom_type, split_resi_position_every_atom)
     reaction_chain = interaction[0]
     reaction_atom = interaction[1]
     reaction_atom_position = interaction[2]
@@ -6866,13 +6872,12 @@ def real_PDB_separate_read(FileName:str):
             sumy = sumy + split_position[i][j][1]
             sumz = sumz + split_position[i][j][2]
         inner_COM = [sumx / len(split_position[i]), sumy /
-                    len(split_position[i]), sumz / len(split_position[i])]
+                     len(split_position[i]), sumz / len(split_position[i])]
         COM.append(inner_COM)
 
     for i in range(len(COM)):
         print("Center of mass of  " + unique_chain[i] + " is: " +
-            "[%.3f, %.3f, %.3f]" % (COM[i][0], COM[i][1], COM[i][2]))
-
+              "[%.3f, %.3f, %.3f]" % (COM[i][0], COM[i][1], COM[i][2]))
 
     # int_site
     int_site = []
@@ -6897,26 +6902,25 @@ def real_PDB_separate_read(FileName:str):
         int_site.append(two_chain_int_site)
         two_chain_int_site = []
 
-
     # calculate distance between interaction site.
     int_site_distance = []
     for i in range(len(int_site)):
         distance = math.sqrt((int_site[i][0][0] - int_site[i][1][0]) ** 2 + (int_site[i][0][1] - int_site[i][1][1]) ** 2
-                            + (int_site[i][0][2] - int_site[i][1][2]) ** 2)
+                             + (int_site[i][0][2] - int_site[i][1][2]) ** 2)
         int_site_distance.append(distance)
 
     for i in range(len(int_site)):
         print("Interaction site of " + reaction_chain[i][0] + " & " + reaction_chain[i][1] + " is: "
-            + "[%.3f, %.3f, %.3f]" % (int_site[i][0][0],
+              + "[%.3f, %.3f, %.3f]" % (int_site[i][0][0],
                                         int_site[i][0][1], int_site[i][0][2]) + " and "
-            + "[%.3f, %.3f, %.3f]" % (int_site[i][1][0],
+              + "[%.3f, %.3f, %.3f]" % (int_site[i][1][0],
                                         int_site[i][1][1], int_site[i][1][2])
-            + " distance between interaction sites is: %.3f nm" % (int_site_distance[i]))
+              + " distance between interaction sites is: %.3f nm" % (int_site_distance[i]))
 
     return reaction_chain, int_site, int_site_distance, unique_chain, COM
 
 
-def real_PDB_separate_filter(Result:tuple, ChainList:list):
+def real_PDB_separate_filter(Result: tuple, ChainList: list):
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     int_index = []
     for i in range(len(reaction_chain)):
@@ -6942,19 +6946,19 @@ def real_PDB_separate_filter(Result:tuple, ChainList:list):
     print(str(len(unique_chain_)) + ' chain(s) in total: ' + str(unique_chain_))
     for i in range(len(COM_)):
         print("Center of mass of  " + unique_chain_[i] + " is: " +
-            "[%.3f, %.3f, %.3f]" % (COM_[i][0], COM_[i][1], COM_[i][2]))
+              "[%.3f, %.3f, %.3f]" % (COM_[i][0], COM_[i][1], COM_[i][2]))
     for i in range(len(int_site_)):
         print("Interaction site of " + reaction_chain_[i][0] + " & " + reaction_chain_[i][1] + " is: "
-            + "[%.3f, %.3f, %.3f]" % (int_site_[i][0][0],
+              + "[%.3f, %.3f, %.3f]" % (int_site_[i][0][0],
                                         int_site_[i][0][1], int_site_[i][0][2]) + " and "
-            + "[%.3f, %.3f, %.3f]" % (int_site_[i][1][0],
+              + "[%.3f, %.3f, %.3f]" % (int_site_[i][1][0],
                                         int_site_[i][1][1], int_site_[i][1][2])
-            + " distance between interaction sites is: %.3f nm" % (int_site_distance_[i]))
+              + " distance between interaction sites is: %.3f nm" % (int_site_distance_[i]))
 
     return reaction_chain_, int_site_, int_site_distance_, unique_chain_, COM_
 
 
-def real_PDB_separate_sigma(Result:tuple, ChangeSigma:bool = False, SiteList:list = [], NewSigma:list = []):
+def real_PDB_separate_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: list = [], NewSigma: list = []):
 
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     # user can choose to change the interaction site
@@ -6980,9 +6984,9 @@ def real_PDB_separate_sigma(Result:tuple, ChangeSigma:bool = False, SiteList:lis
                             int_site[p][0][1],
                             int_site[p][1][2] - int_site[p][0][2])
                         unit_dir_vec1 = [dir_vec1[0] / real_PDB_mag(dir_vec1), dir_vec1[1] / real_PDB_mag(dir_vec1),
-                                        dir_vec1[2] / real_PDB_mag(dir_vec1)]
+                                         dir_vec1[2] / real_PDB_mag(dir_vec1)]
                         unit_dir_vec2 = [dir_vec2[0] / real_PDB_mag(dir_vec2), dir_vec2[1] / real_PDB_mag(dir_vec2),
-                                        dir_vec2[2] / real_PDB_mag(dir_vec2)]
+                                         dir_vec2[2] / real_PDB_mag(dir_vec2)]
 
                         inner_new_position = []
                         new_coord1 = []
@@ -7001,9 +7005,9 @@ def real_PDB_separate_sigma(Result:tuple, ChangeSigma:bool = False, SiteList:lis
                             inner_new_position)
                         new_int_site_distance[p] = math.sqrt(
                             (new_int_site[p][0][0] -
-                            new_int_site[p][1][0]) ** 2
+                             new_int_site[p][1][0]) ** 2
                             + (new_int_site[p][0][1] -
-                            new_int_site[p][1][1]) ** 2
+                               new_int_site[p][1][1]) ** 2
                             + (new_int_site[p][0][2] - new_int_site[p][1][2]) ** 2)
                         # print("New interaction site of " + reaction_chain[p][0] + " & " + reaction_chain[p][
                         #     1] + " is: "
@@ -7037,27 +7041,28 @@ def real_PDB_separate_sigma(Result:tuple, ChangeSigma:bool = False, SiteList:lis
 
                     new_int_site[n] = copy.deepcopy(inner_new_position)
                     new_int_site_distance[n] = math.sqrt((new_int_site[n][0][0] - new_int_site[n][1][0]) ** 2
-                                                        + (new_int_site[n][0][1] - new_int_site[n][1][1]) ** 2
-                                                        + (new_int_site[n][0][2] - new_int_site[n][1][2]) ** 2)
+                                                         + (new_int_site[n][0][1] - new_int_site[n][1][1]) ** 2
+                                                         + (new_int_site[n][0][2] - new_int_site[n][1][2]) ** 2)
                     # print("New interaction site of " + reaction_chain[n][0] + " & " + reaction_chain[n][1] + " is: "
                     #     + "[%.3f, %.3f, %.3f]" % (
                     #         new_int_site[n][0][0], new_int_site[n][0][1], new_int_site[n][0][2]) + " and "
                     #     + "[%.3f, %.3f, %.3f]" % (
                     #     new_int_site[n][1][0], new_int_site[n][1][1], new_int_site[n][1][2])
                     #     + " distance between interaction sites is: %.3f" % (new_int_site_distance[n]) + ' nm')
-        
+
         for i in range(len(new_int_site)):
             print("New interaction site of " + reaction_chain[i][0] + " & " + reaction_chain[i][1] + " is: "
-                + "[%.3f, %.3f, %.3f]" % (new_int_site[i][0][0],
+                  + "[%.3f, %.3f, %.3f]" % (new_int_site[i][0][0],
                                             new_int_site[i][0][1], new_int_site[i][0][2]) + " and "
-                + "[%.3f, %.3f, %.3f]" % (new_int_site[i][1][0],
+                  + "[%.3f, %.3f, %.3f]" % (new_int_site[i][1][0],
                                             new_int_site[i][1][1], new_int_site[i][1][2])
-                + " distance between new interaction sites is: %.3f nm" % (new_int_site_distance[i]))
+                  + " distance between new interaction sites is: %.3f nm" % (new_int_site_distance[i]))
 
         return reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM
-        
+
     else:
         return Result
+
 
 def real_PDB_separate_angle(Result: tuple):
     reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM = Result
@@ -7065,39 +7070,39 @@ def real_PDB_separate_angle(Result: tuple):
     normal_point_lst1 = []
     normal_point_lst2 = []
     for i in range(len(reaction_chain)):
-            chain1 = 0
-            chain2 = 0
-            for j in range(len(unique_chain)):
-                if reaction_chain[i][0] == unique_chain[j]:
-                    chain1 = j
-                if reaction_chain[i][1] == unique_chain[j]:
-                    chain2 = j
-                if reaction_chain[i][0] == unique_chain[chain1] and reaction_chain[i][1] == unique_chain[chain2]:
-                    break
-            while True:
-                normal_point_lst1.append([0., 0., 1.])
-                if real_PDB_norm_check(normal_point_lst1[-1], COM[chain1], new_int_site[i][0]) == False:
-                    break
-                else:
-                    normal_point_lst1.remove(normal_point_lst1[-1])
-                    normal_point_lst1.append([0., 1., 0.])
+        chain1 = 0
+        chain2 = 0
+        for j in range(len(unique_chain)):
+            if reaction_chain[i][0] == unique_chain[j]:
+                chain1 = j
+            if reaction_chain[i][1] == unique_chain[j]:
+                chain2 = j
+            if reaction_chain[i][0] == unique_chain[chain1] and reaction_chain[i][1] == unique_chain[chain2]:
+                break
+        while True:
+            normal_point_lst1.append([0., 0., 1.])
+            if real_PDB_norm_check(normal_point_lst1[-1], COM[chain1], new_int_site[i][0]) == False:
+                break
+            else:
+                normal_point_lst1.remove(normal_point_lst1[-1])
+                normal_point_lst1.append([0., 1., 0.])
 
-            while True:
-                normal_point_lst2.append([0., 0., 1.])
-                if real_PDB_norm_check(normal_point_lst2[-1], COM[chain2], new_int_site[i][1]) == False:
-                    break
-                else:
-                    normal_point_lst2.remove(normal_point_lst2[-1])
-                    normal_point_lst2.append([0., 1., 0.])
+        while True:
+            normal_point_lst2.append([0., 0., 1.])
+            if real_PDB_norm_check(normal_point_lst2[-1], COM[chain2], new_int_site[i][1]) == False:
+                break
+            else:
+                normal_point_lst2.remove(normal_point_lst2[-1])
+                normal_point_lst2.append([0., 1., 0.])
 
-            inner_angle = real_PDB_angles(COM[chain1], COM[chain2], new_int_site[i][0], new_int_site[i][1], np.array(
-                COM[chain1]) + np.array(normal_point_lst1[-1]), np.array(COM[chain2]) + np.array(normal_point_lst2[-1]))
-            angle.append([inner_angle[0], inner_angle[1], inner_angle[2],
-                        inner_angle[3], inner_angle[4], inner_angle[5]])
-            print("Angles for chain " +
-                str(unique_chain[chain1]) + " & " + str(unique_chain[chain2]))
-            print("Theta1: %.3f, Theta2: %.3f, Phi1: %.3f, Phi2: %.3f, Omega: %.3f" % (
-                inner_angle[0], inner_angle[1], inner_angle[2], inner_angle[3], inner_angle[4]))
+        inner_angle = real_PDB_angles(COM[chain1], COM[chain2], new_int_site[i][0], new_int_site[i][1], np.array(
+            COM[chain1]) + np.array(normal_point_lst1[-1]), np.array(COM[chain2]) + np.array(normal_point_lst2[-1]))
+        angle.append([inner_angle[0], inner_angle[1], inner_angle[2],
+                      inner_angle[3], inner_angle[4], inner_angle[5]])
+        print("Angles for chain " +
+              str(unique_chain[chain1]) + " & " + str(unique_chain[chain2]))
+        print("Theta1: %.3f, Theta2: %.3f, Phi1: %.3f, Phi2: %.3f, Omega: %.3f" % (
+            inner_angle[0], inner_angle[1], inner_angle[2], inner_angle[3], inner_angle[4]))
 
     # looking for chains possess only 1 inferface.
     reaction_chain_1d = []
@@ -7109,6 +7114,7 @@ def real_PDB_separate_angle(Result: tuple):
         if reaction_chain_1d.count(i) == 1:
             one_site_chain.append(i)
     return reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM, angle, normal_point_lst1, normal_point_lst2, one_site_chain
+
 
 def real_PDB_separate_COM(Result: tuple):
     reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM, angle, normal_point_lst1, normal_point_lst2, one_site_chain = Result
@@ -7122,6 +7128,7 @@ def real_PDB_separate_COM(Result: tuple):
             COM[i][m] = 0.0
     print('COM is normalized as [0.000, 0.000, 0.000]')
     return reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM, angle, normal_point_lst1, normal_point_lst2, one_site_chain
+
 
 def real_PDB_separate_write(Result: tuple):
     reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM, angle, normal_point_lst1, normal_point_lst2, one_site_chain = Result
@@ -7154,9 +7161,9 @@ def real_PDB_separate_write(Result: tuple):
         f.write("    #### %s - %s ####\n" %
                 (reaction_chain[i][0], reaction_chain[i][1]))
         f.write("    %s(%s) + %s(%s) <-> %s(%s!1).%s(%s!1)\n" % (reaction_chain[i][0], molecule2_lower,
-                                                                reaction_chain[i][1], molecule1_lower,
-                                                                reaction_chain[i][0], molecule2_lower,
-                                                                reaction_chain[i][1], molecule1_lower))
+                                                                 reaction_chain[i][1], molecule1_lower,
+                                                                 reaction_chain[i][0], molecule2_lower,
+                                                                 reaction_chain[i][1], molecule1_lower))
         f.write("    onRate3Dka = 10\n")
         f.write("    offRatekb = 1\n")
         f.write("    sigma = %f\n" % angle[i][5])
@@ -7224,12 +7231,12 @@ def real_PDB_show_PDB(Result: bool):
     f.write('REMARK   0 SO THE VALUE WILL BE 10 TIMES LARGER THAN NERDSS INPUTS.\n')
     tot_count = 0
     for i in range(len(unique_chain)):
-        f.write('ATOM' + ' '*(7-len(str(tot_count))) + str(tot_count) + '  COM' + \
-            '   ' + unique_chain[i] + ' '*(5-len(str(i))) + str(i) + \
-                ' '*(13-len(str(round(COM[i][0]*10, 3)))) + str(round(COM[i][0]*10, 3)) + \
-                    ' '*(8-len(str(round(COM[i][1]*10, 3)))) + str(round(COM[i][1]*10, 3)) + \
-                        ' '*(8-len(str(round(COM[i][2]*10, 3)))) + str(round(COM[i][2]*10, 3)) + \
-                            '     0     0CL\n')
+        f.write('ATOM' + ' '*(7-len(str(tot_count))) + str(tot_count) + '  COM' +
+                '   ' + unique_chain[i] + ' '*(5-len(str(i))) + str(i) +
+                ' '*(13-len(str(round(COM[i][0]*10, 3)))) + str(round(COM[i][0]*10, 3)) +
+                ' '*(8-len(str(round(COM[i][1]*10, 3)))) + str(round(COM[i][1]*10, 3)) +
+                ' '*(8-len(str(round(COM[i][2]*10, 3)))) + str(round(COM[i][2]*10, 3)) +
+                '     0     0CL\n')
         tot_count += 1
         for j in range(len(reaction_chain)):
             if unique_chain[i] in reaction_chain[j]:
@@ -7239,19 +7246,21 @@ def real_PDB_show_PDB(Result: bool):
                 else:
                     # react_site = reaction_chain[j][0].lower()
                     react_coord = int_site[j][1]
-                react_site = reaction_chain[j][0].lower() + reaction_chain[j][1].lower()
-                f.write('ATOM' + ' '*(7-len(str(tot_count))) + str(tot_count) + \
-                    ' '*(5-len(str(react_site))) + str(react_site) + \
-                        '   ' + unique_chain[i] + ' '*(5-len(str(i))) + str(i) + \
-                            ' '*(13-len(str(round(react_coord[0]*10, 3)))) + str(round(react_coord[0]*10, 3)) + \
-                                ' '*(8-len(str(round(react_coord[1]*10, 3)))) + str(round(react_coord[1]*10, 3)) + \
-                                    ' '*(8-len(str(round(react_coord[2]*10, 3)))) + str(round(react_coord[2]*10, 3)) + \
-                                        '     0     0CL\n')
+                react_site = reaction_chain[j][0].lower(
+                ) + reaction_chain[j][1].lower()
+                f.write('ATOM' + ' '*(7-len(str(tot_count))) + str(tot_count) +
+                        ' '*(5-len(str(react_site))) + str(react_site) +
+                        '   ' + unique_chain[i] + ' '*(5-len(str(i))) + str(i) +
+                        ' '*(13-len(str(round(react_coord[0]*10, 3)))) + str(round(react_coord[0]*10, 3)) +
+                        ' '*(8-len(str(round(react_coord[1]*10, 3)))) + str(round(react_coord[1]*10, 3)) +
+                        ' '*(8-len(str(round(react_coord[2]*10, 3)))) + str(round(react_coord[2]*10, 3)) +
+                        '     0     0CL\n')
                 tot_count += 1
     print('PDB writing complete! (named as show_structure.pdb)')
     return 0
 
-def real_PDB_show_3D(Result:bool):
+
+def real_PDB_show_3D(Result: bool):
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     coord_list = []
     for i in range(len(unique_chain)):
@@ -7268,16 +7277,18 @@ def real_PDB_show_3D(Result:bool):
     color_list = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
     ax = fig.gca(projection='3d')
     for i in range(len(coord_list)):
-        ax.scatter(coord_list[i][0][0], coord_list[i][0][1], coord_list[i][0][2], color=color_list[i%9])
-        ax.text(coord_list[i][0][0], coord_list[i][0][1], coord_list[i][0][2], unique_chain[i], color='k')
+        ax.scatter(coord_list[i][0][0], coord_list[i][0][1],
+                   coord_list[i][0][2], color=color_list[i % 9])
+        ax.text(coord_list[i][0][0], coord_list[i][0][1],
+                coord_list[i][0][2], unique_chain[i], color='k')
         for j in range(1, len(coord_list[i])):
-            figure = ax.plot([coord_list[i][0][0], coord_list[i][j][0]], \
-                [coord_list[i][0][1], coord_list[i][j][1]], \
-                    [coord_list[i][0][2], coord_list[i][j][2]], color=color_list[i%9])
+            figure = ax.plot([coord_list[i][0][0], coord_list[i][j][0]],
+                             [coord_list[i][0][1], coord_list[i][j][1]],
+                             [coord_list[i][0][2], coord_list[i][j][2]], color=color_list[i % 9])
     for i in range(len(int_site)):
-        figure = ax.plot([int_site[i][0][0], int_site[i][1][0]], \
-            [int_site[i][0][1], int_site[i][1][1]], \
-                [int_site[i][0][2], int_site[i][1][2]], linestyle=':', color='k')
+        figure = ax.plot([int_site[i][0][0], int_site[i][1][0]],
+                         [int_site[i][0][1], int_site[i][1][1]],
+                         [int_site[i][0][2], int_site[i][1][2]], linestyle=':', color='k')
     ax.set_xlabel('x (nm)')
     ax.set_ylabel('y (nm)')
     ax.set_zlabel('z (nm)')
@@ -7285,7 +7296,7 @@ def real_PDB_show_3D(Result:bool):
     return 0
 
 
-#-------------------------------------Reading xyz file-----------------------------------------
+# -------------------------------------Reading xyz file-----------------------------------------
 
 def xyz_to_csv(FileName: str, LitNum: int):
     if LitNum != -1:
@@ -7298,7 +7309,7 @@ def xyz_to_csv(FileName: str, LitNum: int):
         head = 'literation,name,x,y,z\n'
         write_file.write(head)
         for line in read_file.readlines():
-            if  LitNum != -1:
+            if LitNum != -1:
                 if line[0:11] == 'iteration: ':
                     if int(line.split(' ')[1]) == LitNum:
                         lit_switch = True
@@ -7308,7 +7319,7 @@ def xyz_to_csv(FileName: str, LitNum: int):
             else:
                 if line[0:11] == 'iteration: ':
                     literation = int(line.split(' ')[1])
-            
+
             if lit_switch:
                 if len(line.strip(' ').strip('\n').split()) == 4:
                     info = line.strip(' ').strip('\n').split()
@@ -7344,7 +7355,7 @@ def traj_track(FileName: str, SiteNum: int, MolIndex: list):
             if line[0:11] == 'iteration: ':
                 index = 0
             if len(line.strip(' ').strip('\n').split()) == 4:
-                if (index//SiteNum)+1 in MolIndex and index%SiteNum == 0:
+                if (index//SiteNum)+1 in MolIndex and index % SiteNum == 0:
                     info = line.strip(' ').strip('\n').split()
                     x = float(info[1])
                     y = float(info[2])
@@ -7354,3 +7365,178 @@ def traj_track(FileName: str, SiteNum: int, MolIndex: list):
                     array[list_index].append(coord)
                 index += 1
     return array
+
+
+# -------------------------------------Gag (Sphere) Regularization Index Calculation---------------------------------------
+
+# ref: https://jekel.me/2015/Least-Squares-Sphere-Fit/
+def fitSphere(x, y, z):
+    A = np.zeros((len(x), 4))
+    A[:, 0] = 2*x
+    A[:, 1] = 2*y
+    A[:, 2] = 2*z
+    A[:, 3] = 1
+    f = np.zeros((len(x), 1))
+    f[:, 0] = x*x+y*y+z*z
+    C, residules, rank, singval = np.linalg.lstsq(A, f)
+    t = (C[0]*C[0])+(C[1]*C[1])+(C[2]*C[2])+C[3]
+    radius = math.sqrt(t)
+    return radius, C[0], C[1], C[2]
+
+
+def single_restart_to_df(FileNamePdb, ComplexSizeList, FileNameRestart='restart.dat', SerialNum=0):
+    if SerialNum == -1:
+        return 0, -1
+    complex_list = RESTART_read_restart(FileNameRestart)
+    index = 0
+    protein_remain = []
+    for i in range(len(ComplexSizeList)):
+        for j in range(len(complex_list)):
+            if len(complex_list[j]) == ComplexSizeList[i]:
+                index += 1
+                if SerialNum == index-1:
+                    protein_remain = complex_list[j]
+                    SerialNum += 1
+                    complex_pdb_df = PDB_pdb_to_df(FileNamePdb, False)
+                    complex_pdb_df = complex_pdb_df[complex_pdb_df['Cite_Name'] == 'COM']
+                    complex_pdb_df = complex_pdb_df[complex_pdb_df['Protein_Num'].isin(
+                        protein_remain)]
+                    if 0 in complex_pdb_df.index:
+                        complex_pdb_df = complex_pdb_df.drop(0)
+                    return complex_pdb_df, SerialNum
+    print('Cannot find more desired size of comolex!')
+    return 0, -1
+
+
+# Code written by Yian and modified bu Hugh
+def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int, TimeStep: float,
+                                ComplexNum: int, Radius: float):
+    warnings.simplefilter("ignore")
+    t = TimeStep * LitNum
+    data = hist(FileName=FileNameHist,
+                FileNum=1, InitialTime=t, FinalTime=t+TimeStep,
+                SpeciesName=SpeciesName, ShowFig=False)
+    x_data = data_type.x(data)
+    y_data = data_type.y(data)
+    size_list = []
+    i = len(x_data)-1
+    while i >= 0:
+        if y_data[i] != 0:
+            size_list.append(x_data[i])
+        i -= 1
+
+    max_complex_size_return = []
+    theta_ideal_return = []
+    sphere_radius_return = []
+    sphere_center_position_return = []
+    complex_COM_return = []
+    regularization_index_return = []
+
+    SerialNum = 0
+    protein_remain = []
+    for m in range(ComplexNum):
+        pdb_file_name = str(LitNum)+'.pdb'
+        restart_file_name = 'restart'+str(LitNum)+'.dat'
+        complex_pdb_df, SerialNum = single_restart_to_df(FileNamePdb=pdb_file_name,
+                                                         ComplexSizeList=size_list,
+                                                         FileNameRestart=restart_file_name,
+                                                         SerialNum=SerialNum)
+
+        max_complex_size = len(complex_pdb_df)
+        sphere_center_position_candidate = np.zeros((3, 3))
+        sphere_radius_candidate = np.zeros((3, 1))
+
+        # Shuffle the dataframe
+        complex_pdb_df = complex_pdb_df.sample(frac=1)
+
+        # if the COM number is gearter than 30, then split the COM list into 3 parts and fit 3 spheres
+        # if the differences of sphere center coordinates are smaller than 0.1
+        # and the |fiited radius - 50| < 0.1 , we consider the fitting as good
+        x_list = np.array(complex_pdb_df['x_coord'])
+        y_list = np.array(complex_pdb_df['y_coord'])
+        z_list = np.array(complex_pdb_df['z_coord'])
+
+        partition = [[0, int(len(x_list)/3)], [int(len(x_list)/3),
+                                               int(len(x_list)/3*2)], [int(len(x_list)/3*2), -1]]
+
+        for ind, part in enumerate(partition):
+            r, cx, cy, cz = fitSphere(np.array(complex_pdb_df['x_coord'][part[0]:part[1]]),
+                                      np.array(
+                                          complex_pdb_df['y_coord'][part[0]:part[1]]),
+                                      np.array(complex_pdb_df['z_coord'][part[0]:part[1]]))
+            sphere_center_position_candidate[ind, :] = [cx, cy, cz]
+            sphere_radius_candidate[ind, :] = r
+
+        # sanity check
+        if sum(abs(np.array(sphere_radius_candidate) - r)) >= 0.1 * 3:
+            print("Caution, the radius error is > 0.1! The fitted radii are: \n",
+                  sphere_radius_candidate)
+
+        # check sphere center coordinate error
+        count = 0
+        for i in range(3):
+            if abs(sphere_center_position_candidate[0][i] - sphere_center_position_candidate[1][i]) >= 0.1 \
+                    and abs(sphere_center_position_candidate[1][i] - sphere_center_position_candidate[2][i]) >= 0.1 \
+                    and abs(sphere_center_position_candidate[0][i] - sphere_center_position_candidate[2][i]) >= 0.1:
+                count += 1
+        if count > 0:
+            print("Caution, the center coordinate error is > 0.1! The fitted coordinates are: \n",
+                  sphere_center_position_candidate)
+
+        sphere_center_position = np.mean(sphere_center_position_candidate, 0)
+        sphere_radius = np.mean(sphere_radius_candidate)
+
+        # calculate the center of mass of the max complex
+        complex_COM = np.mean(
+            complex_pdb_df[['x_coord', 'y_coord', 'z_coord']])
+        # directional vector that directs from sphere center to complex COM
+        dir_vector = complex_COM - sphere_center_position
+
+        # the surface area of a Gag compelx is
+        S_whole_sphere = 4*np.pi*50**2  # nm^2
+        S_per_Gag = S_whole_sphere/3697  # nm^2
+        S_max_complex = S_per_Gag*max_complex_size  # nm^2
+
+        # determine the spherical angle corresponding to the ideal complex with surface area S_max_complex
+        # A = 2*pi*r^2*(1-cos(theta))
+        # max polar angle possible
+        theta_ideal = np.arccos(1-S_max_complex/2/np.pi/sphere_radius**2)
+
+        # determine if the monomer on complex is on the ideal cap
+        counter = 0
+        inside_sphere_cap = []
+        outside_sphere_cap = []
+        for i in range(max_complex_size):
+            monomer_vector = list(
+                complex_pdb_df.iloc[i][['x_coord', 'y_coord', 'z_coord']])-sphere_center_position
+            monomer_theta = np.arccos(float(np.dot(monomer_vector, dir_vector)/np.linalg.norm(
+                monomer_vector.astype(float))/np.linalg.norm(dir_vector.astype(float))))
+            if monomer_theta <= theta_ideal:
+                counter += 1
+                inside_sphere_cap.append(
+                    list(complex_pdb_df.iloc[i][['x_coord', 'y_coord', 'z_coord']]))
+            else:
+                outside_sphere_cap.append(
+                    list(complex_pdb_df.iloc[i][['x_coord', 'y_coord', 'z_coord']]))
+        regularization_index = counter/max_complex_size
+
+        max_complex_size_return.append(max_complex_size)
+        theta_ideal_return.append(theta_ideal)
+        sphere_radius_return.append(sphere_radius)
+        sphere_center_position_return.append(sphere_center_position)
+        complex_COM_return.append(list(complex_COM))
+        regularization_index_return.append(regularization_index)
+
+        print("Complex Size: %f \nTheta of the sphere cap: %f \nR of the fitted circle: %f " % (
+            max_complex_size, theta_ideal, sphere_radius))
+        print('Sphere center coord: ', sphere_center_position)
+        print('Sphere cap COM: ', list(complex_COM))
+        print("Regularixation index: ", regularization_index)
+        if m != ComplexNum-1:
+            print(
+                '------------------------------------------------------------------------------')
+        else:
+            print(
+                '------------------------------------End---------------------------------------')
+
+    return max_complex_size_return, theta_ideal_return, sphere_radius_return, sphere_center_position_return, complex_COM_return, regularization_index_return
