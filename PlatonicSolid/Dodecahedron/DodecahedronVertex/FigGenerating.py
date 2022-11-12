@@ -143,7 +143,9 @@ def vis(lst):
     ax = fig.gca(projection='3d')
     for element in lst:
         sig_vis(element, ax) 
-    
+    ax.set_xlabel('x (nm)')
+    ax.set_ylabel('y (nm)')
+    ax.set_zlabel('z (nm)')
     plt.show()
 
 if __name__ == '__main__':

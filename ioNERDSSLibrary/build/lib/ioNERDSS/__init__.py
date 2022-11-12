@@ -3133,7 +3133,7 @@ def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, Spec
         else:
             plt.bar(n_list_, mean_, width=BarSize)
         plt.title('Histogram of ' + str(SpeciesName))
-        plt.xlabel('# of ' + SpeciesName + ' in sigle complex')
+        plt.xlabel('Number of ' + SpeciesName + ' in sigle complex')
         plt.ylabel('Count')
         if SaveFig:
             plt.savefig('Histogram.png', dpi=500)
@@ -3180,7 +3180,7 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
                          yerr=std, ecolor=errorbar_color)
         plt.title('Maximum Number of ' +
                   str(SpeciesName) + ' in Single Complex')
-        plt.xlabel('Time')
+        plt.xlabel('Time (s)')
         plt.ylabel('Maximum Number of ' + str(SpeciesName))
         if SaveFig:
             plt.savefig('max_complex.png', dpi=500)
@@ -3489,8 +3489,8 @@ def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
         fig = plt.figure()
         ax = fig.gca(projection='3d')
         ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
-        ax.set_xlabel('# of ' + SpeciesName + ' in sigle complex')
-        ax.set_ylabel('Time')
+        ax.set_xlabel('Number of ' + SpeciesName + ' in sigle complex')
+        ax.set_ylabel('Time (s)')
         ax.set_zlabel('Count')
         if SaveFig:
             plt.savefig('histogram_3D.png', dpi=500)
@@ -3594,11 +3594,11 @@ def hist_time_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime
                 for j in range(len(n_list)):
                     text = ax.text(j, i, round(
                         count_list_std[i, j], 1), ha='center', va='center', color='w')
-        ax.set_title('N-mers distribution vs. Time')
+        ax.set_title('Size distribution with Changing of Time')
         fig.tight_layout()
         plt.colorbar(im)
-        plt.xlabel('Size of N-mers')
-        plt.ylabel('Time')
+        plt.xlabel('Size of Complex')
+        plt.ylabel('Time (s)')
         if SaveFig:
             plt.savefig('hist_heatmap.png', dpi=500, bbox_inches='tight')
         plt.show()
@@ -3709,11 +3709,11 @@ def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float
                 for j in range(len(n_list)):
                     text = ax.text(j, i, round(
                         count_list_std[i, j], 1), ha='center', va='center', color='w')
-        ax.set_title('Total Number of Monomers in Complexes  vs. Time')
+        ax.set_title('Total Number of Monomers in Complexes with Changing of Time')
         fig.tight_layout()
         plt.colorbar(im)
-        plt.xlabel('Size of N-mers')
-        plt.ylabel('Time')
+        plt.xlabel('Size of Complex')
+        plt.ylabel('Time (s)')
         if SaveFig:
             plt.savefig('hist_heatmap_count.png', dpi=500, bbox_inches='tight')
         plt.show()
@@ -3826,11 +3826,11 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
                 for j in range(len(n_list)):
                     text = ax.text(j, i, round(
                         count_list_std[i, j], 1), ha='center', va='center', color='w')
-        ax.set_title('Franction of Monomers in Complexes vs. Time')
+        ax.set_title('Franction of Monomers in Complexes with Changing of Time')
         fig.tight_layout()
         plt.colorbar(im)
-        plt.xlabel('Size of N-mers')
-        plt.ylabel('Time')
+        plt.xlabel('Size of Complex')
+        plt.ylabel('Time (s)')
         if SaveFig:
             plt.savefig('hist_heatmap_fraction.png',
                         dpi=500, bbox_inches='tight')
@@ -3963,9 +3963,8 @@ def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         if FileNum != 1:
             plt.errorbar(n_list, mean_energy_list, yerr=std_energy_list,
                          ecolor=errorbar_color, capsize=2)
-        plt.title('Free Energy Vs. Time from ' + str(float(InitialTime)
-                                                     ) + 's to ' + str(float(FinalTime)) + 's')
-        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.title('Free Energy')
+        plt.xlabel('Number of ' + str(SpeciesName) + ' in Single Complex')
         plt.ylabel('-ln(p(N)) ($k_B$T)')
         plt.xticks(ticks=n_list)
         if SaveFig:
@@ -4080,10 +4079,10 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
                          ecolor=errorbar_color_3, capsize=2)
         plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
                     str(DivideSize), 'Associate Size < ' + str(DivideSize)])
-        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.xlabel('Number of ' + str(SpeciesName) + ' in Single Complex')
         plt.ylabel('Probability')
         plt.xticks(ticks=n_list)
-        plt.title('Remodeling of Complex')
+        plt.title('Symmetric Association Probability')
         if SaveFig:
             plt.savefig('associate_probability_symmetric.png', dpi=500)
         plt.show()
@@ -4214,10 +4213,10 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
                          ecolor=errorbar_color_3, capsize=2)
         plt.legend(['Associate Size > ' + str(DivideSize), 'Associate Size = ' +
                     str(DivideSize), 'Associate Size < ' + str(DivideSize)])
-        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.xlabel('Number of ' + str(SpeciesName) + ' in Single Complex')
         plt.ylabel('Probability')
         plt.xticks(ticks=n_list)
-        plt.title('Remodeling of Complex')
+        plt.title('Asymmetric Association Probability')
         if SaveFig:
             plt.savefig('associate_probability_asymmetric.png', dpi=500)
         plt.show()
@@ -4333,10 +4332,10 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
                          ecolor=errorbar_color_3, capsize=2)
         plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
                     str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
-        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.xlabel('Number of ' + str(SpeciesName) + ' in Single Complex')
         plt.ylabel('Probability')
         plt.xticks(ticks=n_list)
-        plt.title('Remodeling of Complex')
+        plt.title('Symmetric Dissociation Probability')
         if SaveFig:
             plt.savefig('dissociate_probability_symmetric.png', dpi=500)
         plt.show()
@@ -4470,10 +4469,10 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
                          ecolor=errorbar_color_3, capsize=2)
         plt.legend(['Dissociate Size > ' + str(DivideSize), 'Dissociate Size = ' +
                     str(DivideSize), 'Dissociate Size < ' + str(DivideSize)])
-        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.xlabel('Number of ' + str(SpeciesName) + ' in Single Complex')
         plt.ylabel('Probability')
         plt.xticks(ticks=n_list)
-        plt.title('Remodeling of Complex')
+        plt.title('Asymmetric Dissociation Probability')
         if SaveFig:
             plt.savefig('dissociate_probability_asymmetric.png', dpi=500)
         plt.show()
@@ -4544,7 +4543,7 @@ def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
             plt.errorbar(n_list, mean, yerr=std,
                          ecolor=errorbar_color, capsize=2)
         plt.axhline(y=1/2, c='black', lw=1.0)
-        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.xlabel('Number of ' + str(SpeciesName) + ' in Single Complex')
         plt.ylabel('$P_{growth}$')
         plt.xticks(ticks=n_list)
         plt.yticks((0, 0.25, 0.5, 0.75, 1))
@@ -4639,7 +4638,7 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
         if FileNum != 1:
             plt.errorbar(size_list, mean, yerr=std,
                          ecolor=errorbar_color, capsize=2)
-        plt.xlabel('N (copies of ' + str(SpeciesName) + ')')
+        plt.xlabel('Number of ' + str(SpeciesName) + ' in Single Complex')
         plt.ylabel('Lifetime (s)')
         plt.xticks(ticks=size_list)
         plt.title('Lifetime of Complex')
@@ -4792,7 +4791,7 @@ def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float
             label_name = 'total monomers'
         else:
             label_name = xAxis
-        plt.xlabel('# of ' + label_name + ' in sigle complex (count)')
+        plt.xlabel('Number of ' + label_name + ' in sigle complex (count)')
         plt.ylabel('Count')
         plt.title('Histogram of Multi-component Assemblies')
         fig_species = xAxis
@@ -5070,7 +5069,7 @@ def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTim
             x_label_name = 'total monomers'
         else:
             x_label_name = xAxis
-        plt.xlabel('# of ' + x_label_name + ' in sigle complex')
+        plt.xlabel('Number of ' + x_label_name + ' in sigle complex')
         plt.ylabel('Count')
         plt.legend()
         plt.title('Histogram of Multi-component Assemblies')
@@ -5139,7 +5138,7 @@ def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime
             title_spec = SpeciesName
         plt.title('Maximum Number of ' +
                   str(title_spec) + ' in Single Complex')
-        plt.xlabel('Time')
+        plt.xlabel('Time (s)')
         plt.ylabel('Maximum Number of ' + str(title_spec))
         if SaveFig:
             plt.savefig('multi_max_complex.png', dpi=500)
@@ -5214,7 +5213,7 @@ def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTim
             title_spec = SpeciesName
         plt.title('Maximum Number of ' +
                   str(title_spec) + ' in Single Complex')
-        plt.xlabel('Time')
+        plt.xlabel('Time (s)')
         plt.ylabel('Maximum Number of ' + str(title_spec))
         if SaveFig:
             plt.savefig('multi_max_complex.png', dpi=500)
@@ -5456,8 +5455,8 @@ def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
         fig = plt.figure()
         ax = fig.gca(projection='3d')
         ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
-        ax.set_xlabel('# of ' + xAxis + ' in sigle complex')
-        ax.set_ylabel('# of ' + yAxis + ' in sigle complex')
+        ax.set_xlabel('Number of ' + xAxis + ' in sigle complex')
+        ax.set_ylabel('Number of ' + yAxis + ' in sigle complex')
         ax.set_zlabel('Relative Occurrence Probability')
         ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
         fig.tight_layout()

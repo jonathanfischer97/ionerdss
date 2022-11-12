@@ -12,7 +12,10 @@ def vis(list):
     for element in list:
         sig_vis(element, ax) 
     plt.tight_layout()    
-    plt.savefig('1.png', dpi=500)
+    ax.set_xlabel('x (nm)')
+    ax.set_ylabel('y (nm)')
+    ax.set_zlabel('z (nm)')
+#     plt.savefig('1.png', dpi=500)
     plt.show()
 
 # After simulation in nerdss, obtain coordinates by pymol from trajectory.xyz
@@ -91,7 +94,7 @@ f12 = [[-89.542782, -80.138987, -26.427024],
 void = [[-90, -76, -30], [-90, -76, -30], [-90, -76, -30], [-90, -76, -30], [-90, -76, -30], [-90, -76, -30]]
 
 # find opposite faces by visualize them
-coord_list = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12]
+# coord_list = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12]
 # f1&f8
 # vis([f1, void, void, void, void, void, void, f8, void, void, void, void])
 # f2&f7
@@ -103,6 +106,6 @@ coord_list = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12]
 # # f5&f12
 # vis([void, void, void, void, f5, void, void, void, void, void, void, f12])
 # # f6&f11
-# vis([void, void, void, void, void, f6, void, void, void, void, f11, void])
+vis([void, void, void, void, void, f6, void, void, void, void, f11, void])
 
 vis(coord_list)
