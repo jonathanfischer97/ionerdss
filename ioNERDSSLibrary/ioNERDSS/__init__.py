@@ -2989,21 +2989,6 @@ def icos_vert(radius: float, sigma: float):
     return 0
 
 
-# -----------------------------------Data Extraction--------------------------------
-
-class data_type:
-    def x(data: tuple):
-        return data[0]
-
-    def y(data: tuple):
-        return data[1]
-
-    def z(data: tuple):
-        return data[2]
-
-    def std(data: tuple):
-        return data[3]
-
 # -----------------------------------Data Visualization------------------------------
 
 # Analysis tools for 'histogram_complexes_time.dat' file
@@ -7415,8 +7400,8 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
     data = hist(FileName=FileNameHist,
                 FileNum=1, InitialTime=t, FinalTime=t+TimeStep,
                 SpeciesName=SpeciesName, ShowFig=False)
-    x_data = data_type.x(data)
-    y_data = data_type.y(data)
+    x_data = data[0]
+    y_data = data[1]
     size_list = []
     i = len(x_data)-1
     while i >= 0:
