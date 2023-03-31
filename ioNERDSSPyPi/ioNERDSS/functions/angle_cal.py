@@ -32,3 +32,7 @@ def angle_cal(COM1: float, leg1: float, COM2: float, leg2: float):
     t2__hat = t2_/np.linalg.norm(t2_)
     omega = round(math.acos(np.around(np.dot(t1__hat, t2__hat), n)), n)
     return theta1, theta2, phi1, phi2, omega
+
+
+# DODECAHEDEON FACE AS COM
+

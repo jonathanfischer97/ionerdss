@@ -1,5 +1,5 @@
-import icos_face_vert_coord
-import icos_face_COM_coord
+from .icos_face_vert_coord import icos_face_vert_coord
+from .icos_face_COM_coord import icos_face_COM_coord
 
 
 def icos_face_COM_list_gen(radius: float):

@@ -1,6 +1,6 @@
-import angle_cal
-import dode_face_leg_reduce_coor_gen
-import dode_face_input_coord
+from .angle_cal import angle_cal
+from .dode_face_leg_reduce_coor_gen import dode_face_leg_reduce_coor_gen
+from .dode_face_input_coord import dode_face_input_coord
 
 
 def dode_face_write(radius: float, sigma: float):

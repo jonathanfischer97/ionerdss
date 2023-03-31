@@ -1,4 +1,4 @@
-import octa_face_write
+from .octa_face_write import octa_face_write
 
 
 def octa_face(radius: float, sigma: float):

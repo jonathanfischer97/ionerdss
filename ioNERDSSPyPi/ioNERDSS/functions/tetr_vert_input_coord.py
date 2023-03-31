@@ -1,4 +1,4 @@
-import tetr_vert_leg_reduce_coor_gen
+from .tetr_vert_leg_reduce_coor_gen import tetr_vert_leg_reduce_coor_gen
 
 
 def tetr_vert_input_coord(radius: float, sigma: float):

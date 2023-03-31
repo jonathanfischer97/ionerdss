@@ -1,4 +1,4 @@
-import icos_vert_coord
+from .icos_vert_coord import icos_vert_coord
 
 
 def icos_vert_COM_leg_gen(radius: float):

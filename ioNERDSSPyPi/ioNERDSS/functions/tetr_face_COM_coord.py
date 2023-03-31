@@ -1,5 +1,5 @@
 import math
-import mid_pt
+from .mid_pt import mid_pt
 
 
 def tetr_face_COM_coord(a: float, b: float, c: float):

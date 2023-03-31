@@ -1,4 +1,4 @@
-import distance
+from .distance import distance
 
 
 def icos_vert_check_dis(cen: float, COM: float, lg1: float, lg2: float, lg3: float, lg4: float, lg5: float):

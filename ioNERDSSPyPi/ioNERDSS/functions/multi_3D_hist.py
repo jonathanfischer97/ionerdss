@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-import read_multi_hist
-import multi_hist
+from .read_multi_hist import read_multi_hist
+from .multi_hist import multi_hist
 
 
 def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

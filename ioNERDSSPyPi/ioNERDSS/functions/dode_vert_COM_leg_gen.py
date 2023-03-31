@@ -1,4 +1,4 @@
-import dode_vert_coord
+from .dode_vert_coord import dode_vert_coord
 
 
 def dode_vert_COM_leg_gen(radius: float):

@@ -2,12 +2,12 @@ import math
 import numpy as np
 import sys
 import copy
-import real_PDB_data_check
-import real_PDB_chain_int
-import real_PDB_angles
-import real_PDB_norm_check
-import real_PDB_norm_input
-import real_PDB_mag
+from .real_PDB_data_check import real_PDB_data_check
+from .real_PDB_chain_int import real_PDB_chain_int
+from .real_PDB_angles import real_PDB_angles
+from .real_PDB_norm_check import real_PDB_norm_check
+from .real_PDB_norm_input import real_PDB_norm_input
+from .real_PDB_mag import real_PDB_mag
 
 
 def real_PDB_UI():

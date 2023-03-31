@@ -1,4 +1,4 @@
-import icos_vert_COM_leg_gen
+from .icos_vert_COM_leg_gen import icos_vert_COM_leg_gen
 
 
 def icos_vert_leg_reduce_coor_gen(radius: float, sigma: float):

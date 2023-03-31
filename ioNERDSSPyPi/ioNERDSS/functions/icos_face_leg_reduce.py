@@ -1,5 +1,5 @@
 import math
-import distance
+from .distance import distance
 
 
 def icos_face_leg_reduce(COM: float, leg: float, sigma: float):

@@ -1,6 +1,6 @@
-import angle_cal
-import cube_face_leg_reduce_coord_gen
-import cube_face_input_coord
+from .angle_cal import angle_cal
+from .cube_face_leg_reduce_coord_gen import cube_face_leg_reduce_coord_gen
+from .cube_face_input_coord import cube_face_input_coord
 
 
 def cube_face_write(radius: float, sigma: float):

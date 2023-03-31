@@ -1,5 +1,5 @@
 import math
-import mid_pt
+from .mid_pt import mid_pt
 
 
 def icos_vert_center_coor(a: float, b: float, c: float, d: float, e: float):

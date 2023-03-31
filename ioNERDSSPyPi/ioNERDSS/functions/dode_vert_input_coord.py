@@ -1,4 +1,4 @@
-import dode_vert_leg_reduce_coor_gen
+from .dode_vert_leg_reduce_coor_gen import dode_vert_leg_reduce_coor_gen
 
 
 def dode_vert_input_coord(radius: float, sigma: float):

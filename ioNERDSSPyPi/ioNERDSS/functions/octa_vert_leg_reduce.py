@@ -1,4 +1,4 @@
-import distance
+from .distance import distance
 
 
 def octa_vert_leg_reduce(COM: float, leg: float, sigma: float):

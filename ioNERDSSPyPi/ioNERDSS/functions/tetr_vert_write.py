@@ -1,4 +1,4 @@
-import tetr_vert_norm_input
+from .tetr_vert_norm_input import tetr_vert_norm_input
 
 
 def tetr_vert_write(radius: float, sigma: float):

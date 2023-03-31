@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import multi_hist_to_csv
+from .multi_hist_to_csv import multi_hist_to_csv
 
 
 def multi_hist_to_df(FileName: str, SaveCsv: bool = True):

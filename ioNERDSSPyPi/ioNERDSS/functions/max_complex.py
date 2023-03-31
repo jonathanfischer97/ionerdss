@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import read_file
+from .read_file import read_file
 
 
 def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

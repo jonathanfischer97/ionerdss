@@ -1,4 +1,4 @@
-import cube_face_leg_reduce_coord_gen
+from .cube_face_leg_reduce_coord_gen import cube_face_leg_reduce_coord_gen
 
 
 def cube_face_input_coord(radius: float, sigma: float):

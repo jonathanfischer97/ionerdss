@@ -1,6 +1,6 @@
-import angle_cal
-import icos_face_leg_reduce_coord_gen
-import icos_face_input_coord
+from .angle_cal import angle_cal
+from .icos_face_leg_reduce_coord_gen import icos_face_leg_reduce_coord_gen
+from .icos_face_input_coord import icos_face_input_coord
 
 
 def icos_face_write(radius: float, sigma: float):

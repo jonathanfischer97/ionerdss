@@ -1,5 +1,5 @@
-import distance
-import tetr_vert_input_coord
+from .distance import distance
+from .tetr_vert_input_coord import tetr_vert_input_coord
 
 
 def tetr_vert_norm_input(radius: float, sigma: float):

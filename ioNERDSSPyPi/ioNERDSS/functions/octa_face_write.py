@@ -1,6 +1,6 @@
-import angle_cal
-import octa_face_leg_reduce_coord_gen
-import octa_face_input_coord
+from .angle_cal import angle_cal
+from .octa_face_leg_reduce_coord_gen import octa_face_leg_reduce_coord_gen
+from .octa_face_input_coord import octa_face_input_coord
 
 
 def octa_face_write(radius: float, sigma: float):

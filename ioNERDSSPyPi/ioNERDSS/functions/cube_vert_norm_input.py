@@ -1,5 +1,5 @@
-import distance
-import cube_vert_input_coord
+from .distance import distance
+from .cube_vert_input_coord import cube_vert_input_coord
 
 
 def cube_vert_norm_input(radius: float, sigma: float):

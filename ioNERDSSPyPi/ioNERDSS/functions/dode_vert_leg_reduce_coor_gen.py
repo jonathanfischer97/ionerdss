@@ -1,4 +1,4 @@
-import dode_vert_COM_leg_gen
+from .dode_vert_COM_leg_gen import dode_vert_COM_leg_gen
 
 
 def dode_vert_leg_reduce_coor_gen(radius: float, sigma: float):

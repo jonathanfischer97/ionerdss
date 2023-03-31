@@ -1,4 +1,4 @@
-import dode_face_leg_reduce_coor_gen
+from .dode_face_leg_reduce_coor_gen import dode_face_leg_reduce_coor_gen
 
 
 def dode_face_input_coord(radius: float, sigma: float):

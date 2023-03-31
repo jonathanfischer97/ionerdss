@@ -1,6 +1,6 @@
 import numpy as np
-import COM_leg_list_gen
-import cube_face_COM_leg_list_gen
+from .COM_leg_list_gen import COM_leg_list_gen
+from .cube_face_COM_leg_list_gen import cube_face_COM_leg_list_gen
 
 
 def cube_face_leg_reduce_coord_gen(radius: float, sigma: float):

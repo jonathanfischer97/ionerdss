@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-import read_cluster_lifetime
+from .read_cluster_lifetime import read_cluster_lifetime
 
 
 def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

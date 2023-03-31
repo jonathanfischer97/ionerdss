@@ -1,4 +1,4 @@
-import read_file
+from .read_file import read_file
 
 
 def hist_temp(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):

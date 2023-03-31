@@ -1,5 +1,5 @@
-import mid_pt
-import tetr_face_COM_coord
+from .mid_pt import mid_pt
+from .tetr_face_COM_coord import tetr_face_COM_coord
 
 
 def tetr_face_COM_leg_coord(a: float, b: float, c: float):

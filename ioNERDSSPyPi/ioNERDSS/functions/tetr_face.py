@@ -1,4 +1,4 @@
-import tetr_face_write
+from .tetr_face_write import tetr_face_write
 
 
 def tetr_face(radius: float, sigma: float):

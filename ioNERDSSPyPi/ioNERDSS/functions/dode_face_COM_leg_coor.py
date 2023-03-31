@@ -1,5 +1,5 @@
-import mid_pt
-import dode_face_COM_coor
+from .mid_pt import mid_pt
+from .dode_face_COM_coor import dode_face_COM_coor
 
 
 def dode_face_COM_leg_coor(a: float, b: float, c: float, d: float, e: float):

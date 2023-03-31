@@ -1,5 +1,5 @@
-import distance
-import dode_vert_input_coord
+from .distance import distance
+from .dode_vert_input_coord import dode_vert_input_coord
 
 
 def dode_vert_norm_input(radius: float, sigma: float):

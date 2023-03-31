@@ -1,5 +1,5 @@
-import dode_face_COM_leg_list_gen
-import COM_leg_list_gen
+from .dode_face_COM_leg_list_gen import dode_face_COM_leg_list_gen
+from .COM_leg_list_gen import COM_leg_list_gen
 
 
 def dode_face_leg_reduce_coor_gen(radius: float, sigma: float):

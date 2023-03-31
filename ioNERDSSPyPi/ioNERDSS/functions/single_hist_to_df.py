@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import single_hist_to_csv
+from .single_hist_to_csv import single_hist_to_csv
 
 
 def single_hist_to_df(FileName: str, SaveCsv: bool = True):

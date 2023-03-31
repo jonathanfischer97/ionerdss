@@ -1,8 +1,8 @@
 import math
 import numpy as np
-import real_PDB_unit
-import real_PDB_triangle_correction
-import real_PDB_calculate_phi
+from .real_PDB_unit import real_PDB_unit
+from .real_PDB_triangle_correction import real_PDB_triangle_correction
+from .real_PDB_calculate_phi import real_PDB_calculate_phi
 
 
 def real_PDB_angles(COM1, COM2, int_site1, int_site2, normal_point1, normal_point2):

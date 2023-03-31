@@ -1,4 +1,4 @@
-import octa_vert_COM_leg_gen
+from .octa_vert_COM_leg_gen import octa_vert_COM_leg_gen
 
 
 def octa_vert_leg_reduce_coor_gen(radius: float, sigma: float):

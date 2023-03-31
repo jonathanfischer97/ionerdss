@@ -1,4 +1,4 @@
-import tetr_vert_COM_leg_gen
+from .tetr_vert_COM_leg_gen import tetr_vert_COM_leg_gen
 
 
 def tetr_vert_leg_reduce_coor_gen(radius: float, sigma: float):

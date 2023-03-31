@@ -1,4 +1,4 @@
-import COM_leg_list_gen
+from .COM_leg_list_gen import COM_leg_list_gen
 
 
 def icos_face_leg_reduce_coord_gen(radius: float, sigma: float):

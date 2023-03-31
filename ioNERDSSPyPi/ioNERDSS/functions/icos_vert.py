@@ -1,4 +1,4 @@
-import icos_vert_write
+from .icos_vert_write import icos_vert_write
 
 
 def icos_vert(radius: float, sigma: float):

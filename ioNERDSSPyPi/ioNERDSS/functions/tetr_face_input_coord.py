@@ -1,4 +1,4 @@
-import tetr_face_leg_reduce_coord_gen
+from .tetr_face_leg_reduce_coord_gen import tetr_face_leg_reduce_coord_gen
 
 
 def tetr_face_input_coord(radius: float, sigma: float):

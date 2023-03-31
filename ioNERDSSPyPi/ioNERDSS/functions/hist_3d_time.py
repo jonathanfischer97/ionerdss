@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-import hist_temp
+from .hist_temp import hist_temp
 
 
 def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

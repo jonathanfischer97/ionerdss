@@ -1,4 +1,4 @@
-import cube_vert_norm_input
+from .cube_vert_norm_input import cube_vert_norm_input
 
 
 def cube_vert_write(radius: float, sigma: float):

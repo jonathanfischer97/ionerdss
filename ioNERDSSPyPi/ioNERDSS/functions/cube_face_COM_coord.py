@@ -1,4 +1,4 @@
-import mid_pt
+from .mid_pt import mid_pt
 
 
 def cube_face_COM_coord(a: float, b: float, c: float, d: float):

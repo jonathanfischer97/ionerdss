@@ -1,5 +1,5 @@
 import numpy as np
-import mid_pt
+from .mid_pt import mid_pt
 
 
 def tetr_vert_COM_leg(COM: float, a: float, b: float, c: float):

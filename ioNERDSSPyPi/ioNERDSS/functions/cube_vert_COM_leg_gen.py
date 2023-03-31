@@ -1,4 +1,4 @@
-import cube_vert_coord
+from .cube_vert_coord import cube_vert_coord
 
 
 def cube_vert_COM_leg_gen(radius: float):

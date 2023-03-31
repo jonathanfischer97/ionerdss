@@ -1,4 +1,4 @@
-import tetr_vert_coord
+from .tetr_vert_coord import tetr_vert_coord
 
 
 def tetr_vert_COM_leg_gen(radius: float):

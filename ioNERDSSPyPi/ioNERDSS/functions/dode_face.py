@@ -1,4 +1,4 @@
-import dode_face_write
+from .dode_face_write import dode_face_write
 
 
 def dode_face(radius: float, sigma: float):

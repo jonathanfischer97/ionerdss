@@ -2,7 +2,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-import read_transition_matrix
+from .read_transition_matrix import read_transition_matrix
 
 
 def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

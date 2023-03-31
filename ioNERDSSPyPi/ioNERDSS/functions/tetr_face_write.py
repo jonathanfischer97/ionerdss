@@ -1,6 +1,6 @@
-import angle_cal
-import tetr_face_leg_reduce_coord_gen
-import tetr_face_input_coord
+from .angle_cal import angle_cal
+from .tetr_face_leg_reduce_coord_gen import tetr_face_leg_reduce_coord_gen
+from .tetr_face_input_coord import tetr_face_input_coord
 
 
 def tetr_face_write(radius: float, sigma: float):

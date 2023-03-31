@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import hist_temp
+from .hist_temp import hist_temp
 
 
 def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

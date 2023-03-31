@@ -1,5 +1,5 @@
-import RESTART_read_restart
-import RESTART_new_pdb
+from .RESTART_read_restart import RESTART_read_restart
+from .RESTART_new_pdb import RESTART_new_pdb
 
 
 def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart='restart.dat'):

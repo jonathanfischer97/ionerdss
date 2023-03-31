@@ -1,4 +1,4 @@
-import cube_face_write
+from .cube_face_write import cube_face_write
 
 
 def cube_face(radius: float, sigma: float):

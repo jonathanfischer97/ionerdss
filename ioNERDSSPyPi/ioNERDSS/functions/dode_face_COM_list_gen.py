@@ -1,5 +1,5 @@
-import dode_face_dodecahedron_coord
-import dode_face_COM_coor
+from .dode_face_dodecahedron_coord import dode_face_dodecahedron_coord
+from .dode_face_COM_coor import dode_face_COM_coor
 
 
 def dode_face_COM_list_gen(radius: float):

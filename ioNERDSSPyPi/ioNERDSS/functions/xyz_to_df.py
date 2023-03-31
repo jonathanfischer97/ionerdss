@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import xyz_to_csv
+from .xyz_to_csv import xyz_to_csv
 
 
 def xyz_to_df(FileName: str, LitNum: int, SaveCsv: bool = True):

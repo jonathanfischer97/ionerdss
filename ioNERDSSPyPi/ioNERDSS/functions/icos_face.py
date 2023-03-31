@@ -1,4 +1,4 @@
-import icos_face_write
+from .icos_face_write import icos_face_write
 
 
 def icos_face(radius: float, sigma: float):

@@ -1,4 +1,4 @@
-import octa_face_leg_reduce_coord_gen
+from .octa_face_leg_reduce_coord_gen import octa_face_leg_reduce_coord_gen
 
 
 def octa_face_input_coord(radius: float, sigma: float):

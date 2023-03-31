@@ -1,5 +1,5 @@
-import COM_leg_list_gen
-import tetr_face_COM_leg_list_gen
+from .COM_leg_list_gen import COM_leg_list_gen
+from .tetr_face_COM_leg_list_gen import tetr_face_COM_leg_list_gen
 
 
 def tetr_face_leg_reduce_coord_gen(radius: float, sigma: float):

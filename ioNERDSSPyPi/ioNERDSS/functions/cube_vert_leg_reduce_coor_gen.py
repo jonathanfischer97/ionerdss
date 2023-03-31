@@ -1,4 +1,4 @@
-import cube_vert_COM_leg_gen
+from .cube_vert_COM_leg_gen import cube_vert_COM_leg_gen
 
 
 def cube_vert_leg_reduce_coor_gen(radius: float, sigma: float):

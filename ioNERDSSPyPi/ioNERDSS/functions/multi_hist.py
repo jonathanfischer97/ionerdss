@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import read_multi_hist
+from .read_multi_hist import read_multi_hist
 
 
 def multi_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

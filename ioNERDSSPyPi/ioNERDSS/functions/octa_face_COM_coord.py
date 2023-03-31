@@ -1,5 +1,5 @@
 import math
-import mid_pt
+from .mid_pt import mid_pt
 
 
 def octa_face_COM_coord(a: float, b: float, c: float):

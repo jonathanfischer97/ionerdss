@@ -1,5 +1,5 @@
-import octa_face_vert_coord
-import octa_face_COM_leg_coord
+from .octa_face_vert_coord import octa_face_vert_coord
+from .octa_face_COM_leg_coord import octa_face_COM_leg_coord
 
 
 def octa_face_COM_leg_list_gen(radius: float):

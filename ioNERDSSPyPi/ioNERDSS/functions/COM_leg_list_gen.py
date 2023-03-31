@@ -1,5 +1,5 @@
-import icos_face_vert_coord
-import icos_face_COM_leg_coord
+from .icos_face_vert_coord import icos_face_vert_coord
+from .icos_face_COM_leg_coord import icos_face_COM_leg_coord
 
 
 def COM_leg_list_gen(radius: float):

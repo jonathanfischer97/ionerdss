@@ -1,7 +1,7 @@
-import icos_vert_input_coord
-import icos_vert_center_coor
-import icos_vert_check_dis
-import icos_vert_norm_input
+from .icos_vert_input_coord import icos_vert_input_coord
+from .icos_vert_center_coor import icos_vert_center_coor
+from .icos_vert_check_dis import icos_vert_check_dis
+from .icos_vert_norm_input import icos_vert_norm_input
 
 
 def icos_vert_write(radius: float, sigma: float):

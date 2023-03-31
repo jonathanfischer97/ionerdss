@@ -1,4 +1,4 @@
-import octa_vert_coord
+from .octa_vert_coord import octa_vert_coord
 
 
 def octa_vert_COM_leg_gen(radius: float):

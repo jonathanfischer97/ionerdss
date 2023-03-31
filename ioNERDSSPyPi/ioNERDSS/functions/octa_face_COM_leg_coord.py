@@ -1,5 +1,5 @@
-import mid_pt
-import octa_face_COM_coord
+from .mid_pt import mid_pt
+from .octa_face_COM_coord import octa_face_COM_coord
 
 
 def octa_face_COM_leg_coord(a: float, b: float, c: float):

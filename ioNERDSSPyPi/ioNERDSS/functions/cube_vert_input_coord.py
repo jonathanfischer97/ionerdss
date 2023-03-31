@@ -1,4 +1,4 @@
-import cube_vert_leg_reduce_coor_gen
+from .cube_vert_leg_reduce_coor_gen import cube_vert_leg_reduce_coor_gen
 
 
 def cube_vert_input_coord(radius: float, sigma: float):

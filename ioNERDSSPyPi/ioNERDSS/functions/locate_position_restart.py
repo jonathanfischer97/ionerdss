@@ -1,8 +1,8 @@
-import RESTART_read_restart
-import RESTART_pdb_to_df
-import RESTART_complex_df_gen
-import RESTART_find_complex_df
-import RESTART_new_pdb
+from .RESTART_read_restart import RESTART_read_restart
+from .RESTART_pdb_to_df import RESTART_pdb_to_df
+from .RESTART_complex_df_gen import RESTART_complex_df_gen
+from .RESTART_find_complex_df import RESTART_find_complex_df
+from .RESTART_new_pdb import RESTART_new_pdb
 
 
 def locate_position_restart(FileNamePdb, NumList, FileNameRestart='restart.dat'):

@@ -1,4 +1,4 @@
-import dode_vert_norm_input
+from .dode_vert_norm_input import dode_vert_norm_input
 
 
 def dode_vert_write(radius: float, sigma: float):

@@ -1,5 +1,5 @@
-import PDB_pdb_to_df
-import RESTART_read_restart
+from .PDB_pdb_to_df import PDB_pdb_to_df
+from .RESTART_read_restart import RESTART_read_restart
 
 
 def single_restart_to_df(FileNamePdb, ComplexSizeList, FileNameRestart='restart.dat', SerialNum=0):

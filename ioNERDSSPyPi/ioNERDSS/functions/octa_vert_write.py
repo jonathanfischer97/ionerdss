@@ -1,4 +1,4 @@
-import octa_vert_input_coord
+from .octa_vert_input_coord import octa_vert_input_coord
 
 
 def octa_vert_write(radius: float, sigma: float):

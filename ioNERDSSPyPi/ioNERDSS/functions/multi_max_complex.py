@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import hist
-import read_multi_hist
-import multi_hist
+from .hist import hist
+from .read_multi_hist import read_multi_hist
+from .multi_hist import multi_hist
 
 
 def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
