@@ -59,7 +59,7 @@ for filename in os.listdir(directory_name):
                 if '.' in word:
                     imports.append(libraries[word])
                 elif '(' in word:
-                    imports.append('import ' + word[:-1] + '\n')
+                    imports.append('from .' + word[:-1] + ' import ' + word[:-1] + '\n')
         if len(imports) > 0:
             imports.append('\n\n')
     with open(file_path, 'w') as f:
