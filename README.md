@@ -10,7 +10,7 @@ pip install ioNERDSS
 
 ### Syncing PyPi from GitHub
 - Navigate to the ioNERDSSPyPi folder
-- Ensure that your package's version number in setup.py matches the version number of the PyPI package you want to sync. If not, update the version number.
+- Ensure that your package's version number in setup.py matches the version number of the PyPI package you want to sync (It should be a newer version). If not, update the version number.
 - Create a source distribution of your package by running the following command in your terminal: **python setup.py sdist**. This will create a dist directory containing a tarball of your package's source code.
 - Upload the source distribution to PyPI by running the following command: twine upload dist/*
 
@@ -22,3 +22,4 @@ pip install ioNERDSS
 - Use meaningful names for modules, classes, functions, and variables.
 - Include examples and usage instructions in documentation. Sphinx can include examples and usage instructions in your documentation, which can help users understand how to use your code.
 - Use Sphinx to generate documentation.
+- Add tests for each function using unittest.

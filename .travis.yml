@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.9"
+install:
+  - pip install -r requirements.txt
+before_script:
+  - git diff --name-only $TRAVIS_COMMIT_RANGE | grep "^ioNERDSSPyPi/" | xargs tar -czvf ioNERDSSPyPi.tar.gz
+script:
+  - tar -xzvf ioNERDSSPyPi.tar.gz
+  - python -m unittest discover functions/
