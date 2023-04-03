@@ -44,18 +44,18 @@ ExamplesOfUsingIoNERDSS: Holds a lot of files that (i may be wrong) seem to be e
         - simulation: seems to be a complete NERDSS output of something
         - multi_components_sikao: another example of creating graphs (same data type as before, but new files)
  - PdbAngleCalculation: an example of IoNERDSS using ouputs from PDB NERDSS sims to create graphs and new inputs for NERDSS
-        - 3Dtest.py: unknown
-        - JupyterNotebook: instantiates IoNERDSS functions and uses them for various PDB related tasks
-        - 1si4/1utc: NERDSS RealPDB output
-        - 1utc (folder): seems to be an example of using IoNERDSS for editing the PDB input. However, the code is seperate from the library, and just .py files here. 
-        - raw_functions: same as 1utc but only includes the functions
+    - 3Dtest.py: unknown
+    - JupyterNotebook: instantiates IoNERDSS functions and uses them for various PDB related tasks
+    - 1si4/1utc: NERDSS RealPDB output
+    - 1utc (folder): seems to be an example of using IoNERDSS for editing the PDB input. However, the code is seperate from the library, and just .py files here. 
+    - raw_functions: same as 1utc but only includes the functions
  - PlatonicSolids: examples of creating platonic solids using IoNerds
-        - Folders with solid names (ex: Cube, Octahedron)
-            - [name]Face and [name]Vertex: the two files have slightly different contents in each file, but I do not know the difference
-                - [name].mole / parm.inp: inputs for NERDSS made by IoNERDSS
-                - JupyterNotebook: writes the inputs for NERDSS (instanstiates all functions, does not import)
-        - PyFilesForPlatonicSolids: includes python files that instantiate functions that can be used to create Platoic Solids that can be inputted in NERDSS. However, the scripts will not create any platonic solids as they only instantiate the functions, maybe intended for user to add their own code at the bottom.
-        - Clath_rotate: includes 1 JupyterNotebook that instantiates and then runs functions that rotate clathrin (the initial clathrin data is included in the script)
+    - Folders with solid names (ex: Cube, Octahedron)
+        - [name]Face and [name]Vertex: the two files have slightly different contents in each file, but I do not know the difference
+            - [name].mole / parm.inp: inputs for NERDSS made by IoNERDSS
+            - JupyterNotebook: writes the inputs for NERDSS (instanstiates all functions, does not import)
+    - PyFilesForPlatonicSolids: includes python files that instantiate functions that can be used to create Platoic Solids that can be inputted in NERDSS. However, the scripts will not create any platonic solids as they only instantiate the functions, maybe intended for user to add their own code at the bottom.
+    - Clath_rotate: includes 1 JupyterNotebook that instantiates and then runs functions that rotate clathrin (the initial clathrin data is included in the script)
 
 
 
