@@ -13,27 +13,28 @@ We have created a new development branch where we will be improving the code qua
  - **IoNERDSS:** Holds the actual code. Each function can be find as a seperate file in /functions
  - **ioNERDSS.egg-info:** text that is necessary for PyPi
 
-
 **Tutorial: Holds developer and user tutorials**
  - **DevelopersGuide:** Describes how to edit library, and then upload it to PyPi
  - **MultiSpeciesTutorial:** Desribes how to create graphs and spreadsheets from multi-species assembly NERDSS sim.
-    - **Dodecahedron:** NERDSS MutliSpecies Input
-    - histogram_complexes_time_dode_1 .... _5: NERDSS MultiSpecies outputs
+    - **Dodecahedron:** NERDSS Multi-Species Input
+    - JupyterNotebook: Walks user through how to use different functions required for making graphs and spreadsheets from the NERDSS multi-species output
+    - histogram_complexes_time_dode_1 .... _5: NERDSS Multi-Species outputs
     - .png/.csv: IoNERDSS outputted charts and spreadsheets
  - **RealRealPDBTutorial:** Describes how to interpret and edit data from RealPDB NERDSS sim.
+    - JupyterNotebook: Walks user through how to use different functions required for interpreting data from RealPDB NERDSS sim & creating new inputs for the NERDSS sim
     - 1si4.pdb (hemoglobin protein) & 1utc.pdb (clathrin protein): NERDSS RealPDB output
-    - .mol/.inp: NERDSS input created with IoNERDSS
+    - .mol/.inp: IoNERDSS outputted NERDSS input
     - show_structure.pdb:  IoNERDSS outputted 'simplified' .pdb file for creating graphs of the protein's connections
  - **SingleSpeciesTutorial:** Describes how to use IoNERDSS with NERDSS & how to interpret / edit data from SingleSpecies NERDSS sim.
-    - .mol /parm.inp: NERDSS inputs generated with IoNERDSS.
+    - JupyterNotebook: Walks user through how to use different functions required to create inputs for single-species NERDSS sim & for making graphs and spreadsheets from the NERDSS output
+    - .mol /parm.inp: IoNERDSS outputted NERDSS inputs
     - histogran_complexes_time_dode_1 ... _5: NERDSS SingleSpecies outputs
     - transition_matrix_time_1 ... _5: NERDSS SingleSpecies outputs
     - restart.dat/9999999.pdb: NERDSS SingleSpecies ouputs
     - output_file: IoNERDSS outputted file. Edited version of restart.dat/9999999.pdb
 
-
-**ExamplesOfUsingIoNERDSS: Holds a lot of files that (i may be wrong) seem to be examples of using ioNERDSS.**
- - **LocatePositionByPdbRestart</u>: an example of using IoNERDSS to interpret data from the pdb / restart / .dat files from the SingleSpecies NERDSS sim
+**ExamplesIoNERDSS: Holds a lot of files that (i may be wrong) seem to be examples of using ioNERDSS.**
+ - **LocatePositionByPdbRestart** : an example of using IoNERDSS to interpret data from the pdb / restart / .dat files from the SingleSpecies NERDSS sim
     - **PDB:** Example of using parms.inp + 9999999.pdb to locate positions
     - **restart:** Example of using restart.dat + 9999999.pdb to locate positions
     - Both Include:
@@ -50,7 +51,7 @@ We have created a new development branch where we will be improving the code qua
     - hist_3d_time.py: python script that generates a graph based on the other files in the folder
     - multi_comp_hist.dat / hist_to_df.csv: unknown
  - **PdbAngleCalculation:** an example of IoNERDSS using ouputs from PDB NERDSS sims to create graphs and new inputs for NERDSS
-    - **1utc</u>: seems to be an example of using IoNERDSS for editing the PDB input. However, the code is seperate from the library, and just .py files here. 
+    - **1utc** : seems to be an example of using IoNERDSS for editing the PDB input. However, the code is seperate from the library, and just .py files here. 
     - **raw_functions:** same as 1utc but only includes the functions
     - 3Dtest.py: unknown
     - JupyterNotebook: instantiates IoNERDSS functions and uses them for various PDB related tasks
