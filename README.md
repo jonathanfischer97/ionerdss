@@ -7,7 +7,7 @@ This repository primarily contains Python code for creating user-friendly analys
 We have created a new development branch where we will be improving the code quality, cleaning up tutorials, optimizing certain functions, and reorganizing directories for better readability.
 
 ### Folder Descriptions
-*<u>Underlined text = sub-directory</u>*
+*<u>Underlined text = sub-directory<u>*
 
 **IoNERDSSPyPi: Holds the main code of the library + extra files necessary for PyPi**
  - <u>IoNERDSS:</u> Holds the actual code. Each function can be find as a seperate file in /functions
