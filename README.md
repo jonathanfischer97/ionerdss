@@ -7,58 +7,61 @@ This repository primarily contains Python code for creating user-friendly analys
 We have created a new development branch where we will be improving the code quality, cleaning up tutorials, optimizing certain functions, and reorganizing directories for better readability.
 
 ### Folder Descriptions
+*<u>Underlined text = sub-directory</u>*
 
 **IoNERDSSPyPi: Holds the main code of the library + extra files necessary for PyPi**
- - IoNERDSS: Holds the actual code. Each function can be find as a seperate file in /functions
- - ioNERDSS.egg-info: text that is necessary for PyPi
+ - <u>IoNERDSS:</u> Holds the actual code. Each function can be find as a seperate file in /functions
+ - <u>ioNERDSS.egg-info:</u> text that is necessary for PyPi
+
 
 **Tutorial: Holds developer and user tutorials**
- - DevelopersGuide: Describes how to edit library, and then upload it to PyPi
- - MultiSpeciesTutorial: Desribes how to create graphs and spreadsheets from multi-species assembly NERDSS sim.
-    - Dodecahedron folder: NERDSS MutliSpecies Input
+ - <u>DevelopersGuide:</u> Describes how to edit library, and then upload it to PyPi
+ - <u>MultiSpeciesTutorial:</u> Desribes how to create graphs and spreadsheets from multi-species assembly NERDSS sim.
+    - <u>Dodecahedron:</u> NERDSS MutliSpecies Input
     - histogram_complexes_time_dode_1 .... _5: NERDSS MultiSpecies outputs
     - .png/.csv: IoNERDSS outputted charts and spreadsheets
- - RealRealPDBTutorial: Describes how to interpret and edit data from RealPDB NERDSS sim.
+ - <u>RealRealPDBTutorial:</u> Describes how to interpret and edit data from RealPDB NERDSS sim.
     - 1si4.pdb (hemoglobin protein) & 1utc.pdb (clathrin protein): NERDSS RealPDB output
     - .mol/.inp: NERDSS input created with IoNERDSS
     - show_structure.pdb:  IoNERDSS outputted 'simplified' .pdb file for creating graphs of the protein's connections
- - SingleSpeciesTutorial: Describes how to use IoNERDSS with NERDSS & how to interpret / edit data from SingleSpecies NERDSS sim.
+ - <u>SingleSpeciesTutorial:</u> Describes how to use IoNERDSS with NERDSS & how to interpret / edit data from SingleSpecies NERDSS sim.
     - .mol /parm.inp: NERDSS inputs generated with IoNERDSS.
     - histogran_complexes_time_dode_1 ... _5: NERDSS SingleSpecies outputs
     - transition_matrix_time_1 ... _5: NERDSS SingleSpecies outputs
     - restart.dat/9999999.pdb: NERDSS SingleSpecies ouputs
     - output_file: IoNERDSS outputted file. Edited version of restart.dat/9999999.pdb
 
+
 **ExamplesOfUsingIoNERDSS: Holds a lot of files that (i may be wrong) seem to be examples of using ioNERDSS.**
- - LocatePositionByPdbRestart: an example of using IoNERDSS to interpret data from the pdb / restart / .dat files from the SingleSpecies NERDSS sim
-    - PDB: Example of using parms.inp + 0000000.pdb to locate positions
-    - restart: Example of using restart.dat + 0000000.pdb to locate positions
+ - <u>LocatePositionByPdbRestart</u>: an example of using IoNERDSS to interpret data from the pdb / restart / .dat files from the SingleSpecies NERDSS sim
+    - <u>PDB:</u> Example of using parms.inp + 9999999.pdb to locate positions
+    - <u>restart:</u> Example of using restart.dat + 9999999.pdb to locate positions
     - Both Include:
         - output_file.pdb: file outputted by the jupyter notebook code
- - OutputVis: an example of IoNERDSS using ouputs from Single/MultiSpecies NERDSS sims to create graphs. (code not in a directory is for single species)
+ - <u>OutputVis:</u> an example of IoNERDSS using ouputs from Single/MultiSpecies NERDSS sims to create graphs. (code not in a directory is for single species)
+     - <u>multi_components:</u> same thing but for multispecies
+        - <u>simulation:</u> seems to be a complete NERDSS output of something
+        - <u>multi_components_sikao:</u> another example of creating graphs (same data type as before, but new files)
+        - JupyterNotebook: shows a lot of examples of creating graphs based on data. Both inports and instantiates (some) functions.
+        - histogram_complexes_time ... _5: NERDSS outputs
     - histogran_complexes_time_dode_1 ... _5: NERDSS SingleSpecies outputs
     - transition_matrix_time ... _5: NERDSS SingleSpecies outputs
     - JupyterNotebook: seems to just instantiate all functions that would be necessary, but does not do anything with them. Possibl intended for user to use final box?
     - hist_3d_time.py: python script that generates a graph based on the other files in the folder
     - multi_comp_hist.dat / hist_to_df.csv: unknown
-    - multi_components: same thing but for multispecies
-        - JupyterNotebook: shows a lot of examples of creating graphs based on data. Both inports and instantiates (some) functions.
-        - histogram_complexes_time ... _5: NERDSS outputs
-        - simulation: seems to be a complete NERDSS output of something
-        - multi_components_sikao: another example of creating graphs (same data type as before, but new files)
- - PdbAngleCalculation: an example of IoNERDSS using ouputs from PDB NERDSS sims to create graphs and new inputs for NERDSS
+ - <u>PdbAngleCalculation:</u> an example of IoNERDSS using ouputs from PDB NERDSS sims to create graphs and new inputs for NERDSS
+    - <u>1utc</u>: seems to be an example of using IoNERDSS for editing the PDB input. However, the code is seperate from the library, and just .py files here. 
+    - <u>raw_functions:</u> same as 1utc but only includes the functions
     - 3Dtest.py: unknown
     - JupyterNotebook: instantiates IoNERDSS functions and uses them for various PDB related tasks
     - 1si4/1utc: NERDSS RealPDB output
-    - 1utc (folder): seems to be an example of using IoNERDSS for editing the PDB input. However, the code is seperate from the library, and just .py files here. 
-    - raw_functions: same as 1utc but only includes the functions
- - PlatonicSolids: examples of creating platonic solids using IoNerds
+ - <u>PlatonicSolids:</u> examples of creating platonic solids using IoNerds
     - Folders with solid names (ex: Cube, Octahedron)
-        - [name]Face and [name]Vertex: the two files have slightly different contents in each file, but I do not know the difference
+        - <u>[name]Face</u> and <u>[name]Vertex:</u> the two files have slightly different contents in each file, but I do not know the difference
             - [name].mole / parm.inp: inputs for NERDSS made by IoNERDSS
             - JupyterNotebook: writes the inputs for NERDSS (instanstiates all functions, does not import)
-    - PyFilesForPlatonicSolids: includes python files that instantiate functions that can be used to create Platoic Solids that can be inputted in NERDSS. However, the scripts will not create any platonic solids as they only instantiate the functions, maybe intended for user to add their own code at the bottom.
-    - Clath_rotate: includes 1 JupyterNotebook that instantiates and then runs functions that rotate clathrin (the initial clathrin data is included in the script)
+    - <u>PyFilesForPlatonicSolids:</u> includes python files that instantiate functions that can be used to create Platoic Solids that can be inputted in NERDSS. However, the scripts will not create any platonic solids as they only instantiate the functions, maybe intended for user to add their own code at the bottom.
+    - <u>Clath_rotate:</u> includes 1 JupyterNotebook that instantiates and then runs functions that rotate clathrin (the initial clathrin data is included in the script)
 
 
 
