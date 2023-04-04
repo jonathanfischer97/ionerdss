@@ -1,4 +1,4 @@
-from .PDB_pdb_to_df import PDB_pdb_to_df
+from ..restart.PDB_pdb_to_df import PDB_pdb_to_df
 from .PDB_dis_df_gen import PDB_dis_df_gen
 from .PDB_bind_df_gen import PDB_bind_df_gen
 from .PDB_find_bond import PDB_find_bond

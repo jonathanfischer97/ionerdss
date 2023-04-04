@@ -4,7 +4,7 @@ from .gen_platonic import *
 from .cube import *
 from .dode import *
 from .octa import *
-from .tetra import *
+from .tetr import *
 
 # Get the directory of the current __init__.py file
 current_directory = os.path.dirname(__file__)

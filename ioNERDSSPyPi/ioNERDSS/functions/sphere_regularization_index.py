@@ -1,8 +1,8 @@
 import numpy as np
 import warnings
-from .hist import hist
+from .read_hist.hist import hist
 from .fitSphere import fitSphere
-from .single_restart_to_df import single_restart_to_df
+from .restart.single_restart_to_df import single_restart_to_df
 
 
 def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int, TimeStep: float,
