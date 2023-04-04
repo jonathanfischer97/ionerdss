@@ -1,4 +1,4 @@
-from .hist import *
+from .hist_dir import *
 
 
 import os

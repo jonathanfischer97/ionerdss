@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .hist import hist
+from .hist_dir import hist
 from .read_multi_hist import read_multi_hist
 from .multi_hist import multi_hist
 

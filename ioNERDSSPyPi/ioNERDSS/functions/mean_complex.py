@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .read_file import read_file
+from .hist_dir.read_file import read_file
 
 
 def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
