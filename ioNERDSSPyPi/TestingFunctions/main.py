@@ -1,7 +1,79 @@
+''''
+This is just a workspace to test the speed of functions. Has some NERDSS output files as tests.
+
+NERDSS Output File Explanation:
+ - histogram_single_component: (Normally called histogram_complexes_time.dat) is a histogram of a single-component NERDSS sim.
+
+
+'''
+
+from awful_tmr import badTimer
+## CURRENTLY TESTING: hist.py
+
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-from .hist_temp import hist_temp
+from mpl_toolkits.mplot3d import Axes3D
+
+
+def read_file(FileName: str, SpeciesName: str):
+    hist = []
+    hist_temp = []
+    hist_conv = []
+    hist_count = []
+    with open(FileName, 'r') as file:
+        for line in file.readlines():
+            if line[0:4] == 'Time':
+                if hist_count != [] and hist_conv != []:
+                    hist_temp.append(hist_count)
+                    hist_temp.append(hist_conv)
+                    hist.append(hist_temp)
+                hist_count = []
+                hist_conv = []
+                hist_temp = []
+                hist_temp.append(float(line.strip('Time (s): ')))
+            else:
+                string = '	' + str(SpeciesName) + ': '
+                line = line.strip('. \n').split(string)
+                if len(line) != 2:
+                    print('Wrong species name!')
+                    return 0
+                else:
+                    hist_count.append(int(line[0]))
+                    hist_conv.append(int(line[1]))
+            if len(hist_temp) == 0:
+                hist_temp.append(hist_count)
+                hist_temp.append(hist_conv)
+                hist.append(hist_temp)
+    hist_temp.append(hist_count)
+    hist_temp.append(hist_conv)
+    hist.append(hist_temp)
+    return hist
+
+
+
+
+def hist_temp(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
+    hist = read_file(FileName, SpeciesName)
+    plot_count = []
+    plot_conv = []
+    tot = 0
+    for i in hist:
+        if InitialTime <= i[0] <= FinalTime:
+            tot += 1
+            for j in i[2]:
+                if j not in plot_conv:
+                    plot_conv.append(j)
+                    plot_count.append(i[1][i[2].index(j)])
+                else:
+                    index = plot_conv.index(j)
+                    plot_count[index] += i[1][i[2].index(j)]
+    plot_count_mean = []
+    for i in plot_count:
+        plot_count_mean.append(i/tot)
+    return plot_conv, plot_count_mean
+
+
 
 
 def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
@@ -93,5 +165,14 @@ def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
             plt.savefig('histogram_3D.png', dpi=500)
         plt.show()
     return n_list, t_plt, count_list_mean, 'Nan'
+
+
+
+
+last = badTimer('Start',0)
+hist_3d_time(FileName='ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat',FileNum=1,InitialTime=0,FinalTime=1,SpeciesName='dode',TimeBins=10,ShowFig=False)
+badTimer('end',last)
+
+
 
 
