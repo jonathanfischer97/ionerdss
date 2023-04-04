@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .hist_dir import read_file
+from . import read_file
 
 
 def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
