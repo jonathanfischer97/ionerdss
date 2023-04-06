@@ -1,4 +1,4 @@
-from .PDB_pdb_to_df import PDB_pdb_to_df
+from ..pdb.general.PDB_pdb_to_df import PDB_pdb_to_df
 from .RESTART_read_restart import RESTART_read_restart
 
 

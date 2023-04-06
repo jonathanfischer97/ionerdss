@@ -1,6 +1,6 @@
 import math
 import copy
-from .real_PDB_mag import real_PDB_mag
+from .general.real_PDB_mag import real_PDB_mag
 
 
 def real_PDB_separate_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: list = [], NewSigma: list = []):

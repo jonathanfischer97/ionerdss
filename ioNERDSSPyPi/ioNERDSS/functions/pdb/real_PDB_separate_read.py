@@ -1,7 +1,7 @@
 import math
 import sys
-from .real_PDB_data_check import real_PDB_data_check
-from .real_PDB_chain_int import real_PDB_chain_int
+from .general.real_PDB_data_check import real_PDB_data_check
+from .general.real_PDB_chain_int import real_PDB_chain_int
 
 
 def real_PDB_separate_read(FileName: str):

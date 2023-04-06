@@ -1,6 +1,6 @@
 import numpy as np
 from .real_PDB_angles import real_PDB_angles
-from .real_PDB_norm_check import real_PDB_norm_check
+from .general.real_PDB_norm_check import real_PDB_norm_check
 
 
 def real_PDB_separate_angle(Result: tuple):

@@ -1,14 +1,7 @@
-from .platonic_solids import *
-from .transition_matrix import *
-from .single_species_hist import *
-from .multi_species_hist import *
-from .pdb import *
-from .xyz import *
-from .restart import *
-
-
 import os
 import importlib
+
+from .gen import *
 
 # Get the directory of the current __init__.py file
 current_directory = os.path.dirname(__file__)

@@ -1,7 +1,7 @@
 import math
 import numpy as np
-from .real_PDB_unit import real_PDB_unit
-from .real_PDB_triangle_correction import real_PDB_triangle_correction
+from .general.real_PDB_unit import real_PDB_unit
+from .general.real_PDB_triangle_correction import real_PDB_triangle_correction
 
 
 def real_PDB_calculate_phi(v: np.ndarray, n: np.ndarray, sigma: np.ndarray) -> float:
