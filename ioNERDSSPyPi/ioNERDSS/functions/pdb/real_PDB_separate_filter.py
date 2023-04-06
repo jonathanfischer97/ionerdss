@@ -1,4 +1,18 @@
 def real_PDB_separate_filter(Result: tuple, ChainList: list):
+    """
+    This function will filter the desired chain according to the input list of chain and exclude all the 
+    unnecessary coordinate information for future analysis. 
+
+    Args:
+        Result (tuple): The output result of function ‘real_PDB_separate_read (FileName)’. 
+        ChainList (list): The desired name of chains that users intend to examine. 
+
+    Returns:
+        A tuple that includes:
+         - coms_dict: Dictionary of the COMs of each unique chain
+         - dist_dict: Dictionary of the binding information between each pair of chains (including whether two chains are binded and the coordinates of each binding interface)
+    """
+
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     int_index = []
     for i in range(len(reaction_chain)):

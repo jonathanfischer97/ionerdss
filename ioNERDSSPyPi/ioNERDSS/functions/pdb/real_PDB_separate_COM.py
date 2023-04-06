@@ -1,4 +1,19 @@
+
+
 def real_PDB_separate_COM(Result: tuple):
+    """
+    Normalizes the COM of each chain in the given Result and subtracts the interface coordinates of each chain by their respective COM.
+
+    Args:
+        Result (tuple): The output result of function 'real_PDB_separate_angle (Result)'.
+
+    Returns:
+        tuple: The tuple contains all the information for further analysis.
+
+    Note:
+        The function expects the Result as input which is the output of 'real_PDB_separate_angle (Result)'.
+    """
+
     reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM, angle, normal_point_lst1, normal_point_lst2, one_site_chain = Result
     for i in range(len(unique_chain)):
         for k in range(len(reaction_chain)):

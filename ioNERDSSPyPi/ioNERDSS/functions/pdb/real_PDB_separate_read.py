@@ -1,10 +1,26 @@
 import math
 import sys
-from .general.real_PDB_data_check import real_PDB_data_check
-from .general.real_PDB_chain_int import real_PDB_chain_int
+from .gen.real_PDB_data_check import real_PDB_data_check
+from .gen.real_PDB_chain_int import real_PDB_chain_int
 
 
 def real_PDB_separate_read(FileName: str):
+    """
+    This function will extract the coordinate information stored inside a real PDB file and calculate 
+    the COM of each unique chain, as well as recognize the binding information between each pair of chains 
+    (all atoms of different unique chains that are closer that 3.0 angstroms are considered as binded), 
+    including whether two chains are binded and the coordinates of each binding interface. All the information 
+    will be printed on the screen and the returns will contain all the information for further analysis. 
+
+    Args:
+        FileName (str): The full path of the desired PDB file or name of the file if in same directory. 
+
+    Returns:
+        A tuple that includes:
+         - coms_dict: Dictionary of the COMs of each unique chain
+         - dist_dict: Dictionary of the binding information between each pair of chains (including whether two chains are binded and the coordinates of each binding interface)
+    """
+
     total_atom_count = []
     # specific chain the atom belongs to (such as A or B or C, etc).
     total_chain = []

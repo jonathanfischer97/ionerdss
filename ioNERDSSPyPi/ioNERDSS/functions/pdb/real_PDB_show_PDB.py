@@ -1,4 +1,17 @@
 def real_PDB_show_PDB(Result: bool):
+    """
+    Generates a PDB file containing the calculated COMs and reaction interfaces for visualization and comparison with the 
+    original PDB file. The input must be the output result of the 'real_PDB_separate_read' function. Note that the unit for 
+    the coordinates in the PDB file is Angstrom, not nm, so the values will be 10 times larger than those in NERDSS input 
+    files.
+
+    Parameters:
+    Result (tuple): The output result of the 'real_PDB_separate_read' function.
+
+    Returns:
+        None
+    """
+        
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     f = open('show_structure.pdb', 'w')
     f.write('TITLE  PDB\n')

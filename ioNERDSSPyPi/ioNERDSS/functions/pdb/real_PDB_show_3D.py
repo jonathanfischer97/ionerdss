@@ -2,6 +2,18 @@ import matplotlib.pyplot as plt
 
 
 def real_PDB_show_3D(Result: bool):
+    """
+    Generate a 3D plot to display the spatial geometry of each simplified chain.
+    The plot will show solid lines of different colors that connect the COM with interfaces within each chain. It will also show black dotted lines that connect each pair of interfaces, and the COMs will be represented as solid points with their names above.
+    To interact with the plot, other IDEs rather than Jupyter Notebook (such as VSCode) are recommended.
+
+    Parameters:
+        Result (tuple): The output result of the function 'real_PDB_separate_read(FileName)'.
+
+    Returns:
+        None
+    """
+
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     coord_list = []
     for i in range(len(unique_chain)):

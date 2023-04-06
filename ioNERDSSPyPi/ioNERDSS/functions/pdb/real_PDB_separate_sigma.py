@@ -1,9 +1,32 @@
 import math
 import copy
-from .general.real_PDB_mag import real_PDB_mag
+from .gen.real_PDB_mag import real_PDB_mag
 
 
 def real_PDB_separate_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: list = [], NewSigma: list = []):
+    """
+    This function allows users to change the value of sigma (the distance between two binding interfaces). 
+    The new sigma value and the corresponding coordinates of interfaces will be shown on the screen and the 
+    returns will contain all the information for further analysis. 
+
+    Args:
+        Result (tuple): The output result of function ‘real_PDB_separate_read(FileName)’. 
+        ChangeSigma (bool, optional): If True, the users are capable of changing the sigma value; 
+                                      if False, the sigma will remain as the original ones. 
+        SiteList (list, optional): It consists of the serial numbers of the pair of interfaces for which 
+                                   the user needs to modify the sigma value. The serial number is determined 
+                                   by the pairing sequence shown by the function ‘real_PDB_separate_read’. 
+                                   The serial number should be no greater than the total number of interface 
+                                   pairs and no smaller than 0. If the serial number is 0, it means to change 
+                                   all pairs of interfaces into a same sigma value.
+        NewSigma (list, optional): It consists of the actual sigma value that users desire to change, according 
+                                   to the sequence of input ‘SiteList’. 
+
+    Returns:
+        A tuple that includes:
+         - coms_dict: Dictionary of the COMs of each unique chain
+         - dist_dict: Dictionary of the binding information between each pair of chains (including whether two chains are binded and the coordinates of each binding interface)
+    """
 
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
     # user can choose to change the interaction site

@@ -1,9 +1,23 @@
 import numpy as np
-from .real_PDB_angles import real_PDB_angles
-from .general.real_PDB_norm_check import real_PDB_norm_check
+from .gen.real_PDB_angles import real_PDB_angles
+from .gen.real_PDB_norm_check import real_PDB_norm_check
 
 
 def real_PDB_separate_angle(Result: tuple):
+    """
+    This function calculates the 5 associating angles of each pair of interfaces.
+    The default normal vector will be assigned as (0, 0, 1). If the co-linear issue occurs, 
+    the system will use (0, 1, 0) instead to resolve co-linear issue. The calculated 5 angles 
+    will be shown on the screen automatically. If user intends to manually input the normal vector, 
+    please refer to function ‘real_PDB_UI’, the separated function does not support manual inputs.
+    
+    Args:
+        Result (tuple): The output result of function ‘real_PDB_separate_sigma (Result, ChangeSigma, SiteList, NewSigma)’.
+    
+    Returns:
+        Tuple: All the information for further analysis, including the 5 associating angles of each pair of interfaces.
+    """
+
     reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM = Result
     angle = []
     normal_point_lst1 = []
