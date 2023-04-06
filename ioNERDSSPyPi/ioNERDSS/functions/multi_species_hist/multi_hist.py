@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-def multi_hist(FileName: str = 'histogram_complexes_time.dat', FileNum: int = 1, InitialTime: float = 0, FinalTime: float = 0,
+def multi_hist(FileName: str = 'histogram_complexes_time.dat', FileNum: int = 1, InitialTime: float = 0, FinalTime: float = 1E10,
                SpeciesList: list = ['all'], BinNums: int = 10, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False) -> tuple:
     """
     Generate histogram of the size of target species for a multiple species system for the given species 
@@ -13,7 +13,7 @@ def multi_hist(FileName: str = 'histogram_complexes_time.dat', FileNum: int = 1,
         FileName (str): The name of the input file. Default is 'histogram_complexes_time.dat'
         FileNum (int): The number of files to read. Default is 1.
         InitialTime (float): The start time of the time range (inclusive). Default is 0.
-        FinalTime (float): The end time of the time range (exclusive). Default is 0. But will set to the length of the trace in the function if it is 0.
+        FinalTime (float): The end time of the time range (exclusive). Default is 1E10.
         SpeciesList (list): The list of targets for whose number will be counted as the size of the complex. Default is all species.
         BinNums (int, optional): The number of bins in the histogram. Default is 10.
         ExcludeSize (int, optional): The minimum value required to include a data point in the histogram. Default is 0.
