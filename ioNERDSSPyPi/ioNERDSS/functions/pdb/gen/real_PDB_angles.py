@@ -1,7 +1,7 @@
 import math
 import numpy as np
-from .general.real_PDB_unit import real_PDB_unit
-from .general.real_PDB_triangle_correction import real_PDB_triangle_correction
+from .real_PDB_unit import real_PDB_unit
+from .real_PDB_triangle_correction import real_PDB_triangle_correction
 from .real_PDB_calculate_phi import real_PDB_calculate_phi
 
 

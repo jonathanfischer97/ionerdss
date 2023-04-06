@@ -8,6 +8,7 @@ NERDSS Output File Explanation:
  of complex molecule at every time step in multi-component NERDSS sim.
  - trajectory: i dont really know. I think shows the trajectories of the molecules in the simulation.
  - transition_matrix_time: idk
+ - 1si4.pdb: describes info about hemogoblin??? (wow this list is not super helpful is it)
 '''
 
 from TestingFunctions.awful_tmr import badTimer
@@ -21,8 +22,10 @@ import ioNERDSS as ion
 
 
 last = badTimer('Start',0)
-ion.read_cluster_lifetime(FileName='ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat',InitialTime=0,FinalTime=1,SpeciesName='dode')
+ion.real_PDB_UI()
+
 badTimer('start',last)
 
-
-
+#last = badTimer('Start',0)
+#op = ion.real_PDB_show_PDB(Result=op)
+#badTimer('start',last) ioNERDSSPyPi\TestingFunctions\1si4.pdb

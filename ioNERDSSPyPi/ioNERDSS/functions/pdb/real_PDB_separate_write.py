@@ -6,7 +6,7 @@ def real_PDB_separate_write(Result: tuple):
         Result (tuple): The output result of function 'real_PDB_separate_COM(Result)'.
 
     Returns:
-        None
+        File with new inputs for NERDSS.
     """
 
     reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM, angle, normal_point_lst1, normal_point_lst2, one_site_chain = Result

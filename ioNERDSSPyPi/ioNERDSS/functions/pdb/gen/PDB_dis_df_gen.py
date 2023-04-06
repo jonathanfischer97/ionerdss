@@ -1,5 +1,5 @@
 import pandas as pd
-from .general.PDB_dis_cal import PDB_dis_cal
+from .PDB_dis_cal import PDB_dis_cal
 
 
 def PDB_dis_df_gen(df, info):
