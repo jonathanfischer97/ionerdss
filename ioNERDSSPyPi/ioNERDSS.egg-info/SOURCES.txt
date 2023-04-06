@@ -178,3 +178,4 @@ ioNERDSS/functions/tetr_vert_write.py
 ioNERDSS/functions/traj_track.py
 ioNERDSS/functions/xyz_to_csv.py
 ioNERDSS/functions/xyz_to_df.py
+ioNERDSS/functions/hist_dir/__init__.py
