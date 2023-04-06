@@ -1,4 +1,3 @@
-from .hist_to_data import *
 from .platonic_solids import *
 from .transition_matrix import *
 from .single_species_hist import *
