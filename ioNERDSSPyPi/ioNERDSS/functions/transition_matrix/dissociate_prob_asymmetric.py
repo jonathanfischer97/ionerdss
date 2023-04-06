@@ -20,21 +20,16 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
         SaveFig (bool, optional): If True, the plot will be saved as a '.png' file in the current directory; if False, the figure will not be saved. Defaults to False.
 
     Returns:
-        Tuple[np.ndarray, np.ndarray, np.ndarray]: A tuple containing the following:
+        A tuple containing the following:
         - np.ndarray: an array of the size of complexes
         - np.ndarray: an array of the dissociate probabilities when complexes dissociate into smaller complexes
         - np.ndarray: an array of the dissociate probabilities when complexes dissociate into larger complexes
-
-    Raises:
-        ValueError: If the specified InitialTime or FinalTime are out of range.
 
     Notes:
         - If multiple input files are given, the output plot will be the average value of all files and an error bar will also be included.
         - 'Asymmetric' in the function name means that for the dissociate reaction, only the complexes of smaller size dissociating from the original one is counted as dissociate event asymmetrically.
         - For example, if a heptamer dissociates into a tetramer and a trimer, then this event is counted only once, which is heptamer dissociates to trimer.
         - If multiple input files are given, their names should follow the naming rule listed below.
-
-    Naming Rule:
         - If a single file is provided, the input file should be named as its original name ('transition_matrix_time.dat').
         - If multiple files are provided, the name of the input file should also include serial number as 'transition_matrix_time_X.dat' where X = 1,2,3,4,5...
     """

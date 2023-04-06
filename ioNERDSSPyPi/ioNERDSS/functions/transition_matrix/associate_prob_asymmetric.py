@@ -6,24 +6,25 @@ from .read_transition_matrix import read_transition_matrix
 
 def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                               SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
-    """This function plots a line graph representing the probability of association between complexes of different sizes and other complexes of different sizes.
+    """
+    This function plots a line graph representing the probability of association between complexes of different sizes and other complexes of different sizes.
 
-        Args:
-            FileName (str): Path to the ‘.dat’ file, which is usually named as ‘transition_complexes_time.dat’.
-            FileNum (int): Number of the total input file. If multiple files are provided, their names should obey the naming rule listed below.
-            InitialTime (float): Initial time that users desire to examine and plot on the plot. The acceptable range should not be smaller than the starting time or exceed the ending time of simulation.
-            FinalTime (float): Final time that users desire to examine. The acceptable range should not be smaller than the value of InitialTime or exceed the ending time of simulation.
-            SpeciesName (str): Name of species that users want to examine, which should also be identical to the name written in the input (.inp and .mol) files.
-            DivideSize (int, optional): Value that distinguishes the size of the associate complex, for example, if DivideSize = 2, that means the associate events are classified as ‘associate size < 2’, ‘associate size = 2’ and ‘associate size > 2’. Default value is 2.
-            ShowFig (bool, optional): If True, the plot will be shown; if False, the plot will not be shown. No matter the plot is shown or not, the returns will remain the same. Default value is True.
-            SaveFig (bool, optional): If True, the plot will be saved as a ‘.png’ file in the current directory; if False, the figure will not be saved. Default value is False.
+    Args:
+        FileName (str): Path to the ‘.dat’ file, which is usually named as ‘transition_complexes_time.dat’.
+        FileNum (int): Number of the total input file. If multiple files are provided, their names should obey the naming rule listed below.
+        InitialTime (float): Initial time that users desire to examine and plot on the plot. The acceptable range should not be smaller than the starting time or exceed the ending time of simulation.
+        FinalTime (float): Final time that users desire to examine. The acceptable range should not be smaller than the value of InitialTime or exceed the ending time of simulation.
+        SpeciesName (str): Name of species that users want to examine, which should also be identical to the name written in the input (.inp and .mol) files.
+        DivideSize (int, optional): Value that distinguishes the size of the associate complex, for example, if DivideSize = 2, that means the associate events are classified as ‘associate size < 2’, ‘associate size = 2’ and ‘associate size > 2’. Default value is 2.
+        ShowFig (bool, optional): If True, the plot will be shown; if False, the plot will not be shown. No matter the plot is shown or not, the returns will remain the same. Default value is True.
+        SaveFig (bool, optional): If True, the plot will be saved as a ‘.png’ file in the current directory; if False, the figure will not be saved. Default value is False.
 
-        Returns:
-            Line graph. X-axis = size of the complex. Y-axis: Associate probability.
+    Returns:
+        Line graph. X-axis = size of the complex molecule. Y-axis: Associate probability.
 
-        Notes:
-            If multiple input files are given, the output plot will be the average value of all files, and an error bar will also be included.
-            Naming rule for input files: If single file is provided, the input file should be named as its original name (‘transition_matrix_time.dat’); if multiple files are provided, the name of input file should also include serial number as ‘transition_matrix_time_X.dat’ where X = 1,2,3,4,5…
+    Notes:
+        If multiple input files are given, the output plot will be the average value of all files, and an error bar will also be included.
+        Naming rule for input files: If single file is provided, the input file should be named as its original name (‘transition_matrix_time.dat’); if multiple files are provided, the name of input file should also include serial number as ‘transition_matrix_time_X.dat’ where X = 1,2,3,4,5…
     """
     warnings.filterwarnings('ignore')
     matrix_list = []

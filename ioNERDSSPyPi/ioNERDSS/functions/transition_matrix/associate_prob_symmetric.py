@@ -10,7 +10,7 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
     Plots the probability of association between complexes of different sizes and other complexes of different sizes.
 
     Args:
-        FileName (str): Path to the histogram data file (usually named as 'histogram_complexes_time.dat') to be analyzed.
+        FileName (str): Path to the histogram data file (usually named as 'transition_matrix_time.dat') to be analyzed.
         FileNum (int): Number of the total input files. If multiple files are provided, their names should obey the naming rule listed below.
         InitialTime (float): The initial time that users desire to examine. The acceptable range should not be smaller than the starting time or exceed the ending time of simulation.
         FinalTime (float): The final time that users desire to examine. The acceptable range should not be smaller than the value of InitialTime or exceed the ending time of simulation.
@@ -20,7 +20,16 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
         SaveFig (bool, optional): Whether to save the plot as a '.png' file in the current directory. Defaults to False.
 
     Returns:
-        Tuple[Union[None, List[float]], Union[None, List[float]], Union[None, List[float]], Union[None, List[float]]]: A tuple of four lists containing the sizes, probabilities of association for complexes of size less than DivideSize, probabilities of association for complexes of size equal to DivideSize, and probabilities of association for complexes of size greater than DivideSize, respectively. If there are errors during the execution of the function, all four lists will be None.
+        A tuple of four lists containing: 
+        - the sizes 
+        - probabilities of association for complexes of size less than DivideSize
+        - probabilities of association for complexes of size equal to DivideSize
+        - probabilities of association for complexes of size greater than DivideSize
+    
+    Notes:
+        If multiple input files are given, the output plot will be the average value of all files, and an error bar will also be included.
+        Naming rule for input files: If single file is provided, the input file should be named as its original name (‘transition_matrix_time.dat’); if multiple files are provided, the name of input file should also include serial number as ‘transition_matrix_time_X.dat’ where X = 1,2,3,4,5…
+
     """
     
     warnings.filterwarnings('ignore')

@@ -20,12 +20,9 @@ def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         SaveFig (bool, optional): If True, the plot will be saved as a '.png' file in the current directory; if False, the figure will not be saved. Defaults to False.
     
     Returns:
-        Tuple[np.ndarray, np.ndarray]: A tuple containing the following:
-        - np.ndarray: an array of the size of complexes
-        - np.ndarray: an array of the free energies calculated as -ln(P(N))/kBT, where P(N) is the probability of occurrence of the number of times N-mer is counted (including association and dissociation).
-    
-    Raises:
-        ValueError: If the specified InitialTime or FinalTime are out of range.
+        A tuple containing the following:
+        - An array of the size of complexes
+        - An array of the free energies calculated as -ln(P(N))/kBT, where P(N) is the probability of occurrence of the number of times N-mer is counted (including association and dissociation).
     
     Notes:
         - If multiple input files are given, the output plot will be the average value of all files and an error bar will also be included.

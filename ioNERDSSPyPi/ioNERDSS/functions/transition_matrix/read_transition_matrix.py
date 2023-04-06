@@ -3,8 +3,7 @@ import numpy as np
 
 def read_transition_matrix(FileName: str, SpeciesName: str, InitialTime: float, FinalTime: float):
     """
-    Parses a text file containing information about a transition matrix over time for a specific species, and returns the matrices
-    at two given time points.
+    Parses transition_matrix_time.dat, and returns the matrices at two given time points.
 
     Args:
         FileName (str): The name of the file to be read.
@@ -13,19 +12,9 @@ def read_transition_matrix(FileName: str, SpeciesName: str, InitialTime: float, 
         FinalTime (float): The final time point of interest.
 
     Returns:
-        A tuple containing two numpy arrays: the transition matrix at the initial time point and at the final time point.
-
-    The file must have the following structure:
-
-        time: <time_value>
-        <transition_matrix>
-
-    where <time_value> is a float representing the time at which the transition matrix was recorded, and
-    <transition_matrix> is a square matrix (in row-major order) representing the transition rates between
-    different species.
-
-    Example:
-    >>> ti_matrix, tf_matrix = read_transition_matrix('transition_matrix.txt', 'species1', 0.0, 1.0)
+          A tuple that contains:
+           - NumPy array of the transition matrix at the initial time point
+           - NumPy array of the transition matrix at the final time point
     """
     ti_switch = False
     tf_switch = False
