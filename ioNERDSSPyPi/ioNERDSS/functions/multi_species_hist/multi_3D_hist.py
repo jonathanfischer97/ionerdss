@@ -1,13 +1,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .hist import hist
+import warnings
 from .read_multi_hist import read_multi_hist
-from .multi_hist import multi_hist
 
 
-def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                   SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1,
-                  ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+                  ShowFig: bool = True, SaveFig: bool = False):
+    """ Creates 3D Histogram from a histogram.dat (multi-species) that shows the distribution of size of the different species.
+
+    Args:
+        FileName (str): Path to the histogram.dat file
+        FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
+        InitialTime (float): The starting time. Must not be smaller / larger then times in file.
+        FinalTime (float): The ending time. Must not be smaller / larger then times in file.
+        SpeciesList (list): The names of the species you want to examine. Should be in the .dat file.
+        xAxis (str): Species shown on X-axis.
+        yAxis (str): Species shown on Y-axis.
+        xBarSize (int, optional): The size of each data bar in the X-dimension. Defaults to 1.
+        yBarSize (int, optional): The size of each data bar in the Y-dimension. Defaults to 1.
+        ShowFig (bool, optional): If the plot is shown. Defaults to True.
+        SaveFig (bool, optional): If the plot is saved. Defaults to False.
+
+    Returns:
+        3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Z-axis: relative occurance of each complex.
+    """
+    warnings.filterwarnings('ignore')
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     count_list_sum = []
@@ -26,11 +44,11 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
                         if k != 0:
                             if xAxis in SpeciesList and yAxis in SpeciesList:
                                 x_name_index = SpeciesList.index(xAxis)
-                                x_size = hist_list[j][k][x_name_index]
-                                x_size = int(x_size / xBarSize)
+                                true_x_size = hist_list[j][k][x_name_index]
+                                x_size = int(true_x_size / xBarSize)
                                 y_name_index = SpeciesList.index(yAxis)
-                                y_size = hist_list[j][k][y_name_index]
-                                y_size = int(y_size / yBarSize)
+                                true_y_size = hist_list[j][k][y_name_index]
+                                y_size = int(true_y_size / yBarSize)
                                 if x_size not in x_size_list:
                                     if len(x_size_list) == 0:
                                         for m in range(0, x_size+1):
@@ -100,37 +118,29 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
     x_list = np.arange(0, max_x) * xBarSize
     y_list = np.arange(0, max_y) * yBarSize
     if ShowFig:
-        fig, ax = plt.subplots()
-        im = ax.imshow(count_list_mean)
-        ax.set_xticks(np.arange(len(x_list)))
-        ax.set_yticks(np.arange(len(y_list)))
-        ax.set_xticklabels(x_list)
-        ax.set_yticklabels(y_list)
-        if ShowMean and ShowStd:
-            print('Cannot show both maen and std!')
-            return 0
-        if ShowMean:
-            fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_mean'
-            for i in range(len(y_list)):
-                for j in range(len(x_list)):
-                    text = ax.text(j, i, round(
-                        count_list_mean[i, j], 1), ha='center', va='center', color='w')
-        elif ShowStd and FileNum != 1:
-            fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_std'
-            for i in range(len(y_list)):
-                for j in range(len(x_list)):
-                    text = ax.text(j, i, round(
-                        count_list_std[i, j], 1), ha='center', va='center', color='w')
-        else:
-            fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis
+        xx, yy = np.meshgrid(x_list, y_list)
+        X, Y = xx.ravel(), yy.ravel()
+        Z = count_list_mean.ravel()
+        width = xBarSize
+        depth = yBarSize
+        bottom = np.zeros_like(Z)
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
+        ax.set_xlabel('Number of ' + xAxis + ' in sigle complex')
+        ax.set_ylabel('Number of ' + yAxis + ' in sigle complex')
+        ax.set_zlabel('Relative Occurrence Probability')
         ax.set_title('Complex Distribution of ' + xAxis + ' and ' + yAxis)
         fig.tight_layout()
-        plt.colorbar(im)
         plt.xlabel('Count of ' + xAxis)
         plt.ylabel('Count of ' + yAxis)
         if SaveFig:
-            plt.savefig(fig_name, dpi=500,  bbox_inches='tight')
+            plt.savefig('3D_hisogram_of_' + xAxis + '_and_' +
+                        yAxis, dpi=500,  bbox_inches='tight')
         plt.show()
-    return x_list, y_list, count_list_mean, count_list_std
+    return x_list, y_list, count_list_mean, 'Nan'
+
+
+# --------------------------------Locate Position by Pdb or Restart----------------------------------
 
 

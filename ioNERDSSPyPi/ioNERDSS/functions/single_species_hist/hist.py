@@ -1,10 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from . import read_file
+from .read_file import read_file
 
 
 def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
          BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
+    """Creates histogram of the number of species in a single complex over a time period.
+
+    Args:
+        FileName (str): Path to the histogram.dat file
+        FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
+        InitialTime (float): The starting time. Must not be smaller / larger then times in file.
+        FinalTime (float): The ending time. Must not be smaller / larger then times in file.
+        SpeciesName (str): The name of the species you want to examine. Should be in the .dat file.
+        BarSize (int, optional): The size of each data bar in the x-dimension. Defaults to 1.
+        ShowFig (bool, optional): If the plot is shown. Defaults to True.
+        SaveFig (bool, optional): If the plot is saved. Defaults to False.
+
+    Returns:
+        Histogram. X-axis = time. Y-axis = number of species in a single complex
+    """
+
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     count_list = []

@@ -1,6 +1,6 @@
 import numpy as np
 import warnings
-from .read_hist.hist import hist
+from .single_species_hist.hist import hist
 from .fitSphere import fitSphere
 from .restart.single_restart_to_df import single_restart_to_df
 

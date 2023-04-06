@@ -1,4 +1,13 @@
 def read_file(FileName: str, SpeciesName: str):
+    """Will take in a histogram.dat (single-species) and turn it into a list of lists
+
+    Args:
+        FileName (str): Path to the histogram.dat file
+        SpeciesName (str): The name of the specific species you want to examine. Should be in the .dat file.
+
+    Returns:
+        list of lists: Has many lists, where each sub-list is a new time stamp that includes time at index 0, and all other (???) info after 
+    """
     hist = []
     hist_temp = []
     hist_conv = []

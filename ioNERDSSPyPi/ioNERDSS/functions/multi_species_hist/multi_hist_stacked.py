@@ -6,6 +6,24 @@ from .read_multi_hist import read_multi_hist
 def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                        SpeciesList: list, xAxis: str, DivideSpecies: str, DivideSize: int,
                        BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+    """Creates a histogram from histogram.dat (multi-species) that shows the average number of complex species of a certain size.
+
+    Args:
+        FileName (str): Path to the histogram.dat file
+        FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
+        InitialTime (float): The starting time. Must not be smaller / larger then times in file.
+        FinalTime (float): The ending time. Must not be smaller / larger then times in file.
+        SpeciesList (list): The names of the species you want to examine. Should be in the .dat file.
+        xAxis (str): Species shown on X-axis.
+        DivideSpecies (str): The name of the species that will be seperated by size.
+        DivideSize (int): The value that separates the size of dissociate complexes. (only changes color of graph)
+        BarSize (int, optional): The size of each data bar in the X-dimension. Defaults to 1.
+        ExcludeSize (int, optional): Monomers in the complex that are smaller or equal to this number will not be included. 
+        ShowFig (bool, optional): If the plot is shown. Defaults to True.
+        SaveFig (bool, optional): If the plot is saved. Defaults to False.
+    Returns:
+        Histogram. X-axis = size of selected species, Y-axis = average number of each corresponds.
+    """
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     above_list = []

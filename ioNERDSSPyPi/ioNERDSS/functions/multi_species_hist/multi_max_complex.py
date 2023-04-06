@@ -1,12 +1,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .hist import hist
 from .read_multi_hist import read_multi_hist
-from .multi_hist import multi_hist
 
 
 def multi_max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                       SpeciesList: list, SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
+    """Creates a graph from a histogram.dat (multi-species) that shows the maximum number of selected monomers in a single complex molecule over a certain time period
+
+    Args:
+        FileName (str): Path to the histogram.dat file
+        FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
+        InitialTime (float): The starting time. Must not be smaller / larger then times in file.
+        FinalTime (float): The ending time. Must not be smaller / larger then times in file.
+        SpeciesList (list): The names of the species you want to examine. Should be in the .dat file.
+        SpeciesName (str): The name of the specific species you want to examine. Should be in the .dat file.
+        ShowFig (bool, optional): Whether to display the generated figures. Default is True.
+        SaveFig (bool, optional): Whether to save the generated figures. Default is False.
+
+    Returns:
+        Graph. X-axis = Time. Y-axis =  maximum number of selected monomers in a single complex molecule.
+    """
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     time_list = []

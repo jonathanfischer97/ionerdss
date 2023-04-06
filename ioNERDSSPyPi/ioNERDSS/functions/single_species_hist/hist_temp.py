@@ -2,6 +2,18 @@ from .read_file import read_file
 
 
 def hist_temp(FileName: str, InitialTime: float, FinalTime: float, SpeciesName: str):
+    """???
+
+    Args:
+        FileName (str): file location (relative) histogram.dat that will be read
+        InitialTime (float): The starting time. Must not be smaller / larger then times in file.
+        FinalTime (float): The ending time. Must not be smaller / larger then times in file.
+        SpeciesName (str): The name of the species you want to examine. Should be in the .dat file.
+
+    Returns:
+        list of lists: ???
+        list: a list of means for each ???
+    """
     hist = read_file(FileName, SpeciesName)
     plot_count = []
     plot_conv = []
