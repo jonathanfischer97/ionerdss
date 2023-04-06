@@ -21,13 +21,7 @@ import ioNERDSS as ion
 
 
 
-op = ion.real_PDB_separate_read(FileName="ioNERDSSPyPi\TestingFunctions\\1si4.pdb")
 
-op = ion.real_PDB_separate_filter(op,["A","B","C"])
-
-op = ion.real_PDB_separate_angle(op)
-
-op = ion.real_PDB_separate_COM(op)
 last = badTimer('Start',0)
-op = ion.real_PDB_show_3D(op[0:5])
-badTimer('Start',lastMeh)
+print(ion.traj_track('ioNERDSSPyPi\TestingFunctions\\trajectory.xyz',6,[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
+badTimer('Start',last)

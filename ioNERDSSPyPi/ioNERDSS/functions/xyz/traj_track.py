@@ -1,4 +1,22 @@
 def traj_track(FileName: str, SiteNum: int, MolIndex: list):
+    """Tracks the center of mass (COM) coordinate changing of one or more molecules.
+
+    Args:
+        FileName: A string specifying the path to the input .xyz file, usually named 'trajectory.xyz'.
+        SiteNum: An integer specifying the total number of COM and interfaces of a single molecule.
+        MolIndex: A list of integers specifying the index of molecules users desire to track.
+
+    Returns:
+        A 2D matrix with the size of the number of literation times the number of desired molecules.
+
+    Example:
+        traj_track('/Users/UserName/Documents/trajectory.xyz', 6, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        [[0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+         [0.2, 0.3, 0.4, 0.5, 0.6, 0.7],
+         [0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+         [0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+         [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]]
+    """ """"""
     array = []
     for i in range(len(MolIndex)):
         array.append([])
@@ -17,8 +35,3 @@ def traj_track(FileName: str, SiteNum: int, MolIndex: list):
                     array[list_index].append(coord)
                 index += 1
     return array
-
-
-# -------------------------------------Gag (Sphere) Regularization Index Calculation---------------------------------------
-
-# ref: https://jekel.me/2015/Least-Squares-Sphere-Fit/

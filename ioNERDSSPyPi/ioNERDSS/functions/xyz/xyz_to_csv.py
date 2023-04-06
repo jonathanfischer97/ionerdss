@@ -1,4 +1,20 @@
 def xyz_to_csv(FileName: str, LitNum: int):
+    """Converts a .xyz file to a .csv file for a specific or entire time frame.
+
+    Args:
+        FileName (str): The path to the input .xyz file, usually named 'trajectory.xyz'.
+        LitNum (int): The number of iterations to examine. If -1, the entire iteration will be extracted.
+
+    Returns:
+        A .csv file.
+
+    Description:
+        This function enables users to convert the output .xyz file by NERDSS simulation into a .csv file of a specific or entire time frame. The generated csv file will contain 5 columns, including number of iteration, species name, x, y, and z coordinates.
+
+    Sample:
+        xyz_to_csv('/Users/UserName/Documents/trajectory.xyz', 100000000) # Extracts iteration 100000000
+        xyz_to_csv('/Users/UserName/Documents/trajectory.xyz', -1) # Extracts the entire iteration
+    """
     if LitNum != -1:
         lit_switch = False
         write_file_name = 'trajectory_' + str(LitNum) + '.csv'
