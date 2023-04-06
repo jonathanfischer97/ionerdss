@@ -4,14 +4,15 @@ import matplotlib.pyplot as plt
 def real_PDB_show_3D(Result: bool):
     """
     Generate a 3D plot to display the spatial geometry of each simplified chain.
-    The plot will show solid lines of different colors that connect the COM with interfaces within each chain. It will also show black dotted lines that connect each pair of interfaces, and the COMs will be represented as solid points with their names above.
-    To interact with the plot, other IDEs rather than Jupyter Notebook (such as VSCode) are recommended.
 
     Parameters:
-        Result (tuple): The output result of the function 'real_PDB_separate_read(FileName)'.
+        Result (5 length tuple): The output result of function(s): 'read','filter','sigma', or first five of function(s): 'angle','COM'
 
     Returns:
-        None
+        3D Plot.The plot will show solid lines of different colors that connect the COM with interfaces within each chain. It will also show black dotted lines that connect each pair of interfaces, and the COMs will be represented as solid points with their names above.
+    
+    Note:
+        To interact with the plot, other IDEs rather than Jupyter Notebook (such as VSCode) are recommended.
     """
 
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result
@@ -28,7 +29,7 @@ def real_PDB_show_3D(Result: bool):
         coord_list.append(coord_list_temp)
     fig = plt.figure(1)
     color_list = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
-    ax = fig.gca(projection='3d')
+    ax = plt.axes(projection="3d")
     for i in range(len(coord_list)):
         ax.scatter(coord_list[i][0][0], coord_list[i][0][1],
                    coord_list[i][0][2], color=color_list[i % 9])
@@ -47,7 +48,3 @@ def real_PDB_show_3D(Result: bool):
     ax.set_zlabel('z (nm)')
     plt.show()
     return 0
-
-
-# -------------------------------------Reading xyz file-----------------------------------------
-

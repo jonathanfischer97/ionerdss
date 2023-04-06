@@ -4,13 +4,11 @@ def real_PDB_separate_filter(Result: tuple, ChainList: list):
     unnecessary coordinate information for future analysis. 
 
     Args:
-        Result (tuple): The output result of function ‘real_PDB_separate_read (FileName)’. 
+        Result (5 length tuple): The output result of function(s): 'read','sigma', or first five of function(s): 'angle','COM' 
         ChainList (list): The desired name of chains that users intend to examine. 
 
     Returns:
-        A tuple that includes:
-         - coms_dict: Dictionary of the COMs of each unique chain
-         - dist_dict: Dictionary of the binding information between each pair of chains (including whether two chains are binded and the coordinates of each binding interface)
+        5 length tuple: The tuple contains all the information for further analysis.
     """
 
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result

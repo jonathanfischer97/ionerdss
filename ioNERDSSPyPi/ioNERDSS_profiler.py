@@ -21,11 +21,13 @@ import ioNERDSS as ion
 
 
 
+op = ion.real_PDB_separate_read(FileName="ioNERDSSPyPi\TestingFunctions\\1si4.pdb")
+
+op = ion.real_PDB_separate_filter(op,["A","B","C"])
+
+op = ion.real_PDB_separate_angle(op)
+
+op = ion.real_PDB_separate_COM(op)
 last = badTimer('Start',0)
-ion.real_PDB_UI()
-
-badTimer('start',last)
-
-#last = badTimer('Start',0)
-#op = ion.real_PDB_show_PDB(Result=op)
-#badTimer('start',last) ioNERDSSPyPi\TestingFunctions\1si4.pdb
+op = ion.real_PDB_show_3D(op[0:5])
+badTimer('Start',lastMeh)

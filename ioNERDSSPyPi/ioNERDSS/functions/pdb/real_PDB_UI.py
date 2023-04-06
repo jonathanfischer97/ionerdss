@@ -11,6 +11,29 @@ from .gen.real_PDB_mag import real_PDB_mag
 
 
 def real_PDB_UI():
+    """A user friendly UI to allow for open, minupulating, and then outputting .pdb files.
+
+    Functions:
+    
+    Open .pdb files:
+     - When run, the first thing that will be asked is "Enter pdb file name: []". You must enter the relative / absolute path to the file.
+     - Ex: Enter pdb file name: "ioNERDSSPyPi\TestingFunctions\\1si4.pdb" (Note: I have to '\' before 1, so python does not see it as a weird charecter)
+    Chaning distance between interaction sites:
+     - After the .pdb file in initilized, it will ask "Would you like to chang...", and ask for you to write 'yes' or 'no'
+     - If you write yes, keep reading, if you write no, it will just go to the next section
+     - Than it will ask 'which distance' you want to change, and ask for an integer between 0-X. 
+        - 0: means all distances will be set to the same number you input
+        - 1+: That distance will be set to the number inputted. You can find which 'distance' each number refers to by reading and counting down the 
+        list of Interaction Sites (which is directly above). 1 = the furthest up.
+     - Then enter the new distance.
+     - Then the initial message will come up again, and repeats this whol process.
+    'Normalizing':
+     - It will then ask if you want to see the 'default norm vector to (0,0,1)'. Write 'yes' or 'no' if you do or don't
+     - It will then ask if you want each molecule's center of mass to be 0,0,0
+     - The UI will then spit out the necessary .mol and .inp files to setup a NERDSS simulation
+
+    If you want to make graphs / new .pdb files, you will need to use the 'seperate' commands instead of the UI.
+    """
     # naming explanation:
     # variables with word 'total' in the front indicate that it's a list of data for the whole protein
     # variables with word 'split' in the front indicate that it's a list containing n sub-lists and each sub-list contains

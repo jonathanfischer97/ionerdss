@@ -12,10 +12,10 @@ def real_PDB_separate_angle(Result: tuple):
     please refer to function ‘real_PDB_UI’, the separated function does not support manual inputs.
     
     Args:
-        Result (tuple): The output result of function ‘real_PDB_separate_sigma (Result, ChangeSigma, SiteList, NewSigma)’.
+        Result (5 length tuple): The output result of function(s): 'read','filter','sigma', or first five of function(s): 'COM'
     
     Returns:
-        Tuple: All the information for further analysis, including the 5 associating angles of each pair of interfaces.
+        9 length Tuple: All the information for further analysis, including the 5 associating angles of each pair of interfaces.
     """
 
     reaction_chain, new_int_site, new_int_site_distance, unique_chain, COM = Result

@@ -10,7 +10,7 @@ def real_PDB_separate_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: 
     returns will contain all the information for further analysis. 
 
     Args:
-        Result (tuple): The output result of function ‘real_PDB_separate_read(FileName)’. 
+        Result (5 length tuple): The output result of function(s): 'read','filter', or first five of function(s): 'angle','COM'
         ChangeSigma (bool, optional): If True, the users are capable of changing the sigma value; 
                                       if False, the sigma will remain as the original ones. 
         SiteList (list, optional): It consists of the serial numbers of the pair of interfaces for which 
@@ -23,9 +23,7 @@ def real_PDB_separate_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: 
                                    to the sequence of input ‘SiteList’. 
 
     Returns:
-        A tuple that includes:
-         - coms_dict: Dictionary of the COMs of each unique chain
-         - dist_dict: Dictionary of the binding information between each pair of chains (including whether two chains are binded and the coordinates of each binding interface)
+        5 length tuple: The tuple contains all the information for further analysis.
     """
 
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result

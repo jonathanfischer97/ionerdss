@@ -6,10 +6,10 @@ def real_PDB_show_PDB(Result: bool):
     files.
 
     Parameters:
-    Result (tuple): The output result of the 'real_PDB_separate_read' function.
+        Result (5 length tuple): The output result of function(s): 'read','filter','sigma', or first five of function(s): 'angle','COM'
 
     Returns:
-        None
+        .pdb file.
     """
         
     reaction_chain, int_site, int_site_distance, unique_chain, COM = Result

@@ -16,9 +16,8 @@ def real_PDB_separate_read(FileName: str):
         FileName (str): The full path of the desired PDB file or name of the file if in same directory. 
 
     Returns:
-        A tuple that includes:
-         - coms_dict: Dictionary of the COMs of each unique chain
-         - dist_dict: Dictionary of the binding information between each pair of chains (including whether two chains are binded and the coordinates of each binding interface)
+        5 length tuple: The tuple contains all the information for further analysis.
+
     """
 
     total_atom_count = []

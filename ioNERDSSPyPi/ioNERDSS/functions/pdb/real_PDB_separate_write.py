@@ -3,7 +3,7 @@ def real_PDB_separate_write(Result: tuple):
     Writes '.inp' and '.mol' files based on the calculations and modifications performed by the previous functions. Multiple '.mol' files and a single '.inp' file will be created in the same directory as the Jupyter Notebook file once the function finishes running.
 
     Parameters:
-        Result (tuple): The output result of function 'real_PDB_separate_COM(Result)'.
+        Result (9 length tuple): The output result of function(s): 'angle','COM'
 
     Returns:
         File with new inputs for NERDSS.
