@@ -2,6 +2,15 @@ import numpy as np
 
 
 def single_hist_to_csv(FileName: str):
+    """Creates a .csv (spreadsheet) file from a histogram.dat file (single-species)
+
+    Args:
+        FileName (str): Path to the histogram.dat file
+
+    Returns:
+        histogram.csv file: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
+        is the number of that complex molecule at that time stamp.
+    """
     name_list = ['Time (s)']
     with open(FileName, 'r') as file:
         for line in file.readlines():
