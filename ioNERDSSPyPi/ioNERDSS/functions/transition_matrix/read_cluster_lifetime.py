@@ -2,6 +2,23 @@ import numpy as np
 
 
 def read_cluster_lifetime(FileName: str, SpeciesName: str, InitialTime: float, FinalTime: float):
+    """
+    Reads and extracts the lifetimes of clusters of a specific species from a file.
+
+    Args:
+        FileName (str): The name of the file to read the cluster lifetimes from.
+        SpeciesName (str): The name of the species to extract cluster lifetimes for.
+        InitialTime (float): The initial time at which to extract cluster lifetimes.
+        FinalTime (float): The final time at which to extract cluster lifetimes.
+
+    Returns:
+        tuple: A tuple containing three elements:
+        - ti_lifetime: a list of numpy arrays representing the lifetimes of the species clusters
+        at the initial time.
+        - tf_lifetime: a list of numpy arrays representing the lifetimes of the species clusters
+        at the final time.
+        - size_list: a list of integers representing the sizes of the species clusters.
+    """
     ti_switch = False
     tf_switch = False
     spec_switch = False

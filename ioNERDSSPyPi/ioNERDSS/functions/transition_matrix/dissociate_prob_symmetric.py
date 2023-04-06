@@ -6,6 +6,30 @@ from .read_transition_matrix import read_transition_matrix
 
 def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                               SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
+    """
+    Calculates and displays the probability of dissociation of complexes of different sizes into other complexes of different sizes.
+
+    Args:
+        FileName (str): Path to the '.dat' file representing the histogram data to be analyzed.
+        FileNum (int): Number of input files. If multiple files are provided, their names should obey the naming rule described below.
+        InitialTime (float): The initial time that users desire to examine (in seconds).
+        FinalTime (float): The final time that users desire to examine (in seconds).
+        SpeciesName (str): The name of the species that users want to examine, identical to the name written in the input (.inp and .mol) files.
+        DivideSize (int, optional): The value that distinguishes the size of the dissociate complex (default=2). For example, if DivideSize=2, that means the dissociate events are classified as 'dissociate size < 2', 'dissociate size = 2' and 'dissociate size > 2'.
+        ShowFig (bool, optional): If True, the plot will be displayed (default=True).
+        SaveFig (bool, optional): If True, the plot will be saved as a '.png' file in the current directory (default=False).
+
+    Returns:
+        tuple: A tuple of four numpy arrays representing the x-axis data, y-axis data, errors in y-axis data, and the bin size. If the plot is not shown or saved, returns a tuple of None values.
+        
+    Raises:
+        ValueError: If the value of FinalTime is smaller than InitialTime, or the range of InitialTime and FinalTime is beyond the range of simulation.
+        
+    Note:
+        If a single file is provided, the input file should be named as its original name ('transition_matrix_time.dat'). If multiple files are provided, the name of the input file should include a serial number as 'transition_matrix_time_X.dat' where X = 1, 2, 3, 4, 5, etc.
+        
+        The function generates a line plot of the probability of dissociation of complexes of different sizes into other complexes of different sizes. The x-axis represents the size of the complex, and the y-axis represents the dissociate probability. Three lines will exist in the line graph, representing dissociating to complexes of sizes less than, equal to, or greater than the specified size, respectively. 'Symmetric' in the function name means that for the dissociate reaction, both sizes of complexes are counted as dissociating events symmetrically, for example, if a dissociate event occurs where a heptamer dissociates into a tetramer and a trimer, then this event is counted twice, which are heptamer dissociates to tetramer and heptamer dissociates to trimer. If multiple input files are given, the output plot will be the average value of all files and an error bar will also be included.
+    """
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]

@@ -6,6 +6,21 @@ from .read_transition_matrix import read_transition_matrix
 
 def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                 SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
+    """
+    This function generates a line plot indicating the probability of growth in size for different sizes of complexes.
+
+    Args:
+        FileName (str): Path to the ‘.dat’ file, which is usually named as ‘histogram_complexes_time.dat’, representing the histogram data to be analyzed.
+        FileNum (int): Number of the total input file. If multiple files are provided, their names should obey the naming rule listed below.
+        InitialTime (float): Initial time that users desire to examine. The acceptable range should not smaller than the starting time or exceed the ending time of simulation.
+        FinalTime (float): Final time that users desire to examine. The acceptable range should not smaller than the value of InitialTime or exceed the ending time of simulation.
+        SpeciesName (str): Name of species that users want to examine, which should also be identical with the name written in the input (.inp and .mol) files.
+        ShowFig (bool, optional): If True, the plot will be shown; if False, the plot will not be shown. Defaults to True.
+        SaveFig (bool, optional): If True, the plot will be saved as a ‘.png’ file in the current directory; if False, the figure will not be saved. Defaults to False.
+
+    Returns:
+        Line plot. X-axis = size of complexes. Y-axis = growth probability.
+"""
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]

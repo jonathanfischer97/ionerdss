@@ -6,6 +6,39 @@ from .read_transition_matrix import read_transition_matrix
 
 def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                                SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
+    """
+    Create a line plot representing the probability of dissociation of complexes of different sizes into other complexes of different sizes.
+
+    Args:
+        FileName (str): The path to the '.dat' file containing the histogram data to be analyzed.
+        FileNum (int): The number of the total input file. If multiple files are provided, their names should follow the naming rule listed below.
+        InitialTime (float): The initial time that users desire to examine.
+        FinalTime (float): The final time that users desire to examine.
+        SpeciesName (str): The name of the species that users want to examine, which should also be identical with the name written in the input (.inp and .mol) files.
+        DivideSize (int, optional): The value that separates the size of the dissociate complex. Defaults to 2.
+        ShowFig (bool, optional): If True, the plot will be shown; if False, the plot will not be shown. Defaults to True.
+        SaveFig (bool, optional): If True, the plot will be saved as a '.png' file in the current directory; if False, the figure will not be saved. Defaults to False.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray, np.ndarray]: A tuple containing the following:
+        - np.ndarray: an array of the size of complexes
+        - np.ndarray: an array of the dissociate probabilities when complexes dissociate into smaller complexes
+        - np.ndarray: an array of the dissociate probabilities when complexes dissociate into larger complexes
+
+    Raises:
+        ValueError: If the specified InitialTime or FinalTime are out of range.
+
+    Notes:
+        - If multiple input files are given, the output plot will be the average value of all files and an error bar will also be included.
+        - 'Asymmetric' in the function name means that for the dissociate reaction, only the complexes of smaller size dissociating from the original one is counted as dissociate event asymmetrically.
+        - For example, if a heptamer dissociates into a tetramer and a trimer, then this event is counted only once, which is heptamer dissociates to trimer.
+        - If multiple input files are given, their names should follow the naming rule listed below.
+
+    Naming Rule:
+        - If a single file is provided, the input file should be named as its original name ('transition_matrix_time.dat').
+        - If multiple files are provided, the name of the input file should also include serial number as 'transition_matrix_time_X.dat' where X = 1,2,3,4,5...
+    """
+    
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]

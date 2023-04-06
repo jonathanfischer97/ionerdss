@@ -6,6 +6,23 @@ from .read_transition_matrix import read_transition_matrix
 
 def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
+    """
+    Plots the probability of association between complexes of different sizes and other complexes of different sizes.
+
+    Args:
+        FileName (str): Path to the histogram data file (usually named as 'histogram_complexes_time.dat') to be analyzed.
+        FileNum (int): Number of the total input files. If multiple files are provided, their names should obey the naming rule listed below.
+        InitialTime (float): The initial time that users desire to examine. The acceptable range should not be smaller than the starting time or exceed the ending time of simulation.
+        FinalTime (float): The final time that users desire to examine. The acceptable range should not be smaller than the value of InitialTime or exceed the ending time of simulation.
+        SpeciesName (str): The name of the species that users want to examine, which should also be identical to the name written in the input (.inp and .mol) files.
+        DivideSize (int, optional): Value that distinguishes the size of the associate complex. Defaults to 2.
+        ShowFig (bool, optional): Whether to show the plot. Defaults to True.
+        SaveFig (bool, optional): Whether to save the plot as a '.png' file in the current directory. Defaults to False.
+
+    Returns:
+        Tuple[Union[None, List[float]], Union[None, List[float]], Union[None, List[float]], Union[None, List[float]]]: A tuple of four lists containing the sizes, probabilities of association for complexes of size less than DivideSize, probabilities of association for complexes of size equal to DivideSize, and probabilities of association for complexes of size greater than DivideSize, respectively. If there are errors during the execution of the function, all four lists will be None.
+    """
+    
     warnings.filterwarnings('ignore')
     matrix_list = []
     file_name_head = FileName.split('.')[0]
