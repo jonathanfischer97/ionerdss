@@ -8,7 +8,8 @@ NERDSS Output File Explanation:
  of complex molecule at every time step in multi-component NERDSS sim.
  - trajectory: i dont really know. I think shows the trajectories of the molecules in the simulation.
  - transition_matrix_time: idk
- - 1si4.pdb: describes info about hemogoblin??? (wow this list is not super helpful is it)
+ - database.pdb: describes the atoms / residuals of a protein. Comes from a protein database
+ - nerdss_output.pdb: describes protiens (com, edges). Comes from NERDSS.
 '''
 
 from TestingFunctions.awful_tmr import badTimer
@@ -26,5 +27,5 @@ for i in range(0,50):
     lst.append(i)
 
 print(lst)
-ion.locate_position_restart("ioNERDSSPyPi\TestingFunctions\9999999.pdb",lst,"ioNERDSSPyPi\TestingFunctions\\restart.dat")
+ion.locate_position_PDB("ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb",[12],"ioNERDSSPyPi\TestingFunctions\parm.inp")
 badTimer('Start',last)
