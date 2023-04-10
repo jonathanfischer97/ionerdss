@@ -13,9 +13,9 @@ from .restart import *
     multi_species_hist: reads in multi-species histograms (from NERDSS sim) and then outputs many different graphs
     
     pdb: reads in .pdb files (which is the final position of each atom in a protein complex from a NERDSS sim)
-        - read_and_edit: These take in .pdb files, allow you to edit them in many ways and then output them in many ways
+        - database: These take in database .pdb files, allow you to edit them in many ways and then output them in many ways
             - gen: these are general files called by the main files. These will rarely be used by a user of ioNERDSS
-        - size_filter: This takes in a .pdb file, then removes all protein complexes that are too small
+        - nerdss_op: This takes in a .pdb file that comes from a nerdss output, then removes all protein complexes that are too small
             - gen: same as before
     
     platonic_solids: creates different types of platonic solids that can be inputted into NERDSS sim
