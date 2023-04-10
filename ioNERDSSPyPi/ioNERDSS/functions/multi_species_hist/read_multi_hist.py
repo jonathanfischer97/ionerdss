@@ -6,44 +6,35 @@ def read_multi_hist(FileName: str, SpeciesList: list):
     Read a multi-species histogram from a file and return a list of time steps
     and species counts.
 
-    Parameters
-    ----------
-    FileName : str
-        The name of the input file to read.
-    SpeciesList : list
-        A list of species names corresponding to the columns in the input file.
+    Args:
+        FileName (str): The name of the input file to read.
+        SpeciesList (list): A list of species names corresponding to the columns in the input file.
 
-    Returns
-    -------
-    hist_list : List
-        A list of time steps and species counts. Each element of the list is a
-        NumPy array with shape (N, M+1), where N is the number of time steps and
-        M is the number of species in SpeciesList. The first column contains the
-        time step and the remaining columns contain the counts for each species.
+    Returns:
+        hist_list (List): A list of time steps and species counts. Each element of the list is a
+            NumPy array with shape (N, M+1), where N is the number of time steps and
+            M is the number of species in SpeciesList. The first column contains the
+            time step and the remaining columns contain the counts for each species.
 
-    Raises
-    ------
-    ValueError
-        If any of the species names in the input file are not found in SpeciesList.
+    Raises:
+        ValueError: If any of the species names in the input file are not found in SpeciesList.
 
-    Examples
-    --------
-    >>> SpeciesList = ['A', 'B', 'C', 'D']
-    >>> read_multi_hist('histogram_complexes_time.dat', SpeciesList)
+    Examples:
+        >>> SpeciesList = ['A', 'B', 'C', 'D']
+        >>> read_multi_hist('histogram_complexes_time.dat', SpeciesList)
 
-    Notes
-    -----
-    The input file must have the following format:
+    Notes:
+        The input file must have the following format:
 
-    Time (s): <time>
-    <complex_count><tab><species 1>: <num_of_species_1_in_complex> . <species 2>: <num_of_species_2_in_complex> . ...
-    <complex_count><tab><species 1>: <num_of_species_1_in_complex> . <species 2>: <num_of_species_2_in_complex> . ...
-    ...
+        Time (s): <time>
+        <complex_count><tab><species 1>: <num_of_species_1_in_complex> . <species 2>: <num_of_species_2_in_complex> . ...
+        <complex_count><tab><species 1>: <num_of_species_1_in_complex> . <species 2>: <num_of_species_2_in_complex> . ...
+        ...
 
-    where <time> is the time step in seconds and <count> is the number of counts
-    for each species at that time step. Each line after the first should contain
-    one time step and its corresponding species counts, with species counts
-    separated by periods.
+        where <time> is the time step in seconds and <count> is the number of counts
+        for each species at that time step. Each line after the first should contain
+        one time step and its corresponding species counts, with species counts
+        separated by periods.
     """
     speciesListArray = np.array(
         SpeciesList)  # Convert SpeciesList to a NumPy array

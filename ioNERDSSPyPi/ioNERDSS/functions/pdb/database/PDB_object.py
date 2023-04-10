@@ -1,7 +1,7 @@
 
 class ProteinComplex():
-    """This object contains all the functions (as methods) necessary to edit a protein complex input using a .pdb file. Then once you are done editing, it can output it as 
-    as NERDSS input, a new .pdb file, or a 3D graph of the complex.
+    """This object contains all the functions (as methods) necessary to edit a protein complex input using a .pdb file downloaded from a database. Then once you are done editing, 
+    it can output it as  as NERDSS input, a new .pdb file, or a 3D graph of the complex.
     """
 
 

@@ -13,8 +13,6 @@ NERDSS Output File Explanation:
 
 from TestingFunctions.awful_tmr import badTimer
 ## CURRENTLY TESTING: hist.py
-import numpy as np
-import matplotlib.pyplot as plt
 import ioNERDSS as ion
 
 
@@ -23,6 +21,10 @@ import ioNERDSS as ion
 
 
 last = badTimer('Start',0)
+lst = []
+for i in range(0,50):
+    lst.append(i)
 
-ion.locate_position_restart("ioNERDSSPyPi\TestingFunctions\9999999.pdb",[5],"ioNERDSSPyPi\TestingFunctions\\restart.dat")
+print(lst)
+ion.locate_position_restart("ioNERDSSPyPi\TestingFunctions\9999999.pdb",lst,"ioNERDSSPyPi\TestingFunctions\\restart.dat")
 badTimer('Start',last)

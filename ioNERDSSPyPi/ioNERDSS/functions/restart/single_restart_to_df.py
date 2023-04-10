@@ -1,4 +1,4 @@
-from ..pdb.size_filter.gen.PDB_pdb_to_df import PDB_pdb_to_df
+from ..pdb.nerdss_op.gen.PDB_pdb_to_df import PDB_pdb_to_df
 from .RESTART_read_restart import RESTART_read_restart
 
 
