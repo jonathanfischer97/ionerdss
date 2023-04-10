@@ -23,7 +23,7 @@ def locate_position_PDB(FileNamePdb, NumList, FileNameInp, BufferRatio=0.01):
             Defaults to 0.01.
 
     Returns:
-        str: A string indicating the path to the output file containing the desired complex.
+        output_file.pdb: A file containing the desired complex.
 
     Note:
         Reading only the PDB file slows down the function compared to reading the 'restart.dat' file, because the function needs
