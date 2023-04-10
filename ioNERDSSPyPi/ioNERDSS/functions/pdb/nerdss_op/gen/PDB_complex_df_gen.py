@@ -2,6 +2,30 @@ import pandas as pd
 
 
 def PDB_complex_df_gen(pdb_df, complex_lst):
+    """Generates a DataFrame containing complex information from a given DataFrame and a list of complexes.
+
+    Args:
+        pdb_df (pd.DataFrame): the input DataFrame containing protein information
+        complex_lst (List[List[str]]): a list of complexes, where each complex is represented as a list of protein names
+
+    Returns:
+        pd.DataFrame: the generated complex information DataFrame, with columns corresponding to unique protein names
+                    in the input DataFrame, and an additional column 'Protein_Num' representing the total number of proteins
+                    in each complex
+
+    Raises:
+        ypeError: if pdb_df is not a pandas DataFrame or complex_lst is not a list of lists
+
+    Example:
+        >>> pdb_df = pd.DataFrame({'Protein_Name': ['A', 'B', 'C'],
+                                'Protein_Num': [1, 2, 3]})
+        >>> complex_lst = [['A', 'B'], ['B', 'C'], ['A', 'C']]
+        >>> PDB_complex_df_gen(pdb_df, complex_lst)
+        A  B  C  Protein_Num
+        0  1  1  0             2
+        1  0  1  1             2
+        2  1  0  1             2
+    """
     name_lst = list(pdb_df['Protein_Name'])
     name_lst_ = []
     for i in name_lst:

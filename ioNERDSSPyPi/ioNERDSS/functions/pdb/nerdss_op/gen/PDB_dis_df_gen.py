@@ -5,6 +5,25 @@ from .PDB_dis_cal import PDB_dis_cal
 def PDB_dis_df_gen(df, info):
     dis_df = pd.DataFrame(columns=['Protein_Num_1', 'Protein_Name_1', 'Cite_Name_1',
                           'Protein_Num_2', 'Protein_Name_2', 'Cite_Name_2', 'sigma', 'dis'])
+    """Generates a distance dataframe for protein-protein interactions based on given information.
+
+    Args:
+       df (pd.DataFrame): the input dataframe containing protein information
+        info (pd.DataFrame): the input dataframe containing interaction information
+
+    Returns:
+        pd.DataFrame: the generated distance dataframe containing calculated distances between protein pairs
+
+    Example:
+        >>> df = pd.read_csv('protein_data.csv')
+        >>> info = pd.read_csv('interaction_info.csv')
+        >>> dis_df = PDB_dis_df_gen(df, info)
+        >>> dis_df.head()
+        Protein_Num_1 Protein_Name_1 Cite_Name_1 Protein_Num_2 Protein_Name_2 Cite_Name_2 sigma       dis
+        0             1          Protein_A       Cite_A             2          Protein_B       Cite_B  2.75  5.196152
+        1             1          Protein_A       Cite_A             3          Protein_C       Cite_C  1.25  3.162278
+        ...
+    """
     index = 0
     count = 1
     for i in range(len(info)):
