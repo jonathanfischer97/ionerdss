@@ -24,5 +24,5 @@ import ioNERDSS as ion
 
 last = badTimer('Start',0)
 
-ion.locate_position_PDB("ioNERDSSPyPi\TestingFunctions\\1si4.pdb",[5],"ioNERDSSPyPi\TestingFunctions\parm.inp")
+ion.locate_position_restart("ioNERDSSPyPi\TestingFunctions\9999999.pdb",[5],"ioNERDSSPyPi\TestingFunctions\\restart.dat")
 badTimer('Start',last)
