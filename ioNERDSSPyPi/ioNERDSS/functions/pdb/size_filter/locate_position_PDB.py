@@ -1,12 +1,12 @@
-from .PDB_pdb_to_df import PDB_pdb_to_df
-from .PDB_dis_df_gen import PDB_dis_df_gen
-from .PDB_bind_df_gen import PDB_bind_df_gen
-from .PDB_find_bond import PDB_find_bond
-from .PDB_find_complex import PDB_find_complex
-from .PDB_complex_df_gen import PDB_complex_df_gen
-from .PDB_find_complex_df import PDB_find_complex_df
-from .PDB_new_pdb import PDB_new_pdb
-from .PDB_binding_info_df import PDB_binding_info_df
+from .gen.PDB_pdb_to_df import PDB_pdb_to_df
+from .gen.PDB_dis_df_gen import PDB_dis_df_gen
+from .gen.PDB_bind_df_gen import PDB_bind_df_gen
+from .gen.PDB_find_bond import PDB_find_bond
+from .gen.PDB_find_complex import PDB_find_complex
+from .gen.PDB_complex_df_gen import PDB_complex_df_gen
+from .gen.PDB_find_complex_df import PDB_find_complex_df
+from .gen.PDB_new_pdb import PDB_new_pdb
+from .gen.PDB_binding_info_df import PDB_binding_info_df
 
 
 def locate_position_PDB(FileNamePdb, NumList, FileNameInp, BufferRatio=0.01):

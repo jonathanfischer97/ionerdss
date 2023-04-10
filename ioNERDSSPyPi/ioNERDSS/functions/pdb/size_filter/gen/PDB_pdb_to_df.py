@@ -1,3 +1,5 @@
+import pandas as pd
+
 def PDB_pdb_to_df(file_name, drop_COM):
     df = pd.DataFrame(columns=['Protein_Num', 'Protein_Name',
                       'Cite_Name', 'x_coord', 'y_coord', 'z_coord'])

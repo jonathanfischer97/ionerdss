@@ -24,15 +24,5 @@ import ioNERDSS as ion
 
 last = badTimer('Start',0)
 
-newProtein = ion.ProteinComplex('ioNERDSSPyPi\TestingFunctions\\1si4.pdb',['A','B'])
-"""newProtein.calc_angle()
-newProtein.set_COM()
-newProtein.filter(['A','B'])
-newProtein.set_sigma()
-newProtein.write_new_input()
-newProtein.show_3D_graph()
-newProtein.write_new_PDB()"""
-
-
-
+ion.locate_position_PDB("ioNERDSSPyPi\TestingFunctions\\1si4.pdb",[5],"ioNERDSSPyPi\TestingFunctions\parm.inp")
 badTimer('Start',last)
