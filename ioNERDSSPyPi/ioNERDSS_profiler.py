@@ -23,5 +23,16 @@ import ioNERDSS as ion
 
 
 last = badTimer('Start',0)
-print(ion.traj_track('ioNERDSSPyPi\TestingFunctions\\trajectory.xyz',6,[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
+
+newProtein = ion.ProteinComplex('ioNERDSSPyPi\TestingFunctions\\1si4.pdb',['A','B'])
+"""newProtein.calc_angle()
+newProtein.set_COM()
+newProtein.filter(['A','B'])
+newProtein.set_sigma()
+newProtein.write_new_input()
+newProtein.show_3D_graph()
+newProtein.write_new_PDB()"""
+
+
+
 badTimer('Start',last)

@@ -32,6 +32,8 @@ def real_PDB_separate_filter(Result: tuple, ChainList: list):
     for i in range(len(chain_index)):
         unique_chain_.append(unique_chain[i])
         COM_.append(COM[i])
+
+    #just printing
     print('After filter with', ChainList, ':')
     print(str(len(unique_chain_)) + ' chain(s) in total: ' + str(unique_chain_))
     for i in range(len(COM_)):

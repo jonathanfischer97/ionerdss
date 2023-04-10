@@ -4,7 +4,7 @@ from .gen.real_PDB_data_check import real_PDB_data_check
 from .gen.real_PDB_chain_int import real_PDB_chain_int
 
 
-def real_PDB_separate_read(FileName: str):
+def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
     """
     This function will extract the coordinate information stored inside a real PDB file and calculate 
     the COM of each unique chain, as well as recognize the binding information between each pair of chains 
@@ -14,6 +14,7 @@ def real_PDB_separate_read(FileName: str):
 
     Args:
         FileName (str): The full path of the desired PDB file or name of the file if in same directory. 
+        ChainIncluded (lst): A list of which chains you want to be included
 
     Returns:
         5 length tuple: The tuple contains all the information for further analysis.
@@ -41,7 +42,7 @@ def real_PDB_separate_read(FileName: str):
             id = data[0]
             if id == 'ENDMDL':
                 break
-            if id == 'ATOM':  # find all 'atom' lines
+            if id == 'ATOM' and (data[4] in ChainsIncluded or ChainsIncluded == [None]):  # find all 'atom' lines
                 if real_PDB_data_check(data) == 1:
                     pass
                 elif real_PDB_data_check(data) == -2:
