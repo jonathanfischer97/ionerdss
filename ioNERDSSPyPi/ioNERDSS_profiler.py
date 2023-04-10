@@ -15,17 +15,16 @@ NERDSS Output File Explanation:
 from TestingFunctions.awful_tmr import badTimer
 ## CURRENTLY TESTING: hist.py
 import ioNERDSS as ion
+import math
+import copy
 
 
 
 
 
 
-last = badTimer('Start',0)
-lst = []
-for i in range(0,50):
-    lst.append(i)
 
-print(lst)
-ion.locate_position_PDB("ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb",[12],"ioNERDSSPyPi\TestingFunctions\parm.inp")
-badTimer('Start',last)
+last = badTimer('start',0)
+ion.real_PDB_UI()
+badTimer('start',last)
+#ioNERDSSPyPi\TestingFunctions\databse.pdb

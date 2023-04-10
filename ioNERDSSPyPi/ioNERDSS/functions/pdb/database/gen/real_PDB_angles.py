@@ -6,7 +6,22 @@ from .real_PDB_calculate_phi import real_PDB_calculate_phi
 
 
 def real_PDB_angles(COM1, COM2, int_site1, int_site2, normal_point1, normal_point2):
-    '''Calculate the angles for binding'''
+    """Calculates the angles for binding using the provided inputs.
+
+    Args:
+        COM1 (array): The center of mass of particle 1.
+        COM2 (array): The center of mass of particle 2.
+        int_site1 (array): The interface site of particle 1.
+        int_site2 (array): The interface site of particle 2.
+        normal_point1 (array): The normal point of particle 1.
+        normal_point2 (array): The normal point of particle 2.
+
+    Returns:
+        Tuple of floats: The calculated values for theta1, theta2, phi1, phi2, omega, and sigma_magnitude respectively.
+
+    Raises:
+        ValueError: If n1 and v1 or n2 and v2 are parallel.
+        """
 
     # Convert sequences into arrays for convinience
     COM1 = np.array(COM1)

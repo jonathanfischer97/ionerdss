@@ -1,7 +1,17 @@
 import numpy as np
 from .gen.real_PDB_angles import real_PDB_angles
 from .gen.real_PDB_norm_check import real_PDB_norm_check
-
+# This function will calculate five necessary angles: theta_one, theta_two, phi_one, phi_two and omega
+# Input variables: four coordinates indicating COM and interaction site of two chains
+# First created by Yian Qian
+# Modified by Mankun Sang on 04/13/2022
+#   1) unit of zero vector and length-one vector
+#   2) error messages when v // n
+#   3) test scripts
+# Modified by Yian Qian & Mankun Sang on 04/16/2022
+#   0) correct omega calculation when n // sigma
+#   1) generalize the sign determination of phi and omega
+#   2) created a function for phi cacluation
 
 def real_PDB_separate_angle(Result: tuple):
     """
@@ -32,6 +42,7 @@ def real_PDB_separate_angle(Result: tuple):
                 chain2 = j
             if reaction_chain[i][0] == unique_chain[chain1] and reaction_chain[i][1] == unique_chain[chain2]:
                 break
+        
         while True:
             normal_point_lst1.append([0., 0., 1.])
             if real_PDB_norm_check(normal_point_lst1[-1], COM[chain1], new_int_site[i][0]) == False:

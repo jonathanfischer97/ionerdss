@@ -42,7 +42,7 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
             id = data[0]
             if id == 'ENDMDL':
                 break
-            if id == 'ATOM' and (data[4] in ChainsIncluded or ChainsIncluded == [None]):  # find all 'atom' lines
+            if id == 'ATOM' and (data[4] in ChainsIncluded or ChainsIncluded == [None]):  # find all 'atom' lines. But only add atom if it is in 'chainincluded'
                 if real_PDB_data_check(data) == 1:
                     pass
                 elif real_PDB_data_check(data) == -2:

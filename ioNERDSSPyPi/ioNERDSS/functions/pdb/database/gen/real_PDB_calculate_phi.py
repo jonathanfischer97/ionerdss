@@ -5,6 +5,27 @@ from .real_PDB_triangle_correction import real_PDB_triangle_correction
 
 
 def real_PDB_calculate_phi(v: np.ndarray, n: np.ndarray, sigma: np.ndarray) -> float:
+    """Calculate phi angle between vector v and plane defined by normal n and point sigma.
+
+    Args:
+        v (np.array): A vector.
+        n (np.array): A normal vector of the plane.
+        sigma (np.array): A point on the plane.
+
+    Returns:
+        phi (float): The phi angle in radians.
+
+    Raises:
+        ValueError: If v, n, or sigma are not 1-D numpy arrays or if they have a length different from 3.
+
+    Example:
+        v = np.array([1, 2, 3])
+        n = np.array([0, 1, 0])
+        sigma = np.array([1, 0, 0])
+        phi = real_PDB_calculate_phi(v, n, sigma)
+        print(phi) # Output: 1.5707963267948966
+
+    """
 
     # calculate phi
     t1 = real_PDB_unit(np.cross(v, sigma))
@@ -25,14 +46,4 @@ def real_PDB_calculate_phi(v: np.ndarray, n: np.ndarray, sigma: np.ndarray) -> f
     return phi
 
 
-# This function will calculate five necessary angles: theta_one, theta_two, phi_one, phi_two and omega
-# Input variables: four coordinates indicating COM and interaction site of two chains
-# First created by Yian Qian
-# Modified by Mankun Sang on 04/13/2022
-#   1) unit of zero vector and length-one vector
-#   2) error messages when v // n
-#   3) test scripts
-# Modified by Yian Qian & Mankun Sang on 04/16/2022
-#   0) correct omega calculation when n // sigma
-#   1) generalize the sign determination of phi and omega
-#   2) created a function for phi cacluation
+

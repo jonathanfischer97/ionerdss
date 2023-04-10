@@ -2,13 +2,21 @@ import numpy as np
 
 
 def real_PDB_norm_check(norm, COM, site, buffer_ratio=1e-3):
-    '''
-    norm is a 3D vector
-    COM is a point
-    site is a point
-    False: continue norm calculation
-    True: requesting redo input
-    '''
+    """Check if the given 3D vector norm is normal to the plane defined by points COM and site in a real PDB file.
+
+    Args:
+        norm (List[float]): A 3D vector representing the normal to the plane.
+        COM (List[float]): A 3D point representing the center of mass of the plane.
+        site (List[float]): A 3D point representing a site in the plane.
+        buffer_ratio (float, optional): A ratio used to define a buffer zone around the expected value of the norm's projection. Defaults to 1e-3.
+
+    Returns:
+        bool: True if the norm is normal to the plane within the given buffer zone, False otherwise.
+
+    The function first checks the input lists for type and length correctness, and returns True if any error is found. Then, it computes the projection of the norm onto the plane, and checks whether it is within the expected range defined by the buffer ratio. The function returns True if the projection is within the range, and False otherwise.
+
+    """
+
     for i in norm:
         if type(i) != float:
             return True
