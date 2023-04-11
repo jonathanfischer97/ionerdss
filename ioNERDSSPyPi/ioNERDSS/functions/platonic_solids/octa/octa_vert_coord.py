@@ -1,4 +1,25 @@
 def octa_vert_coord(radius: float):
+    """
+    Calculates the vertex coordinates of an octagon centered at the origin.
+
+    The vertex coordinates are scaled by the given radius.
+
+    Args:
+        radius (float): The radius of the octagon.
+
+    Returns:
+        list: A list of 6 vertex coordinates, each represented as a list of 3D coordinates [x, y, z].
+        The coordinates are scaled by the given radius.
+
+    Raises:
+        None
+
+    Example:
+        radius = 2.0
+        result = octa_vert_coord(radius)
+        print(result)
+    """
+    
     scaler = radius
     v0 = [1, 0, 0]
     v1 = [-1, 0, 0]

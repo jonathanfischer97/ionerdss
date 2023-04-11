@@ -2,6 +2,25 @@ from .octa_vert_input_coord import octa_vert_input_coord
 
 
 def octa_vert_write(radius: float, sigma: float):
+    """Generates an input file for a simulation of an octahedron vertex-centered 
+    geometry with the specified radius and sigma value.
+
+    Args:
+        radius (float): Radius of the octahedron vertex-centered geometry.
+        sigma (float): Sigma value used for generating the input file.
+
+    Returns:
+        None
+
+    Example:
+        >>> radius = 1.0
+        >>> sigma = 0.5
+        >>> octa_vert_write(radius, sigma)
+        # Generates an input file 'parm.inp' with simulation parameters, 
+        # boundaries, molecules, and reactions for octahedron vertex-centered 
+        # geometry.
+    """
+    
     COM, lg1, lg2, lg3, lg4, n = octa_vert_input_coord(radius, sigma)
     f = open('parm.inp', 'w')
     f.write(' # Input file (octahedron vertex-centered)\n\n')

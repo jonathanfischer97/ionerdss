@@ -4,6 +4,26 @@ from .octa_face_input_coord import octa_face_input_coord
 
 
 def octa_face_write(radius: float, sigma: float):
+    """Generate an input file for a simulation with parameters for octahedron face-centered system.
+
+    Args:
+        radius (float): Radius of the octahedron.
+        sigma (float): Sigma value for the system.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Examples:
+        octa_face_write(5.0, 1.2)
+
+    The function generates an input file 'parm.inp' for a simulation with parameters including 
+    the radius and sigma value of an octahedron face-centered system. The input file contains 
+    start parameters, start boundaries, start molecules, and start reactions sections with 
+    specific parameters written to the file.
+    """
     COM, lg1, lg2, lg3, n = octa_face_input_coord(radius, sigma)
     coord = octa_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(

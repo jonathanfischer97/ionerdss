@@ -1,8 +1,8 @@
-Write a python docstring in the google style for this function: from .icos_face_write import icos_face_write
+Write a python docstring in the google style for this function: from .octa_face_write import octa_face_write
 
 
-def icos_face(radius: float, sigma: float):
-    icos_face_write(radius, sigma)
+def octa_face(radius: float, sigma: float):
+    octa_face_write(radius, sigma)
     print('File writing complete!')
     return 0
 
@@ -15,7 +15,7 @@ Write a python docstring in the google style for this function: import math
 from ..gen_platonic.mid_pt import mid_pt
 
 
-def icos_face_COM_coord(a: float, b: float, c: float):
+def octa_face_COM_coord(a: float, b: float, c: float):
     mid_a = mid_pt(b, c)
     mid_b = mid_pt(a, c)
     mid_c = mid_pt(a, b)
@@ -40,12 +40,12 @@ def icos_face_COM_coord(a: float, b: float, c: float):
 =================================================================
 
 Write a python docstring in the google style for this function: from ..gen_platonic.mid_pt import mid_pt
-from .icos_face_COM_coord import icos_face_COM_coord
+from .octa_face_COM_coord import octa_face_COM_coord
 
 
-def icos_face_COM_leg_coord(a: float, b: float, c: float):
+def octa_face_COM_leg_coord(a: float, b: float, c: float):
     COM_leg = []
-    COM_leg.append(icos_face_COM_coord(a, b, c))
+    COM_leg.append(octa_face_COM_coord(a, b, c))
     COM_leg.append(mid_pt(a, b))
     COM_leg.append(mid_pt(b, c))
     COM_leg.append(mid_pt(c, a))
@@ -56,33 +56,44 @@ def icos_face_COM_leg_coord(a: float, b: float, c: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .icos_face_vert_coord import icos_face_vert_coord
-from .icos_face_COM_coord import icos_face_COM_coord
+Write a python docstring in the google style for this function: from .octa_face_vert_coord import octa_face_vert_coord
+from .octa_face_COM_leg_coord import octa_face_COM_leg_coord
 
 
-def icos_face_COM_list_gen(radius: float):
-    coord = icos_face_vert_coord(radius)
+def octa_face_COM_leg_list_gen(radius: float):
+    coord = octa_face_vert_coord(radius)
+    COM_leg_list = []
+
+    COM_leg_list.append(octa_face_COM_leg_coord(coord[0], coord[2], coord[4]))
+    COM_leg_list.append(octa_face_COM_leg_coord(coord[0], coord[3], coord[4]))
+    COM_leg_list.append(octa_face_COM_leg_coord(coord[0], coord[3], coord[5]))
+    COM_leg_list.append(octa_face_COM_leg_coord(coord[0], coord[2], coord[5]))
+    COM_leg_list.append(octa_face_COM_leg_coord(coord[1], coord[2], coord[4]))
+    COM_leg_list.append(octa_face_COM_leg_coord(coord[1], coord[3], coord[4]))
+    COM_leg_list.append(octa_face_COM_leg_coord(coord[1], coord[3], coord[5]))
+    COM_leg_list.append(octa_face_COM_leg_coord(coord[1], coord[2], coord[5]))
+    return COM_leg_list
+
+
+
+
+=================================================================
+
+Write a python docstring in the google style for this function: from .octa_face_vert_coord import octa_face_vert_coord
+from .octa_face_COM_coord import octa_face_COM_coord
+
+
+def octa_face_COM_list_gen(radius: float):
+    coord = octa_face_vert_coord(radius)
     COM_list = []
-    COM_list.append(icos_face_COM_coord(coord[0], coord[2], coord[8]))
-    COM_list.append(icos_face_COM_coord(coord[0], coord[8], coord[4]))
-    COM_list.append(icos_face_COM_coord(coord[0], coord[4], coord[6]))
-    COM_list.append(icos_face_COM_coord(coord[0], coord[6], coord[10]))
-    COM_list.append(icos_face_COM_coord(coord[0], coord[10], coord[2]))
-    COM_list.append(icos_face_COM_coord(coord[3], coord[7], coord[5]))
-    COM_list.append(icos_face_COM_coord(coord[3], coord[5], coord[9]))
-    COM_list.append(icos_face_COM_coord(coord[3], coord[9], coord[1]))
-    COM_list.append(icos_face_COM_coord(coord[3], coord[1], coord[11]))
-    COM_list.append(icos_face_COM_coord(coord[3], coord[11], coord[7]))
-    COM_list.append(icos_face_COM_coord(coord[7], coord[2], coord[5]))
-    COM_list.append(icos_face_COM_coord(coord[2], coord[5], coord[8]))
-    COM_list.append(icos_face_COM_coord(coord[5], coord[8], coord[9]))
-    COM_list.append(icos_face_COM_coord(coord[8], coord[9], coord[4]))
-    COM_list.append(icos_face_COM_coord(coord[9], coord[4], coord[1]))
-    COM_list.append(icos_face_COM_coord(coord[4], coord[1], coord[6]))
-    COM_list.append(icos_face_COM_coord(coord[1], coord[6], coord[11]))
-    COM_list.append(icos_face_COM_coord(coord[6], coord[11], coord[10]))
-    COM_list.append(icos_face_COM_coord(coord[11], coord[10], coord[7]))
-    COM_list.append(icos_face_COM_coord(coord[10], coord[7], coord[2]))
+    COM_list.append(octa_face_COM_coord(coord[0], coord[2], coord[4]))
+    COM_list.append(octa_face_COM_coord(coord[0], coord[3], coord[4]))
+    COM_list.append(octa_face_COM_coord(coord[0], coord[3], coord[5]))
+    COM_list.append(octa_face_COM_coord(coord[0], coord[2], coord[5]))
+    COM_list.append(octa_face_COM_coord(coord[1], coord[2], coord[4]))
+    COM_list.append(octa_face_COM_coord(coord[1], coord[3], coord[4]))
+    COM_list.append(octa_face_COM_coord(coord[1], coord[3], coord[5]))
+    COM_list.append(octa_face_COM_coord(coord[1], coord[2], coord[5]))
     return COM_list
 
 
@@ -90,11 +101,11 @@ def icos_face_COM_list_gen(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .icos_face_leg_reduce_coord_gen import icos_face_leg_reduce_coord_gen
+Write a python docstring in the google style for this function: from .octa_face_leg_reduce_coord_gen import octa_face_leg_reduce_coord_gen
 import numpy as np
 
-def icos_face_input_coord(radius: float, sigma: float):
-    coor = icos_face_leg_reduce_coord_gen(radius, sigma)
+def octa_face_input_coord(radius: float, sigma: float):
+    coor = octa_face_leg_reduce_coord_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = coor_[0] - coor_[0]
     lg1 = coor_[1] - coor_[0]
@@ -112,9 +123,9 @@ Write a python docstring in the google style for this function: import math
 from ..gen_platonic.distance import distance
 
 
-def icos_face_leg_reduce(COM: float, leg: float, sigma: float):
+def octa_face_leg_reduce(COM: float, leg: float, sigma: float):
     n = 12
-    angle = math.acos(-5**0.5/3)
+    angle = math.acos(-1/3)
     red_len = sigma/(2*math.sin(angle/2))
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -128,17 +139,18 @@ def icos_face_leg_reduce(COM: float, leg: float, sigma: float):
 =================================================================
 
 Write a python docstring in the google style for this function: from ..gen_platonic.COM_leg_list_gen import COM_leg_list_gen
-from .icos_face_leg_reduce import icos_face_leg_reduce
+from .octa_face_COM_leg_list_gen import octa_face_COM_leg_list_gen
+from .octa_face_leg_reduce import octa_face_leg_reduce
 
-def icos_face_leg_reduce_coord_gen(radius: float, sigma: float):
-    COM_leg_list = COM_leg_list_gen(radius)
+def octa_face_leg_reduce_coord_gen(radius: float, sigma: float):
+    COM_leg_list = octa_face_COM_leg_list_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
         temp_list = []
         temp_list.append(elements[0])
         i = 1
         while i <= 3:
-            temp_list.append(icos_face_leg_reduce(
+            temp_list.append(octa_face_leg_reduce(
                 elements[0], elements[i], sigma))
             i += 1
         COM_leg_red_list.append(temp_list)
@@ -149,25 +161,15 @@ def icos_face_leg_reduce_coord_gen(radius: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: import math
-
-
-def icos_face_vert_coord(radius: float):
-    scaler = radius/(2*math.sin(2*math.pi/5))
-    m = (1+5**0.5)/2
-    v0 = [0, 1, m]
-    v1 = [0, 1, -m]
-    v2 = [0, -1, m]
-    v3 = [0, -1, -m]
-    v4 = [1, m, 0]
-    v5 = [1, -m, 0]
-    v6 = [-1, m, 0]
-    v7 = [-1, -m, 0]
-    v8 = [m, 0, 1]
-    v9 = [m, 0, -1]
-    v10 = [-m, 0, 1]
-    v11 = [-m, 0, -1]
-    VertCoord = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11]
+Write a python docstring in the google style for this function: def octa_face_vert_coord(radius: float):
+    scaler = radius
+    v0 = [1, 0, 0]
+    v1 = [-1, 0, 0]
+    v2 = [0, 1, 0]
+    v3 = [0, -1, 0]
+    v4 = [0, 0, 1]
+    v5 = [0, 0, -1]
+    VertCoord = [v0, v1, v2, v3, v4, v5]
     VertCoord_ = []
     for i in VertCoord:
         temp_list = []
@@ -183,18 +185,18 @@ def icos_face_vert_coord(radius: float):
 =================================================================
 
 Write a python docstring in the google style for this function: from ..gen_platonic.angle_cal import angle_cal
-from .icos_face_leg_reduce_coord_gen import icos_face_leg_reduce_coord_gen
-from .icos_face_input_coord import icos_face_input_coord
+from .octa_face_leg_reduce_coord_gen import octa_face_leg_reduce_coord_gen
+from .octa_face_input_coord import octa_face_input_coord
 
 
-def icos_face_write(radius: float, sigma: float):
-    COM, lg1, lg2, lg3, n = icos_face_input_coord(radius, sigma)
-    coord = icos_face_leg_reduce_coord_gen(radius, sigma)
+def octa_face_write(radius: float, sigma: float):
+    COM, lg1, lg2, lg3, n = octa_face_input_coord(radius, sigma)
+    coord = octa_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
-        coord[0][0], coord[0][2], coord[11][0], coord[11][3])
+        coord[0][0], coord[0][3], coord[1][0], coord[1][3])
 
     f = open('parm.inp', 'w')
-    f.write(' # Input file (icosahedron face-centered)\n\n')
+    f.write(' # Input file (octahedron face-centered)\n\n')
     f.write('start parameters\n')
     f.write('    nItr = 10000000 #iterations\n')
     f.write('    timeStep = 0.1\n')
@@ -209,10 +211,10 @@ def icos_face_write(radius: float, sigma: float):
     f.write('    WaterBox = [500,500,500]\n')
     f.write('end boundaries\n\n')
     f.write('start molecules\n')
-    f.write('    dode : 200\n')
+    f.write('    octa : 200\n')
     f.write('end molecules\n\n')
     f.write('start reactions\n')
-    f.write('    icos(lg1) + icos(lg1) <-> icos(lg1!1).icos(lg1!1)\n')
+    f.write('    octa(lg1) + octa(lg1) <-> octa(lg1!1).octa(lg1!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -225,7 +227,7 @@ def icos_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg2) + icos(lg2) <-> icos(lg2!1).icos(lg2!1)\n')
+    f.write('    octa(lg2) + octa(lg2) <-> octa(lg2!1).octa(lg2!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -238,7 +240,7 @@ def icos_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg3) + icos(lg3) <-> icos(lg3!1).icos(lg3!1)\n')
+    f.write('    octa(lg3) + octa(lg3) <-> octa(lg3!1).octa(lg3!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -251,7 +253,7 @@ def icos_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg1) + icos(lg2) <-> icos(lg1!1).icos(lg2!1)\n')
+    f.write('    octa(lg1) + octa(lg2) <-> octa(lg1!1).octa(lg2!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -264,7 +266,7 @@ def icos_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg1) + icos(lg3) <-> icos(lg1!1).icos(lg3!1)\n')
+    f.write('    octa(lg1) + octa(lg3) <-> octa(lg1!1).octa(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -277,7 +279,7 @@ def icos_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg2) + icos(lg3) <-> icos(lg2!1).icos(lg3!1)\n')
+    f.write('    octa(lg2) + octa(lg3) <-> octa(lg2!1).octa(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -292,11 +294,11 @@ def icos_face_write(radius: float, sigma: float):
     f.write('\n')
     f.write('end reactions\n')
 
-    f = open('icos.mol', 'w')
+    f = open('octa.mol', 'w')
     f.write('##\n')
-    f.write('# Icosahehedron (face-centered) information file.\n')
+    f.write('# Octahehedron (face-centered) information file.\n')
     f.write('##\n\n')
-    f.write('Name = icos\n')
+    f.write('Name = octa\n')
     f.write('checkOverlap = true\n\n')
     f.write('# translational diffusion constants\n')
     f.write('D = [13.0, 13.0, 13.0]\n\n')
@@ -311,7 +313,6 @@ def icos_face_write(radius: float, sigma: float):
             str(round(lg2[1], 8)) + '   ' + str(round(lg2[2], 8)) + '\n')
     f.write('lg3   ' + str(round(lg3[0], 8)) + '   ' +
             str(round(lg3[1], 8)) + '   ' + str(round(lg3[2], 8)) + '\n')
-    f.write('\n')
     f.write('# bonds\n')
     f.write('bonds = 3\n')
     f.write('com lg1\n')
@@ -320,75 +321,19 @@ def icos_face_write(radius: float, sigma: float):
     f.write('\n')
 
 
-# ICOSAHEDRON VERTEX AS COM
+# OCTAHEDRON VERTEX AS COM
 
 
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .icos_vert_write import icos_vert_write
+Write a python docstring in the google style for this function: from .octa_vert_write import octa_vert_write
 
 
-def icos_vert(radius: float, sigma: float):
-    icos_vert_write(radius, sigma)
+def octa_vert(radius: float, sigma: float):
+    octa_vert_write(radius, sigma)
     print('File writing complete!')
     return 0
-
-
-# -----------------------------------Data Visualization------------------------------
-
-# Analysis tools for 'histogram_complexes_time.dat' file
-
-
-
-
-=================================================================
-
-Write a python docstring in the google style for this function: import math
-from ..gen_platonic.mid_pt import mid_pt
-
-
-def icos_vert_center_coor(a: float, b: float, c: float, d: float, e: float):
-    n = 8
-    mid_a = mid_pt(c, d)
-    mid_b = mid_pt(d, e)
-    mid_c = mid_pt(a, e)
-    COM_a = []
-    COM_b = []
-    COM_c = []
-    for i in range(0, 3):
-        COM_a.append(round(a[i] + (mid_a[i] - a[i]) /
-                     (1+math.sin(0.3*math.pi)), 14))
-        COM_b.append(round(b[i] + (mid_b[i] - b[i]) /
-                     (1+math.sin(0.3*math.pi)), 14))
-        COM_c.append(round(c[i] + (mid_c[i] - c[i]) /
-                     (1+math.sin(0.3*math.pi)), 14))
-    if round(COM_a[0], n) == round(COM_b[0], n) and round(COM_b[0], n) == round(COM_c[0], n) and \
-        round(COM_a[1], n) == round(COM_b[1], n) and round(COM_b[1], n) == round(COM_c[1], n) and \
-            round(COM_a[2], n) == round(COM_b[2], n) and round(COM_b[2], n) == round(COM_c[2], n):
-        return COM_a
-    else:
-        return COM_a
-
-
-
-
-=================================================================
-
-Write a python docstring in the google style for this function: from ..gen_platonic.distance import distance
-
-
-def icos_vert_check_dis(cen: float, COM: float, lg1: float, lg2: float, lg3: float, lg4: float, lg5: float):
-    dis1 = round(distance(cen, lg1), 8)
-    dis2 = round(distance(cen, lg2), 8)
-    dis3 = round(distance(cen, lg3), 8)
-    dis4 = round(distance(cen, lg4), 8)
-    dis5 = round(distance(cen, lg5), 8)
-    dis_ = round(distance(COM, cen), 8)
-    if dis1 == dis2 and dis1 == dis3 and dis1 == dis4 and dis1 == dis5:
-        return dis1, dis_
-    else:
-        return dis1, dis_
 
 
 
@@ -399,51 +344,36 @@ Write a python docstring in the google style for this function: import numpy as 
 from ..gen_platonic.mid_pt import mid_pt
 
 
-def icos_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float, e: float):
+def octa_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float):
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)
     legd = mid_pt(COM, d)
-    lege = mid_pt(COM, e)
-    result = [np.around(COM, 10), np.around(lega, 10), np.around(
-        legb, 10), np. around(legc, 10), np.around(legd, 10), np.around(lege, 10)]
-    return result
+    return [np.around(COM, 10), np.around(lega, 10), np.around(legb, 10), np.around(legc, 10), np.around(legd, 10)]
 
 
 
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .icos_vert_coord import icos_vert_coord
-from .icos_vert_COM_leg import icos_vert_COM_leg
+Write a python docstring in the google style for this function: from .octa_vert_coord import octa_vert_coord
+from .octa_vert_COM_leg import octa_vert_COM_leg
 
-def icos_vert_COM_leg_gen(radius: float):
-    coord = icos_vert_coord(radius)
+def octa_vert_COM_leg_gen(radius: float):
+    coord = octa_vert_coord(radius)
     COM_leg_list = []
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[0], coord[2], coord[8], coord[4], coord[6], coord[10]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[1], coord[4], coord[6], coord[11], coord[3], coord[9]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[2], coord[0], coord[10], coord[7], coord[5], coord[8]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[3], coord[1], coord[11], coord[7], coord[5], coord[9]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[4], coord[0], coord[6], coord[1], coord[9], coord[8]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[5], coord[2], coord[8], coord[7], coord[3], coord[9]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[6], coord[0], coord[10], coord[11], coord[1], coord[4]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[7], coord[3], coord[11], coord[10], coord[2], coord[5]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[8], coord[0], coord[2], coord[5], coord[9], coord[4]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[9], coord[8], coord[4], coord[1], coord[3], coord[5]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[10], coord[0], coord[2], coord[7], coord[11], coord[6]))
-    COM_leg_list.append(icos_vert_COM_leg(
-        coord[11], coord[10], coord[7], coord[3], coord[1], coord[6]))
+    COM_leg_list.append(octa_vert_COM_leg(
+        coord[0], coord[2], coord[4], coord[3], coord[5]))
+    COM_leg_list.append(octa_vert_COM_leg(
+        coord[1], coord[2], coord[4], coord[3], coord[5]))
+    COM_leg_list.append(octa_vert_COM_leg(
+        coord[2], coord[1], coord[5], coord[0], coord[4]))
+    COM_leg_list.append(octa_vert_COM_leg(
+        coord[3], coord[1], coord[5], coord[0], coord[4]))
+    COM_leg_list.append(octa_vert_COM_leg(
+        coord[4], coord[1], coord[2], coord[0], coord[3]))
+    COM_leg_list.append(octa_vert_COM_leg(
+        coord[5], coord[1], coord[2], coord[0], coord[3]))
     return COM_leg_list
 
 
@@ -451,25 +381,15 @@ def icos_vert_COM_leg_gen(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: import math
-
-
-def icos_vert_coord(radius: float):
-    scaler = radius/(2*math.sin(2*math.pi/5))
-    m = (1+5**0.5)/2
-    v0 = [0, 1, m]
-    v1 = [0, 1, -m]
-    v2 = [0, -1, m]
-    v3 = [0, -1, -m]
-    v4 = [1, m, 0]
-    v5 = [1, -m, 0]
-    v6 = [-1, m, 0]
-    v7 = [-1, -m, 0]
-    v8 = [m, 0, 1]
-    v9 = [m, 0, -1]
-    v10 = [-m, 0, 1]
-    v11 = [-m, 0, -1]
-    VertCoord = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11]
+Write a python docstring in the google style for this function: def octa_vert_coord(radius: float):
+    scaler = radius
+    v0 = [1, 0, 0]
+    v1 = [-1, 0, 0]
+    v2 = [0, 1, 0]
+    v3 = [0, -1, 0]
+    v4 = [0, 0, 1]
+    v5 = [0, 0, -1]
+    VertCoord = [v0, v1, v2, v3, v4, v5]
     VertCoord_ = []
     for i in VertCoord:
         temp_list = []
@@ -484,21 +404,20 @@ def icos_vert_coord(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .icos_vert_leg_reduce_coor_gen import icos_vert_leg_reduce_coor_gen
+Write a python docstring in the google style for this function: from .octa_vert_leg_reduce_coor_gen import octa_vert_leg_reduce_coor_gen
 import numpy as np
 
 
-def icos_vert_input_coord(radius: float, sigma: float):
-    coor = icos_vert_leg_reduce_coor_gen(radius, sigma)
-    coor_ = np.array(coor[0])
-    COM = np.around(coor_[0] - coor_[0], 12)
-    lg1 = np.around(coor_[1] - coor_[0], 12)
-    lg2 = np.around(coor_[2] - coor_[0], 12)
-    lg3 = np.around(coor_[3] - coor_[0], 12)
-    lg4 = np.around(coor_[4] - coor_[0], 12)
-    lg5 = np.around(coor_[5] - coor_[0], 12)
-    n = np.around(coor_[0]/np.linalg.norm(coor_[0]), 12)
-    return COM, lg1, lg2, lg3, lg4, lg5, n
+def octa_vert_input_coord(radius: float, sigma: float):
+    coor = octa_vert_leg_reduce_coor_gen(radius, sigma)
+    coor_ = np.array(coor[4])
+    COM = np.around(coor_[0] - coor_[0], 8)
+    lg1 = np.around(coor_[1] - coor_[0], 8)
+    lg2 = np.around(coor_[2] - coor_[0], 8)
+    lg3 = np.around(coor_[3] - coor_[0], 8)
+    lg4 = np.around(coor_[4] - coor_[0], 8)
+    n = np.around(coor_[0]/np.linalg.norm(coor_[0]), 8)
+    return COM, lg1, lg2, lg3, lg4, n
 
 
 
@@ -508,7 +427,7 @@ def icos_vert_input_coord(radius: float, sigma: float):
 Write a python docstring in the google style for this function: from ..gen_platonic.distance import distance
 
 
-def icos_vert_leg_reduce(COM: float, leg: float, sigma: float):
+def octa_vert_leg_reduce(COM: float, leg: float, sigma: float):
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -521,18 +440,18 @@ def icos_vert_leg_reduce(COM: float, leg: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .icos_vert_COM_leg_gen import icos_vert_COM_leg_gen
-from .icos_vert_leg_reduce import icos_vert_leg_reduce
+Write a python docstring in the google style for this function: from .octa_vert_COM_leg_gen import octa_vert_COM_leg_gen
+from .octa_vert_leg_reduce import octa_vert_leg_reduce
 
-def icos_vert_leg_reduce_coor_gen(radius: float, sigma: float):
-    COM_leg_list = icos_vert_COM_leg_gen(radius)
+def octa_vert_leg_reduce_coor_gen(radius: float, sigma: float):
+    COM_leg_list = octa_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
         temp_list = []
         temp_list.append(elements[0])
         i = 1
-        while i <= 5:
-            temp_list.append(icos_vert_leg_reduce(
+        while i <= 4:
+            temp_list.append(octa_vert_leg_reduce(
                 elements[0], elements[i], sigma))
             i += 1
         COM_leg_red_list.append(temp_list)
@@ -543,49 +462,13 @@ def icos_vert_leg_reduce_coor_gen(radius: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: import math
+Write a python docstring in the google style for this function: from .octa_vert_input_coord import octa_vert_input_coord
 
 
-def icos_vert_norm_input(scaler: float, dis_: float):
-    c1 = math.cos(2*math.pi/5)
-    c2 = math.cos(math.pi/5)
-    s1 = math.sin(2*math.pi/5)
-    s2 = math.sin(4*math.pi/5)
-    v0 = scaler*np.array([0, 1])
-    v1 = scaler*np.array([-s1, c1])
-    v2 = scaler*np.array([-s2, -c2])
-    v3 = scaler*np.array([s2, -c2])
-    v4 = scaler*np.array([s1, c1])
-    lg1 = np.array([v0[0], v0[1], -dis_])
-    lg2 = np.array([v1[0], v1[1], -dis_])
-    lg3 = np.array([v2[0], v2[1], -dis_])
-    lg4 = np.array([v3[0], v3[1], -dis_])
-    lg5 = np.array([v4[0], v4[1], -dis_])
-    COM = np.array([0, 0, 0])
-    n = np.array([0, 0, 1])
-    return COM, lg1, lg2, lg3, lg4, lg5, n
-
-
-
-
-=================================================================
-
-Write a python docstring in the google style for this function: from .icos_vert_input_coord import icos_vert_input_coord
-from .icos_vert_center_coor import icos_vert_center_coor
-from .icos_vert_check_dis import icos_vert_check_dis
-from .icos_vert_norm_input import icos_vert_norm_input
-
-
-def icos_vert_write(radius: float, sigma: float):
-    COM_, lg1_, lg2_, lg3_, lg4_, lg5_, n_ = icos_vert_input_coord(
-        radius, sigma)
-    cen_ = icos_vert_center_coor(lg1_, lg2_, lg3_, lg4_, lg5_)
-    scaler, dis_ = icos_vert_check_dis(
-        cen_, COM_, lg1_, lg2_, lg3_, lg4_, lg5_)
-    COM, lg1, lg2, lg3, lg4, lg5, n = icos_vert_norm_input(scaler, dis_)
-
+def octa_vert_write(radius: float, sigma: float):
+    COM, lg1, lg2, lg3, lg4, n = octa_vert_input_coord(radius, sigma)
     f = open('parm.inp', 'w')
-    f.write(' # Input file (icosahedron vertex-centered)\n\n')
+    f.write(' # Input file (octahedron vertex-centered)\n\n')
     f.write('start parameters\n')
     f.write('    nItr = 10000000 #iterations\n')
     f.write('    timeStep = 0.1\n')
@@ -600,10 +483,10 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    WaterBox = [500,500,500]\n')
     f.write('end boundaries\n\n')
     f.write('start molecules\n')
-    f.write('    icos : 200\n')
+    f.write('    octa : 200\n')
     f.write('end molecules\n\n')
     f.write('start reactions\n')
-    f.write('    icos(lg1) + icos(lg1) <-> icos(lg1!1).icos(lg1!1)\n')
+    f.write('    otca(lg1) + octa(lg1) <-> octa(lg1!1).octa(lg1!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -615,7 +498,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg2) + icos(lg2) <-> icos(lg2!1).icos(lg2!1)\n')
+    f.write('    otca(lg2) + octa(lg2) <-> octa(lg2!1).octa(lg2!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -627,7 +510,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg3) + icos(lg3) <-> icos(lg3!1).icos(lg3!1)\n')
+    f.write('    otca(lg3) + octa(lg3) <-> octa(lg3!1).octa(lg3!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -639,7 +522,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg4) + icos(lg4) <-> icos(lg4!1).icos(lg4!1)\n')
+    f.write('    otca(lg4) + octa(lg4) <-> octa(lg4!1).octa(lg4!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -651,19 +534,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg5) + icos(lg5) <-> icos(lg5!1).icos(lg5!1)\n')
-    f.write('    onRate3Dka = 2\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    icos(lg1) + icos(lg2) <-> icos(lg1!1).icos(lg2!1)\n')
+    f.write('    otca(lg1) + octa(lg2) <-> octa(lg1!1).octa(lg2!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -675,7 +546,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg1) + icos(lg3) <-> icos(lg1!1).icos(lg3!1)\n')
+    f.write('    otca(lg1) + octa(lg3) <-> octa(lg1!1).octa(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -687,7 +558,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg1) + icos(lg4) <-> icos(lg1!1).icos(lg4!1)\n')
+    f.write('    otca(lg1) + octa(lg4) <-> octa(lg1!1).octa(lg4!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -699,7 +570,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg1) + icos(lg5) <-> icos(lg1!1).icos(lg5!1)\n')
+    f.write('    otca(lg2) + octa(lg3) <-> octa(lg2!1).octa(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -711,7 +582,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg2) + icos(lg3) <-> icos(lg2!1).icos(lg3!1)\n')
+    f.write('    otca(lg2) + octa(lg4) <-> octa(lg2!1).octa(lg4!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -723,55 +594,7 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    icos(lg2) + icos(lg4) <-> icos(lg2!1).icos(lg4!1)\n')
-    f.write('    onRate3Dka = 4\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    icos(lg2) + icos(lg5) <-> icos(lg2!1).icos(lg5!1)\n')
-    f.write('    onRate3Dka = 4\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    icos(lg3) + icos(lg4) <-> icos(lg3!1).icos(lg4!1)\n')
-    f.write('    onRate3Dka = 4\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    icos(lg3) + icos(lg5) <-> icos(lg3!1).icos(lg5!1)\n')
-    f.write('    onRate3Dka = 4\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    icos(lg4) + icos(lg5) <-> icos(lg4!1).icos(lg5!1)\n')
+    f.write('    otca(lg3) + octa(lg4) <-> octa(lg3!1).octa(lg4!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -785,11 +608,11 @@ def icos_vert_write(radius: float, sigma: float):
     f.write('\n')
     f.write('end reactions\n')
 
-    f = open('icos.mol', 'w')
+    f = open('octa.mol', 'w')
     f.write('##\n')
-    f.write('# Icosahedron (vertex-centered) information file.\n')
+    f.write('# Octahedron (vertex-centered) information file.\n')
     f.write('##\n\n')
-    f.write('Name = icos\n')
+    f.write('Name = octa\n')
     f.write('checkOverlap = true\n\n')
     f.write('# translational diffusion constants\n')
     f.write('D = [13.0, 13.0, 13.0]\n\n')
@@ -806,20 +629,17 @@ def icos_vert_write(radius: float, sigma: float):
             str(round(lg3[1], 8)) + '   ' + str(round(lg3[2], 8)) + '\n')
     f.write('lg4   ' + str(round(lg4[0], 8)) + '   ' +
             str(round(lg4[1], 8)) + '   ' + str(round(lg4[2], 8)) + '\n')
-    f.write('lg5   ' + str(round(lg5[0], 8)) + '   ' +
-            str(round(lg5[1], 8)) + '   ' + str(round(lg5[2], 8)) + '\n')
     f.write('\n')
     f.write('# bonds\n')
-    f.write('bonds = 5\n')
+    f.write('bonds = 4\n')
     f.write('com lg1\n')
     f.write('com lg2\n')
     f.write('com lg3\n')
     f.write('com lg4\n')
-    f.write('com lg5\n')
     f.write('\n')
 
 
-# OCTAHEDRON FACE AS COM
+# CUBE FACE AS COM
 
 
 

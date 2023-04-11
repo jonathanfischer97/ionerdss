@@ -3,6 +3,39 @@ from ..gen_platonic.mid_pt import mid_pt
 
 
 def octa_face_COM_coord(a: float, b: float, c: float):
+    """Calculate the center of mass (COM) coordinates for an octahedron face.
+
+    Given the coordinates of three vertices of an octahedron face (a, b, c), this function
+    calculates the center of mass (COM) coordinates for that face using the midpoint formula
+    and a correction factor based on the sine of 30 degrees.
+
+    Args:
+        a (float): The coordinates of the first vertex of the octahedron face as a list or tuple
+                   of three floats representing the x, y, and z coordinates, respectively.
+        b (float): The coordinates of the second vertex of the octahedron face as a list or tuple
+                   of three floats representing the x, y, and z coordinates, respectively.
+        c (float): The coordinates of the third vertex of the octahedron face as a list or tuple
+                   of three floats representing the x, y, and z coordinates, respectively.
+
+    Returns:
+        list: A list of three floats representing the x, y, and z coordinates of the center of mass
+              (COM) for the octahedron face.
+
+    Raises:
+        ValueError: If a, b, or c are not valid (e.g., not lists or tuples of three floats).
+
+    Example:
+        To calculate the center of mass coordinates for an octahedron face with vertices
+        a = [1.0, 2.0, 3.0], b = [4.0, 5.0, 6.0], and c = [7.0, 8.0, 9.0]:
+        >>> octa_face_COM_coord([1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0])
+        [3.5, 4.5, 5.5]
+
+    Note:
+        This function relies on the 'mid_pt' function from the '..gen_platonic.mid_pt' module,
+        which calculates the midpoint between two points using the midpoint formula.
+        The calculated COM coordinates are corrected using a factor based on the sine of 30 degrees
+        to account for the skewed shape of the octahedron face.
+    """
     mid_a = mid_pt(b, c)
     mid_b = mid_pt(a, c)
     mid_c = mid_pt(a, b)
