@@ -2,6 +2,30 @@ import math
 
 
 def real_PDB_chain_int(unique_chain, split_position, split_resi_count, split_atom_count, split_resi_type, split_atom_type, split_resi_position):
+    """
+    This function takes in the necessary data for a protein structure and determines which chains and residues are interacting
+    with each other based on the distance between atoms. The output is a tuple that includes the following lists:
+
+    Args:
+        unique_chain (list): Unique chains within the protein structure
+        split_position (list of list): Each sublist contains the positions of atoms in a specific chain
+        split_resi_count (list of list): Each sublist contains the residue count of atoms in a specific chain
+        split_atom_count (list of list): Each sublist contains the atom count in a specific chain
+        split_resi_type (list of list): aEach sublist contains the residue type of atoms in a specific chain
+        split_atom_type (list of list): Each sublist contains the atom type of atoms in a specific chain
+        split_resi_position (list of list): Each sublist contains the residue position of atoms in a specific chain
+    
+    Returns:
+        reaction_chain (list of list): Each sublist contains the chain IDs of two chains that are interacting with each other
+        reaction_resi_count (list of list of list): Each sub-sublist contains pairs of residue counts that are interacting
+        reaction_resi_type (list of list of list): Each sub-sublist contains pairs of residue types that are interacting
+        reaction_resi_position (list of list of list): Each sub-sublist contains pairs of residue positions that are interacting
+        reaction_atom (list of list): Each sublist contains pairs of atom counts that are interacting
+        reaction_atom_position (list of list): Each sublist contains pairs of atom positions that are interacting
+        reaction_atom_distance (list): a list of distances between interacting atoms
+        reaction_atom_type (list of list): Each sublist contains pairs of atom types that are interacting
+    """
+
     distance = 0
     # list of lists (each sublist will include two letters indicating these two chains have
     reaction_chain = []

@@ -2,6 +2,17 @@ import pandas as pd
 
 
 def RESTART_complex_df_gen(pdb_df, complex_lst):
+    """Generates a dataframe that represents the complexes from a given pdb dataframe and complex list.
+
+    Args:
+        pdb_df (pandas.DataFrame): DataFrame containing the PDB data with columns ['Protein_Num', 'Protein_Name'].
+        complex_lst (list): List of lists containing the protein numbers that form each complex.
+
+    Returns:
+        pandas.DataFrame: A DataFrame where each row represents a complex and each column represents a protein. 
+        The values of the DataFrame correspond to the number of atoms of each protein in each complex.
+    """
+
     name_lst = list(pdb_df['Protein_Name'])
     name_lst_ = []
     for i in name_lst:

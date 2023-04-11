@@ -1,4 +1,17 @@
 def real_PDB_data_check(data):
+    """
+    Check if the PDB data is valid.
+
+    Args:
+        data (list): List of PDB data to be checked.
+
+    Returns:
+        int: -1 if the length of data is not equal to 12 and amino acid name exceeds 4 characters.
+             -2 if the length of data is equal to 12 but the amino acid name is not of length 3.
+             1 if the data is valid.
+
+    """
+    
     if len(data) != 12:
         if len(data[2]) > 4:
             return -1  # Amino acid name stick with info before
@@ -7,10 +20,3 @@ def real_PDB_data_check(data):
             return 1  # True data
         else:
             return -2  # Wrong amino acid name
-
-
-# This function will go over every atom between two chains to determine whether they are interacting (distance smaller
-# than 3.0A)
-# remember to import math package when use the function
-# Input variables:
-# return variables: a tuple includes

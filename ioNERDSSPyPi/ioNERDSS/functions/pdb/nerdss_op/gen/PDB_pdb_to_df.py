@@ -1,6 +1,22 @@
 import pandas as pd
 
 def PDB_pdb_to_df(file_name, drop_COM):
+    """Converts a PDB file to a Pandas DataFrame.
+
+    Args:
+        file_name (str): Name of the PDB file to be read.
+        drop_COM (bool): Whether to drop lines with 'COM' as the 'Cite_Name' value.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the protein information extracted from the PDB file.
+            The DataFrame has the following columns:
+            - 'Protein_Num': Protein number (integer).
+            - 'Protein_Name': Protein name (string).
+            - 'Cite_Name': Cite name (string).
+            - 'x_coord': x-coordinate of the protein (float).
+            - 'y_coord': y-coordinate of the protein (float).
+            - 'z_coord': z-coordinate of the protein (float).
+    """
     df = pd.DataFrame(columns=['Protein_Num', 'Protein_Name',
                       'Cite_Name', 'x_coord', 'y_coord', 'z_coord'])
     with open(file_name, 'r') as file:

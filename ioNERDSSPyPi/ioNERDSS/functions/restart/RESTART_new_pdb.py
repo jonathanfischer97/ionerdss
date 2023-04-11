@@ -1,4 +1,17 @@
 def RESTART_new_pdb(file_name_pdb, protein_remain):
+    """Reads a PDB file and creates a new PDB file with only the atoms that correspond to the protein_remain list.
+
+    Args:
+        file_name_pdb (str): the name of the input PDB file
+        protein_remain (List[int]): a list of integers with the protein numbers to be kept in the new PDB file
+
+    Returns:
+        int: 0, indicating that the function has finished executing
+
+    Example:
+        >>> RESTART_new_pdb('input_file.pdb', [1, 2, 3, 5])
+        0
+    """
     with open(file_name_pdb, 'r') as file:
         write_lst = []
         for line in file.readlines():
