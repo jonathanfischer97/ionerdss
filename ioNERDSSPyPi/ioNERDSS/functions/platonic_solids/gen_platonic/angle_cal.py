@@ -3,8 +3,7 @@ import numpy as np
 
 
 def angle_cal(COM1: float, leg1: float, COM2: float, leg2: float):
-    """
-    Calculates angles between vectors based on given inputs.
+    """Calculates angles between vectors based on given inputs.
 
     Args:
         COM1 (float): Center of Mass (COM) for the first leg.

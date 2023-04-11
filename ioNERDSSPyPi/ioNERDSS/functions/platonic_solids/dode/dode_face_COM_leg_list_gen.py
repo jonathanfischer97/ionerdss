@@ -11,8 +11,6 @@ def dode_face_COM_leg_list_gen(radius: float):
     Returns:
         list: A list containing the COM and leg coordinates of 12 faces as a large list.
 
-    Raises:
-        None
     """
     
     # generate all COM and leg coords of 12 faces as a large list

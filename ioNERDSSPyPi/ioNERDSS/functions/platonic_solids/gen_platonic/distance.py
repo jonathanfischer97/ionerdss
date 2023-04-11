@@ -3,37 +3,26 @@ import numpy as np
 from typing import List
 
 def distance(a: List[float], b: List[float]) -> float:
-    """
-    Compute the Euclidean distance between two points in n-dimensional space.
+    """Compute the Euclidean distance between two points in n-dimensional space.
 
-    Parameters
-    ----------
-    a : List[float]
-        The coordinates of the first point.
-    b : List[float]
-        The coordinates of the second point.
+    Args:
+        a (List[float]): The coordinates of the first point.
+        b (List[float]): The coordinates of the second point.
 
-    Returns
-    -------
-    float
-        The Euclidean distance between the two points.
+    Returns:
+        float: The Euclidean distance between the two points.
 
-    Raises
-    ------
-    None
 
-    Examples
-    --------
-    >>> a = [0, 0, 0]
-    >>> b = [1, 1, 1]
-    >>> distance(a, b)
-    1.7320508075688772
+    Examples:
+        >>> a = [0, 0, 0]
+        >>> b = [1, 1, 1]
+        >>> distance(a, b)
+        1.7320508075688772
 
     Notes
-    -----
-    This function computes the Euclidean distance between two points by taking
-    the square root of the sum of squared differences of each coordinate. The 
-    result is rounded to 15 decimal places using string formatting.
+        This function computes the Euclidean distance between two points by taking
+        the square root of the sum of squared differences of each coordinate. The 
+        result is rounded to 15 decimal places using string formatting.
     """
     return float(f"{np.linalg.norm(np.array(a) - np.array(b)):.15f}")
 

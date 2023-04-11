@@ -21,10 +21,8 @@ def dode_vert_norm_input(radius: float, sigma: float):
         numpy.ndarray: A numpy array representing the normalized second leg (lg2) vector.
         numpy.ndarray: A numpy array representing the normalized third leg (lg3) vector.
         numpy.ndarray: A numpy array representing the normalized normal (n) vector.
-
-    Raises:
-        None
     """
+    
     COM, lg1, lg2, lg3, n = dode_vert_input_coord(radius, sigma)
     length = distance(lg1, lg2)
     dis1 = ((-length/2)**2+(-((length/2)*(3**0.5))/3)**2)**0.5

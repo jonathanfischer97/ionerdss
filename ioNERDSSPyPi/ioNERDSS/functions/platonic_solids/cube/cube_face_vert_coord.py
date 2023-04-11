@@ -6,10 +6,10 @@ def cube_face_vert_coord(radius: float):
     by the given radius value.
 
     Args:
-        radius: A float representing the radius of the platonic solid.
+        radius (float): The radius of the platonic solid.
 
     Returns:
-        A list of vertex coordinates for the cube face. Each vertex coordinate is a list of three floats representing the
+        List: Contains vertex coordinates for the cube face. Each vertex coordinate is a list of three floats representing the
         x, y, and z coordinates of the vertex. The vertex coordinates are scaled by the radius value. 
 
     Raises:

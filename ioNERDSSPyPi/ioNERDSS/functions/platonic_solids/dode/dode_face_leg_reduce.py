@@ -3,8 +3,7 @@ from ..gen_platonic.distance import distance
 
 
 def dode_face_leg_reduce(COM: float, leg: float, sigma: float):
-    """
-    Calculates the reduced length of a dodecahedron leg based on the given center of mass (COM), leg coordinates,
+    """Calculates the reduced length of a dodecahedron leg based on the given center of mass (COM), leg coordinates,
     and sigma value.
 
     Args:
@@ -17,6 +16,7 @@ def dode_face_leg_reduce(COM: float, leg: float, sigma: float):
         The list contains three elements [x', y', z'], where x', y', and z' are the reduced coordinates of the leg
         rounded to 14 decimal places.
     """
+    
     # calculate the recuced length when considering the sigma value
     n = 14
     m = (1+5**(0.5))/2

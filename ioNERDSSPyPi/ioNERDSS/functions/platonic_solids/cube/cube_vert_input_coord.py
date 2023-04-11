@@ -18,8 +18,6 @@ def cube_vert_input_coord(radius: float, sigma: float):
         coordinate, the next three arrays represent the three leg coordinates (lg1, lg2, lg3), and the last array
         represents the normalized vector (n) coordinate.
 
-    Raises:
-        N/A
 
     Example:
         cube_vert_input_coord(1.0, 0.5)

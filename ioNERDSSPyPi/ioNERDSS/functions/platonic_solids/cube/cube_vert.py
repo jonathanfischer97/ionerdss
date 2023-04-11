@@ -9,10 +9,7 @@ def cube_vert(radius: float, sigma: float):
         sigma (float): The sigma value for vertex generation.
 
     Returns:
-        int: Returns 0 after writing the file.
-
-    Raises:
-        N/A
+        parm.inp/cube.mol file: inputs for NERDSS
 
     Example:
         cube_vert(1.0, 0.1)  # Generates a cube mesh with radius 1.0 and sigma 0.1,

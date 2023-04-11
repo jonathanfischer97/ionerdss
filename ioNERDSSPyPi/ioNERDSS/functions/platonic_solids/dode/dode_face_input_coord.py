@@ -2,8 +2,7 @@ from .dode_face_leg_reduce_coor_gen import dode_face_leg_reduce_coor_gen
 import numpy as np
 
 def dode_face_input_coord(radius: float, sigma: float):
-    """
-    Generates the input coordinates for a dodecahedron face based on the given radius and sigma.
+    """Generates the input coordinates for a dodecahedron face based on the given radius and sigma.
 
     Args:
         radius (float): The radius of the dodecahedron.

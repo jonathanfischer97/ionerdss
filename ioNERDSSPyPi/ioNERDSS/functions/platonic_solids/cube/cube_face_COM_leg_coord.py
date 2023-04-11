@@ -11,17 +11,14 @@ def cube_face_COM_leg_coord(a: float, b: float, c: float, d: float):
     `..gen_platonic.mid_pt` module.
 
     Args:
-        a: A float representing the x-coordinate of the first vertex of the cube face.
-        b: A float representing the x-coordinate of the second vertex of the cube face.
-        c: A float representing the x-coordinate of the third vertex of the cube face.
-        d: A float representing the x-coordinate of the fourth vertex of the cube face.
+        a (float): The x-coordinate of the first vertex of the cube face.
+        b (float): The x-coordinate of the second vertex of the cube face.
+        c (float): The x-coordinate of the third vertex of the cube face.
+        d (float): The x-coordinate of the fourth vertex of the cube face.
 
     Returns:
-        A list containing the COM coordinates for the cube face and its legs, in the following order:
+        List: he COM coordinates for the cube face and its legs, in the following order:
         [COM_face, COM_leg_ab, COM_leg_bc, COM_leg_cd, COM_leg_da].
-
-    Raises:
-        None.
 
     Example:
         >>> cube_face_COM_leg_coord(0.0, 1.0, 1.0, 0.0)

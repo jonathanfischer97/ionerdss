@@ -14,9 +14,6 @@ def cube_vert_COM_leg_gen(radius: float):
         list: A list containing eight sub-lists, each containing four floating-point values rounded to 10 decimal places,
         representing the central point and the midpoints of line segments between the central point and other points on the cube.
 
-    Raises:
-        N/A
-
     Example:
         cube_vert_COM_leg_gen(1.0)
         # Generates a list of midpoints of line segments between the central point and other points on a cube with a radius of 1.0.

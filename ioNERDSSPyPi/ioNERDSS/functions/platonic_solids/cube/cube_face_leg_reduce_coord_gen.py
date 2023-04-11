@@ -12,11 +12,11 @@ def cube_face_leg_reduce_coord_gen(radius: float, sigma: float):
     and 'cube_face_COM_leg_list_gen' functions respectively.
 
     Args:
-        radius: A float representing the radius of the platonic solid.
-        sigma: A float representing the sigma value for the reduction.
+        radius (float): The radius of the platonic solid.
+        sigma (float): The sigma value for the reduction.
 
     Returns:
-        A list of reduced COM and leg vectors for the cube faces. Each element in the list is a sublist containing the reduced
+        List: Contains reduced COM and leg vectors for the cube faces. Each element in the list is a sublist containing the reduced
         COM vector followed by the reduced leg vectors for each face. The coordinates in the vectors are rounded to 8 decimal places.
 
     Raises:

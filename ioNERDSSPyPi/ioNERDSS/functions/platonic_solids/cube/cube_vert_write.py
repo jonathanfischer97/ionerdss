@@ -9,8 +9,9 @@ def cube_vert_write(radius: float, sigma: float):
         radius (float): The radius of the cubes.
         sigma (float): The sigma value.
 
+
     Returns:
-        None
+        parm.inp/cube.mol file: inputs for NERDSS
     """
     
     COM, lg1, lg2, lg3, n = cube_vert_norm_input(radius, sigma)

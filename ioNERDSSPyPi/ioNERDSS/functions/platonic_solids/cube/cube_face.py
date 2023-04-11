@@ -9,19 +9,11 @@ def cube_face(radius: float, sigma: float):
     `cube_face_write` function from the `.cube_face_write` module.
 
     Args:
-        radius: A float specifying the radius of the cube face.
-        sigma: A float specifying the sigma value for the cube face.
+        radius (float): The radius of the cube face.
+        sigma (float): The sigma value for the cube face.
 
     Returns:
-        An integer value of 0 indicating the completion of file writing.
-
-    Raises:
-        None.
-
-    Example:
-        >>> cube_face(3.5, 0.1)
-        File writing complete!
-        0
+        parm.inp/cube.mol files: Inputs for NERDSS
     """
     
     cube_face_write(radius, sigma)

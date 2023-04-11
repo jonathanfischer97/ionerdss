@@ -11,14 +11,12 @@ def cube_face_COM_leg_list_gen(radius: float):
     module to calculate the COM coordinates for each cube face and its legs.
 
     Args:
-        radius: A float representing the radius of the cube.
+        radius (float): The radius of the cube.
 
     Returns:
-        A list containing the COM coordinates for all cube faces and their legs, in the following order:
+        List: contains COM coordinates for all cube faces and their legs, in the following order:
         [COM_leg_list_abcd, COM_leg_list_adhe, COM_leg_list_efgh, COM_leg_list_befg, COM_leg_list_cdgh, COM_leg_list_aehd].
 
-    Raises:
-        None.
 
     Example:
         >>> cube_face_COM_leg_list_gen(1.0)

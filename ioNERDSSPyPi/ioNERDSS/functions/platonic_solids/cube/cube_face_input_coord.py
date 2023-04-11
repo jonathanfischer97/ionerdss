@@ -10,16 +10,14 @@ def cube_face_input_coord(radius: float, sigma: float):
     performs various calculations to derive the input coordinates.
 
     Args:
-        radius: A float representing the radius of the cube.
-        sigma: A float representing the sigma value for the simulation.
+        radius (float): The radius of the cube.
+        sigma (float): The sigma value for the simulation.
 
     Returns:
-        A list containing the input coordinates for the cube face simulation, in the following order:
+        List: Contains the input coordinates for the cube face simulation, in the following order:
         [COM, lg1, lg2, lg3, lg4, n], where COM is the center of mass of the cube face, lg1, lg2, lg3, and lg4 are
         the leg vectors of the cube face, and n is a vector pointing towards the center of the cube face.
 
-    Raises:
-        None.
 
     Example:
         >>> cube_face_input_coord(1.0, 0.1)

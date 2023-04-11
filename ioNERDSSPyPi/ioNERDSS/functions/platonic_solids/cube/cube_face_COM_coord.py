@@ -10,16 +10,13 @@ def cube_face_COM_coord(a: float, b: float, c: float, d: float):
     the `..gen_platonic.mid_pt` module is used for the mid-point calculations.
 
     Args:
-        a: A float representing the x-coordinate of the first vertex of the cube face.
-        b: A float representing the x-coordinate of the second vertex of the cube face.
-        c: A float representing the x-coordinate of the third vertex of the cube face.
-        d: A float representing the x-coordinate of the fourth vertex of the cube face.
+        a (float): The x-coordinate of the first vertex of the cube face.
+        b (float): The x-coordinate of the second vertex of the cube face.
+        c (float): The x-coordinate of the third vertex of the cube face.
+        d (float): The x-coordinate of the fourth vertex of the cube face.
 
     Returns:
-        A float representing the x-coordinate of the calculated COM coordinate of the cube face.
-
-    Raises:
-        None.
+        Float: The x-coordinate of the calculated COM coordinate of the cube face.
 
     Example:
         >>> cube_face_COM_coord(0.0, 1.0, 1.0, 0.0)

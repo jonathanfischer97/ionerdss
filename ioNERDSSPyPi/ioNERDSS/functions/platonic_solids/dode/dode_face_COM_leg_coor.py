@@ -3,8 +3,7 @@ from .dode_face_COM_coor import dode_face_COM_coor
 
 
 def dode_face_COM_leg_coor(a: float, b: float, c: float, d: float, e: float):
-    """
-    Calculates the center of mass (COM) and the coordinates of the five legs
+    """Calculates the center of mass (COM) and the coordinates of the five legs
     of a protein based on five input coordinates on the same face of a dodecahedron.
 
     Args:
@@ -34,13 +33,6 @@ def dode_face_COM_leg_coor(a: float, b: float, c: float, d: float, e: float):
          [4.0, 4.0, 4.0]]
 
     Note:
-        - This function uses the `mid_pt` function from the `..gen_platonic.mid_pt`
-          module and the `dode_face_COM_coor` function from the `.dode_face_COM_coor`
-          module, assuming they are at the parent and current directory level
-          of the current module, respectively.
-        - The function calculates the center of mass (COM) coordinates using the
-          `dode_face_COM_coor` function and calculates the coordinates of the five
-          legs of the protein by taking the midpoints between the input coordinates.
         - The function returns a list of six lists, where the first element is the
           COM coordinates and the remaining five elements represent the coordinates
           of the five legs of the protein.

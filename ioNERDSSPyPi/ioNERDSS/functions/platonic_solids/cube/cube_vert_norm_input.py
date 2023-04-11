@@ -29,8 +29,6 @@ def cube_vert_norm_input(radius: float, sigma: float):
             - n_ (numpy array): The normalized normal vector (n) of the cube vertex, represented as a numpy array of
                 shape (3,) and dtype float64.
 
-    Raises:
-        N/A
 
     Example:
         cube_vert_norm_input(1.0, 0.2)

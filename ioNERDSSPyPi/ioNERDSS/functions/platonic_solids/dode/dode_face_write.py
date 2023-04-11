@@ -17,7 +17,7 @@ def dode_face_write(radius: float, sigma: float):
         sigma (float): Sigma value.
 
     Returns:
-        None
+        parm.inp/cube.mol file: inputs for NERDSS
     """
     
     COM, lg1, lg2, lg3, lg4, lg5, n = dode_face_input_coord(radius, sigma)

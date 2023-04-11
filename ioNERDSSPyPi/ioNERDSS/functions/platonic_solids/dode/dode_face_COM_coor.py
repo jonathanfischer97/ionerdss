@@ -28,8 +28,6 @@ def dode_face_COM_coor(a: float, b: float, c: float, d: float, e: float):
         [0.29389262614624, 0.29389262614624, 0.29389262614624]
 
     Note:
-        - This function uses the `mid_pt` function from the `..gen_platonic.mid_pt`
-          module, assuming it is at the parent directory level of the current module.
         - The function calculates the center of mass (COM) coordinates by taking
           the midpoint between input coordinates, applying a transformation with
           a scaling factor based on a sine function, and rounding the result to

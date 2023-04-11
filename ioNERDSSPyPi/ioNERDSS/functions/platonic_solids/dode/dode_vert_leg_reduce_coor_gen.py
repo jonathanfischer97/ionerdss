@@ -17,10 +17,8 @@ def dode_vert_leg_reduce_coor_gen(radius: float, sigma: float):
     Returns:
         list: A list of lists, where each inner list contains the reduced center of mass (COM) and leg vectors for a
         dodecahedron vertex.
-
-    Raises:
-        None
     """
+
     COM_leg_list = dode_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:

@@ -15,14 +15,13 @@ def cube_vert_COM_leg(COM: float, a: float, b: float, c: float):
         list: A list containing four floating-point values rounded to 10 decimal places, representing the central point
         (COM) and the midpoints (lega, legb, legc) of the three line segments.
 
-    Raises:
-        N/A
 
     Example:
         cube_vert_COM_leg(0.5, 1.0, 2.0, 3.0)
         # Calculates the midpoints of the line segments between the central point 0.5 and three other points
         # (1.0, 2.0, 3.0), and returns a list containing the calculated values rounded to 10 decimal places.
     """
+    
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)

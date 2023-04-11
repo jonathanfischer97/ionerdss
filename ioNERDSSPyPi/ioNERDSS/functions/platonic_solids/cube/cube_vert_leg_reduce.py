@@ -17,8 +17,6 @@ def cube_vert_leg_reduce(COM: float, leg: float, sigma: float):
         list: A list containing three floating-point values representing the reduced leg coordinates of the cube vertex,
         after applying the reduction ratio to each coordinate.
 
-    Raises:
-        N/A
 
     Example:
         cube_vert_leg_reduce([0.5, 0.5, 0.5], [1.0, 1.0, 1.0], 0.2)

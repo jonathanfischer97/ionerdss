@@ -17,10 +17,8 @@ def dode_vert_leg_reduce(COM: float, leg: float, sigma: float):
 
     Returns:
         list: A list containing the three reduced leg vector coordinates.
-
-    Raises:
-        None
     """
+    
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []

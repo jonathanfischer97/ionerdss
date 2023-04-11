@@ -10,16 +10,7 @@ def dode_vert(radius: float, sigma: float):
         sigma (float): Sigma value for generating vertex coordinates.
 
     Returns:
-        int: 0 upon successful completion.
-
-    Raises:
-        FileNotFoundError: If the file to write vertex coordinates cannot be found.
-        TypeError: If `radius` or `sigma` is not a float.
-
-    Example:
-        >>> dode_vert(1.0, 0.5)
-        File writing complete!
-        0
+        parm.inp/cube.mol file: inputs for NERDSS
     """
     
     dode_vert_write(radius, sigma)

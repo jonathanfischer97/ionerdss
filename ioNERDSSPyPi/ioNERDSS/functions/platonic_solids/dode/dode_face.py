@@ -12,19 +12,7 @@ def dode_face(radius: float, sigma: float):
         sigma (float): The sigma value to use for generating the dodecahedron.
 
     Returns:
-        int: Always returns 0.
-
-    Raises:
-        None.
-
-    Example:
-        >>> dode_face(1.0, 0.5)
-        File writing complete!
-        0
-
-    Note:
-        The `dode_face_write` function is imported from `.dode_face_write` module,
-        which is assumed to be in the same package as the current module.
+        parm.inp/cube.mol file: inputs for NERDSS
     """
     
     dode_face_write(radius, sigma)

@@ -1,6 +1,5 @@
 def dode_vert_coord(radius: float):
-    """
-    Calculates and returns the coordinates of the vertices of a dodecahedron with the given radius.
+    """Calculates and returns the coordinates of the vertices of a dodecahedron with the given radius.
 
     Args:
         radius (float): The radius of the dodecahedron.

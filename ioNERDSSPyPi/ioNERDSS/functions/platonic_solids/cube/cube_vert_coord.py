@@ -11,9 +11,6 @@ def cube_vert_coord(radius: float):
         list: A list containing eight sub-lists, each containing three floating-point values representing the x, y, and z
         coordinates of a vertex of the cube.
 
-    Raises:
-        N/A
-
     Example:
         cube_vert_coord(1.0)
         # Calculates the coordinates of the vertices of a cube with a radius of 1.0.

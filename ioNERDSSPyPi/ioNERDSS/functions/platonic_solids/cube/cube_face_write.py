@@ -11,13 +11,7 @@ def cube_face_write(radius: float, sigma: float):
         sigma (float): The sigma value used for simulation.
 
     Returns:
-        None
-
-    Raises:
-        None
-
-    Example:
-        cube_face_write(10.0, 0.5)
+        parm.inp/cube.mol files: Inputs for NERDSS
 
     This function writes the input parameters and reaction details for a cube face-centered
     simulation to a file named 'parm.inp'. The function takes the radius and sigma as input

@@ -1,6 +1,5 @@
 def dode_face_dodecahedron_coord(radius: float):
-    """
-    Generates the coordinates of the 20 vertices of a dodecahedron based on the given radius.
+    """Generates the coordinates of the 20 vertices of a dodecahedron based on the given radius.
 
     Args:
         radius (float): The radius of the dodecahedron.

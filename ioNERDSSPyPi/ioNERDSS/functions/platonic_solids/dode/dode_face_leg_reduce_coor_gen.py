@@ -3,8 +3,7 @@ from .dode_face_leg_reduce import dode_face_leg_reduce
 
 
 def dode_face_leg_reduce_coor_gen(radius: float, sigma: float):
-    """
-    Generates the reduced coordinates for the center of mass (COM) and legs of a dodecahedron face
+    """Generates the reduced coordinates for the center of mass (COM) and legs of a dodecahedron face
     based on the given radius and sigma.
 
     Args:

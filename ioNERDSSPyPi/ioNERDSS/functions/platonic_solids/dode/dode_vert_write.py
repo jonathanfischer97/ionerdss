@@ -10,13 +10,7 @@ def dode_vert_write(radius: float, sigma: float):
         sigma (float): Sigma value for the simulation.
 
     Returns:
-        None
-
-    Raises:
-        None
-
-    Example Usage:
-        dode_vert_write(5.0, 1.2)
+        parm.inp/cube.mol file: inputs for NERDSS
     """
     
     COM, lg1, lg2, lg3, n = dode_vert_norm_input(radius, sigma)

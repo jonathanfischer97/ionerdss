@@ -18,8 +18,6 @@ def cube_vert_leg_reduce_coor_gen(radius: float, sigma: float):
         and the reduced leg coordinates (leg1, leg2, and leg3) of a cube vertex, after applying the reduction ratio
         based on the given radius and sigma values.
 
-    Raises:
-        N/A
 
     Example:
         cube_vert_leg_reduce_coor_gen(1.0, 0.2)

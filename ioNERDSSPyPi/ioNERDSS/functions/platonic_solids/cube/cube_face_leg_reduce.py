@@ -11,12 +11,12 @@ def cube_face_leg_reduce(COM: float, leg: float, sigma: float):
     1 - (sigma / (2 * sin(angle / 2))) / distance(COM, leg), and angle is calculated as acos(0).
 
     Args:
-        COM: A float representing the center of mass of the cube face.
-        leg: A float representing the leg vector of the cube face.
-        sigma: A float representing the sigma value for the reduction.
+        COM (float): The center of mass of the cube face.
+        leg (float): The leg vector of the cube face.
+        sigma (float): The sigma value for the reduction.
 
     Returns:
-        A list containing the reduced leg vector of the cube face, with each coordinate rounded to 'n' decimal places.
+        List: Contains the reduced leg vector of the cube face, with each coordinate rounded to 'n' decimal places.
         'n' is determined by the value of 'n' in the function.
 
     Raises:
