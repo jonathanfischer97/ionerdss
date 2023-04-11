@@ -109,6 +109,7 @@ if __name__ == "__main__":
           \nNumber of Functions: {len(allFuncNames)}\nNumber of Subfunctions: {len(allFuncNames)-len(mainFunctions)}\
           \n% of Files Docstringed: {round(docStringCount/len(allFuncNames),2)*100}%")
     print(f"Fake spreadsheet vars: {notRealFuncs}\nVars not in spreadsheet: {notInSpreadsheet}")
+    print(f'Needs Doc: {needsDoc}')
 #\nNeeds Docstring: {needsDoc}
 
 

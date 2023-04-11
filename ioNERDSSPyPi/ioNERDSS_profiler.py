@@ -21,6 +21,6 @@ import copy
 
 
 last = badTimer('start',0)
-ion.single_locate_position_restart('ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb',17,"ioNERDSSPyPi\TestingFunctions\\restart.dat")
+ion.locate_position_restart(FileNamePdb = 'ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb', NumList = [10], FileNameRestart = 'ioNERDSSPyPi\TestingFunctions\\restart.dat')
 badTimer('start',last)
 #ioNERDSSPyPi\TestingFunctions\databse.pdb
