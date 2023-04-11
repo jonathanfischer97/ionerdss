@@ -3,17 +3,13 @@ from .octa_face_COM_coord import octa_face_COM_coord
 
 
 def octa_face_COM_list_gen(radius: float):
-    """
-    Generates a list of center of mass (COM) coordinates for the faces of an octahedron.
+    """Generates a list of center of mass (COM) coordinates for the faces of an octahedron.
 
     Args:
         radius (float): The radius of the octahedron.
 
     Returns:
         List: A list of COM coordinates for the faces of the octahedron.
-    
-    Raises:
-        None.
 
     Example:
         coord = octa_face_vert_coord(radius)

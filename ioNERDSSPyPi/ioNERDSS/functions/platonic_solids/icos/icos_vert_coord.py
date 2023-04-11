@@ -12,9 +12,6 @@ def icos_vert_coord(radius: float):
 
     Returns:
         list: A list of vertex coordinates for the icosahedron.
-
-    Raises:
-        None
     """
     scaler = radius/(2*math.sin(2*math.pi/5))
     m = (1+5**0.5)/2

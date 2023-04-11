@@ -1,6 +1,5 @@
 def tetr_vert_coord(radius: float):
-    """
-    Generate the coordinates of the vertices of a regular tetrahedron given the radius.
+    """Generate the coordinates of the vertices of a regular tetrahedron given the radius.
 
     Args:
         radius (float): The radius of the circumsphere of the tetrahedron.

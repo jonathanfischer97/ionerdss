@@ -1,6 +1,5 @@
 def octa_face_vert_coord(radius: float):
-    """
-    Generates the coordinates of the vertices of an octahedron based on the given radius.
+    """Generates the coordinates of the vertices of an octahedron based on the given radius.
 
     Args:
         radius (float): The radius of the octahedron.
@@ -9,9 +8,6 @@ def octa_face_vert_coord(radius: float):
         List[List[float]]: A list of vertex coordinates of the octahedron. Each element in the list
             is a sublist containing three floating point values representing the (x, y, z) coordinates
             of a vertex.
-
-    Raises:
-        None.
 
     Example:
         radius = 5.0

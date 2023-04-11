@@ -15,9 +15,6 @@ def icos_vert_check_dis(cen: float, COM: float, lg1: float, lg2: float, lg3: flo
 
     Returns:
         tuple: A tuple containing the distances between the center point and other points.
-        
-    Raises:
-        None
     """
     dis1 = round(distance(cen, lg1), 8)
     dis2 = round(distance(cen, lg2), 8)

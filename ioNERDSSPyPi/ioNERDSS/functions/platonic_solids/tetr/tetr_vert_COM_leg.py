@@ -3,8 +3,7 @@ from ..gen_platonic.mid_pt import mid_pt
 
 
 def tetr_vert_COM_leg(COM: float, a: float, b: float, c: float):
-    """
-    Calculates the center of mass (COM) and midpoints of three edges of a tetrahedron.
+    """Calculates the center of mass (COM) and midpoints of three edges of a tetrahedron.
     
     Args:
         COM (float): The center of mass of the tetrahedron.
@@ -14,9 +13,6 @@ def tetr_vert_COM_leg(COM: float, a: float, b: float, c: float):
         
     Returns:
         list: A list of four values, [COM, lega, legb, legc], rounded to 10 decimal places.
-        
-    Raises:
-        None.
         
     Example:
         >>> tetr_vert_COM_leg(0.5, 1.0, 2.0, 3.0)

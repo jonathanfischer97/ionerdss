@@ -15,9 +15,6 @@ def icos_vert_leg_reduce_coor_gen(radius: float, sigma: float):
     Returns:
         list: A list of reduced leg coordinates for the icosahedron, containing lists of coordinates for each leg,
         rounded to 8 decimal places.
-
-    Raises:
-        None
     """
     COM_leg_list = icos_vert_COM_leg_gen(radius)
     COM_leg_red_list = []

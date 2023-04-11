@@ -3,8 +3,7 @@ import numpy as np
 
 
 def octa_vert_input_coord(radius: float, sigma: float):
-    """
-    Calculates the input coordinates of an octagonal vertex based on a given radius and sigma.
+    """ Calculates the input coordinates of an octagonal vertex based on a given radius and sigma.
 
     The input coordinates are derived from the reduced coordinates of the octagonal vertex, which are generated
     using the `octa_vert_leg_reduce_coor_gen` function. The input coordinates include the center of mass (COM)
@@ -23,9 +22,6 @@ def octa_vert_input_coord(radius: float, sigma: float):
             - lg3 (float): The third leg vector of the vertex.
             - lg4 (float): The fourth leg vector of the vertex.
             - n (float): The normal vector of the vertex.
-
-    Raises:
-        None
 
     Example:
         radius = 2.0

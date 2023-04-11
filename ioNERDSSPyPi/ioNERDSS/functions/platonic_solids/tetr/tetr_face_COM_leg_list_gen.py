@@ -13,9 +13,6 @@ def tetr_face_COM_leg_list_gen(radius: float):
         a tetrahedron face. The first list contains the COM coordinates of the legs formed by the vertices at
         indices 0, 1, and 2 of the face, and subsequent lists contain the COM coordinates of the legs formed by
         the other combinations of vertices.
-
-    Raises:
-        None
     """
     coord = tetr_face_coord(radius)
     COM_leg_list = []

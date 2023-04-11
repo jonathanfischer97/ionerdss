@@ -3,8 +3,7 @@ from ..gen_platonic.mid_pt import mid_pt
 
 
 def octa_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float):
-    """
-    Calculates the center of mass and leg vectors for an octagon.
+    """Calculates the center of mass and leg vectors for an octagon.
 
     Args:
         COM (float): The center of mass vector of the octagon, given as a tuple (x, y, z).
@@ -18,9 +17,6 @@ def octa_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float):
         5 elements, each rounded to 10 decimal places, in the following order:
         [COM, lega, legb, legc, legd], where COM is the center of mass vector and lega, legb,
         legc, legd are the leg vectors.
-
-    Raises:
-        None
 
     Example:
         COM = (0.5, 0.5, 0.5)

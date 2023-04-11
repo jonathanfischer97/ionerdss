@@ -2,8 +2,7 @@ import math
 
 
 def icos_face_vert_coord(radius: float):
-    """
-    Generates the vertex coordinates of an icosahedron face.
+    """Generates the vertex coordinates of an icosahedron face.
 
     Args:
         radius (float): Radius of the icosahedron.

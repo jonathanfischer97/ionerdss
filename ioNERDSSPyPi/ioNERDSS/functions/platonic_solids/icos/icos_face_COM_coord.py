@@ -3,8 +3,7 @@ from ..gen_platonic.mid_pt import mid_pt
 
 
 def icos_face_COM_coord(a: float, b: float, c: float):
-    """
-    Calculate the center of mass (COM) coordinates for an icosahedron face.
+    """Calculate the center of mass (COM) coordinates for an icosahedron face.
 
     This function calculates the center of mass (COM) coordinates for an icosahedron face
     with three given coordinates `a`, `b`, and `c` using the `mid_pt()` function from the
@@ -19,9 +18,6 @@ def icos_face_COM_coord(a: float, b: float, c: float):
     Returns:
         List[float]: The center of mass (COM) coordinates as a list of three floats.
 
-    Raises:
-        None
-
     Examples:
         >>> a = [0, 0, 0]
         >>> b = [1, 1, 1]
@@ -30,7 +26,6 @@ def icos_face_COM_coord(a: float, b: float, c: float):
         [1.3660254037847, 1.3660254037847, 1.3660254037847]
 
     Notes:
-        - This function assumes that the `mid_pt()` function is correctly implemented in the `mid_pt` module.
         - The COM coordinates are calculated based on the formula mentioned above, where `sin()` function takes
           angle in radians. The angle is calculated as 30 degrees converted to radians using `math.pi`.
         - The calculated COM coordinates are rounded to 12 decimal places using the `round()` function.

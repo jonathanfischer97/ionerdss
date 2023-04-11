@@ -10,7 +10,7 @@ def octa_vert_write(radius: float, sigma: float):
         sigma (float): Sigma value used for generating the input file.
 
     Returns:
-        None
+        parm.inp/icos.mol: input files for NERDSS
 
     Example:
         >>> radius = 1.0

@@ -15,9 +15,6 @@ def icos_vert_input_coord(radius: float, sigma: float):
     Returns:
         tuple: A tuple of input vertex coordinates for the icosahedron, including the center of mass (COM),
         and the leg vectors (lg1, lg2, lg3, lg4, lg5) and the normalized normal vector (n).
-
-    Raises:
-        None
     """
     coor = icos_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])

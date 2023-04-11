@@ -3,8 +3,7 @@ from ..gen_platonic.distance import distance
 
 
 def octa_face_leg_reduce(COM: float, leg: float, sigma: float):
-    """
-    Reduces the length of an octahedron face leg by a given reduction factor sigma.
+    """Reduces the length of an octahedron face leg by a given reduction factor sigma.
 
     Args:
         COM (float): The center of mass (COM) coordinate of the octahedron face.
@@ -15,9 +14,6 @@ def octa_face_leg_reduce(COM: float, leg: float, sigma: float):
         List[float]: A list of reduced leg coordinates after applying the reduction factor.
             The list contains three floating point values representing the x, y, and z coordinates
             of the reduced leg vector.
-
-    Raises:
-        None.
 
     Example:
         COM = [0.0, 0.0, 0.0]

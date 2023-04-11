@@ -15,9 +15,6 @@ def icos_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float, e: flo
 
     Returns:
         list: A list containing the center of mass and legs coordinates, rounded to 10 decimal places.
-        
-    Raises:
-        None
     """
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)

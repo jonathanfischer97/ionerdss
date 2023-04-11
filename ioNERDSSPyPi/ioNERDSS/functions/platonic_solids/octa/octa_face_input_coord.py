@@ -2,8 +2,7 @@ from .octa_face_leg_reduce_coord_gen import octa_face_leg_reduce_coord_gen
 import numpy as np
 
 def octa_face_input_coord(radius: float, sigma: float):
-    """
-    Generates input coordinates for an octahedron face reduction algorithm.
+    """Generates input coordinates for an octahedron face reduction algorithm.
 
     Args:
         radius (float): The radius of the octahedron.
@@ -17,9 +16,6 @@ def octa_face_input_coord(radius: float, sigma: float):
             - lg2 (numpy.array): The second leg vector from COM to vertex 2.
             - lg3 (numpy.array): The third leg vector from COM to vertex 3.
             - n (numpy.array): The normal vector of the octahedron face.
-
-    Raises:
-        None.
 
     Example:
         radius = 1.0

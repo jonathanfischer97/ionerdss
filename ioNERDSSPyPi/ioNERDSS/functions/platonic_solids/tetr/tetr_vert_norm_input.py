@@ -4,8 +4,7 @@ import numpy as np
 
 
 def tetr_vert_norm_input(radius: float, sigma: float):
-    """
-    Generate the normalized input coordinates for a regular tetrahedron given the radius and sigma.
+    """Generate the normalized input coordinates for a regular tetrahedron given the radius and sigma.
 
     Args:
         radius (float): The radius of the circumsphere of the tetrahedron.

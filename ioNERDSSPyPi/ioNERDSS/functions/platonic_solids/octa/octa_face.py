@@ -9,7 +9,7 @@ def octa_face(radius: float, sigma: float):
         sigma (float): The sigma value for generating the face.
 
     Returns:
-        int: Always returns 0.
+        parm.inp/icos.mol: input files for NERDSS
 
     Raises:
         ValueError: If radius or sigma are not valid (e.g., negative values).
@@ -18,10 +18,6 @@ def octa_face(radius: float, sigma: float):
         To generate an octagonal face with a radius of 10 and a sigma of 1.5:
         >>> octa_face(10, 1.5)
         File writing complete!
-
-    Note:
-        This function relies on the 'octa_face_write' function from the '.octa_face_write' module,
-        which handles the actual writing of the generated image to a file.
     """
     octa_face_write(radius, sigma)
     print('File writing complete!')

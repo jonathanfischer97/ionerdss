@@ -13,9 +13,6 @@ def octa_vert_COM_leg_gen(radius: float):
             Each element in the list is a tuple of the form (COM, leg1, leg2, leg3, leg4),
             where COM is the center of mass vector and leg1, leg2, leg3, leg4 are the leg vectors.
 
-    Raises:
-        None
-
     Example:
         coord = octa_vert_COM_leg_gen(5.0)
         print(coord)

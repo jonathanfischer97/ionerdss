@@ -11,10 +11,7 @@ def octa_face_write(radius: float, sigma: float):
         sigma (float): Sigma value for the system.
 
     Returns:
-        None
-
-    Raises:
-        None
+        parm.inp/icos.mol: input files for NERDSS
 
     Examples:
         octa_face_write(5.0, 1.2)

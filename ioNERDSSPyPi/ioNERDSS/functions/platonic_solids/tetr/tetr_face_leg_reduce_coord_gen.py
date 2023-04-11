@@ -2,8 +2,7 @@ from .tetr_face_COM_leg_list_gen import tetr_face_COM_leg_list_gen
 from .tetr_face_leg_reduce import tetr_face_leg_reduce
 
 def tetr_face_leg_reduce_coord_gen(radius: float, sigma: float):
-    """
-    Generates a list of reduced coordinates for the center of mass (COM) and legs of a tetrahedron face given the
+    """Generates a list of reduced coordinates for the center of mass (COM) and legs of a tetrahedron face given the
     radius of the tetrahedron and a scaling factor sigma.
 
     Args:

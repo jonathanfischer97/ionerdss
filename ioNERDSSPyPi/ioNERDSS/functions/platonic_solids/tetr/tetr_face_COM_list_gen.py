@@ -3,8 +3,7 @@ from .tetr_face_COM_coord import tetr_face_COM_coord
 
 
 def tetr_face_COM_list_gen(radius: float):
-    """
-    Generates a list of center of mass (COM) coordinates for a tetrahedron's faces.
+    """Generates a list of center of mass (COM) coordinates for a tetrahedron's faces.
 
     Args:
         radius (float): The radius of the circumscribed sphere of the tetrahedron.

@@ -12,9 +12,6 @@ def icos_vert_COM_leg_gen(radius: float):
 
     Returns:
         list: A list of center of mass and legs coordinates for the icosahedron.
-        
-    Raises:
-        None
     """
     coord = icos_vert_coord(radius)
     COM_leg_list = []

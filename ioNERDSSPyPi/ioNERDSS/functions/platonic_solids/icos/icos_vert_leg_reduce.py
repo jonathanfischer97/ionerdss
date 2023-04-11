@@ -14,9 +14,6 @@ def icos_vert_leg_reduce(COM: float, leg: float, sigma: float):
 
     Returns:
         list: A list of reduced leg vector coordinates for the icosahedron, rounded to 8 decimal places.
-
-    Raises:
-        None
     """
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)

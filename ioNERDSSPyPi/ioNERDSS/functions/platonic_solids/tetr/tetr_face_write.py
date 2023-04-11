@@ -18,10 +18,7 @@ def tetr_face_write(radius: float, sigma: float):
         sigma (float): Sigma value used in the calculation.
 
     Returns:
-        None
-
-    Raises:
-        None
+        parm.inp/icos.mol: input files for NERDSS
 
     Examples:
         >>> tetr_face_write(10.0, 1.0)

@@ -3,8 +3,7 @@ from ..gen_platonic.distance import distance
 
 
 def tetr_face_leg_reduce(COM: float, leg: float, sigma: float):
-    """
-    Reduces the length of a leg of a tetrahedron face given its center of mass (COM), the original length of the leg,
+    """Reduces the length of a leg of a tetrahedron face given its center of mass (COM), the original length of the leg,
     and a scaling factor sigma.
 
     Args:

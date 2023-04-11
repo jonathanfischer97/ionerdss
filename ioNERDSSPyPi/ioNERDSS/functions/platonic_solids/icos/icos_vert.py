@@ -14,16 +14,11 @@ def icos_vert(radius: float, sigma: float):
         sigma (float): The sigma value used in the generation of vertices.
 
     Returns:
-        int: Always returns 0 indicating successful execution.
+        parm.inp/icos.mol: input files for NERDSS
 
     Example:
         >>> icos_vert(2.0, 0.5)
         File writing complete!
-        0
-
-    Note:
-        This function requires the .icos_vert_write module to be imported.
-
     """
     icos_vert_write(radius, sigma)
     print('File writing complete!')

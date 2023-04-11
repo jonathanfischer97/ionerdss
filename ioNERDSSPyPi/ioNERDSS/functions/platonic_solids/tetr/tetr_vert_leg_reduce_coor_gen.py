@@ -2,8 +2,7 @@ from .tetr_vert_COM_leg_gen import tetr_vert_COM_leg_gen
 from .tetr_vert_leg_reduce import tetr_vert_leg_reduce
 
 def tetr_vert_leg_reduce_coor_gen(radius: float, sigma: float):
-    """
-    Generate the reduced leg coordinates of a regular tetrahedron given the radius and sigma.
+    """Generate the reduced leg coordinates of a regular tetrahedron given the radius and sigma.
 
     Args:
         radius (float): The radius of the circumsphere of the tetrahedron.

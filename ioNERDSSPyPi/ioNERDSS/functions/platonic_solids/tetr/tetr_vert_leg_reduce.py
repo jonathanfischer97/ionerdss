@@ -2,8 +2,7 @@ from ..gen_platonic.distance import distance
 
 
 def tetr_vert_leg_reduce(COM: float, leg: float, sigma: float):
-    """
-    Reduce the length of a leg vector of a regular tetrahedron by a scaling factor sigma, with respect to the center of mass (COM).
+    """Reduce the length of a leg vector of a regular tetrahedron by a scaling factor sigma, with respect to the center of mass (COM).
 
     Args:
         COM (float): The 3-dimensional coordinate vector of the center of mass of the tetrahedron.

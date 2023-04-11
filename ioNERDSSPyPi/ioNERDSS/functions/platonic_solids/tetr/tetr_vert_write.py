@@ -2,18 +2,14 @@ from .tetr_vert_norm_input import tetr_vert_norm_input
 
 
 def tetr_vert_write(radius: float, sigma: float):
-    """
-    Writes input parameters for a tetrahedron vertex-centered simulation to a file.
+    """Writes input parameters for a tetrahedron vertex-centered simulation to a file.
 
     Args:
         radius (float): The radius of the tetrahedron.
         sigma (float): The sigma value for the simulation.
 
     Returns:
-        None
-
-    Raises:
-        None
+        parm.inp/icos.mol: input files for NERDSS
 
     Example:
         tetr_vert_write(3.0, 1.5)

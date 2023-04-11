@@ -2,8 +2,7 @@ from .tetr_face_leg_reduce_coord_gen import tetr_face_leg_reduce_coord_gen
 import numpy as np
 
 def tetr_face_input_coord(radius: float, sigma: float):
-    """"
-    Generates input coordinates for a tetrahedral face given the radius of its circumscribed sphere
+    """"Generates input coordinates for a tetrahedral face given the radius of its circumscribed sphere
     and a scaling factor sigma.
 
     Args:

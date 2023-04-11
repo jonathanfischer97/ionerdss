@@ -15,9 +15,6 @@ def tetr_face_COM_leg_coord(a: float, b: float, c: float):
         one of the legs of the tetrahedron face. The first list contains the COM coordinates of the face itself, and the
         subsequent lists contain the COM coordinates of each leg formed by the midpoints of the edges of the face.
 
-    Raises:
-        None
-
     Examples:
         >>> a = [0.0, 0.0, 0.0]
         >>> b = [1.0, 0.0, 0.0]

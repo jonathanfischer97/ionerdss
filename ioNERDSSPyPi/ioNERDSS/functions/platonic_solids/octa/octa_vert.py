@@ -10,10 +10,7 @@ def octa_vert(radius: float, sigma: float):
         sigma (float): The standard deviation for the Gaussian distribution.
 
     Returns:
-        int: Always returns 0.
-
-    Raises:
-        None
+        parm.inp/icos.mol: input files for NERDSS
 
     Example:
         octa_vert(5.0, 1.0)

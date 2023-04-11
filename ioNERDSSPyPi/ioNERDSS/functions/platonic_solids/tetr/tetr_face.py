@@ -9,15 +9,11 @@ def tetr_face(radius: float, sigma: float):
         sigma (float): The sigma value for drawing the tetrahedron face.
 
     Returns:
-        int: The return value is always 0.
-
-    Raises:
-        None
+        parm.inp/icos.mol: input files for NERDSS
 
     Examples:
         >>> tetr_face(1.0, 0.5)
         File writing complete!
-        0
 
     Note:
         This function relies on the 'tetr_face_write' function from the '.tetr_face_write' module.

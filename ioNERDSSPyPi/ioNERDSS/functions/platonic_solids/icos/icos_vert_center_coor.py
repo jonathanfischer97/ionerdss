@@ -29,10 +29,6 @@ def icos_vert_center_coor(a: float, b: float, c: float, d: float, e: float):
         >>> e = [13.0, 14.0, 15.0]
         >>> icos_vert_center_coor(a, b, c, d, e)
         [5.18101203220144, 6.58101203220144, 7.98101203220144]
-
-    Note:
-        - This function requires the math module to be imported.
-        - This function relies on the mid_pt function from the ..gen_platonic.mid_pt module.
     """
     n = 8
     mid_a = mid_pt(c, d)

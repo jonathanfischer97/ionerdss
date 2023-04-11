@@ -16,9 +16,6 @@ def icos_vert_norm_input(scaler: float, dis_: float):
     Returns:
         tuple: A tuple containing the center of mass (COM) vector, and vectors for each leg of the icosahedron.
         Each vector is represented as a numpy array of shape (3,), and is rounded to 12 decimal places.
-
-    Raises:
-        None
     """
     c1 = math.cos(2*math.pi/5)
     c2 = math.cos(math.pi/5)

@@ -3,8 +3,7 @@ from .icos_face_COM_coord import icos_face_COM_coord
 
 
 def icos_face_COM_leg_coord(a: float, b: float, c: float):
-    """
-    Calculate the center of mass (COM) leg coordinates for an icosahedron face.
+    """Calculate the center of mass (COM) leg coordinates for an icosahedron face.
 
     This function calculates the center of mass (COM) leg coordinates for an icosahedron face
     with three given coordinates `a`, `b`, and `c` using the `icos_face_COM_coord()` and `mid_pt()`
@@ -22,9 +21,6 @@ def icos_face_COM_leg_coord(a: float, b: float, c: float):
         List[list[float]]: The center of mass (COM) leg coordinates as a list of lists of three floats.
             The list has four sub-lists, each containing the COM leg coordinates for a pair of vertices.
 
-    Raises:
-        None
-
     Examples:
         >>> a = [0, 0, 0]
         >>> b = [1, 1, 1]
@@ -36,8 +32,6 @@ def icos_face_COM_leg_coord(a: float, b: float, c: float):
          [1.0, 1.0, 1.0]]
 
     Notes:
-        - This function assumes that the `icos_face_COM_coord()` and `mid_pt()` functions are correctly
-          implemented in the `icos_face_COM_coord` and `mid_pt` modules respectively.
         - The COM leg coordinates are calculated using the `icos_face_COM_coord()` function for the face
           and `mid_pt()` function for the mid-points of pairs of vertices.
         - The calculated COM leg coordinates are returned as a list of lists, where each sub-list contains

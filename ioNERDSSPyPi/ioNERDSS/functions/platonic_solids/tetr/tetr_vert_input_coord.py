@@ -3,8 +3,7 @@ import numpy as np
 
 
 def tetr_vert_input_coord(radius: float, sigma: float):
-    """
-    Generate the input coordinates for a regular tetrahedron given the radius and sigma.
+    """Generate the input coordinates for a regular tetrahedron given the radius and sigma.
 
     Args:
         radius (float): The radius of the circumsphere of the tetrahedron.

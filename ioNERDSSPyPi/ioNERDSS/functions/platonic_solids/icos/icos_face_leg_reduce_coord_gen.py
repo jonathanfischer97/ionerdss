@@ -2,8 +2,7 @@ from ..gen_platonic.COM_leg_list_gen import COM_leg_list_gen
 from .icos_face_leg_reduce import icos_face_leg_reduce
 
 def icos_face_leg_reduce_coord_gen(radius: float, sigma: float):
-    """
-    Reduces the length of a leg of an icosahedron face.
+    """Reduces the length of a leg of an icosahedron face.
 
     Args:
         COM (float): Center of Mass (COM) coordinate.

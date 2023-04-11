@@ -3,8 +3,7 @@ from .octa_face_COM_leg_list_gen import octa_face_COM_leg_list_gen
 from .octa_face_leg_reduce import octa_face_leg_reduce
 
 def octa_face_leg_reduce_coord_gen(radius: float, sigma: float):
-    """
-    Generates a list of reduced center of mass (COM) and leg coordinates of an octahedron face
+    """Generates a list of reduced center of mass (COM) and leg coordinates of an octahedron face
     based on the given radius and reduction factor sigma.
 
     Args:
@@ -17,9 +16,6 @@ def octa_face_leg_reduce_coord_gen(radius: float, sigma: float):
             values: [COM, leg1_red, leg2_red, leg3_red]. The COM is the center of mass coordinate
             of the octahedron face, and leg1_red, leg2_red, leg3_red are the reduced leg coordinates
             after applying the reduction factor.
-
-    Raises:
-        None.
 
     Example:
         radius = 5.0

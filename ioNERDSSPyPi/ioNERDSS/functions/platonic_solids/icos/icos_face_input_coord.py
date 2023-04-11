@@ -2,8 +2,7 @@ from .icos_face_leg_reduce_coord_gen import icos_face_leg_reduce_coord_gen
 import numpy as np
 
 def icos_face_input_coord(radius: float, sigma: float):
-    """
-    Generates input coordinates for an icosahedron face.
+    """Generates input coordinates for an icosahedron face.
 
     Args:
         radius (float): Radius of the icosahedron.

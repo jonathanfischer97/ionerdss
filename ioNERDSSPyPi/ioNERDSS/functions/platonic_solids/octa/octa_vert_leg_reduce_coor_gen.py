@@ -2,8 +2,7 @@ from .octa_vert_COM_leg_gen import octa_vert_COM_leg_gen
 from .octa_vert_leg_reduce import octa_vert_leg_reduce
 
 def octa_vert_leg_reduce_coor_gen(radius: float, sigma: float):
-    """
-    Generates a list of center of mass (COM) and reduced leg vectors for an octagonal vertex based on a given radius
+    """Generates a list of center of mass (COM) and reduced leg vectors for an octagonal vertex based on a given radius
     and sigma value.
 
     This function uses the `octa_vert_COM_leg_gen` function to generate a list of COM and leg vectors for an octagonal
@@ -22,9 +21,6 @@ def octa_vert_leg_reduce_coor_gen(radius: float, sigma: float):
             [COM2, leg_red2_1, leg_red2_2, leg_red2_3, leg_red2_4],
             ...
         ]
-
-    Raises:
-        None
 
     Example:
         radius = 1.0

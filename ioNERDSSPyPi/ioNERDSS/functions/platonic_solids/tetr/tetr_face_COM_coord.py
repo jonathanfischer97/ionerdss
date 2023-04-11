@@ -13,9 +13,6 @@ def tetr_face_COM_coord(a: float, b: float, c: float):
     Returns:
         list: A list of three floats representing the center of mass (COM) coordinates of the tetrahedron face.
 
-    Raises:
-        None
-
     Examples:
         >>> a = [0.0, 0.0, 0.0]
         >>> b = [1.0, 0.0, 0.0]

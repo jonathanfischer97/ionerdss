@@ -16,7 +16,8 @@ def icos_vert_write(radius: float, sigma: float):
         sigma (float): Sigma value for the simulation.
 
     Returns:
-        None
+        parm.inp/icos.mol: input files for NERDSS
+
 
     Raises:
         None
@@ -26,8 +27,6 @@ def icos_vert_write(radius: float, sigma: float):
 
     Notes:
         - The input file is written to a file named 'parm.inp' in the current directory.
-        - The function uses other helper functions to calculate various parameters and write
-          the input file in the required format.
     """
     COM_, lg1_, lg2_, lg3_, lg4_, lg5_, n_ = icos_vert_input_coord(
         radius, sigma)

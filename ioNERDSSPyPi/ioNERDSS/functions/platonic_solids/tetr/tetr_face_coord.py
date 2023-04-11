@@ -1,6 +1,5 @@
 def tetr_face_coord(radius: float):
-    """
-    Generates vertex coordinates of a tetrahedron given the radius of its circumscribed sphere.
+    """Generates vertex coordinates of a tetrahedron given the radius of its circumscribed sphere.
 
     Args:
         radius (float): The radius of the circumscribed sphere of the tetrahedron.

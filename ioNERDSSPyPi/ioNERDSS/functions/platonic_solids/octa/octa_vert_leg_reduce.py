@@ -2,8 +2,7 @@ from ..gen_platonic.distance import distance
 
 
 def octa_vert_leg_reduce(COM: float, leg: float, sigma: float):
-    """
-    Reduces the length of an octagonal vertex leg based on a given center of mass (COM), leg vector, and sigma.
+    """Reduces the length of an octagonal vertex leg based on a given center of mass (COM), leg vector, and sigma.
 
     The reduction of the leg length is calculated using the formula: leg_red = (leg - COM) * ratio + COM, where ratio
     is calculated as 1 minus half of the sigma divided by the distance between COM and leg, as given by the `distance`
@@ -17,9 +16,6 @@ def octa_vert_leg_reduce(COM: float, leg: float, sigma: float):
     Returns:
         list: A list containing the reduced leg vector (leg_red) of the octagonal vertex, with rounded values
         to 8 decimal places.
-
-    Raises:
-        None
 
     Example:
         COM = [0, 0, 0]
