@@ -3,6 +3,18 @@ from .dode_face_COM_leg_coor import dode_face_COM_leg_coor
 
 
 def dode_face_COM_leg_list_gen(radius: float):
+    """Generate the Center of Mass (COM) and leg coordinates of 12 faces of a dodecahedron.
+
+    Args:
+        radius (float): The radius of the dodecahedron.
+
+    Returns:
+        list: A list containing the COM and leg coordinates of 12 faces as a large list.
+
+    Raises:
+        None
+    """
+    
     # generate all COM and leg coords of 12 faces as a large list
     coord = dode_face_dodecahedron_coord(radius)
     COM_leg_list = []

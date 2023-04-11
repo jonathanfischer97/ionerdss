@@ -1,7 +1,26 @@
 from .dode_vert_coord import dode_vert_coord
+from .dode_vert_COM_leg import dode_vert_COM_leg
 
 
 def dode_vert_COM_leg_gen(radius: float):
+    """Generates and returns a list of dodecahedron leg vertices based on the center of mass (COM) and radius.
+
+    Args:
+        radius (float): Radius of the dodecahedron.
+
+    Returns:
+        list: List of vertices as [COM_leg1, COM_leg2, ..., COM_leg20], where each COM_leg is a list of vertices as [COM, lega, legb, legc], rounded to 10 decimal places.
+
+    Example:
+        >>> dode_vert_COM_leg_gen(1.0)
+        [
+            [COM1, lega1, legb1, legc1],
+            [COM2, lega2, legb2, legc2],
+            ...
+            [COM20, lega20, legb20, legc20]
+        ]
+    """
+     
     coord = dode_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(dode_vert_COM_leg(

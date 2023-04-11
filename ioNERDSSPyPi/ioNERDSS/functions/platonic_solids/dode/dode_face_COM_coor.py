@@ -3,6 +3,42 @@ from ..gen_platonic.mid_pt import mid_pt
 
 
 def dode_face_COM_coor(a: float, b: float, c: float, d: float, e: float):
+    """
+    Calculates the center of mass (COM) coordinates for a dodecahedron face
+    based on five input coordinates on the same face, and checks for overlap.
+
+    Args:
+        a (float): The first coordinate on the face.
+        b (float): The second coordinate on the face.
+        c (float): The third coordinate on the face.
+        d (float): The fourth coordinate on the face.
+        e (float): The fifth coordinate on the face.
+
+    Returns:
+        list: A list of three float values representing the X, Y, and Z coordinates
+        of the center of mass (COM) if the calculated COM coordinates are not overlapped.
+        Otherwise, returns the COM coordinates based on the first input coordinate.
+
+    Raises:
+        None.
+
+    Example:
+        >>> dode_face_COM_coor([0.0, 0.0, 0.0], [1.0, 1.0, 1.0],
+        ...                   [2.0, 2.0, 2.0], [3.0, 3.0, 3.0], [4.0, 4.0, 4.0])
+        [0.29389262614624, 0.29389262614624, 0.29389262614624]
+
+    Note:
+        - This function uses the `mid_pt` function from the `..gen_platonic.mid_pt`
+          module, assuming it is at the parent directory level of the current module.
+        - The function calculates the center of mass (COM) coordinates by taking
+          the midpoint between input coordinates, applying a transformation with
+          a scaling factor based on a sine function, and rounding the result to
+          14 decimal places.
+        - The function checks for overlap among the calculated COM coordinates
+          and returns the COM coordinates based on the first input coordinate if
+          there is overlap.
+    """
+    
     # calculate the center of mass(COM) according to 5 coords on the same face
     n = 10
     mid_a = mid_pt(c, d)

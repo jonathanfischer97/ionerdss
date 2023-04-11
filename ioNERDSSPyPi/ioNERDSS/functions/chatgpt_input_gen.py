@@ -4,7 +4,7 @@ import os
 if __name__ == "__main__":
 
     #get names of files in current directory
-    dir = "ioNERDSSPyPi\ioNERDSS\\functions\platonic_solids\cube"
+    dir = "ioNERDSSPyPi\ioNERDSS\\functions\platonic_solids\dode"
     dir_list = os.listdir(dir)
         
 

@@ -1,4 +1,16 @@
 def dode_vert_coord(radius: float):
+    """
+    Calculates and returns the coordinates of the vertices of a dodecahedron with the given radius.
+
+    Args:
+        radius (float): The radius of the dodecahedron.
+
+    Returns:
+        List[List[float]]: A list of lists representing the coordinates of the vertices of the dodecahedron.
+                            Each inner list contains three float values representing the x, y, and z coordinates
+                            of a vertex.
+
+    """
     scaler = radius/(3**0.5)
     m = (1+5**(0.5))/2
     V0 = [0, m, 1/m]

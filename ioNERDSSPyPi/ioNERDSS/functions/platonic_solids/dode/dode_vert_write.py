@@ -2,6 +2,23 @@ from .dode_vert_norm_input import dode_vert_norm_input
 
 
 def dode_vert_write(radius: float, sigma: float):
+    """
+    Writes input parameters for a dodecahedron vertex-centered simulation to a file.
+
+    Args:
+        radius (float): Radius of the dodecahedron.
+        sigma (float): Sigma value for the simulation.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Example Usage:
+        dode_vert_write(5.0, 1.2)
+    """
+    
     COM, lg1, lg2, lg3, n = dode_vert_norm_input(radius, sigma)
     f = open('parm.inp', 'w')
     f.write(' # Input file (dodecahedron vertex-centered)\n\n')

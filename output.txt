@@ -1,8 +1,8 @@
-Write a python docstring in the google style for this function: from .cube_face_write import cube_face_write
+Write a python docstring in the google style for this function: from .dode_face_write import dode_face_write
 
 
-def cube_face(radius: float, sigma: float):
-    cube_face_write(radius, sigma)
+def dode_face(radius: float, sigma: float):
+    dode_face_write(radius, sigma)
     print('File writing complete!')
     return 0
 
@@ -11,17 +11,31 @@ def cube_face(radius: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from ..gen_platonic.mid_pt import mid_pt
+Write a python docstring in the google style for this function: import math
+from ..gen_platonic.mid_pt import mid_pt
 
 
-def cube_face_COM_coord(a: float, b: float, c: float, d: float):
-    mid_a = mid_pt(a, b)
-    mid_b = mid_pt(b, c)
-    mid_c = mid_pt(c, d)
-    mid_d = mid_pt(d, a)
-    COM_a = mid_pt(mid_a, mid_c)
-    COM_b = mid_pt(mid_b, mid_d)
-    if COM_a == COM_b:
+def dode_face_COM_coor(a: float, b: float, c: float, d: float, e: float):
+    # calculate the center of mass(COM) according to 5 coords on the same face
+    n = 10
+    mid_a = mid_pt(c, d)
+    mid_b = mid_pt(d, e)
+    mid_c = mid_pt(a, e)
+    COM_a = []
+    COM_b = []
+    COM_c = []
+    # calculate 3 COM here and check if they are overlapped
+    for i in range(0, 3):
+        COM_a.append(round(a[i] + (mid_a[i] - a[i]) /
+                     (1+math.sin(0.3*math.pi)), 14))
+        COM_b.append(round(b[i] + (mid_b[i] - b[i]) /
+                     (1+math.sin(0.3*math.pi)), 14))
+        COM_c.append(round(c[i] + (mid_c[i] - c[i]) /
+                     (1+math.sin(0.3*math.pi)), 14))
+    # checking overlap
+    if round(COM_a[0], n) == round(COM_b[0], n) and round(COM_b[0], n) == round(COM_c[0], n) and \
+        round(COM_a[1], n) == round(COM_b[1], n) and round(COM_b[1], n) == round(COM_c[1], n) and \
+            round(COM_a[2], n) == round(COM_b[2], n) and round(COM_b[2], n) == round(COM_c[2], n):
         return COM_a
     else:
         return COM_a
@@ -32,16 +46,18 @@ def cube_face_COM_coord(a: float, b: float, c: float, d: float):
 =================================================================
 
 Write a python docstring in the google style for this function: from ..gen_platonic.mid_pt import mid_pt
-from .cube_face_COM_coord import cube_face_COM_coord
+from .dode_face_COM_coor import dode_face_COM_coor
 
 
-def cube_face_COM_leg_coord(a: float, b: float, c: float, d: float):
+def dode_face_COM_leg_coor(a: float, b: float, c: float, d: float, e: float):
+    # calculate COM and 5 legs of one protein, 6 coords in total [COM, lg1, lg2, lg3, lg4, lg5]
     COM_leg = []
-    COM_leg.append(cube_face_COM_coord(a, b, c, d))
+    COM_leg.append(dode_face_COM_coor(a, b, c, d, e))
     COM_leg.append(mid_pt(a, b))
     COM_leg.append(mid_pt(b, c))
     COM_leg.append(mid_pt(c, d))
-    COM_leg.append(mid_pt(d, a))
+    COM_leg.append(mid_pt(d, e))
+    COM_leg.append(mid_pt(e, a))
     return COM_leg
 
 
@@ -49,25 +65,38 @@ def cube_face_COM_leg_coord(a: float, b: float, c: float, d: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .cube_face_vert_coord import cube_face_vert_coord
-from .cube_face_COM_leg_coord import cube_face_COM_leg_coord
+Write a python docstring in the google style for this function: from .dode_face_dodecahedron_coord import dode_face_dodecahedron_coord
+from .dode_face_COM_leg_coor import dode_face_COM_leg_coor
 
 
-def cube_face_COM_leg_list_gen(radius: float):
-    coord = cube_face_vert_coord(radius)
+def dode_face_COM_leg_list_gen(radius: float):
+    # generate all COM and leg coords of 12 faces as a large list
+    coord = dode_face_dodecahedron_coord(radius)
     COM_leg_list = []
-    COM_leg_list.append(cube_face_COM_leg_coord(
-        coord[0], coord[3], coord[5], coord[2]))
-    COM_leg_list.append(cube_face_COM_leg_coord(
-        coord[0], coord[3], coord[6], coord[1]))
-    COM_leg_list.append(cube_face_COM_leg_coord(
-        coord[0], coord[1], coord[4], coord[2]))
-    COM_leg_list.append(cube_face_COM_leg_coord(
-        coord[7], coord[4], coord[1], coord[6]))
-    COM_leg_list.append(cube_face_COM_leg_coord(
-        coord[7], coord[4], coord[2], coord[5]))
-    COM_leg_list.append(cube_face_COM_leg_coord(
-        coord[7], coord[6], coord[3], coord[5]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[6], coord[18], coord[2], coord[14], coord[4]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[6], coord[4], coord[12], coord[0], coord[16]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[4], coord[14], coord[9], coord[8], coord[12]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[6], coord[18], coord[11], coord[10], coord[16]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[14], coord[2], coord[3], coord[15], coord[9]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[18], coord[11], coord[19], coord[3], coord[2]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[16], coord[10], coord[17], coord[1], coord[0]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[12], coord[0], coord[1], coord[13], coord[8]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[7], coord[17], coord[10], coord[11], coord[19]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[5], coord[13], coord[8], coord[9], coord[15]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[3], coord[19], coord[7], coord[5], coord[15]))
+    COM_leg_list.append(dode_face_COM_leg_coor(
+        coord[1], coord[17], coord[7], coord[5], coord[13]))
     return COM_leg_list
 
 
@@ -75,25 +104,38 @@ def cube_face_COM_leg_list_gen(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .cube_face_vert_coord import cube_face_vert_coord
-from .cube_face_COM_coord import cube_face_COM_coord
+Write a python docstring in the google style for this function: from .dode_face_dodecahedron_coord import dode_face_dodecahedron_coord
+from .dode_face_COM_coor import dode_face_COM_coor
 
 
-def cube_face_COM_list_gen(radius: float):
-    coord = cube_face_vert_coord(radius)
+def dode_face_COM_list_gen(radius: float):
+    # generate the list of COM of all 12 faces
+    coord = dode_face_dodecahedron_coord(radius)
     COM_list = []
-    COM_list.append(cube_face_COM_coord(
-        coord[0], coord[3], coord[5], coord[2]))
-    COM_list.append(cube_face_COM_coord(
-        coord[0], coord[3], coord[6], coord[1]))
-    COM_list.append(cube_face_COM_coord(
-        coord[0], coord[1], coord[4], coord[2]))
-    COM_list.append(cube_face_COM_coord(
-        coord[7], coord[4], coord[1], coord[6]))
-    COM_list.append(cube_face_COM_coord(
-        coord[7], coord[4], coord[2], coord[5]))
-    COM_list.append(cube_face_COM_coord(
-        coord[7], coord[6], coord[3], coord[5]))
+    COM_list.append(dode_face_COM_coor(
+        coord[6], coord[18], coord[2], coord[14], coord[4]))
+    COM_list.append(dode_face_COM_coor(
+        coord[6], coord[4], coord[12], coord[0], coord[16]))
+    COM_list.append(dode_face_COM_coor(
+        coord[4], coord[14], coord[9], coord[8], coord[12]))
+    COM_list.append(dode_face_COM_coor(
+        coord[6], coord[18], coord[11], coord[10], coord[16]))
+    COM_list.append(dode_face_COM_coor(
+        coord[14], coord[2], coord[3], coord[15], coord[9]))
+    COM_list.append(dode_face_COM_coor(
+        coord[18], coord[11], coord[19], coord[3], coord[2]))
+    COM_list.append(dode_face_COM_coor(
+        coord[16], coord[10], coord[17], coord[1], coord[0]))
+    COM_list.append(dode_face_COM_coor(
+        coord[12], coord[0], coord[1], coord[13], coord[8]))
+    COM_list.append(dode_face_COM_coor(
+        coord[7], coord[17], coord[10], coord[11], coord[19]))
+    COM_list.append(dode_face_COM_coor(
+        coord[5], coord[13], coord[8], coord[9], coord[15]))
+    COM_list.append(dode_face_COM_coor(
+        coord[3], coord[19], coord[7], coord[5], coord[15]))
+    COM_list.append(dode_face_COM_coor(
+        coord[1], coord[17], coord[7], coord[5], coord[13]))
     return COM_list
 
 
@@ -101,19 +143,61 @@ def cube_face_COM_list_gen(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .cube_face_leg_reduce_coord_gen import cube_face_leg_reduce_coord_gen
-import numpy as np
+Write a python docstring in the google style for this function: def dode_face_dodecahedron_coord(radius: float):
+    # Setup coordinates of 20 verticies when scaler = 1
+    scaler = radius/(3**0.5)
+    m = (1+5**(0.5))/2
+    V1 = [0, m, 1/m]
+    V2 = [0, m, -1/m]
+    V3 = [0, -m, 1/m]
+    V4 = [0, -m, -1/m]
+    V5 = [1/m, 0, m]
+    V6 = [1/m, 0, -m]
+    V7 = [-1/m, 0, m]
+    V8 = [-1/m, 0, -m]
+    V9 = [m, 1/m, 0]
+    V10 = [m, -1/m, 0]
+    V11 = [-m, 1/m, 0]
+    V12 = [-m, -1/m, 0]
+    V13 = [1, 1, 1]
+    V14 = [1, 1, -1]
+    V15 = [1, -1, 1]
+    V16 = [1, -1, -1]
+    V17 = [-1, 1, 1]
+    V18 = [-1, 1, -1]
+    V19 = [-1, -1, 1]
+    V20 = [-1, -1, -1]
+    coord = [V1, V2, V3, V4, V5, V6, V7, V8, V9, V10,
+             V11, V12, V13, V14, V15, V16, V17, V18, V19, V20]
+    # calculate coordinates according to the scaler as coord_ (list)
+    coord_ = []
+    for i in coord:
+        temp_list = []
+        for j in i:
+            temp = j*scaler
+            temp_list.append(temp)
+        coord_.append(temp_list)
+    return coord_
 
-def cube_face_input_coord(radius: float, sigma: float):
-    coor = cube_face_leg_reduce_coord_gen(radius, sigma)
+
+
+
+=================================================================
+
+Write a python docstring in the google style for this function: from .dode_face_leg_reduce_coor_gen import dode_face_leg_reduce_coor_gen
+
+
+def dode_face_input_coord(radius: float, sigma: float):
+    coor = dode_face_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
-    COM = np.around(coor_[0] - coor_[0], 7)
+    COM = coor_[0] - coor_[0]
     lg1 = coor_[1] - coor_[0]
     lg2 = coor_[2] - coor_[0]
     lg3 = coor_[3] - coor_[0]
     lg4 = coor_[4] - coor_[0]
+    lg5 = coor_[5] - coor_[0]
     n = -coor_[0]
-    return [COM, lg1, lg2, lg3, lg4, n]
+    return COM, lg1, lg2, lg3, lg4, lg5, n
 
 
 
@@ -124,9 +208,11 @@ Write a python docstring in the google style for this function: import math
 from ..gen_platonic.distance import distance
 
 
-def cube_face_leg_reduce(COM: float, leg: float, sigma: float):
-    n = 12
-    angle = math.acos(0)
+def dode_face_leg_reduce(COM: float, leg: float, sigma: float):
+    # calculate the recuced length when considering the sigma value
+    n = 14
+    m = (1+5**(0.5))/2
+    angle = 2*math.atan(m)
     red_len = sigma/(2*math.sin(angle/2))
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -139,21 +225,21 @@ def cube_face_leg_reduce(COM: float, leg: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: import numpy as np
+Write a python docstring in the google style for this function: from .dode_face_COM_leg_list_gen import dode_face_COM_leg_list_gen
 from ..gen_platonic.COM_leg_list_gen import COM_leg_list_gen
-from .cube_face_COM_leg_list_gen import cube_face_COM_leg_list_gen
-from .cube_face_leg_reduce import cube_face_leg_reduce
 
-def cube_face_leg_reduce_coord_gen(radius: float, sigma: float):
-    COM_leg_list = cube_face_COM_leg_list_gen(radius)
+
+def dode_face_leg_reduce_coor_gen(radius: float, sigma: float):
+    # Generating all the coords of COM and legs when sigma exists
+    COM_leg_list = dode_face_COM_leg_list_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
         temp_list = []
-        temp_list.append(np.around(elements[0], 8))
+        temp_list.append(elements[0])
         i = 1
-        while i <= 4:
-            temp_list.append(np.around(cube_face_leg_reduce(
-                elements[0], elements[i], sigma), 8))
+        while i <= 5:
+            temp_list.append(dode_face_leg_reduce(
+                elements[0], elements[i], sigma))
             i += 1
         COM_leg_red_list.append(temp_list)
     return COM_leg_red_list
@@ -163,44 +249,19 @@ def cube_face_leg_reduce_coord_gen(radius: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: def cube_face_vert_coord(radius: float):
-    scaler = radius/3**0.5
-    v0 = [1, 1, 1]
-    v1 = [-1, 1, 1]
-    v2 = [1, -1, 1]
-    v3 = [1, 1, -1]
-    v4 = [-1, -1, 1]
-    v5 = [1, -1, -1]
-    v6 = [-1, 1, -1]
-    v7 = [-1, -1, -1]
-    VertCoord = [v0, v1, v2, v3, v4, v5, v6, v7]
-    VertCoord_ = []
-    for i in VertCoord:
-        temp_list = []
-        for j in i:
-            temp = j*scaler
-            temp_list.append(temp)
-        VertCoord_.append(temp_list)
-    return VertCoord_
-
-
-
-
-=================================================================
-
 Write a python docstring in the google style for this function: from ..gen_platonic.angle_cal import angle_cal
-from .cube_face_leg_reduce_coord_gen import cube_face_leg_reduce_coord_gen
-from .cube_face_input_coord import cube_face_input_coord
+from .dode_face_leg_reduce_coor_gen import dode_face_leg_reduce_coor_gen
+from .dode_face_input_coord import dode_face_input_coord
 
 
-def cube_face_write(radius: float, sigma: float):
-    COM, lg1, lg2, lg3, lg4, n = cube_face_input_coord(radius, sigma)
-    coord = cube_face_leg_reduce_coord_gen(radius, sigma)
+def dode_face_write(radius: float, sigma: float):
+    COM, lg1, lg2, lg3, lg4, lg5, n = dode_face_input_coord(radius, sigma)
+    coord = dode_face_leg_reduce_coor_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
-        coord[0][0], coord[0][1], coord[1][0], coord[1][1])
+        coord[0][0], coord[0][3], coord[4][0], coord[4][1])
 
     f = open('parm.inp', 'w')
-    f.write(' # Input file (cube face-centered)\n\n')
+    f.write(' # Input file (dodecahedron face-centered)\n\n')
     f.write('start parameters\n')
     f.write('    nItr = 10000000 #iterations\n')
     f.write('    timeStep = 0.1\n')
@@ -215,10 +276,10 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    WaterBox = [500,500,500]\n')
     f.write('end boundaries\n\n')
     f.write('start molecules\n')
-    f.write('    cube : 200\n')
+    f.write('    dode : 200\n')
     f.write('end molecules\n\n')
     f.write('start reactions\n')
-    f.write('    cube(lg1) + cube(lg1) <-> cube(lg1!1).cube(lg1!1)\n')
+    f.write('    dode(lg1) + dode(lg1) <-> dode(lg1!1).dode(lg1!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -231,7 +292,7 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg2) + cube(lg2) <-> cube(lg2!1).cube(lg2!1)\n')
+    f.write('    dode(lg2) + dode(lg2) <-> dode(lg2!1).dode(lg2!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -244,7 +305,7 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg3) + cube(lg3) <-> cube(lg3!1).cube(lg3!1)\n')
+    f.write('    dode(lg3) + dode(lg3) <-> dode(lg3!1).dode(lg3!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -257,7 +318,7 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg4) + cube(lg4) <-> cube(lg4!1).cube(lg4!1)\n')
+    f.write('    dode(lg4) + dode(lg4) <-> dode(lg4!1).dode(lg4!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -270,7 +331,20 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg1) + cube(lg2) <-> cube(lg1!1).cube(lg2!1)\n')
+    f.write('    dode(lg5) + dode(lg5) <-> dode(lg5!1).dode(lg5!1)\n')
+    f.write('    onRate3Dka = 2\n')
+    f.write('    offRatekb = 2\n')
+    f.write('    norm1 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    norm2 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    sigma = ' + str(float(sigma)) + '\n')
+    f.write('    assocAngles = [' + str(theta1) + ', ' + str(theta2) +
+            ', ' + str(phi1) + ', ' + str(phi2) + ', ' + str(omega) + ']\n')
+    f.write('    observeLabel = leg\n')
+    f.write('    bindRadSameCom = 5.0\n')
+    f.write('\n')
+    f.write('    dode(lg1) + dode(lg2) <-> dode(lg1!1).dode(lg2!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -283,7 +357,7 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg1) + cube(lg3) <-> cube(lg1!1).cube(lg3!1)\n')
+    f.write('    dode(lg1) + dode(lg3) <-> dode(lg1!1).dode(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -296,7 +370,7 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg1) + cube(lg4) <-> cube(lg1!1).cube(lg4!1)\n')
+    f.write('    dode(lg1) + dode(lg4) <-> dode(lg1!1).dode(lg4!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -309,7 +383,7 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg2) + cube(lg3) <-> cube(lg2!1).cube(lg3!1)\n')
+    f.write('    dode(lg1) + dode(lg5) <-> dode(lg1!1).dode(lg5!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -322,7 +396,7 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg2) + cube(lg4) <-> cube(lg2!1).cube(lg4!1)\n')
+    f.write('    dode(lg2) + dode(lg3) <-> dode(lg2!1).dode(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -335,7 +409,59 @@ def cube_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg3) + cube(lg4) <-> cube(lg3!1).cube(lg4!1)\n')
+    f.write('    dode(lg2) + dode(lg4) <-> dode(lg2!1).dode(lg4!1)\n')
+    f.write('    onRate3Dka = 4\n')
+    f.write('    offRatekb = 2\n')
+    f.write('    norm1 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    norm2 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    sigma = ' + str(float(sigma)) + '\n')
+    f.write('    assocAngles = [' + str(theta1) + ', ' + str(theta2) +
+            ', ' + str(phi1) + ', ' + str(phi2) + ', ' + str(omega) + ']\n')
+    f.write('    observeLabel = leg\n')
+    f.write('    bindRadSameCom = 5.0\n')
+    f.write('\n')
+    f.write('    dode(lg2) + dode(lg5) <-> dode(lg2!1).dode(lg5!1)\n')
+    f.write('    onRate3Dka = 4\n')
+    f.write('    offRatekb = 2\n')
+    f.write('    norm1 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    norm2 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    sigma = ' + str(float(sigma)) + '\n')
+    f.write('    assocAngles = [' + str(theta1) + ', ' + str(theta2) +
+            ', ' + str(phi1) + ', ' + str(phi2) + ', ' + str(omega) + ']\n')
+    f.write('    observeLabel = leg\n')
+    f.write('    bindRadSameCom = 5.0\n')
+    f.write('\n')
+    f.write('    dode(lg3) + dode(lg4) <-> dode(lg3!1).dode(lg4!1)\n')
+    f.write('    onRate3Dka = 4\n')
+    f.write('    offRatekb = 2\n')
+    f.write('    norm1 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    norm2 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    sigma = ' + str(float(sigma)) + '\n')
+    f.write('    assocAngles = [' + str(theta1) + ', ' + str(theta2) +
+            ', ' + str(phi1) + ', ' + str(phi2) + ', ' + str(omega) + ']\n')
+    f.write('    observeLabel = leg\n')
+    f.write('    bindRadSameCom = 5.0\n')
+    f.write('\n')
+    f.write('    dode(lg3) + dode(lg5) <-> dode(lg3!1).dode(lg5!1)\n')
+    f.write('    onRate3Dka = 4\n')
+    f.write('    offRatekb = 2\n')
+    f.write('    norm1 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    norm2 = [' + str(n[0]) + ', ' +
+            str(n[1]) + ', ' + str(n[2]) + ']\n')
+    f.write('    sigma = ' + str(float(sigma)) + '\n')
+    f.write('    assocAngles = [' + str(theta1) + ', ' + str(theta2) +
+            ', ' + str(phi1) + ', ' + str(phi2) + ', ' + str(omega) + ']\n')
+    f.write('    observeLabel = leg\n')
+    f.write('    bindRadSameCom = 5.0\n')
+    f.write('\n')
+    f.write('    dode(lg4) + dode(lg5) <-> dode(lg4!1).dode(lg5!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -350,11 +476,11 @@ def cube_face_write(radius: float, sigma: float):
     f.write('\n')
     f.write('end reactions\n')
 
-    f = open('cube.mol', 'w')
+    f = open('dode.mol', 'w')
     f.write('##\n')
-    f.write('# Cube (face-centered) information file.\n')
+    f.write('# Dodecahedron (face-centered) information file.\n')
     f.write('##\n\n')
-    f.write('Name = cube\n')
+    f.write('Name = dode\n')
     f.write('checkOverlap = true\n\n')
     f.write('# translational diffusion constants\n')
     f.write('D = [13.0, 13.0, 13.0]\n\n')
@@ -371,27 +497,30 @@ def cube_face_write(radius: float, sigma: float):
             str(round(lg3[1], 8)) + '   ' + str(round(lg3[2], 8)) + '\n')
     f.write('lg4   ' + str(round(lg4[0], 8)) + '   ' +
             str(round(lg4[1], 8)) + '   ' + str(round(lg4[2], 8)) + '\n')
+    f.write('lg5   ' + str(round(lg5[0], 8)) + '   ' +
+            str(round(lg5[1], 8)) + '   ' + str(round(lg5[2], 8)) + '\n')
     f.write('\n')
     f.write('# bonds\n')
-    f.write('bonds = 4\n')
+    f.write('bonds = 5\n')
     f.write('com lg1\n')
     f.write('com lg2\n')
     f.write('com lg3\n')
     f.write('com lg4\n')
+    f.write('com lg5\n')
     f.write('\n')
 
 
-# CUBE VERTEX AS COM
+# DODECAHEDEON VERTEX AS COM
 
 
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .cube_vert_write import cube_vert_write
+Write a python docstring in the google style for this function: from .dode_vert_write import dode_vert_write
 
 
-def cube_vert(radius: float, sigma: float):
-    cube_vert_write(radius, sigma)
+def dode_vert(radius: float, sigma: float):
+    dode_vert_write(radius, sigma)
     print('File writing complete!')
     return 0
 
@@ -404,7 +533,7 @@ Write a python docstring in the google style for this function: import numpy as 
 from ..gen_platonic.mid_pt import mid_pt
 
 
-def cube_vert_COM_leg(COM: float, a: float, b: float, c: float):
+def dode_vert_COM_leg(COM: float, a: float, b: float, c: float):
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)
@@ -415,28 +544,52 @@ def cube_vert_COM_leg(COM: float, a: float, b: float, c: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .cube_vert_coord import cube_vert_coord
-from .cube_vert_COM_leg import cube_vert_COM_leg
+Write a python docstring in the google style for this function: from .dode_vert_coord import dode_vert_coord
 
-def cube_vert_COM_leg_gen(radius: float):
-    coord = cube_vert_coord(radius)
+
+def dode_vert_COM_leg_gen(radius: float):
+    coord = dode_vert_coord(radius)
     COM_leg_list = []
-    COM_leg_list.append(cube_vert_COM_leg(
-        coord[0], coord[1], coord[2], coord[3]))
-    COM_leg_list.append(cube_vert_COM_leg(
-        coord[1], coord[0], coord[4], coord[6]))
-    COM_leg_list.append(cube_vert_COM_leg(
-        coord[2], coord[0], coord[4], coord[5]))
-    COM_leg_list.append(cube_vert_COM_leg(
-        coord[3], coord[0], coord[5], coord[6]))
-    COM_leg_list.append(cube_vert_COM_leg(
-        coord[4], coord[1], coord[2], coord[7]))
-    COM_leg_list.append(cube_vert_COM_leg(
-        coord[5], coord[2], coord[3], coord[7]))
-    COM_leg_list.append(cube_vert_COM_leg(
-        coord[6], coord[1], coord[3], coord[7]))
-    COM_leg_list.append(cube_vert_COM_leg(
-        coord[7], coord[4], coord[5], coord[6]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[0], coord[1], coord[12], coord[16]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[1], coord[0], coord[13], coord[17]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[2], coord[3], coord[14], coord[18]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[3], coord[2], coord[15], coord[19]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[4], coord[6], coord[12], coord[14]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[5], coord[7], coord[13], coord[15]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[6], coord[4], coord[16], coord[18]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[7], coord[5], coord[17], coord[19]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[8], coord[9], coord[12], coord[13]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[9], coord[8], coord[14], coord[15]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[10], coord[11], coord[16], coord[17]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[11], coord[10], coord[18], coord[19]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[12], coord[0], coord[4], coord[8]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[13], coord[1], coord[5], coord[8]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[14], coord[2], coord[4], coord[9]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[15], coord[3], coord[5], coord[9]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[16], coord[0], coord[6], coord[10]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[17], coord[1], coord[7], coord[10]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[18], coord[2], coord[6], coord[11]))
+    COM_leg_list.append(dode_vert_COM_leg(
+        coord[19], coord[3], coord[7], coord[11]))
     return COM_leg_list
 
 
@@ -444,42 +597,56 @@ def cube_vert_COM_leg_gen(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: def cube_vert_coord(radius: float):
-    scaler = radius/3**0.5
-    v0 = [1, 1, 1]
-    v1 = [-1, 1, 1]
-    v2 = [1, -1, 1]
-    v3 = [1, 1, -1]
-    v4 = [-1, -1, 1]
-    v5 = [1, -1, -1]
-    v6 = [-1, 1, -1]
-    v7 = [-1, -1, -1]
-    VertCoord = [v0, v1, v2, v3, v4, v5, v6, v7]
-    VertCoord_ = []
-    for i in VertCoord:
+Write a python docstring in the google style for this function: def dode_vert_coord(radius: float):
+    scaler = radius/(3**0.5)
+    m = (1+5**(0.5))/2
+    V0 = [0, m, 1/m]
+    V1 = [0, m, -1/m]
+    V2 = [0, -m, 1/m]
+    V3 = [0, -m, -1/m]
+    V4 = [1/m, 0, m]
+    V5 = [1/m, 0, -m]
+    V6 = [-1/m, 0, m]
+    V7 = [-1/m, 0, -m]
+    V8 = [m, 1/m, 0]
+    V9 = [m, -1/m, 0]
+    V10 = [-m, 1/m, 0]
+    V11 = [-m, -1/m, 0]
+    V12 = [1, 1, 1]
+    V13 = [1, 1, -1]
+    V14 = [1, -1, 1]
+    V15 = [1, -1, -1]
+    V16 = [-1, 1, 1]
+    V17 = [-1, 1, -1]
+    V18 = [-1, -1, 1]
+    V19 = [-1, -1, -1]
+    coord = [V0, V1, V2, V3, V4, V5, V6, V7, V8, V9,
+             V10, V11, V12, V13, V14, V15, V16, V17, V18, V19]
+    coord_ = []
+    for i in coord:
         temp_list = []
         for j in i:
             temp = j*scaler
             temp_list.append(temp)
-        VertCoord_.append(temp_list)
-    return VertCoord_
+        coord_.append(temp_list)
+    return coord_
 
 
 
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .cube_vert_leg_reduce_coor_gen import cube_vert_leg_reduce_coor_gen
-import numpy as np
+Write a python docstring in the google style for this function: from .dode_vert_leg_reduce_coor_gen import dode_vert_leg_reduce_coor_gen
 
-def cube_vert_input_coord(radius: float, sigma: float):
-    coor = cube_vert_leg_reduce_coor_gen(radius, sigma)
+
+def dode_vert_input_coord(radius: float, sigma: float):
+    coor = dode_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
-    COM = np.around(coor_[0] - coor_[0], 8)
-    lg1 = np.around(coor_[1] - coor_[0], 8)
-    lg2 = np.around(coor_[2] - coor_[0], 8)
-    lg3 = np.around(coor_[3] - coor_[0], 8)
-    n = np.around(coor_[0]/np.linalg.norm(coor_[0]), 8)
+    COM = np.around(coor_[0] - coor_[0], 12)
+    lg1 = np.around(coor_[1] - coor_[0], 12)
+    lg2 = np.around(coor_[2] - coor_[0], 12)
+    lg3 = np.around(coor_[3] - coor_[0], 12)
+    n = np.around(coor_[0]/np.linalg.norm(coor_[0]), 12)
     return COM, lg1, lg2, lg3, n
 
 
@@ -490,7 +657,7 @@ def cube_vert_input_coord(radius: float, sigma: float):
 Write a python docstring in the google style for this function: from ..gen_platonic.distance import distance
 
 
-def cube_vert_leg_reduce(COM: float, leg: float, sigma: float):
+def dode_vert_leg_reduce(COM: float, leg: float, sigma: float):
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -503,18 +670,18 @@ def cube_vert_leg_reduce(COM: float, leg: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .cube_vert_COM_leg_gen import cube_vert_COM_leg_gen
-from .cube_vert_leg_reduce import cube_vert_leg_reduce
+Write a python docstring in the google style for this function: from .dode_vert_COM_leg_gen import dode_vert_COM_leg_gen
 
-def cube_vert_leg_reduce_coor_gen(radius: float, sigma: float):
-    COM_leg_list = cube_vert_COM_leg_gen(radius)
+
+def dode_vert_leg_reduce_coor_gen(radius: float, sigma: float):
+    COM_leg_list = dode_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
         temp_list = []
         temp_list.append(elements[0])
         i = 1
         while i <= 3:
-            temp_list.append(cube_vert_leg_reduce(
+            temp_list.append(dode_vert_leg_reduce(
                 elements[0], elements[i], sigma))
             i += 1
         COM_leg_red_list.append(temp_list)
@@ -526,11 +693,11 @@ def cube_vert_leg_reduce_coor_gen(radius: float, sigma: float):
 =================================================================
 
 Write a python docstring in the google style for this function: from ..gen_platonic.distance import distance
-from .cube_vert_input_coord import cube_vert_input_coord
-import numpy as np
+from .dode_vert_input_coord import dode_vert_input_coord
 
-def cube_vert_norm_input(radius: float, sigma: float):
-    COM, lg1, lg2, lg3, n = cube_vert_input_coord(radius, sigma)
+
+def dode_vert_norm_input(radius: float, sigma: float):
+    COM, lg1, lg2, lg3, n = dode_vert_input_coord(radius, sigma)
     length = distance(lg1, lg2)
     dis1 = ((-length/2)**2+(-((length/2)*(3**0.5))/3)**2)**0.5
     dis2 = distance(COM, lg1)
@@ -547,13 +714,13 @@ def cube_vert_norm_input(radius: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .cube_vert_norm_input import cube_vert_norm_input
+Write a python docstring in the google style for this function: from .dode_vert_norm_input import dode_vert_norm_input
 
 
-def cube_vert_write(radius: float, sigma: float):
-    COM, lg1, lg2, lg3, n = cube_vert_norm_input(radius, sigma)
+def dode_vert_write(radius: float, sigma: float):
+    COM, lg1, lg2, lg3, n = dode_vert_norm_input(radius, sigma)
     f = open('parm.inp', 'w')
-    f.write(' # Input file (cube vertex-centered)\n\n')
+    f.write(' # Input file (dodecahedron vertex-centered)\n\n')
     f.write('start parameters\n')
     f.write('    nItr = 10000000 #iterations\n')
     f.write('    timeStep = 0.1\n')
@@ -568,10 +735,10 @@ def cube_vert_write(radius: float, sigma: float):
     f.write('    WaterBox = [500,500,500]\n')
     f.write('end boundaries\n\n')
     f.write('start molecules\n')
-    f.write('    cube : 200\n')
+    f.write('    dode : 200\n')
     f.write('end molecules\n\n')
     f.write('start reactions\n')
-    f.write('    cube(lg1) + cube(lg1) <-> cube(lg1!1).cube(lg1!1)\n')
+    f.write('    dode(lg1) + dode(lg1) <-> dode(lg1!1).dode(lg1!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -583,7 +750,7 @@ def cube_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg2) + cube(lg2) <-> cube(lg2!1).cube(lg2!1)\n')
+    f.write('    dode(lg2) + dode(lg2) <-> dode(lg2!1).dode(lg2!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -595,7 +762,7 @@ def cube_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg3) + cube(lg3) <-> cube(lg3!1).cube(lg3!1)\n')
+    f.write('    dode(lg3) + dode(lg3) <-> dode(lg3!1).dode(lg3!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -607,7 +774,7 @@ def cube_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg1) + cube(lg2) <-> cube(lg1!1).cube(lg2!1)\n')
+    f.write('    dode(lg1) + dode(lg2) <-> dode(lg1!1).dode(lg2!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -619,7 +786,7 @@ def cube_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg1) + cube(lg3) <-> cube(lg1!1).cube(lg3!1)\n')
+    f.write('    dode(lg1) + dode(lg3) <-> dode(lg1!1).dode(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -631,7 +798,7 @@ def cube_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    cube(lg2) + cube(lg3) <-> cube(lg2!1).cube(lg3!1)\n')
+    f.write('    dode(lg2) + dode(lg3) <-> dode(lg2!1).dode(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -645,11 +812,11 @@ def cube_vert_write(radius: float, sigma: float):
     f.write('\n')
     f.write('end reactions\n')
 
-    f = open('cube.mol', 'w')
+    f = open('dode.mol', 'w')
     f.write('##\n')
-    f.write('# Cube (vertex-centered) information file.\n')
+    f.write('# Dodecahedron (vertex-centered) information file.\n')
     f.write('##\n\n')
-    f.write('Name = cube\n')
+    f.write('Name = dode\n')
     f.write('checkOverlap = true\n\n')
     f.write('# translational diffusion constants\n')
     f.write('D = [13.0, 13.0, 13.0]\n\n')
@@ -673,7 +840,7 @@ def cube_vert_write(radius: float, sigma: float):
     f.write('\n')
 
 
-# TETRAHETRON FACE AS COM
+# ICOSAHEDRON FACE AS COM
 
 
 

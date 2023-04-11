@@ -3,6 +3,15 @@ from .dode_face_COM_coor import dode_face_COM_coor
 
 
 def dode_face_COM_list_gen(radius: float):
+    """Generate the list of Centers of Mass (COM) of all 12 faces of a dodecahedron.
+
+    Args:
+        radius (float): The radius of the dodecahedron.
+
+    Returns:
+        list: A list containing the Centers of Mass (COM) of all 12 faces of the dodecahedron.
+    """
+    
     # generate the list of COM of all 12 faces
     coord = dode_face_dodecahedron_coord(radius)
     COM_list = []

@@ -4,6 +4,22 @@ from .dode_face_input_coord import dode_face_input_coord
 
 
 def dode_face_write(radius: float, sigma: float):
+    """Generate input file for dodecahedron face-centered simulation.
+
+    This function takes a radius and a sigma value as input parameters,
+    and generates an input file for a dodecahedron face-centered simulation
+    using the provided parameters. The input file is written to a file named
+    'parm.inp' and contains information about simulation parameters,
+    boundaries, molecules, and reactions.
+
+    Args:
+        radius (float): Radius of the dodecahedron.
+        sigma (float): Sigma value.
+
+    Returns:
+        None
+    """
+    
     COM, lg1, lg2, lg3, lg4, lg5, n = dode_face_input_coord(radius, sigma)
     coord = dode_face_leg_reduce_coor_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
