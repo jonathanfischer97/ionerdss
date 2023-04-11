@@ -3,6 +3,21 @@ import numpy as np
 
 
 def tetr_vert_input_coord(radius: float, sigma: float):
+    """
+    Generate the input coordinates for a regular tetrahedron given the radius and sigma.
+
+    Args:
+        radius (float): The radius of the circumsphere of the tetrahedron.
+        sigma (float): The scaling factor for the coordinates.
+
+    Returns:
+        tuple: A tuple containing the center of mass (COM) and three leg vectors of the tetrahedron,
+        as well as the normalized vector of the first vertex.
+
+    Example:
+        >>> tetr_vert_input_coord(1.0, 0.5)
+        (array([0., 0., 0.]), array([0.5, 0., 0.]), array([0., 0.5, 0.]), array([0., 0., 0.5]), array([1., 0., 0.]))
+    """
     coor = tetr_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = np.around(coor_[0] - coor_[0], 8)

@@ -2,6 +2,20 @@ from .tetr_vert_coord import tetr_vert_coord
 from .tetr_vert_COM_leg import tetr_vert_COM_leg
 
 def tetr_vert_COM_leg_gen(radius: float):
+    """
+    Generates the center of mass (COM) and midpoints of three edges of a tetrahedron for all possible combinations
+    of vertices.
+    
+    Args:
+        radius (float): The radius of the tetrahedron's circumsphere.
+        
+    Returns:
+        list: A list of four COM_leg lists for each vertex combination, where each COM_leg list contains four values,
+        [COM, lega, legb, legc], rounded to 10 decimal places.
+        
+    Raises:
+        None.
+    """
     coord = tetr_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(tetr_vert_COM_leg(

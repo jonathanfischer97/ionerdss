@@ -1,8 +1,8 @@
-Write a python docstring in the google style for this function: from .octa_face_write import octa_face_write
+Write a python docstring in the google style for this function: from .tetr_face_write import tetr_face_write
 
 
-def octa_face(radius: float, sigma: float):
-    octa_face_write(radius, sigma)
+def tetr_face(radius: float, sigma: float):
+    tetr_face_write(radius, sigma)
     print('File writing complete!')
     return 0
 
@@ -15,7 +15,8 @@ Write a python docstring in the google style for this function: import math
 from ..gen_platonic.mid_pt import mid_pt
 
 
-def octa_face_COM_coord(a: float, b: float, c: float):
+def tetr_face_COM_coord(a: float, b: float, c: float):
+    n = 10
     mid_a = mid_pt(b, c)
     mid_b = mid_pt(a, c)
     mid_c = mid_pt(a, b)
@@ -29,6 +30,7 @@ def octa_face_COM_coord(a: float, b: float, c: float):
                      (1+math.sin(30/180*math.pi)), 12))
         COM_c.append(round(c[i] + (mid_c[i] - c[i]) /
                      (1+math.sin(30/180*math.pi)), 12))
+
     if COM_a == COM_b and COM_b == COM_c:
         return COM_a
     else:
@@ -40,12 +42,12 @@ def octa_face_COM_coord(a: float, b: float, c: float):
 =================================================================
 
 Write a python docstring in the google style for this function: from ..gen_platonic.mid_pt import mid_pt
-from .octa_face_COM_coord import octa_face_COM_coord
+from .tetr_face_COM_coord import tetr_face_COM_coord
 
 
-def octa_face_COM_leg_coord(a: float, b: float, c: float):
+def tetr_face_COM_leg_coord(a: float, b: float, c: float):
     COM_leg = []
-    COM_leg.append(octa_face_COM_coord(a, b, c))
+    COM_leg.append(tetr_face_COM_coord(a, b, c))
     COM_leg.append(mid_pt(a, b))
     COM_leg.append(mid_pt(b, c))
     COM_leg.append(mid_pt(c, a))
@@ -56,22 +58,17 @@ def octa_face_COM_leg_coord(a: float, b: float, c: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .octa_face_vert_coord import octa_face_vert_coord
-from .octa_face_COM_leg_coord import octa_face_COM_leg_coord
+Write a python docstring in the google style for this function: from .tetr_face_coord import tetr_face_coord
+from .tetr_face_COM_leg_coord import tetr_face_COM_leg_coord
 
 
-def octa_face_COM_leg_list_gen(radius: float):
-    coord = octa_face_vert_coord(radius)
+def tetr_face_COM_leg_list_gen(radius: float):
+    coord = tetr_face_coord(radius)
     COM_leg_list = []
-
-    COM_leg_list.append(octa_face_COM_leg_coord(coord[0], coord[2], coord[4]))
-    COM_leg_list.append(octa_face_COM_leg_coord(coord[0], coord[3], coord[4]))
-    COM_leg_list.append(octa_face_COM_leg_coord(coord[0], coord[3], coord[5]))
-    COM_leg_list.append(octa_face_COM_leg_coord(coord[0], coord[2], coord[5]))
-    COM_leg_list.append(octa_face_COM_leg_coord(coord[1], coord[2], coord[4]))
-    COM_leg_list.append(octa_face_COM_leg_coord(coord[1], coord[3], coord[4]))
-    COM_leg_list.append(octa_face_COM_leg_coord(coord[1], coord[3], coord[5]))
-    COM_leg_list.append(octa_face_COM_leg_coord(coord[1], coord[2], coord[5]))
+    COM_leg_list.append(tetr_face_COM_leg_coord(coord[0], coord[1], coord[2]))
+    COM_leg_list.append(tetr_face_COM_leg_coord(coord[0], coord[2], coord[3]))
+    COM_leg_list.append(tetr_face_COM_leg_coord(coord[0], coord[1], coord[3]))
+    COM_leg_list.append(tetr_face_COM_leg_coord(coord[1], coord[2], coord[3]))
     return COM_leg_list
 
 
@@ -79,21 +76,17 @@ def octa_face_COM_leg_list_gen(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .octa_face_vert_coord import octa_face_vert_coord
-from .octa_face_COM_coord import octa_face_COM_coord
+Write a python docstring in the google style for this function: from .tetr_face_coord import tetr_face_coord
+from .tetr_face_COM_coord import tetr_face_COM_coord
 
 
-def octa_face_COM_list_gen(radius: float):
-    coord = octa_face_vert_coord(radius)
+def tetr_face_COM_list_gen(radius: float):
+    coord = tetr_face_coord(radius)
     COM_list = []
-    COM_list.append(octa_face_COM_coord(coord[0], coord[2], coord[4]))
-    COM_list.append(octa_face_COM_coord(coord[0], coord[3], coord[4]))
-    COM_list.append(octa_face_COM_coord(coord[0], coord[3], coord[5]))
-    COM_list.append(octa_face_COM_coord(coord[0], coord[2], coord[5]))
-    COM_list.append(octa_face_COM_coord(coord[1], coord[2], coord[4]))
-    COM_list.append(octa_face_COM_coord(coord[1], coord[3], coord[4]))
-    COM_list.append(octa_face_COM_coord(coord[1], coord[3], coord[5]))
-    COM_list.append(octa_face_COM_coord(coord[1], coord[2], coord[5]))
+    COM_list.append(tetr_face_COM_coord(coord[0], coord[1], coord[2]))
+    COM_list.append(tetr_face_COM_coord(coord[0], coord[2], coord[3]))
+    COM_list.append(tetr_face_COM_coord(coord[0], coord[1], coord[3]))
+    COM_list.append(tetr_face_COM_coord(coord[1], coord[2], coord[3]))
     return COM_list
 
 
@@ -101,11 +94,32 @@ def octa_face_COM_list_gen(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .octa_face_leg_reduce_coord_gen import octa_face_leg_reduce_coord_gen
+Write a python docstring in the google style for this function: def tetr_face_coord(radius: float):
+    scaler = radius/(3/8)**0.5/2
+    v0 = [1, 0, -1/2**0.5]
+    v1 = [-1, 0, -1/2**0.5]
+    v2 = [0, 1, 1/2**0.5]
+    v3 = [0, -1, 1/2**0.5]
+    VertCoord = [v0, v1, v2, v3]
+    VertCoord_ = []
+    for i in VertCoord:
+        temp_list = []
+        for j in i:
+            temp = j*scaler
+            temp_list.append(temp)
+        VertCoord_.append(temp_list)
+    return VertCoord_
+
+
+
+
+=================================================================
+
+Write a python docstring in the google style for this function: from .tetr_face_leg_reduce_coord_gen import tetr_face_leg_reduce_coord_gen
 import numpy as np
 
-def octa_face_input_coord(radius: float, sigma: float):
-    coor = octa_face_leg_reduce_coord_gen(radius, sigma)
+def tetr_face_input_coord(radius: float, sigma: float):
+    coor = tetr_face_leg_reduce_coord_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = coor_[0] - coor_[0]
     lg1 = coor_[1] - coor_[0]
@@ -123,9 +137,9 @@ Write a python docstring in the google style for this function: import math
 from ..gen_platonic.distance import distance
 
 
-def octa_face_leg_reduce(COM: float, leg: float, sigma: float):
+def tetr_face_leg_reduce(COM: float, leg: float, sigma: float):
     n = 12
-    angle = math.acos(-1/3)
+    angle = math.acos(1/3)
     red_len = sigma/(2*math.sin(angle/2))
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -139,18 +153,18 @@ def octa_face_leg_reduce(COM: float, leg: float, sigma: float):
 =================================================================
 
 Write a python docstring in the google style for this function: from ..gen_platonic.COM_leg_list_gen import COM_leg_list_gen
-from .octa_face_COM_leg_list_gen import octa_face_COM_leg_list_gen
-from .octa_face_leg_reduce import octa_face_leg_reduce
+from .tetr_face_COM_leg_list_gen import tetr_face_COM_leg_list_gen
+from .tetr_face_leg_reduce import tetr_face_leg_reduce
 
-def octa_face_leg_reduce_coord_gen(radius: float, sigma: float):
-    COM_leg_list = octa_face_COM_leg_list_gen(radius)
+def tetr_face_leg_reduce_coord_gen(radius: float, sigma: float):
+    COM_leg_list = tetr_face_COM_leg_list_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
         temp_list = []
         temp_list.append(elements[0])
         i = 1
         while i <= 3:
-            temp_list.append(octa_face_leg_reduce(
+            temp_list.append(tetr_face_leg_reduce(
                 elements[0], elements[i], sigma))
             i += 1
         COM_leg_red_list.append(temp_list)
@@ -161,42 +175,19 @@ def octa_face_leg_reduce_coord_gen(radius: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: def octa_face_vert_coord(radius: float):
-    scaler = radius
-    v0 = [1, 0, 0]
-    v1 = [-1, 0, 0]
-    v2 = [0, 1, 0]
-    v3 = [0, -1, 0]
-    v4 = [0, 0, 1]
-    v5 = [0, 0, -1]
-    VertCoord = [v0, v1, v2, v3, v4, v5]
-    VertCoord_ = []
-    for i in VertCoord:
-        temp_list = []
-        for j in i:
-            temp = j*scaler
-            temp_list.append(temp)
-        VertCoord_.append(temp_list)
-    return VertCoord_
-
-
-
-
-=================================================================
-
 Write a python docstring in the google style for this function: from ..gen_platonic.angle_cal import angle_cal
-from .octa_face_leg_reduce_coord_gen import octa_face_leg_reduce_coord_gen
-from .octa_face_input_coord import octa_face_input_coord
+from .tetr_face_leg_reduce_coord_gen import tetr_face_leg_reduce_coord_gen
+from .tetr_face_input_coord import tetr_face_input_coord
 
 
-def octa_face_write(radius: float, sigma: float):
-    COM, lg1, lg2, lg3, n = octa_face_input_coord(radius, sigma)
-    coord = octa_face_leg_reduce_coord_gen(radius, sigma)
+def tetr_face_write(radius: float, sigma: float):
+    COM, lg1, lg2, lg3, n = tetr_face_input_coord(radius, sigma)
+    coord = tetr_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
-        coord[0][0], coord[0][3], coord[1][0], coord[1][3])
+        coord[0][0], coord[0][1], coord[2][0], coord[2][1])
 
     f = open('parm.inp', 'w')
-    f.write(' # Input file (octahedron face-centered)\n\n')
+    f.write(' # Input file (tetrahedron face-centered)\n\n')
     f.write('start parameters\n')
     f.write('    nItr = 10000000 #iterations\n')
     f.write('    timeStep = 0.1\n')
@@ -211,10 +202,10 @@ def octa_face_write(radius: float, sigma: float):
     f.write('    WaterBox = [500,500,500]\n')
     f.write('end boundaries\n\n')
     f.write('start molecules\n')
-    f.write('    octa : 200\n')
+    f.write('    tetr : 200\n')
     f.write('end molecules\n\n')
     f.write('start reactions\n')
-    f.write('    octa(lg1) + octa(lg1) <-> octa(lg1!1).octa(lg1!1)\n')
+    f.write('    tetr(lg1) + tetr(lg1) <-> tetr(lg1!1).tetr(lg1!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -227,7 +218,7 @@ def octa_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    octa(lg2) + octa(lg2) <-> octa(lg2!1).octa(lg2!1)\n')
+    f.write('    tetr(lg2) + tetr(lg2) <-> tetr(lg2!1).tetr(lg2!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -240,7 +231,7 @@ def octa_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    octa(lg3) + octa(lg3) <-> octa(lg3!1).octa(lg3!1)\n')
+    f.write('    tetr(lg3) + tetr(lg3) <-> tetr(lg3!1).tetr(lg3!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -253,7 +244,7 @@ def octa_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    octa(lg1) + octa(lg2) <-> octa(lg1!1).octa(lg2!1)\n')
+    f.write('    tetr(lg1) + tetr(lg2) <-> tetr(lg1!1).tetr(lg2!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -266,7 +257,7 @@ def octa_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    octa(lg1) + octa(lg3) <-> octa(lg1!1).octa(lg3!1)\n')
+    f.write('    tetr(lg1) + tetr(lg3) <-> tetr(lg1!1).tetr(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -279,7 +270,7 @@ def octa_face_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    octa(lg2) + octa(lg3) <-> octa(lg2!1).octa(lg3!1)\n')
+    f.write('    tetr(lg2) + tetr(lg3) <-> tetr(lg2!1).tetr(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -294,11 +285,11 @@ def octa_face_write(radius: float, sigma: float):
     f.write('\n')
     f.write('end reactions\n')
 
-    f = open('octa.mol', 'w')
+    f = open('tetr.mol', 'w')
     f.write('##\n')
-    f.write('# Octahehedron (face-centered) information file.\n')
+    f.write('# Tetrahedron (face-centered) information file.\n')
     f.write('##\n\n')
-    f.write('Name = octa\n')
+    f.write('Name = tetr\n')
     f.write('checkOverlap = true\n\n')
     f.write('# translational diffusion constants\n')
     f.write('D = [13.0, 13.0, 13.0]\n\n')
@@ -313,6 +304,7 @@ def octa_face_write(radius: float, sigma: float):
             str(round(lg2[1], 8)) + '   ' + str(round(lg2[2], 8)) + '\n')
     f.write('lg3   ' + str(round(lg3[0], 8)) + '   ' +
             str(round(lg3[1], 8)) + '   ' + str(round(lg3[2], 8)) + '\n')
+    f.write('\n')
     f.write('# bonds\n')
     f.write('bonds = 3\n')
     f.write('com lg1\n')
@@ -321,17 +313,17 @@ def octa_face_write(radius: float, sigma: float):
     f.write('\n')
 
 
-# OCTAHEDRON VERTEX AS COM
+# TETRAHEDRON VERTEX AS COM
 
 
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .octa_vert_write import octa_vert_write
+Write a python docstring in the google style for this function: from .tetr_vert_write import tetr_vert_write
 
 
-def octa_vert(radius: float, sigma: float):
-    octa_vert_write(radius, sigma)
+def tetr_vert(radius: float, sigma: float):
+    tetr_vert_write(radius, sigma)
     print('File writing complete!')
     return 0
 
@@ -344,36 +336,31 @@ Write a python docstring in the google style for this function: import numpy as 
 from ..gen_platonic.mid_pt import mid_pt
 
 
-def octa_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float):
+def tetr_vert_COM_leg(COM: float, a: float, b: float, c: float):
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)
-    legd = mid_pt(COM, d)
-    return [np.around(COM, 10), np.around(lega, 10), np.around(legb, 10), np.around(legc, 10), np.around(legd, 10)]
+    return [np.around(COM, 10), np.around(lega, 10), np.around(legb, 10), np.around(legc, 10)]
 
 
 
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .octa_vert_coord import octa_vert_coord
-from .octa_vert_COM_leg import octa_vert_COM_leg
+Write a python docstring in the google style for this function: from .tetr_vert_coord import tetr_vert_coord
+from .tetr_vert_COM_leg import tetr_vert_COM_leg
 
-def octa_vert_COM_leg_gen(radius: float):
-    coord = octa_vert_coord(radius)
+def tetr_vert_COM_leg_gen(radius: float):
+    coord = tetr_vert_coord(radius)
     COM_leg_list = []
-    COM_leg_list.append(octa_vert_COM_leg(
-        coord[0], coord[2], coord[4], coord[3], coord[5]))
-    COM_leg_list.append(octa_vert_COM_leg(
-        coord[1], coord[2], coord[4], coord[3], coord[5]))
-    COM_leg_list.append(octa_vert_COM_leg(
-        coord[2], coord[1], coord[5], coord[0], coord[4]))
-    COM_leg_list.append(octa_vert_COM_leg(
-        coord[3], coord[1], coord[5], coord[0], coord[4]))
-    COM_leg_list.append(octa_vert_COM_leg(
-        coord[4], coord[1], coord[2], coord[0], coord[3]))
-    COM_leg_list.append(octa_vert_COM_leg(
-        coord[5], coord[1], coord[2], coord[0], coord[3]))
+    COM_leg_list.append(tetr_vert_COM_leg(
+        coord[0], coord[1], coord[2], coord[3]))
+    COM_leg_list.append(tetr_vert_COM_leg(
+        coord[1], coord[2], coord[3], coord[0]))
+    COM_leg_list.append(tetr_vert_COM_leg(
+        coord[2], coord[3], coord[0], coord[1]))
+    COM_leg_list.append(tetr_vert_COM_leg(
+        coord[3], coord[0], coord[1], coord[2]))
     return COM_leg_list
 
 
@@ -381,15 +368,13 @@ def octa_vert_COM_leg_gen(radius: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: def octa_vert_coord(radius: float):
-    scaler = radius
-    v0 = [1, 0, 0]
-    v1 = [-1, 0, 0]
-    v2 = [0, 1, 0]
-    v3 = [0, -1, 0]
-    v4 = [0, 0, 1]
-    v5 = [0, 0, -1]
-    VertCoord = [v0, v1, v2, v3, v4, v5]
+Write a python docstring in the google style for this function: def tetr_vert_coord(radius: float):
+    scaler = radius/(3/8)**0.5/2
+    v0 = [1, 0, -1/2**0.5]
+    v1 = [-1, 0, -1/2**0.5]
+    v2 = [0, 1, 1/2**0.5]
+    v3 = [0, -1, 1/2**0.5]
+    VertCoord = [v0, v1, v2, v3]
     VertCoord_ = []
     for i in VertCoord:
         temp_list = []
@@ -404,20 +389,19 @@ Write a python docstring in the google style for this function: def octa_vert_co
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .octa_vert_leg_reduce_coor_gen import octa_vert_leg_reduce_coor_gen
+Write a python docstring in the google style for this function: from .tetr_vert_leg_reduce_coor_gen import tetr_vert_leg_reduce_coor_gen
 import numpy as np
 
 
-def octa_vert_input_coord(radius: float, sigma: float):
-    coor = octa_vert_leg_reduce_coor_gen(radius, sigma)
-    coor_ = np.array(coor[4])
+def tetr_vert_input_coord(radius: float, sigma: float):
+    coor = tetr_vert_leg_reduce_coor_gen(radius, sigma)
+    coor_ = np.array(coor[0])
     COM = np.around(coor_[0] - coor_[0], 8)
     lg1 = np.around(coor_[1] - coor_[0], 8)
     lg2 = np.around(coor_[2] - coor_[0], 8)
     lg3 = np.around(coor_[3] - coor_[0], 8)
-    lg4 = np.around(coor_[4] - coor_[0], 8)
     n = np.around(coor_[0]/np.linalg.norm(coor_[0]), 8)
-    return COM, lg1, lg2, lg3, lg4, n
+    return COM, lg1, lg2, lg3, n
 
 
 
@@ -427,7 +411,7 @@ def octa_vert_input_coord(radius: float, sigma: float):
 Write a python docstring in the google style for this function: from ..gen_platonic.distance import distance
 
 
-def octa_vert_leg_reduce(COM: float, leg: float, sigma: float):
+def tetr_vert_leg_reduce(COM: float, leg: float, sigma: float):
     red_len = sigma/2
     ratio = 1 - red_len/distance(COM, leg)
     leg_red = []
@@ -440,18 +424,19 @@ def octa_vert_leg_reduce(COM: float, leg: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .octa_vert_COM_leg_gen import octa_vert_COM_leg_gen
-from .octa_vert_leg_reduce import octa_vert_leg_reduce
+Write a python docstring in the google style for this function: from .tetr_vert_COM_leg_gen import tetr_vert_COM_leg_gen
+from .tetr_vert_leg_reduce import tetr_vert_leg_reduce
 
-def octa_vert_leg_reduce_coor_gen(radius: float, sigma: float):
-    COM_leg_list = octa_vert_COM_leg_gen(radius)
+def tetr_vert_leg_reduce_coor_gen(radius: float, sigma: float):
+    # Generating all the coords of COM and legs when sigma exists
+    COM_leg_list = tetr_vert_COM_leg_gen(radius)
     COM_leg_red_list = []
     for elements in COM_leg_list:
         temp_list = []
         temp_list.append(elements[0])
         i = 1
-        while i <= 4:
-            temp_list.append(octa_vert_leg_reduce(
+        while i <= 3:
+            temp_list.append(tetr_vert_leg_reduce(
                 elements[0], elements[i], sigma))
             i += 1
         COM_leg_red_list.append(temp_list)
@@ -462,13 +447,36 @@ def octa_vert_leg_reduce_coor_gen(radius: float, sigma: float):
 
 =================================================================
 
-Write a python docstring in the google style for this function: from .octa_vert_input_coord import octa_vert_input_coord
+Write a python docstring in the google style for this function: from ..gen_platonic.distance import distance
+from .tetr_vert_input_coord import tetr_vert_input_coord
+import numpy as np
 
 
-def octa_vert_write(radius: float, sigma: float):
-    COM, lg1, lg2, lg3, lg4, n = octa_vert_input_coord(radius, sigma)
+def tetr_vert_norm_input(radius: float, sigma: float):
+    COM, lg1, lg2, lg3, n = tetr_vert_input_coord(radius, sigma)
+    length = distance(lg1, lg2)
+    dis1 = ((-length/2)**2+(-((length/2)*(3**0.5))/3)**2)**0.5
+    dis2 = distance(COM, lg1)
+    height = (dis2**2-dis1**2)**0.5
+    lg1_ = np.array([-length/2, -((length/2)*(3**0.5))/3, -height])
+    lg2_ = np.array([length/2, -((length/2)*(3**0.5))/3, -height])
+    lg3_ = np.array([0, ((length/2)*(3**0.5))/3*2, -height])
+    COM_ = np.array([0, 0, 0])
+    n_ = np.array([0, 0, 1])
+    return COM_, lg1_, lg2_, lg3_, n_
+
+
+
+
+=================================================================
+
+Write a python docstring in the google style for this function: from .tetr_vert_norm_input import tetr_vert_norm_input
+
+
+def tetr_vert_write(radius: float, sigma: float):
+    COM, lg1, lg2, lg3, n = tetr_vert_norm_input(radius, sigma)
     f = open('parm.inp', 'w')
-    f.write(' # Input file (octahedron vertex-centered)\n\n')
+    f.write(' # Input file (tetrahedron vertex-centered)\n\n')
     f.write('start parameters\n')
     f.write('    nItr = 10000000 #iterations\n')
     f.write('    timeStep = 0.1\n')
@@ -483,10 +491,10 @@ def octa_vert_write(radius: float, sigma: float):
     f.write('    WaterBox = [500,500,500]\n')
     f.write('end boundaries\n\n')
     f.write('start molecules\n')
-    f.write('    octa : 200\n')
+    f.write('    tetr : 200\n')
     f.write('end molecules\n\n')
     f.write('start reactions\n')
-    f.write('    otca(lg1) + octa(lg1) <-> octa(lg1!1).octa(lg1!1)\n')
+    f.write('    tetr(lg1) + tetr(lg1) <-> tetr(lg1!1).tetr(lg1!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -498,7 +506,7 @@ def octa_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    otca(lg2) + octa(lg2) <-> octa(lg2!1).octa(lg2!1)\n')
+    f.write('    tetr(lg2) + tetr(lg2) <-> tetr(lg2!1).tetr(lg2!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -510,7 +518,7 @@ def octa_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    otca(lg3) + octa(lg3) <-> octa(lg3!1).octa(lg3!1)\n')
+    f.write('    tetr(lg3) + tetr(lg3) <-> tetr(lg3!1).tetr(lg3!1)\n')
     f.write('    onRate3Dka = 2\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -522,19 +530,7 @@ def octa_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    otca(lg4) + octa(lg4) <-> octa(lg4!1).octa(lg4!1)\n')
-    f.write('    onRate3Dka = 2\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    otca(lg1) + octa(lg2) <-> octa(lg1!1).octa(lg2!1)\n')
+    f.write('    tetr(lg1) + tetr(lg2) <-> tetr(lg1!1).tetr(lg2!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -546,7 +542,7 @@ def octa_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    otca(lg1) + octa(lg3) <-> octa(lg1!1).octa(lg3!1)\n')
+    f.write('    tetr(lg1) + tetr(lg3) <-> tetr(lg1!1).tetr(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -558,43 +554,7 @@ def octa_vert_write(radius: float, sigma: float):
     f.write('    observeLabel = leg\n')
     f.write('    bindRadSameCom = 5.0\n')
     f.write('\n')
-    f.write('    otca(lg1) + octa(lg4) <-> octa(lg1!1).octa(lg4!1)\n')
-    f.write('    onRate3Dka = 4\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    otca(lg2) + octa(lg3) <-> octa(lg2!1).octa(lg3!1)\n')
-    f.write('    onRate3Dka = 4\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    otca(lg2) + octa(lg4) <-> octa(lg2!1).octa(lg4!1)\n')
-    f.write('    onRate3Dka = 4\n')
-    f.write('    offRatekb = 2\n')
-    f.write('    norm1 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    norm2 = [' + str(n[0]) + ', ' +
-            str(n[1]) + ', ' + str(n[2]) + ']\n')
-    f.write('    sigma = ' + str(float(sigma)) + '\n')
-    f.write('    assocAngles = [M_PI, M_PI, nan, nan, 0]\n')
-    f.write('    observeLabel = leg\n')
-    f.write('    bindRadSameCom = 5.0\n')
-    f.write('\n')
-    f.write('    otca(lg3) + octa(lg4) <-> octa(lg3!1).octa(lg4!1)\n')
+    f.write('    tetr(lg2) + tetr(lg3) <-> tetr(lg2!1).tetr(lg3!1)\n')
     f.write('    onRate3Dka = 4\n')
     f.write('    offRatekb = 2\n')
     f.write('    norm1 = [' + str(n[0]) + ', ' +
@@ -608,11 +568,11 @@ def octa_vert_write(radius: float, sigma: float):
     f.write('\n')
     f.write('end reactions\n')
 
-    f = open('octa.mol', 'w')
+    f = open('tetr.mol', 'w')
     f.write('##\n')
-    f.write('# Octahedron (vertex-centered) information file.\n')
+    f.write('# Tetrahedron (vertex-centered) information file.\n')
     f.write('##\n\n')
-    f.write('Name = octa\n')
+    f.write('Name = tetr\n')
     f.write('checkOverlap = true\n\n')
     f.write('# translational diffusion constants\n')
     f.write('D = [13.0, 13.0, 13.0]\n\n')
@@ -627,19 +587,14 @@ def octa_vert_write(radius: float, sigma: float):
             str(round(lg2[1], 8)) + '   ' + str(round(lg2[2], 8)) + '\n')
     f.write('lg3   ' + str(round(lg3[0], 8)) + '   ' +
             str(round(lg3[1], 8)) + '   ' + str(round(lg3[2], 8)) + '\n')
-    f.write('lg4   ' + str(round(lg4[0], 8)) + '   ' +
-            str(round(lg4[1], 8)) + '   ' + str(round(lg4[2], 8)) + '\n')
     f.write('\n')
     f.write('# bonds\n')
-    f.write('bonds = 4\n')
+    f.write('bonds = 3\n')
     f.write('com lg1\n')
     f.write('com lg2\n')
     f.write('com lg3\n')
-    f.write('com lg4\n')
     f.write('\n')
 
-
-# CUBE FACE AS COM
 
 
 

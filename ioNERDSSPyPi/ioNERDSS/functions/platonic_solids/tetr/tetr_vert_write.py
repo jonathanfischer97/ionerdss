@@ -2,6 +2,22 @@ from .tetr_vert_norm_input import tetr_vert_norm_input
 
 
 def tetr_vert_write(radius: float, sigma: float):
+    """
+    Writes input parameters for a tetrahedron vertex-centered simulation to a file.
+
+    Args:
+        radius (float): The radius of the tetrahedron.
+        sigma (float): The sigma value for the simulation.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Example:
+        tetr_vert_write(3.0, 1.5)
+    """
     COM, lg1, lg2, lg3, n = tetr_vert_norm_input(radius, sigma)
     f = open('parm.inp', 'w')
     f.write(' # Input file (tetrahedron vertex-centered)\n\n')

@@ -7,7 +7,7 @@ import os
 if __name__ == "__main__":
 
     #get names of files in current directory
-    dir = "ioNERDSSPyPi\ioNERDSS\\functions\platonic_solids\octa"
+    dir = "ioNERDSSPyPi\ioNERDSS\\functions\platonic_solids\\tetr"
     dir_list = os.listdir(dir)
         
 

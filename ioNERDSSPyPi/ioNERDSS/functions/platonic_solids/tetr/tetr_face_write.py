@@ -4,6 +4,29 @@ from .tetr_face_input_coord import tetr_face_input_coord
 
 
 def tetr_face_write(radius: float, sigma: float):
+    """Write input parameters for a tetrahedron face-centered system.
+
+    This function writes input parameters for a tetrahedron face-centered system
+    to a file named 'parm.inp'. The input parameters include system boundaries,
+    molecule specifications, and reaction rates, among others. The input
+    coordinates and angles are calculated using the `tetr_face_input_coord`,
+    `tetr_face_leg_reduce_coord_gen`, and `angle_cal` functions from the
+    `gen_platonic` module.
+
+    Args:
+        radius (float): Radius of the tetrahedron.
+        sigma (float): Sigma value used in the calculation.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Examples:
+        >>> tetr_face_write(10.0, 1.0)
+        
+    """
     COM, lg1, lg2, lg3, n = tetr_face_input_coord(radius, sigma)
     coord = tetr_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(
