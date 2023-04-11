@@ -2,6 +2,17 @@ from .cube_vert_norm_input import cube_vert_norm_input
 
 
 def cube_vert_write(radius: float, sigma: float):
+    """
+    Writes input parameters for a cube vertex-centered simulation to a file.
+
+    Args:
+        radius (float): The radius of the cubes.
+        sigma (float): The sigma value.
+
+    Returns:
+        None
+    """
+    
     COM, lg1, lg2, lg3, n = cube_vert_norm_input(radius, sigma)
     f = open('parm.inp', 'w')
     f.write(' # Input file (cube vertex-centered)\n\n')

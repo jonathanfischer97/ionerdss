@@ -4,6 +4,31 @@ from .cube_face_input_coord import cube_face_input_coord
 
 
 def cube_face_write(radius: float, sigma: float):
+    """Writes input parameters and reaction details to a file for cube face-centered simulation.
+
+    Args:
+        radius (float): The radius of the cube face-centered structure.
+        sigma (float): The sigma value used for simulation.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Example:
+        cube_face_write(10.0, 0.5)
+
+    This function writes the input parameters and reaction details for a cube face-centered
+    simulation to a file named 'parm.inp'. The function takes the radius and sigma as input
+    arguments, and uses them to calculate the required input parameters and reaction details.
+    The file 'parm.inp' contains input parameters such as number of iterations, time steps,
+    write frequencies, box boundaries, number of molecules, and reaction details for four
+    types of cubes (lg1, lg2, lg3, lg4) based on the given radius and sigma values. The
+    function uses helper functions 'cube_face_input_coord', 'cube_face_leg_reduce_coord_gen',
+    and 'angle_cal' from other modules to calculate the required input parameters.
+    """
+
     COM, lg1, lg2, lg3, lg4, n = cube_face_input_coord(radius, sigma)
     coord = cube_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(

@@ -1,4 +1,26 @@
 def cube_vert_coord(radius: float):
+    """Calculates the coordinates of the vertices of a cube based on the given radius.
+
+    This function calculates the coordinates of the vertices of a cube based on the given radius, using a scaling factor
+    calculated as radius divided by the square root of 3.
+
+    Args:
+        radius (float): The radius of the cube.
+
+    Returns:
+        list: A list containing eight sub-lists, each containing three floating-point values representing the x, y, and z
+        coordinates of a vertex of the cube.
+
+    Raises:
+        N/A
+
+    Example:
+        cube_vert_coord(1.0)
+        # Calculates the coordinates of the vertices of a cube with a radius of 1.0.
+        # Returns a list containing eight sub-lists, each containing three floating-point values representing the x, y, and z
+        # coordinates of a vertex of the cube.
+    """
+        
     scaler = radius/3**0.5
     v0 = [1, 1, 1]
     v1 = [-1, 1, 1]
