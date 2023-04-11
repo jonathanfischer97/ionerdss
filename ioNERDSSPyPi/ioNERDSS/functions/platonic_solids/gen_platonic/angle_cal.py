@@ -3,6 +3,24 @@ import numpy as np
 
 
 def angle_cal(COM1: float, leg1: float, COM2: float, leg2: float):
+    """
+    Calculates angles between vectors based on given inputs.
+
+    Args:
+        COM1 (float): Center of Mass (COM) for the first leg.
+        leg1 (float): Endpoint of the first leg.
+        COM2 (float): Center of Mass (COM) for the second leg.
+        leg2 (float): Endpoint of the second leg.
+
+    Returns:
+        tuple: A tuple containing the following angles (in radians) rounded to 8 decimal places:
+            - theta1 (float): Angle between vector from COM1 to leg1 and vector from leg1 to leg2.
+            - theta2 (float): Angle between vector from COM2 to leg2 and vector from leg2 to leg1.
+            - phi1 (float): Angle between vectors perpendicular to leg1 and leg2, passing through COM1.
+            - phi2 (float): Angle between vectors perpendicular to leg2 and leg1, passing through COM2.
+            - omega (float): Angle between vectors perpendicular to leg1 and leg2, passing through leg1 and leg2.
+    """
+    
     n = 8
     c1 = np.array(COM1)
     p1 = np.array(leg1)
