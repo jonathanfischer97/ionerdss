@@ -3,6 +3,22 @@ import numpy as np
 
 
 def icos_vert_input_coord(radius: float, sigma: float):
+    """Generate input vertex coordinates for an icosahedron with the given radius and sigma.
+
+    The function calculates the input vertex coordinates for an icosahedron with the given radius and sigma,
+    using mathematical formulas and numpy operations.
+
+    Args:
+        radius (float): The radius of the icosahedron.
+        sigma (float): The sigma value for generating the vertex coordinates.
+
+    Returns:
+        tuple: A tuple of input vertex coordinates for the icosahedron, including the center of mass (COM),
+        and the leg vectors (lg1, lg2, lg3, lg4, lg5) and the normalized normal vector (n).
+
+    Raises:
+        None
+    """
     coor = icos_vert_leg_reduce_coor_gen(radius, sigma)
     coor_ = np.array(coor[0])
     COM = np.around(coor_[0] - coor_[0], 12)

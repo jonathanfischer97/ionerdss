@@ -5,6 +5,30 @@ from .icos_vert_norm_input import icos_vert_norm_input
 
 
 def icos_vert_write(radius: float, sigma: float):
+    """Write input file for icosahedron vertex-centered simulation.
+
+    This function writes an input file in the required format for a icosahedron vertex-centered
+    simulation. The input file contains parameters, boundaries, molecules, and reactions
+    for the simulation.
+
+    Args:
+        radius (float): Radius of the icosahedron.
+        sigma (float): Sigma value for the simulation.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Examples:
+        >>> icos_vert_write(5.0, 0.5)
+
+    Notes:
+        - The input file is written to a file named 'parm.inp' in the current directory.
+        - The function uses other helper functions to calculate various parameters and write
+          the input file in the required format.
+    """
     COM_, lg1_, lg2_, lg3_, lg4_, lg5_, n_ = icos_vert_input_coord(
         radius, sigma)
     cen_ = icos_vert_center_coor(lg1_, lg2_, lg3_, lg4_, lg5_)

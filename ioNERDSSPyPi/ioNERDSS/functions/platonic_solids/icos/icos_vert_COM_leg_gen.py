@@ -2,6 +2,20 @@ from .icos_vert_coord import icos_vert_coord
 from .icos_vert_COM_leg import icos_vert_COM_leg
 
 def icos_vert_COM_leg_gen(radius: float):
+    """Generate a list of center of mass (COM) and legs coordinates for an icosahedron.
+
+    The function calculates the center of mass and legs coordinates for an icosahedron
+    with the given radius, using the `icos_vert_coord` and `icos_vert_COM_leg` functions.
+
+    Args:
+        radius (float): The radius of the icosahedron.
+
+    Returns:
+        list: A list of center of mass and legs coordinates for the icosahedron.
+        
+    Raises:
+        None
+    """
     coord = icos_vert_coord(radius)
     COM_leg_list = []
     COM_leg_list.append(icos_vert_COM_leg(

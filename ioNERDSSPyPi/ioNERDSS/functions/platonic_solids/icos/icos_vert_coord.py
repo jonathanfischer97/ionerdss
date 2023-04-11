@@ -2,6 +2,20 @@ import math
 
 
 def icos_vert_coord(radius: float):
+    """Generate vertex coordinates for an icosahedron with the given radius.
+
+    The function calculates the vertex coordinates for an icosahedron with the given radius,
+    using mathematical formulas and scaling based on the radius.
+
+    Args:
+        radius (float): The radius of the icosahedron.
+
+    Returns:
+        list: A list of vertex coordinates for the icosahedron.
+
+    Raises:
+        None
+    """
     scaler = radius/(2*math.sin(2*math.pi/5))
     m = (1+5**0.5)/2
     v0 = [0, 1, m]

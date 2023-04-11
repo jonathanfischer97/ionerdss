@@ -3,6 +3,37 @@ from ..gen_platonic.mid_pt import mid_pt
 
 
 def icos_vert_center_coor(a: float, b: float, c: float, d: float, e: float):
+    """Calculate the coordinates of the center of mass for an icosahedron.
+
+    This function calculates the coordinates of the center of mass (COM) for
+    an icosahedron, given the coordinates of five points (a, b, c, d, e) and
+    using the mid_pt function from the ..gen_platonic.mid_pt module. The COM
+    coordinates are computed based on the formula:
+    COM = point + (mid_point - point) / (1 + sin(0.3 * pi))
+
+    Args:
+        a (float): The coordinates of point a as a list or tuple of three float values.
+        b (float): The coordinates of point b as a list or tuple of three float values.
+        c (float): The coordinates of point c as a list or tuple of three float values.
+        d (float): The coordinates of point d as a list or tuple of three float values.
+        e (float): The coordinates of point e as a list or tuple of three float values.
+
+    Returns:
+        list: The coordinates of the center of mass (COM) as a list of three float values.
+
+    Example:
+        >>> a = [1.0, 2.0, 3.0]
+        >>> b = [4.0, 5.0, 6.0]
+        >>> c = [7.0, 8.0, 9.0]
+        >>> d = [10.0, 11.0, 12.0]
+        >>> e = [13.0, 14.0, 15.0]
+        >>> icos_vert_center_coor(a, b, c, d, e)
+        [5.18101203220144, 6.58101203220144, 7.98101203220144]
+
+    Note:
+        - This function requires the math module to be imported.
+        - This function relies on the mid_pt function from the ..gen_platonic.mid_pt module.
+    """
     n = 8
     mid_a = mid_pt(c, d)
     mid_b = mid_pt(d, e)

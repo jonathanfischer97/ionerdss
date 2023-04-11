@@ -1,7 +1,25 @@
 import math
-
+import numpy as np
 
 def icos_vert_norm_input(scaler: float, dis_: float):
+    """Calculate normalized input coordinates for an icosahedron.
+
+    The function calculates the normalized input coordinates for an icosahedron based on the given scaler and dis_ values.
+    The scaler value is used to scale the vectors, and the dis_ value is used to determine the z-coordinate of the leg
+    vectors. The resulting coordinates are returned as a tuple containing the center of mass (COM) vector, and the vectors
+    for each leg, rounded to 12 decimal places.
+
+    Args:
+        scaler (float): The scaling factor for the vectors.
+        dis_ (float): The z-coordinate value for the leg vectors.
+
+    Returns:
+        tuple: A tuple containing the center of mass (COM) vector, and vectors for each leg of the icosahedron.
+        Each vector is represented as a numpy array of shape (3,), and is rounded to 12 decimal places.
+
+    Raises:
+        None
+    """
     c1 = math.cos(2*math.pi/5)
     c2 = math.cos(math.pi/5)
     s1 = math.sin(2*math.pi/5)

@@ -3,6 +3,22 @@ from ..gen_platonic.mid_pt import mid_pt
 
 
 def icos_vert_COM_leg(COM: float, a: float, b: float, c: float, d: float, e: float):
+    """Calculate center of mass (COM) and legs from COM to each point.
+
+    Args:
+        COM (float): The center of mass point.
+        a (float): Point A.
+        b (float): Point B.
+        c (float): Point C.
+        d (float): Point D.
+        e (float): Point E.
+
+    Returns:
+        list: A list containing the center of mass and legs coordinates, rounded to 10 decimal places.
+        
+    Raises:
+        None
+    """
     lega = mid_pt(COM, a)
     legb = mid_pt(COM, b)
     legc = mid_pt(COM, c)

@@ -4,6 +4,29 @@ from .icos_face_input_coord import icos_face_input_coord
 
 
 def icos_face_write(radius: float, sigma: float):
+    """
+    Writes input parameters for a simulation of an icosahedron face-centered system.
+
+    Args:
+        radius (float): Radius of the icosahedron.
+        sigma (float): Sigma parameter for the simulation.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    Example:
+        icos_face_write(5.0, 0.2)
+
+    This function writes input parameters for a simulation of an icosahedron face-centered system
+    to a file named 'parm.inp'. The input parameters include simulation settings such as the number
+    of iterations, time step, and output frequency, as well as parameters related to the geometry
+    and interaction potentials of the system. The input parameters are derived from the given radius
+    and sigma values, which are used to calculate other quantities using helper functions
+    `icos_face_input_coord`, `icos_face_leg_reduce_coord_gen`, and `angle_cal`.
+    """
     COM, lg1, lg2, lg3, n = icos_face_input_coord(radius, sigma)
     coord = icos_face_leg_reduce_coord_gen(radius, sigma)
     theta1, theta2, phi1, phi2, omega = angle_cal(

@@ -1,4 +1,7 @@
-import os
+import os 
+"""Will take in every file in a folder, add a chatgpt prompt in front, and output a file called 'output.txt'
+"""
+
 
 
 if __name__ == "__main__":

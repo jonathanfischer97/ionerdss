@@ -3,6 +3,16 @@ from .icos_face_COM_coord import icos_face_COM_coord
 
 
 def icos_face_COM_list_gen(radius: float):
+    """
+    Generates a list of coordinates representing the centers of mass (COM) of the faces of an icosahedron,
+    given the radius of the icosahedron.
+
+    Args:
+        radius (float): The radius of the icosahedron.
+
+    Returns:
+        list: A list of 20 COM coordinates, each representing the center of mass of a face of the icosahedron.
+    """
     coord = icos_face_vert_coord(radius)
     COM_list = []
     COM_list.append(icos_face_COM_coord(coord[0], coord[2], coord[8]))

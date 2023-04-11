@@ -2,6 +2,23 @@ from ..gen_platonic.distance import distance
 
 
 def icos_vert_check_dis(cen: float, COM: float, lg1: float, lg2: float, lg3: float, lg4: float, lg5: float):
+    """Check distances between a center point and other points.
+
+    Args:
+        cen (float): The center point.
+        COM (float): The center of mass point.
+        lg1 (float): Point 1.
+        lg2 (float): Point 2.
+        lg3 (float): Point 3.
+        lg4 (float): Point 4.
+        lg5 (float): Point 5.
+
+    Returns:
+        tuple: A tuple containing the distances between the center point and other points.
+        
+    Raises:
+        None
+    """
     dis1 = round(distance(cen, lg1), 8)
     dis2 = round(distance(cen, lg2), 8)
     dis3 = round(distance(cen, lg3), 8)
