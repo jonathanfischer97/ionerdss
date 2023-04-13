@@ -2,8 +2,7 @@ import numpy as np
 
 
 def read_multi_hist(FileName: str, SpeciesList: list):
-    """
-    Read a multi-species histogram from a file and return a list of time steps
+    """Read a multi-species histogram from a file and return a list of time steps
     and species counts.
 
     Args:

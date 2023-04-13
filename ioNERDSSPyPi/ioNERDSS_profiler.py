@@ -19,7 +19,8 @@ import ioNERDSS as ion
 
 
 
-last = badTimer('start',0)
-ion.single_locate_position_restart(FileNamePdb = 'ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb', ComplexSize = 11, FileNameRestart = 'ioNERDSSPyPi\TestingFunctions\\restart.dat')
-badTimer('start',last)
+#last = badTimer('start',0)
+ion.multi_mean_complex(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat", FileNum = 1, InitialTime = 0, FinalTime = 1,
+                       SpeciesList = ["A","B"], SpeciesName = 'A',ShowFig=False)
+#badTimer('start',last)
 #ioNERDSSPyPi\TestingFunctions\databse.pdb

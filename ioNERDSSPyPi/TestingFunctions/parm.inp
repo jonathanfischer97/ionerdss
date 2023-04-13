@@ -1,76 +1,173 @@
- # Input file
+ # Input file (dodecahedron face-centered)
 
 start parameters
-    nItr = 1000000
-    timestep = 0.1
-
-
-    timeWrite = 500
-    trajWrite = 500
-    pdbWrite = 500
+    nItr = 10000000 #iterations
+    timeStep = 0.1
+    timeWrite = 10000
+    pdbWrite = 10000
+    trajWrite = 10000
     restartWrite = 50000
-    fromRestart = false
+    checkPoint = 1000000
+    overlapSepLimit = 7.0
 end parameters
 
 start boundaries
-    WaterBox = [494,494,494] #nm
-    implicitLipid = false
-    xBCtype = reflect
-    yBCtype = reflect
-    zBCtype = reflect
+    WaterBox = [500,500,500]
 end boundaries
 
 start molecules
-     A:100
-     B:100
-     P:100
-     Q:100
+    dode : 200
 end molecules
 
 start reactions
-    #### A - B ####
-    A(b) + B(a) <-> A(b!1).B(a!1)
-    onRate3Dka = 10
-    offRatekb = 1
-    sigma = 0.500000
-    norm1 = [0.000000,0.000000,1.000000]
-    norm2 = [0.000000,0.000000,1.000000]
-    assocAngles = [2.5833501326204322,2.7327369114509334,-2.2854045610074447,1.3403916712030426,1.1750391819633896
+    dode(lg1) + dode(lg1) <-> dode(lg1!1).dode(lg1!1)
+    onRate3Dka = 2
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
 
-    #### A - P ####
-    A(p) + P(a) <-> A(p!1).P(a!1)
-    onRate3Dka = 10
-    offRatekb = 1
-    sigma = 0.500000
-    norm1 = [0.000000,0.000000,1.000000]
-    norm2 = [0.000000,0.000000,1.000000]
-    assocAngles = [1.7383746278888652,1.709281744298263,-1.5325306595075032,-1.6352222181152751,-2.999396542737283
+    dode(lg2) + dode(lg2) <-> dode(lg2!1).dode(lg2!1)
+    onRate3Dka = 2
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
 
-    #### A - Q ####
-    A(q) + Q(a) <-> A(q!1).Q(a!1)
-    onRate3Dka = 10
-    offRatekb = 1
-    sigma = 0.800000
-    norm1 = [0.000000,0.000000,1.000000]
-    norm2 = [0.000000,0.000000,1.000000]
-    assocAngles = [1.7452836522190072,2.2534653991266085,-3.040566991620611,2.1555514994251883,0.34108576054682965
+    dode(lg3) + dode(lg3) <-> dode(lg3!1).dode(lg3!1)
+    onRate3Dka = 2
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
 
-    #### B - P ####
-    B(p) + P(b) <-> B(p!1).P(b!1)
-    onRate3Dka = 10
-    offRatekb = 1
-    sigma = 0.500000
-    norm1 = [0.000000,0.000000,1.000000]
-    norm2 = [0.000000,0.000000,1.000000]
-    assocAngles = [2.1302085618875775,2.9432636985946927,-1.8232097528185545,-0.4689478470474647,1.8172068599057667
+    dode(lg4) + dode(lg4) <-> dode(lg4!1).dode(lg4!1)
+    onRate3Dka = 2
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
 
-    #### B - Q ####
-    B(q) + Q(b) <-> B(q!1).Q(b!1)
-    onRate3Dka = 10
-    offRatekb = 1
-    sigma = 0.500000
-    norm1 = [0.000000,0.000000,1.000000]
-    norm2 = [0.000000,0.000000,1.000000]
-    assocAngles = [2.482513050927195,1.7747925797701911,-1.8729484528369837,-1.624335964463418,-1.870331105047322
+    dode(lg5) + dode(lg5) <-> dode(lg5!1).dode(lg5!1)
+    onRate3Dka = 2
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg1) + dode(lg2) <-> dode(lg1!1).dode(lg2!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg1) + dode(lg3) <-> dode(lg1!1).dode(lg3!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg1) + dode(lg4) <-> dode(lg1!1).dode(lg4!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg1) + dode(lg5) <-> dode(lg1!1).dode(lg5!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg2) + dode(lg3) <-> dode(lg2!1).dode(lg3!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg2) + dode(lg4) <-> dode(lg2!1).dode(lg4!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg2) + dode(lg5) <-> dode(lg2!1).dode(lg5!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg3) + dode(lg4) <-> dode(lg3!1).dode(lg4!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg3) + dode(lg5) <-> dode(lg3!1).dode(lg5!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
+
+    dode(lg4) + dode(lg5) <-> dode(lg4!1).dode(lg5!1)
+    onRate3Dka = 4
+    offRatekb = 2
+    norm1 = [-0.0, 16.71098317873574, -27.03893876862218]
+    norm2 = [-0.0, 16.71098317873574, -27.03893876862218]
+    sigma = 1.0
+    assocAngles = [2.58801829, 2.58801829, 0.0, 0.0, 0.0]
+    observeLabel = leg
+    bindRadSameCom = 5.0
 
 end reactions
