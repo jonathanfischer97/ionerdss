@@ -11,18 +11,15 @@ def RESTART_complex_df_gen(pdb_dict, complex_lst):
     Returns:
         pandas.DataFrame: A DataFrame where each row represents a complex and each column represents a protein. 
         The values of the DataFrame correspond to the number of atoms of each protein in each complex.
+        set: has a list of each unique protein name
     """
 
     #create a list of each unique protein name in the dataframe
-    name_lst = list(pdb_dict.values())
-    name_lst_ = [] #a list of each unique protein name
-    for i in name_lst:
-        if i not in name_lst_:
-            name_lst_.append(i)
+    protein_name_set = set(list(pdb_dict.values()))
     
     #Creates new dataframe with each unique protein as a differen column
     column_lst = [] # a list of the columns in the df
-    for i in name_lst_:
+    for i in protein_name_set:
         column_lst.append(i)
     column_lst.append('Protein_Num')
     complex_df = pd.DataFrame(columns=column_lst) # Dataframe with columns = protein types. Rows = protein complex.

@@ -14,13 +14,12 @@ NERDSS Output File Explanation:
 
 from TestingFunctions.awful_tmr import badTimer
 import ioNERDSS as ion
-## CURRENTLY TESTING: hist.py
-import math
-import copy
+## CURRENTLY TESTING: something
+
 
 
 
 last = badTimer('start',0)
-ion.locate_position_restart(FileNamePdb = 'ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb', NumList = [10], FileNameRestart = 'ioNERDSSPyPi\TestingFunctions\\restart.dat')
+ion.single_locate_position_restart(FileNamePdb = 'ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb', ComplexSize = 11, FileNameRestart = 'ioNERDSSPyPi\TestingFunctions\\restart.dat')
 badTimer('start',last)
 #ioNERDSSPyPi\TestingFunctions\databse.pdb
