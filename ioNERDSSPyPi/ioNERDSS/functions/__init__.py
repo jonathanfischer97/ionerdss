@@ -5,6 +5,7 @@ from .multi_species_hist import *
 from .pdb import *
 from .xyz import *
 from .restart import *
+from .acf import *
 
 
 """Welcome to the main ioNERDSS function library folder! Here I will give a brief description of each folder and sub folder!
