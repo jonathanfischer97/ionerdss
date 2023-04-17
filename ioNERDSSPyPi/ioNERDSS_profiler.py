@@ -20,7 +20,7 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.multi_heatmap(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi\histogram_complexes_time_dode_1.dat", FileNum = 1, InitialTime = 0, FinalTime = 1,
+ion.multi_3D_hist(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi\histogram_complexes_time_dode.dat", FileNum = 5, InitialTime = 0, FinalTime = 1,
                        SpeciesList = ["A","B"], xAxis = "A", yAxis = "B",ShowFig=False)
 badTimer('start',last)
 #ioNERDSSPyPi\TestingFunctions\databse.pdb
