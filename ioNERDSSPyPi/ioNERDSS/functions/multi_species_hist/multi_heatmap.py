@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
 
 
-def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
-                  SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1,
+def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, xAxis: str, yAxis: str,
+                  SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
                   ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.
 
@@ -13,9 +13,9 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
         FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
         InitialTime (float): The starting time. Must not be smaller / larger then times in file.
         FinalTime (float): The ending time. Must not be smaller / larger then times in file.
-        SpeciesList (list): The names of the species you want to examine. Should be in the .dat file.
         xAxis (str): Species shown on X-axis.
         yAxis (str): Species shown on Y-axis.
+        SpeciesList (list, optional): The names of the species you want to examine. Should be in the .dat file.
         xBarSize (int, optional): The size of each data bar in the X-dimension. Defaults to 1.
         yBarSize (int, optional): The size of each data bar in the Y-dimension. Defaults to 1.
         ShowMean (bool, optional): If means will be shown in each box. Defaults to False.
@@ -29,94 +29,106 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     count_list_sum = []
-    for i in range(1, FileNum+1):
-        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+
+    #create species list 
+    SpeciesList = []
+    SpeciesList.append(xAxis)
+    SpeciesList.append(yAxis)
+
+    #true max X and Y (across all files)
+    true_max_x = 0
+    true_max_y = 0
+
+    #runs through every file
+    for histogram_file_number in range(1, FileNum+1):
+        
+        #determining file name (if there are multiple or none)
         if FileNum == 1:
             temp_file_name = FileName
-        x_size_list = []
-        y_size_list = []
-        hist_list = read_multi_hist(temp_file_name, SpeciesList=SpeciesList)
-        for j in range(len(hist_list)):
-            if hist_list[j] != []:
-                time = hist_list[j][0]
-                if InitialTime <= time <= FinalTime:
-                    for k in range(len(hist_list[j])):
-                        if k != 0:
-                            if xAxis in SpeciesList and yAxis in SpeciesList:
-                                x_name_index = SpeciesList.index(xAxis)
-                                x_size = hist_list[j][k][x_name_index]
-                                x_size = int(x_size / xBarSize)
-                                y_name_index = SpeciesList.index(yAxis)
-                                y_size = hist_list[j][k][y_name_index]
-                                y_size = int(y_size / yBarSize)
-                                if x_size not in x_size_list:
-                                    if len(x_size_list) == 0:
-                                        for m in range(0, x_size+1):
-                                            x_size_list.append(m)
-                                    else:
-                                        if x_size - x_size_list[-1] == 1:
-                                            x_size_list.append(x_size)
-                                        else:
-                                            diff = x_size - x_size_list[-1]
-                                            for m in range(x_size_list[-1]+1, x_size+1):
-                                                x_size_list.append(m)
-                                if y_size not in y_size_list:
-                                    if len(y_size_list) == 0:
-                                        for m in range(0, y_size+1):
-                                            y_size_list.append(m)
-                                    else:
-                                        if y_size - y_size_list[-1] == 1:
-                                            y_size_list.append(y_size)
-                                        else:
-                                            for m in range(y_size_list[-1]+1, y_size+1):
-                                                y_size_list.append(m)
-                            else:
-                                print('xAxis or yAxos not in SpeciesList!')
-                                return 0
-        count_list = np.zeros([len(y_size_list), len(x_size_list)])
+        else:
+            temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
+
+        max_x_size = 0 #stores the max number of the x protein type in 1 complex (1 file vv)
+        max_y_size = 0 #stores the max number of the y protein type in 1 complex
+        count_list = [[0]]
         data_count = 0
-        for j in range(len(hist_list)):
-            if hist_list[j] != []:
-                time = hist_list[j][0]
+
+        #get lists of data from file
+        hist_list = read_multi_hist(temp_file_name, SpeciesList=SpeciesList)
+
+        #run through every timestep in the file, to find the max # of Xs and Ys in a single complex
+        for time_step in hist_list:
+            if time_step != []:
+                time = time_step[0]
                 if InitialTime <= time <= FinalTime:
                     data_count += 1
-                    for k in range(len(hist_list[j])):
-                        if k != 0:
-                            count = hist_list[j][k][-1]
-                            x_name_index = SpeciesList.index(xAxis)
-                            x_size = hist_list[j][k][x_name_index]
-                            x_size = int(x_size / xBarSize)
-                            y_name_index = SpeciesList.index(yAxis)
-                            y_size = hist_list[j][k][y_name_index]
-                            y_size = int(y_size / yBarSize)
-                            count_list[y_size][x_size] += count
-        count_list = count_list/data_count
+
+                    #run through each protein complex in timestep
+                    for protein_complex in time_step[1:]:
+
+                        #find number of each protein type in this complex. Then how many complexes of this type there are
+                        x_size = protein_complex[0]
+                        x_size = int(x_size / xBarSize)
+                        y_size = protein_complex[1]
+                        y_size = int(y_size / yBarSize)
+                        count = protein_complex[-1]
+
+                        #Expands matrix if it is not big enough
+                        if max_y_size < y_size: 
+                            for i in range(max_y_size,y_size):
+                                count_list.append([])
+                                for i in range(max_x_size+1):
+                                    count_list[-1].append(0)
+                            max_y_size = y_size
+                        if max_x_size < x_size: 
+                            for column_index in range(len(count_list)):
+                                for i in range(max_x_size,x_size):
+                                    count_list[column_index].append(0)
+                            max_x_size = x_size
+
+                        #goes through each protein, than adds 1 to the main array based on # of Xs and Ys in it
+                        count_list[y_size][x_size] += count
+
+        #find max X and Y b/w all files
+        if max_y_size > true_max_y:
+            true_max_y = max_y_size
+        if max_x_size > true_max_x:
+            true_max_x = max_x_size
+
+        #turns array (# of proteins with specific XY counts) into mean (b/w all timestamps) than adds it to main, multi-file list
+        count_list = np.divide(count_list,data_count)
         count_list_sum.append(count_list)
-    max_x = 0
-    max_y = 0
-    for i in count_list_sum:
-        if len(i[0]) > max_x:
-            max_x = len(i[0])
-        if len(i) > max_y:
-            max_y = len(i)
-    count_list_sum_ = []
-    for i in range(len(count_list_sum)):
-        temp_matrix = np.zeros([max_y, max_x])
-        for j in range(len(count_list_sum[i])):
-            for k in range(len(count_list_sum[i][j])):
-                temp_matrix[j][k] += count_list_sum[i][j][k]
-        count_list_sum_.append(temp_matrix)
-    count_list_mean = np.zeros([max_y, max_x])
-    count_list_std = np.zeros([max_y, max_x])
-    for i in range(len(count_list_sum_[0])):
-        for j in range(len(count_list_sum_[0][0])):
+    
+    #makes it so the arrays all go up to max_x and max_y
+    for array in count_list_sum:
+        max_y_size = len(array)
+        max_x_size = len(array[0])
+        if max_y_size < true_max_y: 
+            for i in range(max_y_size,y_size):
+                array.append([])
+                for i in range(max_x_size+1):
+                    array[-1].append(0)
+            max_y_size = y_size
+        if max_x_size < true_max_x: 
+            for column_index in range(len(array)):
+                for i in range(max_x_size,x_size):
+                    array[column_index].append(0)
+            max_x_size = x_size
+    
+    #find mean and std
+    count_list_mean = np.zeros([max_y_size+1, max_x_size+1])
+    count_list_std = np.zeros([max_y_size+1, max_x_size+1])
+    for i in range(len(count_list_sum[0])):
+        for j in range(len(count_list_sum[0][0])):
             temp_list = []
-            for k in range(len(count_list_sum_)):
-                temp_list.append(count_list_sum_[k][i][j])
+            for file in count_list_sum:
+                temp_list.append(file[i][j])
             count_list_mean[i][j] += np.mean(temp_list)
             count_list_std[i][j] += np.std(temp_list)
-    x_list = np.arange(0, max_x) * xBarSize
-    y_list = np.arange(0, max_y) * yBarSize
+    x_list = np.arange(0, max_x_size+1) * xBarSize
+    y_list = np.arange(0, max_y_size+1) * yBarSize
+    
+    #create figure
     if ShowFig:
         fig, ax = plt.subplots()
         im = ax.imshow(count_list_mean)
@@ -125,7 +137,7 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
         ax.set_xticklabels(x_list)
         ax.set_yticklabels(y_list)
         if ShowMean and ShowStd:
-            print('Cannot show both maen and std!')
+            print('Cannot show both mean and std!')
             return 0
         if ShowMean:
             fig_name = 'Complex_Distribution_of_' + xAxis + '_and_' + yAxis + '_with_mean'
@@ -150,5 +162,4 @@ def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: fl
             plt.savefig(fig_name, dpi=500,  bbox_inches='tight')
         plt.show()
     return x_list, y_list, count_list_mean, count_list_std
-
 

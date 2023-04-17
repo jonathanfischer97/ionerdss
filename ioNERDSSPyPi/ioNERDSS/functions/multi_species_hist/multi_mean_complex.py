@@ -1,52 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
-
-def size_time_list_from_read_hist(hist_list,InitialTime,FinalTime,SpeciesName,SpeciesList,ExcludeSize):
-    """Takes hist list output and creates a size list and a time list
-
-    Args:
-        hist_list (list): [i][0] = time, [i][1+] = arrays that describe complex species, 
-                            [i][1+][0:-1] = count of each species, [1][1+][-1] = count of that complex species
-
-    Result:
-        size_list (list): a simple list of the average size at each timestep
-        time_list (list): a simple of list of the timestep
-    """
-    total_size_list = [] #list of average sizes at timestamp (1 file)
-    total_time_list = [] #list of each timestep (1 file)
-    
-    for time_step in hist_list:
-        if time_step != []: #if timestep exists
-            if InitialTime <= time_step[0] <= FinalTime: #if inside specific time
-                total_time_list.append(time_step[0])
-                
-                temp_sum = 0 # number of proteins
-                count = 0 #number of complexes
-
-                #Counts up the size of each complex (based on inputted protein) / number of complexes
-                for protein_complex in time_step[1:]:
-                    #each protein complex (list with # of proteins in that complex. Final number = number of complexes.)
-                    if SpeciesName == 'tot':
-                        total_size = np.sum(protein_complex[0:-1])
-                    elif SpeciesName in SpeciesList:
-                        name_index = SpeciesList.index(SpeciesName)
-                        total_size = protein_complex[name_index]
-                    else:
-                        print('SpeciesName not in SpeciesList!')
-                        return 0
-
-                    if total_size >= ExcludeSize:
-                        count += protein_complex[-1]
-                        temp_sum += total_size * protein_complex[-1]
-                    
-                #adds the average size at timestamp to list
-                if count != 0:
-                    total_size_list.append(temp_sum/count)
-                else:
-                    total_size_list.append(0.0)
-    return total_size_list,total_time_list
-
+from .list_index_exists import list_index_exists
 
 
 
@@ -85,49 +40,90 @@ def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTim
         else:
             temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
 
-
-       
-
         #creates a list. ([i][0] = time, [i][1+] = arrays that describe complex species, [i][1+][0:-1] = count of each species, [1][1+][-1] = count of that complex species)
         hist_list = read_multi_hist(temp_file_name, SpeciesList=SpeciesList)
 
         #go through the array outputed by read_multi_hist and find timestamps & number of proteins in each complex (at each time)
-        total_size_list,total_time_list = size_time_list_from_read_hist(hist_list,InitialTime,FinalTime,SpeciesName,SpeciesList,ExcludeSize)
+        total_size_list = [] #list of average sizes at timestamp (1 file)
+        total_time_list = [] #list of each timestep (1 file)
+        
+        for time_step in hist_list:
+            if time_step != []: #if timestep exists
+                if InitialTime <= time_step[0] <= FinalTime: #if inside specific time
+                    total_time_list.append(time_step[0])
+                    
+                    temp_sum = 0 # number of proteins
+                    count = 0 #number of complexes
 
+                    #Counts up the size of each complex (based on inputted protein) / number of complexes
+                    for protein_complex in time_step[1:]:
+                        #each protein complex (list with # of proteins in that complex. Final number = number of complexes.)
+                        if SpeciesName == 'tot':
+                            total_size = np.sum(protein_complex[0:-1])
+                        elif SpeciesName in SpeciesList:
+                            name_index = SpeciesList.index(SpeciesName)
+                            total_size = protein_complex[name_index]
+                        else:
+                            print('SpeciesName not in SpeciesList!')
+                            return 0
+
+                        if total_size >= ExcludeSize:
+                            count += protein_complex[-1]
+                            temp_sum += total_size * protein_complex[-1]
+                        
+                    #adds the average size at timestamp to list
+                    if count != 0:
+                        total_size_list.append(temp_sum/count)
+                    else:
+                        total_size_list.append(0.0)
         #adds this files size/time lists to a master list
         size_list.append(total_size_list)
         time_list.append(total_time_list)
 
-
+    size_list_rev = []
     #Make it so each sub-list has the same timestamps from every file, sintead of having every timestamp from 1 file.
-    size_list_rev = np.transpose(size_list)
+    for file in size_list:
+        for indexY,size in enumerate(file):
+            if not list_index_exists(size_list_rev,indexY):
+                size_list_rev.append([])
+            size_list_rev[indexY].append(size)
+
     
 
     #creates lists of means and stds
-    mean = np.array([])
-    std = np.array([])
+    mean = []
+    std = []
 
     #runs through each timestamp and calculates means/stds
     for index,timestamps in enumerate(size_list_rev):
         
         #if this timestamp is equal to previous, copy previous. 
         if timestamps == size_list_rev[index-1]:
-
-            mean = np.append(mean,mean[index-1])
-            if FileNum > 1: std = np.append(std,std[index-1])
+            mean.append(mean[index-1])
+            if FileNum > 1: std.append(std[index-1])
         
         #Else calculate new measns/stds
         else:
-            mean = np.append(mean,np.nanmean(timestamps))
-            if FileNum > 1: std = np.append(std,np.nanstd(timestamps))
+            mean.append(np.nanmean(timestamps))
+            if FileNum > 1: std.append(np.nanstd(timestamps))
+
+    #find time that is equal to the length of means (or the longest time generakky)
+    time_index = -1
+    for index,file in enumerate(time_list):
+        if len(mean) == len(file):
+            time_index = index
+            break
+    if time_index == -1:
+        print('Times do not line up to means')
+        return 0
 
 
     #create figure
     if ShowFig:
         errorbar_color = '#c9e3f6'
-        plt.plot(time_list[0], mean, color='C0')
+        plt.plot(time_list[time_index], mean, color='C0')
         if FileNum > 1:
-            plt.errorbar(time_list[0], mean, color='C0',
+            plt.errorbar(time_list[time_index], mean, color='C0',
                          yerr=std, ecolor=errorbar_color)
         if SpeciesName == 'tot':
             title_spec = 'Total Species'
@@ -140,5 +136,5 @@ def multi_mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTim
         if SaveFig:
             plt.savefig('multi_mean_complex.png', dpi=500)
         plt.show()
-    return time_list[0], mean, 'Nan', std
+    return time_list[time_index], mean, 'Nan', std
 
