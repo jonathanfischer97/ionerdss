@@ -6,7 +6,8 @@ from .read_multi_hist import read_multi_hist
 def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                        SpeciesList: list, xAxis: str, DivideSpecies: str, DivideSize: int,
                        BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
-    """Creates a stacked histogram from histogram.dat (multi-species) that shows the average number of complex species of each protein composition over the whole sim. 
+    """Creates a stacked histogram from histogram.dat (multi-species) that shows the average number of each type of 
+    complex species (based on protein composition) over the whole sim. 
 
     Args:
         FileName (str): Path to the histogram.dat file
