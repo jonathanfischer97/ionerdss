@@ -6,8 +6,7 @@ from .read_cluster_lifetime import read_cluster_lifetime
 
 def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                      SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
-    """
-    This line plot indicates the lifetime for different sizes of complexes. The x-axis is the size of complexes, and the y-axis is the corresponding lifetime in unit of second. If multiple input files are given, the output plot will be the average value of all files and an error bar will also be included.
+    """This line plot indicates the lifetime for different sizes of complexes. The x-axis is the size of complexes, and the y-axis is the corresponding lifetime in unit of second. If multiple input files are given, the output plot will be the average value of all files and an error bar will also be included.
 
     Args:
         FileName (str): The path to the '.dat' file, which is usually named as 'transition_matrix_time.dat', representing the histogram data to be analyzed.
@@ -35,12 +34,20 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
     mean_lifetime = []
-    for i in range(1, FileNum+1):
-        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+    
+    #reads through each inputted file
+    for matrix_file_number in range(1, FileNum+1):
+       
+       #determining file name (if there are multiple or none)
         if FileNum == 1:
             temp_file_name = FileName
+        else:
+            temp_file_name = file_name_head + '_' + str(matrix_file_number) + '.' + file_name_tail
+        
+        #reads cluster lifetime
         ti_lifetime, tf_lifetime, size_list = read_cluster_lifetime(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
+        
         mean_temp = []
         for i in range(len(tf_lifetime)):
             tf_lifetime[i] = np.delete(
