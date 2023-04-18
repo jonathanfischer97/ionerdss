@@ -7,6 +7,26 @@ from .single_restart_to_df import single_restart_to_df
 
 def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int, TimeStep: float,
                                 ComplexNum: int, Radius: float):
+    """This function calculates the regularization index of the given parameters.
+    Note: This was made with chatgpt and may be wrong
+
+    Parameters:
+        FileNameHist: A string representing the file name of the histogram
+        SpeciesName: A string representing the species name
+        LitNum: An integer representing the number of the litter
+        TimeStep: A float representing the time steComplexNum: An integer representing the number of complexes
+        Radius: A float representing the radius
+    
+    Returns:
+        max_complex_size_return: A list of integers representing the maximum complex size
+        theta_ideal_return: A list of floats representing the ideal spherical angle
+        sphere_radius_return: A list of floats representing the sphere radius
+        sphere_center_position_return: A list of floats representing the sphere center position
+        complex_COM_return: A list of floats representing the complex center of mass
+        regularization_index_return: A list of floats representing the regularization index
+    
+    This function calculates the regularization index of the given parameters. It firsts get the data from the histogram and then calculates the maximum complex size. It then fits 3 spheres and does a sanity check. It then calculates the center of mass of the max complex and determines the spherical angle corresponding to the ideal complex with surface area. It then determines if the monomer on complex is on the ideal cap and returns the regularization index.
+    """
     warnings.simplefilter("ignore")
     t = TimeStep * LitNum
     data = hist(FileName=FileNameHist,

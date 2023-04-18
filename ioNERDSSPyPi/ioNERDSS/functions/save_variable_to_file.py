@@ -2,8 +2,7 @@ import os
 import numpy as np
 
 def save_variable_to_file(variable, file_name=None, file_path=None):
-    """
-    Save a list or NumPy array of numbers to a .dat file, one number per line.
+    """Save a list or NumPy array of numbers to a .dat file, one number per line.
 
     This function takes a list or NumPy array of numbers as input, saves it to a .dat file
     with each number on a new line, and allows for customization of the file name and file
