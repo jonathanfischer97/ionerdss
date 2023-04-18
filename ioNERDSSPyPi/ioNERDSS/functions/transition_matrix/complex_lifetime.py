@@ -38,34 +38,42 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
     #reads through each inputted file
     for matrix_file_number in range(1, FileNum+1):
        
-       #determining file name (if there are multiple or none)
-        if FileNum == 1:
-            temp_file_name = FileName
-        else:
-            temp_file_name = file_name_head + '_' + str(matrix_file_number) + '.' + file_name_tail
+        #determining file name (if there are multiple or none)
+        if FileNum == 1: temp_file_name = FileName
+        else: temp_file_name = file_name_head + '_' + str(matrix_file_number) + '.' + file_name_tail
         
         #reads cluster lifetime
         ti_lifetime, tf_lifetime, size_list = read_cluster_lifetime(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         
+        #gets mean lifetime for each size
         mean_temp = []
-        for i in range(len(tf_lifetime)):
-            tf_lifetime[i] = np.delete(
-                tf_lifetime[i], range(0, len(ti_lifetime[i])), axis=0)
-            mean_temp.append(tf_lifetime[i].mean())
+        for index,lifetime_f in enumerate(tf_lifetime):
+            lifetime_f = np.delete(
+                lifetime_f, range(0, len(ti_lifetime[index])), axis=0) #what does this do???
+            mean_temp.append(lifetime_f.mean())
         mean_lifetime.append(mean_temp)
-    mean_lifetime_rev = []
-    for i in range(len(mean_lifetime[0])):
-        temp = []
-        for j in range(len(mean_lifetime)):
-            temp.append(mean_lifetime[j][i])
-        mean_lifetime_rev.append(temp)
+    
+    #is it... TRANSPOSING TIME???? yes, yes it is
+    mean_lifetime_rev = np.array(mean_lifetime).transpose()
+    
+    #find means and std devs
     mean = []
     std = []
-    for i in mean_lifetime_rev:
-        mean.append(np.nanmean(i))
-        if FileNum != 1:
-            std.append(np.nanstd(i))
+    if FileNum != 1:
+        for index,size in enumerate(mean_lifetime_rev):
+            if size != mean_lifetime_rev[index-1]:
+                mean.append(np.nanmean(size))
+                std.append(np.nanstd(size))
+            else:
+                mean.append(mean_lifetime_rev[index-1])
+                std.append(mean_lifetime_rev[index-1])     
+    else:
+        for size in mean_lifetime_rev:
+            mean.append(size[0])
+                 
+    
+    #show figure!!!
     if ShowFig:
         errorbar_color = '#c9e3f6'
         plt.plot(size_list, mean, color='C0')

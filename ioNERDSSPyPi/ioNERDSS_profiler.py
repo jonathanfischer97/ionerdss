@@ -20,14 +20,10 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.associate_prob_symmetric_old(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat",FileNum=1,SpeciesName="dode",InitialTime = 0,FinalTime = 1,ShowFig=False)
-last = badTimer('start',last) #original = .60,.50,.40,.50
-ion.associate_prob_symmetric(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat",FileNum=1,SpeciesName="dode",InitialTime = 0,FinalTime = 1,ShowFig=False)
+ion.complex_lifetime(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat",FileNum=1,SpeciesName="dode",InitialTime = 0,FinalTime = 1,ShowFig=False)
 last = badTimer('start',last) #original = .60,.50,.40,.50
 
 
-#ion.read_transition_matrix(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time_BIG.dat",SpeciesName="clat",InitialTime = 0,FinalTime = 90)
-last = badTimer('start',last)
 
 
 #input(f"{ti_lifetime} \n\n{ti_lifetime2}")

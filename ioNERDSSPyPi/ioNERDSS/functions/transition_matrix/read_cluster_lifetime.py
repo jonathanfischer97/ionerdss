@@ -49,7 +49,7 @@ def read_cluster_lifetime(FileName: str, SpeciesName: str, InitialTime: float, F
         if float(line.split(' ')[1]) == InitialTime:
             index_real = (distance*index) + 1
             index_start_read = index_real + speciesDistance   
-            for data in lines[index_start_read:-1]:
+            for data in lines[index_start_read:]:
                 
                 #if time is reached
                 if data[0:5] == 'time:':
@@ -74,7 +74,7 @@ def read_cluster_lifetime(FileName: str, SpeciesName: str, InitialTime: float, F
             index_real = (distance*index) + 1
             index_start_read = index_real + speciesDistance   
 
-            for data in lines[index_start_read:-1]:
+            for data in lines[index_start_read:]:
                 
                 #if time is reached
                 if data[0:5] == 'time:':
