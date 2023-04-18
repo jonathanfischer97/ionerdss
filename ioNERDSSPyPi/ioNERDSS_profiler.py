@@ -20,13 +20,14 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-#ion.multi_hist_stacked(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi\histogram_complexes_time_dode_1.dat", FileNum = 1, InitialTime = 0, FinalTime = 1,
-                       #SpeciesList = ["A","B"], xAxis = "A", DivideSpecies = "B",DivideSize=5,ShowFig=True)
+ion.read_transition_matrix_old(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time_BIG.dat",SpeciesName="clat",InitialTime = 0,FinalTime = 90)
+last = badTimer('start',last)
+ion.read_transition_matrix(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time_BIG.dat",SpeciesName="clat",InitialTime = 0,FinalTime = 90)
+last = badTimer('start',last)
 
-ti_matrix,tf_matrix = ion.read_transition_matrix(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time_alt.dat",SpeciesName="clat",InitialTime = 0,FinalTime = 15)
-#ti_matrix2,tf_matrix2 = ion.read_transition_matrix_old(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat",SpeciesName="dode",InitialTime = 0,FinalTime = 1)
 
-badTimer('start',last)
-print(f"1:{ti_matrix}   2:{tf_matrix} {ti_matrix == tf_matrix}")
+#input(f"{ti_lifetime} \n\n{ti_lifetime2}")
+#input(f"\n\n{tf_lifetime} \n\n{tf_lifetime2}")
+#input(f"\n\n{size_list == size_list2}")
 
 #ioNERDSSPyPi\TestingFunctions\databse.pdb
