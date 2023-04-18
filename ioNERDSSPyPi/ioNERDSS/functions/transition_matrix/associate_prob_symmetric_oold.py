@@ -4,7 +4,7 @@ import warnings
 from .read_transition_matrix import read_transition_matrix
 
 
-def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def associate_prob_symmetric_old(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
     """
     Plots the probability of association between complexes of different sizes and other complexes of different sizes.
@@ -34,127 +34,92 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
     
     warnings.filterwarnings('ignore')
     matrix_list = []
-    
-    #create name head/tail
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
-    
-    #for each transition matrix file input
-    for matrix_file_number in range(1, FileNum+1):
-        
-        #determining file name (if there are multiple or none)
+    for i in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
         if FileNum == 1:
             temp_file_name = FileName
-        else:
-            temp_file_name = file_name_head + '_' + str(matrix_file_number) + '.' + file_name_tail
-        
-        #read transition matrix (t1_matrix = matrix of proteins at initial, tf...)
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
-        
-        #get change in matrix
         matrix = tf_matrix - ti_matrix
         matrix_list.append(matrix)
-    
-    
     above = []
     equal = []
     below = []
-    #for each file
-    for matrix in matrix_list:
-        
-        #create lists of zeros, based on the number of columns
+    for k in range(len(matrix_list)):
         above_temp = np.zeros(len(matrix_list[0][0]))
         equal_temp = np.zeros(len(matrix_list[0][0]))
         below_temp = np.zeros(len(matrix_list[0][0]))
-        
-        #goes through the matrix, and based on row/column of data it gets assigned to equal/above/below
-        row = 0
-        while row < len(matrix):
-            column = 0
-            while column < len(matrix[row]):
-                if row > column:
-                    if row - column == DivideSize:
-                        equal_temp[column] += matrix[row][column]
-                    elif row - column > DivideSize:
-                        above_temp[column] += matrix[row][column]
+        i = 0
+        while i < len(matrix_list[k]):
+            j = 0
+            while j < len(matrix_list[k][i]):
+                if i > j:
+                    if i - j == DivideSize:
+                        equal_temp[j] += matrix_list[k][i][j]
+                    elif i - j > DivideSize:
+                        above_temp[j] += matrix_list[k][i][j]
                     else:
-                        below_temp[column] += matrix[row][column]
-                column += 1
-            row += 1
-        #add to main above/ect. vars
+                        below_temp[j] += matrix_list[k][i][j]
+                j += 1
+            i += 1
         above.append(above_temp)
         equal.append(equal_temp)
         below.append(below_temp)
-    
-    #for each column determine probability based on entire count in that column. 
     above_prob = []
     equal_prob = []
     below_prob = []
     for i in range(len(above)):
-        above_prob_temp = []
-        equal_prob_temp = []
-        below_prob_temp =[]
+        above_prob_temp = np.array([])
+        equal_prob_temp = np.array([])
+        below_prob_temp = np.array([])
         for j in range(len(above[0])):
             sum = above[i][j] + equal[i][j] + below[i][j]
             if sum != 0:
-                above_prob_temp.append(above[i][j]/sum)
-                equal_prob_temp.append(equal[i][j]/sum)
-                below_prob_temp.append(below[i][j]/sum)
+                above_prob_temp = np.append(above_prob_temp, above[i][j]/sum)
+                equal_prob_temp = np.append(equal_prob_temp, equal[i][j]/sum)
+                below_prob_temp = np.append(below_prob_temp, below[i][j]/sum)
             else:
-                above_prob_temp.append(np.nan)
-                equal_prob_temp.append(np.nan)
-                below_prob_temp.append(np.nan)
+                above_prob_temp = np.append(above_prob_temp, np.nan)
+                equal_prob_temp = np.append(equal_prob_temp, np.nan)
+                below_prob_temp = np.append(below_prob_temp, np.nan)
         above_prob.append(above_prob_temp)
         equal_prob.append(equal_prob_temp)
         below_prob.append(below_prob_temp)
-    
-    #TRANSPOSING TIME!!!!!!
-    above_prob_rev = np.array(above_prob).transpose()
-    equal_prob_rev = np.array(equal_prob).transpose()
-    below_prob_rev = np.array(below_prob).transpose()
-    
-    #calculate means and stds devss
+    above_prob_rev = []
+    for i in range(len(above_prob[0])):
+        temp = []
+        for j in range(len(above_prob)):
+            temp.append(above_prob[j][i])
+        above_prob_rev.append(temp)
+    equal_prob_rev = []
+    for i in range(len(equal_prob[0])):
+        temp = []
+        for j in range(len(equal_prob)):
+            temp.append(equal_prob[j][i])
+        equal_prob_rev.append(temp)
+    below_prob_rev = []
+    for i in range(len(below_prob[0])):
+        temp = []
+        for j in range(len(below_prob)):
+            temp.append(below_prob[j][i])
+        below_prob_rev.append(temp)
     mean_above = []
     mean_equal = []
     mean_below = []
     std_above = []
     std_equal = []
     std_below = []
-   
-   #for every column (across all files) determine mean / std
-    if FileNum != 1: 
-        for i in range(len(above_prob_rev)):
-            if above_prob_rev[i] != above_prob_rev[i-1] or i == 0:
-                mean_above.append(np.nanmean(above_prob_rev[i]))
-                std_above.append(np.nanstd(above_prob_rev[i]))
-            else:
-                mean_above.append(mean_above[i-1])
-                std_above.append(std_above[i-1])
-            
-            if equal_prob_rev[i] != equal_prob_rev[i-1] or i == 0:
-                mean_equal.append(np.nanmean(equal_prob_rev[i]))
-                std_equal.append(np.nanstd(equal_prob_rev[i]))
-            else:
-                mean_equal.append(mean_equal[i-1])
-                std_equal.append(std_equal[i-1])
-
-            if equal_prob_rev[i] != equal_prob_rev[i-1] or i == 0:
-                mean_below.append(np.nanmean(below_prob_rev[i]))
-                std_below.append(np.nanstd(below_prob_rev[i]))
-            else:
-                mean_below.append(mean_below[i-1])        
-                std_below.append(std_below[i-1])
-    else:
-        for i in range(len(above_prob_rev)):
-            mean_above.append(above_prob_rev[i])
-            mean_equal.append(equal_prob_rev[i])
-            mean_below.append(below_prob_rev[i])
-
-        
+    for i in range(len(above_prob_rev)):
+        mean_above.append(np.nanmean(above_prob_rev[i]))
+        mean_equal.append(np.nanmean(equal_prob_rev[i]))
+        mean_below.append(np.nanmean(below_prob_rev[i]))
+        if FileNum != 1:
+            std_above.append(np.nanstd(above_prob_rev[i]))
+            std_equal.append(np.nanstd(equal_prob_rev[i]))
+            std_below.append(np.nanstd(below_prob_rev[i]))
     n_list = list(range(1, 1 + len(matrix_list[0])))
-    
-    #show figure!
     if ShowFig:
         errorbar_color_1 = '#c9e3f6'
         errorbar_color_2 = '#ffe7d2'

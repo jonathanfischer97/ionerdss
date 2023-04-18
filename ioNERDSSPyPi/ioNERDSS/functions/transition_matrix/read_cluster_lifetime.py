@@ -62,11 +62,11 @@ def read_cluster_lifetime(FileName: str, SpeciesName: str, InitialTime: float, F
                 #the lifetimes of that size??
                 else:
                     str_list = data.strip('\n').strip(' ').split(' ')
-                    temp = np.array([])
+                    temp = []
                     for i in str_list:
                         if i != '':
-                            temp = np.append(temp, float(i))
-                    ti_lifetime.append(temp)
+                            temp.append(float(i))
+                    ti_lifetime.append(np.array(temp))
 
         
         #checks if it equal to the final time
