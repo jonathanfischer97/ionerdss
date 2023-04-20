@@ -11,7 +11,7 @@ def calculate_distance(x, y):
     Example:
         >>> x = (1.0, 2.0, 3.0)
         >>> y = (4.0, 5.0, 6.0)
-        >>> PDB_dis_cal(x, y)
+        >>> calculate_distance(x, y)
         5.196152422706632
     """
         

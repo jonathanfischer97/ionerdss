@@ -1,25 +1,15 @@
-import pandas as pd
-
-
 def read_inp(inp_name):
-    """Generates a DataFrame containing binding information from an input file.
+    """Generates an array containing binding information from an input file.
 
     Args:
         inp_name (str): the name of the input file to read binding information from
 
     Returns:
         numpy array: array that stores all of the binding info
-            - [i] = each row, different possible bind
+            - [i] = each row, each different possible bind
             - [i][i] = each column (in a specific row). Has specific info about bind. find the index of the correct colum with the dictionary
                 - Ex: binding_dict['Protein_Name_1'] >> 0
         dictionary: dictionary that stores the index of each column    
-
-    Example:
-        >>> inp_name = 'binding_info.txt'
-        >>> PDB_binding_info_df(inp_name)
-        Protein_Name_1 Cite_Name_1 Protein_Name_2 Cite_Name_2 sigma
-        0            ABC         XYZ            DEF         LMN  0.123
-        1            GHI         OPQ            JKL         RST  0.456
     """
     status = False
 

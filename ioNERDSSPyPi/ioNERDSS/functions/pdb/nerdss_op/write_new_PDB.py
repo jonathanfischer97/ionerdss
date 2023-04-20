@@ -9,7 +9,7 @@ def write_new_PDB(file_name, protein_remain):
         protein_remain (list): A list of protein numbers for which the protein information needs to be extracted.
 
     Returns:
-        int: Returns 0 upon successful generation of the new PDB file.
+        .pdb file: holds all of the proteins sites that are in the complexes of the correct sizes
     """
     with open(file_name, 'r') as file:
         write_lst = []

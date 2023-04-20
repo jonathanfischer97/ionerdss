@@ -1,7 +1,5 @@
-import pandas as pd
-
 def read_PDB(file_name, drop_COM):
-    """Converts a PDB file to a Pandas DataFrame.
+    """Converts a PDB file to an array.
 
     Args:
         file_name (str): Name of the PDB file to be read.
