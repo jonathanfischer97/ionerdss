@@ -14,7 +14,11 @@ def create_complex_list(bond_list):
     #if the bond list is not empty, keep going through it
     while bond_list != []:
         temp_complex_lst = bond_list[0]
-        
+        #
+        #May be possible to make it just 2 fors that both go through bond lists. Try it out next
+        #Actually probably not, idk ill do it next week lol
+        #
+        #
         #go through each the temp protein complex list. For each protein, check through the enitre bond_list to see if it is bonded with anything. If yes, add it and remove it from main list
         for protein in temp_complex_lst:
             for bond in bond_list:
