@@ -1,4 +1,4 @@
-def old_PDB_dis_cal(x, y):
+def calculate_distance(x, y):
     """Calculates the Euclidean distance between two points in 3D space.
 
     Args:

@@ -1,4 +1,4 @@
-def old_PDB_new_pdb(file_name, protein_remain):
+def write_new_PDB(file_name, protein_remain):
     """Generates a new PDB file with protein information based on a list of remaining protein numbers.
 
     This function reads a PDB file, extracts protein information for the proteins whose numbers are specified

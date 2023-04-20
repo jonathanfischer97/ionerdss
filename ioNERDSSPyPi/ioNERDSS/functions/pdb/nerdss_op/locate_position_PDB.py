@@ -1,15 +1,12 @@
-from .gen.PDB_pdb_to_df import PDB_pdb_to_df
-from .gen.PDB_dis_df_gen import PDB_dis_df_gen
-from .gen.PDB_bind_df_gen import PDB_bind_df_gen
-from .gen.PDB_find_bond import PDB_find_bond
-from .gen.PDB_find_complex import PDB_find_complex
-from .gen.PDB_complex_df_gen import PDB_complex_df_gen
-from .gen.PDB_find_complex_df import PDB_find_complex_df
-from .gen.PDB_new_pdb import PDB_new_pdb
-from .gen.PDB_binding_info_df import PDB_binding_info_df
+from .gen.read_PDB import read_PDB
+from .gen.read_inp import read_inp
+from .gen.create_bond_list import create_bond_list
+from .gen.create_complex_list import create_complex_list
+from .gen.filter_complexes import filter_complexes
+from .gen.write_new_PDB import write_new_PDB
 
 
-def locate_position_PDB(FileNamePdb, NumList, FileNameInp, BufferRatio=0.01):
+def locate_position_PDB(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
     """
     Locates specific complexes of a certain size from a PDB file after simulation and outputs the result as a separated file
     named "output_file.pdb" containing only the desired complex.
@@ -41,30 +38,32 @@ def locate_position_PDB(FileNamePdb, NumList, FileNameInp, BufferRatio=0.01):
 
     #reads in the .pdb file
     print('Reading files......')
-    pdb_df = PDB_pdb_to_df(FileNamePdb, True)
+    site_array,site_dict,num_name_dict = read_PDB(FileNamePdb, True)
     print('Reading files complete!')
 
+    #reads in the .inp file
     print('Extracting binding information......')
-    binding_info = PDB_binding_info_df(FileNameInp)
+    binding_array,binding_dict = read_inp(FileNameInp)
     print('Extracting complete!')
 
+    #creates list of every bond
     print('Calculating distance......')
-    dis_df = PDB_dis_df_gen(pdb_df, binding_info)
+    bonds_lst= create_bond_list(site_array,site_dict,binding_array,binding_dict,BufferRatio)
     print('Calculation complete!')
 
-    print('Finding bonds......')
-    bind_df = PDB_bind_df_gen(dis_df, BufferRatio)
-    bond_lst = PDB_find_bond(bind_df)
-    print('Finding bonds complete!')
-
+    #creates list of each complex
     print('Finding complexes......')
-    complex_lst = PDB_find_complex(pdb_df, bond_lst)
-    complex_df = PDB_complex_df_gen(pdb_df, complex_lst)
+    complex_lst = create_complex_list(bonds_lst)
     print('Finding complexes complete!')
-    
+
+    #creates list of each complex that has the correct number of each type
+    print('Filtering complexes......')
+    complex_filtered = filter_complexes(complex_lst,num_name_dict,NumDict)
+    print('Filtering complexes complete!')
+
+    #protein_remain = PDB_find_complex_df(complex_lst, NumList, site_array,site_dict)
     print('Writing new PDB files......')
-    protein_remain = PDB_find_complex_df(complex_df, NumList, pdb_df)
-    PDB_new_pdb(FileNamePdb, protein_remain)
+    write_new_PDB(FileNamePdb, complex_filtered)
     print('PDB writing complete!(named as output_file.pdb)')
     return 0
 

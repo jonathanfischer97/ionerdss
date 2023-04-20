@@ -1,7 +1,5 @@
-import pandas as pd
 
-
-def old_PDB_complex_df_gen(pdb_df, complex_lst):
+def filter_complexes(complex_lst,num_name_dict,num_dict):
     """Generates a DataFrame containing complex information from a given DataFrame and a list of complexes.
 
     Args:
@@ -26,31 +24,23 @@ def old_PDB_complex_df_gen(pdb_df, complex_lst):
         1  0  1  1             2
         2  1  0  1             2
     """
-    name_lst = list(pdb_df['Protein_Name'])
-    name_lst_ = []
-    for i in name_lst:
-        if i not in name_lst_:
-            name_lst_.append(i)
-    column_lst = []
-    for i in name_lst_:
-        column_lst.append(i)
-    column_lst.append('Protein_Num')
-    complex_df = pd.DataFrame(columns=column_lst)
-    index = 0
-    for i in complex_lst:
-        complex_df.loc[index] = 0
-        complex_df.loc[index, 'Protein_Num'] = str(i)
-        for j in i:
-            for indexs in pdb_df.index:
-                for k in range(len(pdb_df.loc[indexs].values)):
-                    if(pdb_df.loc[indexs].values[k] == j):
-                        col = pdb_df.loc[indexs, 'Protein_Name']
-                        complex_df.loc[index, col] += 1
-                        break
-                else:
-                    continue
-                break
-        index += 1
-    return complex_df
+
+    complex_filtered = []
+    #run through every protein complex
+    for complex in complex_lst:
+        temp_complex_num = {}
+        for value in set(list(num_name_dict.values())):
+            temp_complex_num[value] = 0
+        #for each protein
+        for protein in complex:
+            temp_complex_num[num_name_dict[str(protein)]] = temp_complex_num[num_name_dict[str(protein)]] + 1
+
+        
+        if temp_complex_num == num_dict:
+            for protein in complex:
+                complex_filtered.append(protein)
 
 
+    return complex_filtered
+
+   

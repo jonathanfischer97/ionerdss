@@ -1,7 +1,6 @@
-import pandas as pd
+from .calculate_distance import calculate_distance
 
-
-def old_PDB_bind_df_gen(dis_df, buffer_ratio):
+def determine_bind(site_1, site_2, buffer_ratio, site_dict, sigma):
     """ Generates a new DataFrame containing binding information from a distance DataFrame, based on a buffer ratio.
 
     Args:
@@ -26,14 +25,15 @@ def old_PDB_bind_df_gen(dis_df, buffer_ratio):
         0             1              A           X             4              D          M    0.1  0.05
         1             2              B           Y             5              E          N    0.2  0.15
     """
-    bind_df = pd.DataFrame(columns=['Protein_Num_1', 'Protein_Name_1', 'Cite_Name_1',
-                           'Protein_Num_2', 'Protein_Name_2', 'Cite_Name_2', 'sigma', 'dis'])
-    index = 0
-    for i in range(len(dis_df)):
-        if dis_df.loc[i, 'dis'] >= dis_df.loc[i, 'sigma']*(1-buffer_ratio):
-            if dis_df.loc[i, 'dis'] <= dis_df.loc[i, 'sigma']*(1+buffer_ratio):
-                bind_df.loc[index] = dis_df.loc[i]
-                index += 1
-    return bind_df
+    #calculate distance
+    x = (site_1[site_dict['x_coord']],site_1[site_dict['y_coord']],site_1[site_dict['z_coord']])
+    y = (site_2[site_dict['x_coord']],site_2[site_dict['y_coord']],site_2[site_dict['z_coord']])
+    distance = calculate_distance(x, y)
+
+    #calculate if they are close enough to bind
+    if distance >= sigma*(1-buffer_ratio):
+        if distance <= sigma*(1+buffer_ratio):
+            return True, distance
+    return False, distance
 
 

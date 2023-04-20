@@ -20,7 +20,7 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.complex_lifetime(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat",FileNum=1,SpeciesName="dode",InitialTime = 0,FinalTime = 1,ShowFig=False)
+ion.locate_position_PDB(FileNamePdb = "ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb", NumDict = {"dod":5}, FileNameInp = "ioNERDSSPyPi\TestingFunctions\parm.inp")
 last = badTimer('start',last) #original = .60,.50,.40,.50
 
 

@@ -1,3 +1,6 @@
+"""
+CURRENTLY BROKEN BY CHANGED TO read_PDB. WILL FIX LATER - ian
+
 import numpy as np
 import warnings
 from .single_species_hist.hist import hist
@@ -7,7 +10,7 @@ from .single_restart_to_df import single_restart_to_df
 
 def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int, TimeStep: float,
                                 ComplexNum: int, Radius: float):
-    """This function calculates the regularization index of the given parameters.
+    This function calculates the regularization index of the given parameters.
     Note: This was made with chatgpt and may be wrong
 
     Parameters:
@@ -26,7 +29,7 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
         regularization_index_return: A list of floats representing the regularization index
     
     This function calculates the regularization index of the given parameters. It firsts get the data from the histogram and then calculates the maximum complex size. It then fits 3 spheres and does a sanity check. It then calculates the center of mass of the max complex and determines the spherical angle corresponding to the ideal complex with surface area. It then determines if the monomer on complex is on the ideal cap and returns the regularization index.
-    """
+    
     warnings.simplefilter("ignore")
     t = TimeStep * LitNum
     data = hist(FileName=FileNameHist,
@@ -156,3 +159,4 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
                 '------------------------------------End---------------------------------------')
 
     return max_complex_size_return, theta_ideal_return, sphere_radius_return, sphere_center_position_return, complex_COM_return, regularization_index_return
+"""

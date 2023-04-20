@@ -1,4 +1,4 @@
-def old_PDB_find_complex(pdb_df, bond_lst):
+def create_complex_list(bond_list):
     """Finds protein complexes based on a list of protein-protein bond pairs.
 
     Args:
@@ -25,27 +25,28 @@ def old_PDB_find_complex(pdb_df, bond_lst):
 
         [[1, 2, 3], [4, 5]].
     """
-
+    
     complex_lst = []
-    for i in range(1, 1+pdb_df['Protein_Num'].max()):
-        complex_temp = [i]
-        j = 0
-        while j < len(bond_lst):
-            if bond_lst[j][0] in complex_temp and bond_lst[j][1] not in complex_temp:
-                complex_temp.append(bond_lst[j][1])
-                j = 0
-            elif bond_lst[j][1] in complex_temp and bond_lst[j][0] not in complex_temp:
-                complex_temp.append(bond_lst[j][0])
-                j = 0
-            else:
-                j += 1
-        complex_lst.append(complex_temp)
-    for i in complex_lst:
-        i.sort()
-    complex_lst_ = []
-    for i in complex_lst:
-        if i not in complex_lst_:
-            complex_lst_.append(i)
-    return complex_lst_
+    
+    #if the bond list is not empty, keep going through it
+    while bond_list != []:
+        temp_complex_lst = bond_list[0]
+        
+        #go through each the temp protein complex list. For each protein, check through the enitre bond_list to see if it is bonded with anything. If yes, add it and remove it from main list
+        for protein in temp_complex_lst:
+            for bond in bond_list:
+                if protein == bond[0]:
+                    temp_complex_lst.append(bond[1])
+                    bond_list.remove(bond)
+                elif protein == bond[1]:
+                    temp_complex_lst.append(bond[0])
+                    bond_list.remove(bond)
+        
+        complex_lst.append(list(set(temp_complex_lst)))
 
+    for complex in complex_lst:
+        complex.sort()
 
+    
+    
+    return complex_lst
