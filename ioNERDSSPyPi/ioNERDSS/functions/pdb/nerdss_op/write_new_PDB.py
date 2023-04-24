@@ -1,38 +1,30 @@
-def write_new_PDB(file_name, protein_remain):
+def write_new_PDB(protein_remain, main_pdb_list):
     """Generates a new PDB file with protein information based on a list of remaining protein numbers.
 
     This function reads a PDB file, extracts protein information for the proteins whose numbers are specified
     in the `protein_remain` list, and writes the extracted information to a new PDB file.
 
     Args:
-        file_name (str): The name of the input PDB file to be read.
-        protein_remain (list): A list of protein numbers for which the protein information needs to be extracted.
+        protein_remain (list): A list of protein numbers that had the correct number of sub-proteins.
+        main_pdb_list (list): A list of lists of every single line of the original inputted pdb file. info[i][0] = important data from line, info[i][1] = the line string
 
     Returns:
         .pdb file: holds all of the proteins sites that are in the complexes of the correct sizes
     """
-    with open(file_name, 'r') as file:
-        write_lst = []
-        for line in file.readlines():
-            line_ = line.split(' ')
-            if line_[0] == 'TITLE':
-                write_lst.append(line)
-            elif line_[0] == 'CRYST1':
-                write_lst.append(line)
-            elif line_[0] == 'ATOM':
-                info = []
-                for i in line_:
-                    i.strip('\n')
-                    if i != '':
-                        info.append(i)
-                info[9] = info[9].strip('\n')
-                if int(info[4]) in protein_remain:
-                    write_lst.append(line)
-    with open('output_file.pdb', 'w') as file_:
-        file_.seek(0)
-        file_.truncate()
-        for i in write_lst:
-            file_.writelines(i)
+
+        
+    
+    #write new file
+    with open('output_file.pdb', 'w') as file:
+        file.seek(0)
+        file.truncate()
+        
+        #goes through the main_PDB_list which has a setup of [['info','string of line'],[],[],...] with info being the important data in that line (or description of line)
+        for line in main_pdb_list:
+            if line[0] == "header":
+                file.writelines(line[1])
+            elif line[0] in protein_remain:
+                file.writelines(line[1])
     return 0
 
 

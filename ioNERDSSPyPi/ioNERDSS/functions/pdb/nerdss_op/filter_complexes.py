@@ -11,16 +11,17 @@ def filter_complexes(complex_lst,num_name_dict,num_dict):
     """
 
     complex_filtered = []
-    #run through every protein complex
+    #run through every protein complex, and determine it's length.
     for complex in complex_lst:
-        temp_complex_num = {}
-        for value in set(list(num_name_dict.values())):
-            temp_complex_num[value] = 0
-        #for each protein
-        for protein in complex:
-            temp_complex_num[num_name_dict[str(protein)]] = temp_complex_num[num_name_dict[str(protein)]] + 1
-
         
+        #create dictionary to hold the values
+        temp_complex_num = dict.fromkeys(num_dict,0)
+        
+        #count up each protein type in the complex
+        for protein in complex:
+            temp_complex_num[num_name_dict[str(protein)]] += 1
+
+        #if it has the corret number of proteins, add it to the new list
         if temp_complex_num == num_dict:
             for protein in complex:
                 complex_filtered.append(protein)

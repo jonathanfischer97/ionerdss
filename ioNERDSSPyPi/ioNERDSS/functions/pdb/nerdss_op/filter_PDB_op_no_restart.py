@@ -1,9 +1,9 @@
-from read_PDB import read_PDB
-from read_inp import read_inp
-from create_bond_list import create_bond_list
-from create_complex_list import create_complex_list
-from filter_complexes import filter_complexes
-from write_new_PDB import write_new_PDB
+from .read_PDB import read_PDB
+from .read_inp import read_inp
+from .create_bond_list import create_bond_list
+from .create_complex_list import create_complex_list
+from .filter_complexes import filter_complexes
+from .write_new_PDB import write_new_PDB
 
 
 def locate_position_PDB(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
@@ -32,7 +32,7 @@ def locate_position_PDB(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
 
     #reads in the .pdb file
     print('Reading files......')
-    site_array,site_dict,num_name_dict = read_PDB(FileNamePdb, True)
+    site_array,site_dict,num_name_dict,main_pdb_list = read_PDB(FileNamePdb, True)
     print('Reading files complete!')
 
     #reads in the .inp file
@@ -55,9 +55,9 @@ def locate_position_PDB(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
     complex_filtered = filter_complexes(complex_lst,num_name_dict,NumDict)
     print('Filtering complexes complete!')
 
-    #protein_remain = PDB_find_complex_df(complex_lst, NumList, site_array,site_dict)
+    #writes a new PDB file that only includs proteins that are in complexes of the correct size
     print('Writing new PDB files......')
-    write_new_PDB(FileNamePdb, complex_filtered)
+    write_new_PDB(complex_filtered, main_pdb_list)
     print('PDB writing complete! (named as output_file.pdb)')
     return 0
 

@@ -18,6 +18,7 @@ def create_bond_list(site_array,site_dict,binding_array,binding_dict,BufferRatio
 
     bond_lst = []
 
+    #for every reaction type, check all possible interactions b/w interaction sites. Then add to main list
     for bind_type in binding_array:
         
         #create a list of each possible interaction site for this interaction
@@ -36,18 +37,19 @@ def create_bond_list(site_array,site_dict,binding_array,binding_dict,BufferRatio
         print('Calculating distance for reaction #', count, '...')
         count += 1
         
-        #create list of each interaction
+        #create list of each actual interaction
         for site_1 in protein_1_sites:
             for site_2 in protein_2_sites:
+
+                #determine if these two sites are bonded
                 storeBoolean = determine_bind(site_1,site_2,BufferRatio,site_dict,bind_type[binding_dict["sigma"]])
                 if storeBoolean:
 
                     temp_bond_lst = [site_1[site_dict["Protein_Num"]],site_2[site_dict["Protein_Num"]]]
                     if temp_bond_lst not in bond_lst:
+                        temp_bond_lst.sort()
                         bond_lst.append(temp_bond_lst)
-                    
-                    for bond in bond_lst:
-                        bond.sort()
+
     
 
     return bond_lst

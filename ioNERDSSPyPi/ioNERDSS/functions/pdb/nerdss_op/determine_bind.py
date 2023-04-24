@@ -19,9 +19,11 @@ def determine_bind(site_1, site_2, buffer_ratio, site_dict, sigma):
     distance = calculate_distance(x, y)
 
     #calculate if they are close enough to bind
-    if distance >= sigma*(1-buffer_ratio):
+    return distance >= sigma*(1-buffer_ratio) and distance <= sigma*(1+buffer_ratio)
+
+    """if distance >= sigma*(1-buffer_ratio):
         if distance <= sigma*(1+buffer_ratio):
             return True
-    return False
+    return False"""
 
 

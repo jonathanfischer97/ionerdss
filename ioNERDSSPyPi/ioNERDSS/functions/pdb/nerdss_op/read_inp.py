@@ -34,7 +34,7 @@ def read_inp(inp_name):
                     binding_array.append([])
                     index = len(binding_array) - 1
                     
-                    #extracts info from parms.inp (its ugly but im scared to chang eit)
+                    #extracts info from parms.inp (its ugly but im scared to change it)
                     line1 = line.split('+')
                     element1 = line1[0].strip(' ')
                     line2 = line1[1].split('<->')
