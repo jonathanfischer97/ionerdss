@@ -20,7 +20,8 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.locate_position_PDB(FileNamePdb = "ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb", NumDict = {"dod":5}, FileNameInp = "ioNERDSSPyPi\TestingFunctions\parm.inp")
+#ion.hist(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", FileNum = 1, InitialTime = 0, FinalTime = 1, SpeciesName = "dode",BarSize = 1,ShowFig=False)
+ion.read_file(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", SpeciesName = "dode")
 last = badTimer('start',last) #original = .60,.50,.40,.50
 
 

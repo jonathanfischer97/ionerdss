@@ -6,9 +6,9 @@ def real_PDB_data_check(data):
         data (list): List of PDB data to be checked.
 
     Returns:
-        int: -1 if the length of data is not equal to 12 and amino acid name exceeds 4 characters.
+        int: -1 if the length of data is not equal to 12 because the amino acid name combined with previous section
              -2 if the length of data is equal to 12 but the amino acid name is not of length 3.
-             1 if the data is valid.
+              1 if the data is valid.
 
     """
     

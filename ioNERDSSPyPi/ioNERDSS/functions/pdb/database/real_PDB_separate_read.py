@@ -21,9 +21,8 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
 
     """
 
-    total_atom_count = []
-    # specific chain the atom belongs to (such as A or B or C, etc).
-    total_chain = []
+    total_atom_count = [] # holds the index of every atom
+    total_chain = [] # specific chain the atom belongs to (such as A or B or C, etc).
     total_resi_count = []  # residue number
     total_position = []  # the coordinate of each atom
     total_atom_type = []  # to show whether the atom is a alpha carbon, N, etc.
@@ -34,40 +33,51 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
     total_alphaC_resi_count = []  # indicate which residue the alphaC belongs to
     # The length of last two lists are the same as total residue numbers in the chain and the length of rest of the lists
     # are the same as total atom numbers in the protein.
-    # read in user pdb file
-    # out data into corresponding lists
+    
+    #read in user pdb file, and output data into corresponding lists
     with open(FileName, "r") as filename:
+        
+        #go through each line in the file
         for line in filename:
             data = line.split()  # split a line into list
+            
+            #based on the data, import data from that line into lists
             id = data[0]
             if id == 'ENDMDL':
                 break
-            if id == 'ATOM' and (data[4] in ChainsIncluded or ChainsIncluded == [None]):  # find all 'atom' lines. But only add atom if it is in 'chainincluded'
-                if real_PDB_data_check(data) == 1:
+            elif id == 'ATOM' and (data[4] in ChainsIncluded or ChainsIncluded == [None]):  # find all 'atom' lines. But only add atom if it is in 'chainincluded'
+                
+                #check amino acid name, then edit it accordingly
+                pdb_data = real_PDB_data_check(data)
+                if pdb_data == 1:
                     pass
-                elif real_PDB_data_check(data) == -2:
+                elif pdb_data == -2:
                     data[3] = data[3].lstrip(data[3][0])
-                elif real_PDB_data_check(data) == -1:
+                elif pdb_data == -1:
                     amino_name = data[2][-3:]
                     data.insert(3, amino_name)
                     data[2] = data[2].rstrip(amino_name)
 
+                #add data about the atom's data to the different lists
                 total_atom_count.append(data[1])
                 total_chain.append(data[4])
                 total_resi_count.append(data[5])
                 total_atom_type.append(data[2])
                 total_resi_type.append(data[3])
-                # change all strings into floats for position values, also converting to nm from angstroms
+                
+                #change all strings into floats for position values, also converting to nm from angstroms
                 position_coords = []
                 for i in range(3):
                     position_coords.append(float(data[6+i])/10)
                 total_position.append(position_coords)
+                
+                #create lists of all residuals
                 if data[2] == "CA":
                     total_resi_position.append(position_coords)
                     total_alphaC_resi_count.append(data[5])
     print('Finish reading pdb file')
 
-    # create total_resi_position_every_atom list
+    #create a list that holds the residual location of every atom (based on the residuals CA)
     count = 0
     for i in range(len(total_alphaC_resi_count)):
         if count >= len(total_atom_type):
@@ -80,10 +90,7 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
                 break
 
     # determine how many unique chains exist
-    unique_chain = []
-    for letter in total_chain:
-        if letter not in unique_chain:
-            unique_chain.append(letter)
+    unique_chain = list(set(total_chain))
     print(str(len(unique_chain)) + ' chain(s) in total: ' + str(unique_chain))
 
     # exit if there's only one chain.
