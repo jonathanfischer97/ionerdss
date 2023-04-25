@@ -20,56 +20,70 @@ def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: flo
     Returns:
         graph. X-axis = time. Y-axis = mean number of species in a single complex molecule.
     """
+    
+    #for file names
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
-    time_list = []
-    size_list = []
-    for k in range(1, FileNum+1):
-        temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
+    
+    time_list = [] #list of every timestamp
+    size_list = [] #list of mean sizes (index of this = index of timestep)
+
+    for histogram_file_number in range(1, FileNum+1):
+        
+        #determining file name (if there are multiple or none)
         if FileNum == 1:
             temp_file_name = FileName
-        total_size_list = []
-        total_time_list = []
+        else:
+            temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
+
+        total_size_list = [] #list of every timestamp for this file
+        total_time_list = [] #list of mean sizes (index of this = index of timestep)
+        
+        #real file
         hist = read_file(temp_file_name, SpeciesName)
+        
+        #create list of means / timesteps, based on what sizes are excluded/not
         if ExcludeSize == 0:
-            for i in hist:
-                if InitialTime <= i[0] <= FinalTime:
-                    total_time_list.append(i[0])
-                    total_size_list.append(np.mean(i[2]))
+            for timestep in hist:
+                if InitialTime <= timestep[0] <= FinalTime:
+                    total_time_list.append(timestep[0])
+                    total_size_list.append(np.mean(timestep[2]))
+        
         elif ExcludeSize > 0:
-            for i in hist:
-                if InitialTime <= i[0] <= FinalTime:
-                    count = 1
-                    N = 0
-                    temp_sum = 0
-                    total_time_list.append(i[0])
-                    while count <= len(i[1]):
-                        if i[2][count-1] >= ExcludeSize:
-                            temp_sum += i[2][count-1]
-                            N += 1
-                        if count == len(i[1]):
-                            if N != 0:
-                                total_size_list.append(temp_sum/N)
-                            else:
-                                total_size_list.append(0)
-                        count += 1
+            for timestep in hist:
+                if InitialTime <= timestep[0] <= FinalTime:
+                    timestep_edited = [ele for ele in timestep[2] if ele>ExcludeSize] #create new list that only includes elements greater then exclude size
+                    total_time_list.append(timestep[0])
+                    total_size_list.append(np.mean(timestep_edited))
         else:
             print('ExcludeSize cannot smaller than 0!')
             return 0
+        
+        #add time/size lists to main, cross function lists
         time_list.append(total_time_list)
         size_list.append(total_size_list)
+    
+    #transpose list (each sub-list = 1 timesteps across every file)
     size_list_rev = []
-    for i in range(len(size_list[0])):
-        temp = []
-        for j in range(len(size_list)):
-            temp.append(size_list[j][i])
-        size_list_rev.append(temp)
+    size_list_rev = np.transpose(size_list)
+
+    #find mean and std dev
     mean = []
     std = []
-    for i in range(len(size_list_rev)):
-        mean.append(np.mean(size_list_rev[i]))
-        if FileNum > 1:
-            std.append(np.std(size_list_rev[i]))
+
+    for index,timestamps in enumerate(size_list_rev):
+        
+        #if this timestamp is equal to previous, copy previous. 
+        if timestamps == size_list_rev[index-1]:
+            mean.append(mean[index-1])
+            if FileNum > 1: std.append(std[index-1])
+        
+        #Else calculate new measns/stds
+        else:
+            mean.append(np.nanmean(timestamps))
+            if FileNum > 1: std.append(np.nanstd(timestamps))
+    
+    #show figure
     if ShowFig:
         errorbar_color = '#c9e3f6'
         plt.plot(time_list[0], mean, color='C0')

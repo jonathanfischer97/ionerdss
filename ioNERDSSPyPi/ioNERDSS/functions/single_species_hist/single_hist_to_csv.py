@@ -11,65 +11,76 @@ def single_hist_to_csv(FileName: str):
         histogram.csv file: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
         is the number of that complex molecule at that time stamp.
     """
-    name_list = ['Time (s)']
-    with open(FileName, 'r') as file:
-        for line in file.readlines():
-            if line[0:9] != 'Time (s):':
-                name = line.split('	')[1].strip(' \n')
-                name_num = int(line.split('	')[1].split(' ')[1].strip('.'))
-                if name_list != ['Time (s)']:
-                    last_num = int(name_list[-1].split(' ')[1].strip('.'))
-                else:
-                    last_num = 0
-                if name not in name_list:
-                    if name_num-last_num == 1:
-                        name_list.append(name)
-                    else:
-                        fill = range(last_num+1, name_num)
-                        for i in fill:
-                            name = str(line.split('	')[1].split(
-                                ' ')[0]) + ' ' + str(i) + '.'
-                            name_list.append(name)
-    file.close()
-    with open(FileName, 'r') as read_file, open('histogram.csv', 'w') as write_file:
-        head = ''
-        for i in name_list:
-            head += i
-            if i != name_list[-1]:
-                head += ','
-            else:
-                head += '\n'
-        write_file.write(head)
-        stat = np.zeros(len(name_list))
-        for line in read_file.readlines():
-            if line[0:9] == 'Time (s):':
-                if line != 'Time (s): 0\n':
-                    write_line = ''
-                    for i in range(len(stat)):
-                        write_line += str(stat[i])
-                        if i != len(stat)-1:
-                            write_line += ','
-                        else:
-                            write_line += '\n'
-                    write_file.write(write_line)
-                stat = np.zeros(len(name_list))
-                write_line = ''
-                info = float(line.split(' ')[-1])
-                stat[0] += info
-            else:
-                name = line.split('	')[-1].strip(' \n')
-                num = float(line.split('	')[0])
-                index = name_list.index(name)
-                stat[index] += num
-        for i in range(len(stat)):
-            write_line += str(stat[i])
-            if i != len(stat)-1:
-                write_line += ','
-            else:
-                write_line += '\n'
-        write_file.write(write_line)
-    read_file.close()
-    write_file.close()
-    return 0
+    
+    column_list = [] #holds the name of each column (Time + each complex name)
+    time_list = [] #holds each time. Index corresponds to a sublist in name/size_list
+    name_list = [] #holds each name for each datapoint. Index corresponds with size_list
+    size_list = [] #holds each size for each datapoint. Index corresponds with name_list
 
+    name_sub = [] #holds sublist of names. appended to name_list
+    size_sub = [] #holds sublist of size. appended to size_list
+
+    #Creates list with every complex type/size
+    with open(FileName, 'r') as file:
+        for index,line in enumerate(file.readlines()):
+            
+            #if it is a time stamp
+            if line[0:9] == 'Time (s):':
+                time_list.append(float(line.split(' ')[-1]))
+
+                #if there was a previous timestamp before it that needs to be initilized
+                if index != 0:
+                    name_list.append(name_sub)
+                    size_list.append(size_sub)
+                    name_sub = []
+                    size_sub = []
+            else:
+                
+                #get name of species & get number of species in this complex
+                name = line.split('	')[1].strip(' \n')
+                name_sub.append(name)
+                size_sub.append(int(line.split('	')[1].split(' ')[1].strip('.')))
+
+                #creates a list of every 'name'
+                if name not in column_list:
+                    column_list.append(name)
+    
+    #at the end append the final subs because of the fence problem thing :(
+    name_list.append(name_sub)
+    size_list.append(size_sub) 
+    
+    
+    #write the file!
+    with open('histogram.csv', 'w') as write_file:
+        
+        #create column names
+        head = 'Time(s):'
+        for column in column_list:
+            head += ','
+            head += column
+        head += '\n'
+        write_file.write(head)
+
+        #write the bulk of the file
+        for index,timestep in enumerate(time_list):
+            
+            #initilize writing
+            write = ''
+
+            #write time to string
+            write += f"{str(timestep)}"
+
+            #write data to string
+            for column in column_list[1:]:
+                write += ','
+                if column in name_list[index]:
+                    size_index = name_list[index].index(column)
+                    write += str(size_list[index][size_index])
+                else:
+                    write += '0'
+            
+            #commit to file
+            write += '\n'
+            write_file.write(write)
+    
 

@@ -20,9 +20,8 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-#ion.hist(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", FileNum = 1, InitialTime = 0, FinalTime = 1, SpeciesName = "dode",BarSize = 1,ShowFig=False)
-ion.read_file(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", SpeciesName = "dode")
-last = badTimer('start',last) #original = .60,.50,.40,.50
+ion.single_hist_to_df(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat")
+last = badTimer('start',last)
 
 
 

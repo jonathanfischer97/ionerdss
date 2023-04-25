@@ -19,35 +19,59 @@ def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
     Returns:
         graph. X-axis = time. Y-axis = max number of species in a single complex molecule.
     """
+    
+    #init names
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
-    time_list = []
-    size_list = []
-    for k in range(1, FileNum+1):
-        temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
+    
+    time_list = [] #list of every timestamp
+    size_list = [] #list of max sizes (index of this = index of timestep)
+    
+    
+    for histogram_file_number in range(1, FileNum+1):
+        
+        #determining file name (if there are multiple or none)
         if FileNum == 1:
             temp_file_name = FileName
-        total_size_list = []
-        total_time_list = []
+        else:
+            temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
+        
+        total_size_list = [] #list of every timestep (for this file)
+        total_time_list = [] #list of max sizes (for this file)
+        
+        #read histogram
         hist = read_file(temp_file_name, SpeciesName)
-        for i in hist:
-            if InitialTime <= i[0] <= FinalTime:
-                total_time_list.append(i[0])
-                total_size_list.append(max(i[2]))
+        
+        #for each timestep determine the time + max size
+        for timestep in hist:
+            if InitialTime <= timestep[0] <= FinalTime:
+                total_time_list.append(timestep[0])
+                total_size_list.append(np.max(timestep[2]))
+        
+        #append data to main, cross file lists
         time_list.append(total_time_list)
         size_list.append(total_size_list)
-    size_list_rev = []
-    for i in range(len(size_list[0])):
-        temp = []
-        for j in range(len(size_list)):
-            temp.append(size_list[j][i])
-        size_list_rev.append(temp)
+    
+    #transpose list (each sub-list = 1 timesteps across every file)
+    size_list_rev = np.transpose(size_list)
+   
+   #find mean and std dev
     mean = []
     std = []
-    for i in range(len(size_list_rev)):
-        mean.append(np.mean(size_list_rev[i]))
-        if FileNum > 1:
-            std.append(np.std(size_list_rev[i]))
+
+    for index,timestamps in enumerate(size_list_rev):
+        
+        #if this timestamp is equal to previous, copy previous. 
+        if timestamps == size_list_rev[index-1]:
+            mean.append(mean[index-1])
+            if FileNum > 1: std.append(std[index-1])
+        
+        #Else calculate new measns/stds
+        else:
+            mean.append(np.nanmean(timestamps))
+            if FileNum > 1: std.append(np.nanstd(timestamps))
+    
+    #show figure
     if ShowFig:
         errorbar_color = '#c9e3f6'
         plt.plot(time_list[0], mean, color='C0')
