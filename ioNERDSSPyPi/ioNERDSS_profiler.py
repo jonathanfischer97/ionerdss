@@ -21,6 +21,7 @@ import ioNERDSS as ion
 
 last = badTimer('start',0)
 ion.filter_PDB_op_restart(FileNamePdb = "ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb", NumDict = {"dod":9}, FileNameRestart='ioNERDSSPyPi\TestingFunctions\\restart.dat')
+
 last = badTimer('start',last)
 
 

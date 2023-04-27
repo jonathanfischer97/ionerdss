@@ -1,6 +1,6 @@
 from .read_restart import read_restart
 from .write_pdb import write_pdb
-
+import numpy as np
 
 def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart='restart.dat'):
     """ Reads a restart.dat file and a PDB file, identifies protein complexes of a certain size, creates a new PDB file
@@ -16,19 +16,23 @@ def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart='re
 
     """
 
+    #read restart file
     print('Reading restart.dat...')
     complex_lst = read_restart(FileNameRestart)
     print('Reading files complete!')
+    
+    #find which complexes have the correct size
     protein_remain = []
-    for i in complex_lst:
-        if len(i) == ComplexSize:
-            print(i)
-            print(len(i))
-            protein_remain.append(i)
-    protein_remain_flat = []
-    for i in protein_remain:
-        for j in i:
-            protein_remain_flat.append(j)
+    for complex in complex_lst:
+        if len(complex) == ComplexSize:
+            print(complex)
+            print(len(complex))
+            protein_remain.append(complex)
+    
+    #flatten list as it is a list of lists (list of complexes)
+    protein_remain_flat = np.array(protein_remain).flatten()
+    
+    #write new PDB
     write_pdb(FileNamePdb, protein_remain_flat)
     print('PDB writing complete!(named as output_file.pdb)')
     return 0
