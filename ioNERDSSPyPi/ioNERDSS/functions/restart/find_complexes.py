@@ -1,32 +1,33 @@
-def RESTART_find_complex_df(complex_df, num_lst):
+def find_complexes(sorted_complexes, NumDict):
     """Finds the complexes with the correct number of proteins of each type.
     
     Args:
-        complex_df: A pandas DataFrame that contains information about the complexes, including the protein numbers 
-                    that form the complex.
-        num_lst: A list of integers representing the protein numbers of the proteins to be found in the complex.
-        pdb_dict: A dictionary with keys: protein number, values: protein type
+        sorted_complexes (array): holds each complex as a subdictionary. Then each dictionaries key = name of a protein, value = list of protein indexes in that complex
+        NumDict (dictionary): A dictionary that holds the requested number of protein types in a complex
     
     Returns:
-        A list of integers representing the protein numbers that form the given complex.
+        A list of integers representing the protein numbers that form the correct size /composition of a complex.
     """
 
 
-    list_of_rows = complex_df.loc[0:].values.tolist()
     protein_remain = [] #list of proteins in the complexes (what is returned)
     protein_complex_hits = 0 #how many protein complexes have the correct number
     
     #each row of the dataframe
-    for row in list_of_rows:
+    for complex in sorted_complexes:
 
         #if row/protein complex has the correct number of each protein type
-        if row[0:-1] == num_lst: 
-            
+        correct_complex_size = True
+        for protein_type,protein_list in complex.items():
+            if len(protein_list) != NumDict[protein_type]:
+                correct_complex_size = False
+                break
+        
+        if correct_complex_size: 
             protein_complex_hits += 1
-            list_of_protein_nums = row[-1].strip('[').strip(']').split(',') #gets the list of the specific proteins in this complex
             
             #add every protein num that is in that complex
-            for protein_num in list_of_protein_nums:
+            for protein_num in protein_list:
                 protein_remain.append(int(protein_num))
     
     #print success / failure

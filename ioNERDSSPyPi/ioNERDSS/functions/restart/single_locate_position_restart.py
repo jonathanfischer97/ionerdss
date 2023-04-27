@@ -1,5 +1,5 @@
-from .RESTART_read_restart import RESTART_read_restart
-from .RESTART_new_pdb import RESTART_new_pdb
+from .read_restart import read_restart
+from .write_pdb import write_pdb
 
 
 def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart='restart.dat'):
@@ -17,7 +17,7 @@ def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart='re
     """
 
     print('Reading restart.dat...')
-    complex_lst = RESTART_read_restart(FileNameRestart)
+    complex_lst = read_restart(FileNameRestart)
     print('Reading files complete!')
     protein_remain = []
     for i in complex_lst:
@@ -29,6 +29,6 @@ def single_locate_position_restart(FileNamePdb, ComplexSize, FileNameRestart='re
     for i in protein_remain:
         for j in i:
             protein_remain_flat.append(j)
-    RESTART_new_pdb(FileNamePdb, protein_remain_flat)
+    write_pdb(FileNamePdb, protein_remain_flat)
     print('PDB writing complete!(named as output_file.pdb)')
     return 0

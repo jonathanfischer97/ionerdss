@@ -1,4 +1,4 @@
-def RESTART_new_pdb(file_name_pdb, protein_remain):
+def write_pdb(file_name_pdb, protein_remain):
     """Reads a PDB file and creates a new PDB file with only the atoms that correspond to the protein_remain list.
 
     Args:

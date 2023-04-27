@@ -17,16 +17,26 @@ def traj_track(FileName: str, SiteNum: int, MolIndex: list):
          [0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
          [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]]
     """ """"""
-    array = []
-    for i in range(len(MolIndex)):
+    array = [] #an array that stores the trajectory
+    
+    #an array with a sublist for each tracked molecule
+    for na in range(len(MolIndex)):
         array.append([])
+    
     with open(FileName, 'r') as file:
         for line in file.readlines():
+            
+            #if there is a new iteration, reset index
             if line[0:11] == 'iteration: ':
                 index = 0
-            if len(line.strip(' ').strip('\n').split()) == 4:
+            
+            info = line.strip(' ').strip('\n').split()
+            
+            #if line is a trajectory line
+            if len(info) == 4:
+                
+                #if the correct molecule is found and it's the first site (COM) of that molecule. Add data to array
                 if (index//SiteNum)+1 in MolIndex and index % SiteNum == 0:
-                    info = line.strip(' ').strip('\n').split()
                     x = float(info[1])
                     y = float(info[2])
                     z = float(info[3])

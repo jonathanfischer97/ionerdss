@@ -20,14 +20,11 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.multi_hist_to_df(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat")
+ion.filter_PDB_op_restart(FileNamePdb = "ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb", NumDict = {"dod":9}, FileNameRestart='ioNERDSSPyPi\TestingFunctions\\restart.dat')
 last = badTimer('start',last)
 
 
 
 
-#input(f"{ti_lifetime} \n\n{ti_lifetime2}")
-#input(f"\n\n{tf_lifetime} \n\n{tf_lifetime2}")
-#input(f"\n\n{size_list == size_list2}")
 
 #ioNERDSSPyPi\TestingFunctions\databse.pdb

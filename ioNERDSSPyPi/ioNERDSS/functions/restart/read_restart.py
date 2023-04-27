@@ -1,4 +1,4 @@
-def RESTART_read_restart(file_name_restart):
+def read_restart(file_name_restart):
     """Read restart file and extract information about complexes and their components.
 
     Args:
