@@ -14,8 +14,14 @@ def single_hist_to_df(FileName: str, SaveCsv: bool = True):
        pandas.df: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
         is the number of that complex molecule at that time stamp.
     """
+    
+    #creates .csv file
     single_hist_to_csv(FileName)
+    
+    #create df file
     df = pd.read_csv('histogram.csv')
+    
+    #delete .csv file
     if not SaveCsv:
         os.remove('histogram.csv')
     return df

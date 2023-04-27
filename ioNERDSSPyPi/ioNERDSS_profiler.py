@@ -20,8 +20,7 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.hist_time_heatmap_fraction(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat",FileNum = 1, InitialTime = 0, FinalTime = 1,
-                 SpeciesName = "dode", TimeBins = 10,ShowFig=True)
+ion.multi_hist_to_df(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat")
 last = badTimer('start',last)
 
 

@@ -48,7 +48,7 @@ def single_hist_to_csv(FileName: str):
     #at the end append the final subs because of the fence problem thing :(
     name_list.append(name_sub)
     size_list.append(size_sub) 
-    
+    column_list.sort()
     
     #write the file!
     with open('histogram.csv', 'w') as write_file:
@@ -71,7 +71,7 @@ def single_hist_to_csv(FileName: str):
             write += f"{str(timestep)}"
 
             #write data to string
-            for column in column_list[1:]:
+            for column in column_list:
                 write += ','
                 if column in name_list[index]:
                     size_index = name_list[index].index(column)
