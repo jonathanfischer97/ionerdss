@@ -20,8 +20,8 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.filter_PDB_op_restart(FileNamePdb = "ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb", NumDict = {"dod":9}, FileNameRestart='ioNERDSSPyPi\TestingFunctions\\restart.dat')
-
+ion.sphere_regularization_index(FileNameHist = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", SpeciesName = "dode", LitNum = 1, TimeStep = 0.001,
+                                ComplexNum = 1, Radius = 180)
 last = badTimer('start',last)
 
 

@@ -1,16 +1,147 @@
-"""
-CURRENTLY BROKEN BY CHANGED TO read_PDB. WILL FIX LATER - ian
+
+#probably broken because of changes to other things. I added in the old functions under 'fake' to try and get it working again
 
 import numpy as np
 import warnings
-from .single_species_hist.hist import hist
+import matplotlib as plt
 from .fitSphere import fitSphere
 from .single_restart_to_df import single_restart_to_df
+
+def fake_read_file(FileName: str, SpeciesName: str):
+    hist = []
+    hist_temp = []
+    hist_conv = []
+    hist_count = []
+    with open(FileName, 'r') as file:
+        for line in file.readlines():
+            if line[0:4] == 'Time':
+                if hist_count != [] and hist_conv != []:
+                    hist_temp.append(hist_count)
+                    hist_temp.append(hist_conv)
+                    hist.append(hist_temp)
+                hist_count = []
+                hist_conv = []
+                hist_temp = []
+                hist_temp.append(float(line.strip('Time (s): ')))
+            else:
+                string = '	' + str(SpeciesName) + ': '
+                line = line.strip('. \n').split(string)
+                if len(line) != 2:
+                    print('Wrong species name!')
+                    return 0
+                else:
+                    hist_count.append(int(line[0]))
+                    hist_conv.append(int(line[1]))
+            if len(hist_temp) == 0:
+                hist_temp.append(hist_count)
+                hist_temp.append(hist_conv)
+                hist.append(hist_temp)
+    hist_temp.append(hist_count)
+    hist_temp.append(hist_conv)
+    hist.append(hist_temp)
+    return hist
+
+
+def fake_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
+         BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
+    file_name_head = FileName.split('.')[0]
+    file_name_tail = FileName.split('.')[1]
+    count_list = []
+    size_list = []
+    for k in range(1, FileNum+1):
+        temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
+        if FileNum == 1:
+            temp_file_name = FileName
+        total_size_list = []
+        total_count_list = []
+        hist = fake_read_file(temp_file_name, SpeciesName)
+        data_count = 0
+        for i in hist:
+            if InitialTime <= i[0] <= FinalTime:
+                data_count += 1
+                for j in i[2]:
+                    if j not in total_size_list:
+                        total_size_list.append(j)
+                        total_count_list.append(i[1][i[2].index(j)])
+                    else:
+                        index = total_size_list.index(j)
+                        total_count_list[index] += i[1][i[2].index(j)]
+        total_count_list = np.array(total_count_list)/data_count
+        if len(total_size_list) != 0:
+            total_size_list_sorted = np.arange(1, max(total_size_list)+1, 1)
+        else:
+            total_size_list_sorted = np.array([])
+        total_count_list_sorted = []
+        for i in total_size_list_sorted:
+            if i in total_size_list:
+                index = total_size_list.index(i)
+                total_count_list_sorted.append(total_count_list[index])
+            else:
+                total_count_list_sorted.append(0.0)
+        size_list.append(total_size_list_sorted)
+        count_list.append(total_count_list_sorted)
+    max_size = 0
+    for i in size_list:
+        if max_size < len(i):
+            max_size = len(i)
+            n_list = i
+    count_list_filled = np.zeros([FileNum, max_size])
+    for i in range(len(count_list)):
+        for j in range(len(count_list[i])):
+            count_list_filled[i][j] += count_list[i][j]
+    count_list_rev = []
+    for i in range(len(count_list_filled[0])):
+        temp = []
+        for j in range(len(count_list_filled)):
+            temp.append(count_list_filled[j][i])
+        count_list_rev.append(temp)
+    mean = []
+    std = []
+    for i in count_list_rev:
+        mean.append(np.nanmean(i))
+        std.append(np.nanstd(i))
+    mean_ = []
+    std_ = []
+    n_list_ = []
+    temp_mean = 0
+    temp_std = 0
+    bar_size_count = 0
+    for i in range(len(mean)):
+        temp_mean += mean[i]
+        temp_std += std[i]
+        bar_size_count += 1
+        if i+1 == len(mean):
+            mean_.append(temp_mean)
+            std_.append(temp_std)
+            n_list_.append(n_list[i])
+        elif bar_size_count >= BarSize:
+            mean_.append(temp_mean)
+            std_.append(temp_std)
+            n_list_.append(n_list[i])
+            temp_mean = 0
+            temp_std = 0
+            bar_size_count = 0
+    mean_ = np.array(mean_)
+    std_ = np.array(std_)
+    n_list_ = np.array(n_list_)
+    if ShowFig:
+        if FileNum != 1:
+            plt.bar(n_list_, mean_, width=BarSize, color='C0',
+                    yerr=std_, ecolor='C1', capsize=2)
+        else:
+            plt.bar(n_list_, mean_, width=BarSize)
+        plt.title('Histogram of ' + str(SpeciesName))
+        plt.xlabel('Number of ' + SpeciesName + ' in sigle complex')
+        plt.ylabel('Count')
+        if SaveFig:
+            plt.savefig('Histogram.png', dpi=500)
+        plt.show()
+    return n_list_, mean_, 'Nan', std_
 
 
 def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int, TimeStep: float,
                                 ComplexNum: int, Radius: float):
-    This function calculates the regularization index of the given parameters.
+    """This function calculates the regularization index of the given parameters.
     Note: This was made with chatgpt and may be wrong
 
     Parameters:
@@ -29,10 +160,10 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
         regularization_index_return: A list of floats representing the regularization index
     
     This function calculates the regularization index of the given parameters. It firsts get the data from the histogram and then calculates the maximum complex size. It then fits 3 spheres and does a sanity check. It then calculates the center of mass of the max complex and determines the spherical angle corresponding to the ideal complex with surface area. It then determines if the monomer on complex is on the ideal cap and returns the regularization index.
-    
+    """
     warnings.simplefilter("ignore")
     t = TimeStep * LitNum
-    data = hist(FileName=FileNameHist,
+    data = fake_hist(FileName=FileNameHist,
                 FileNum=1, InitialTime=t, FinalTime=t+TimeStep,
                 SpeciesName=SpeciesName, ShowFig=False)
     x_data = data[0]
@@ -159,4 +290,3 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
                 '------------------------------------End---------------------------------------')
 
     return max_complex_size_return, theta_ideal_return, sphere_radius_return, sphere_center_position_return, complex_COM_return, regularization_index_return
-"""

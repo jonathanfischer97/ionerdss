@@ -1,0 +1,12 @@
+Creating NERDSS Inputs
+1. Create a 'fake' protein that will self-assemble into one of these Platonic Solids
+ - Tetrahedron (Pyramid, 4 faces, 3 interaction sites), Cube (Cube, 6 faces, 3 interaction sites),  
+   Octahedron (8 faces, 4 interaction sites), Dodecahedron (12 faces, 3 interaction sites), Icosohedron (20 faces, 5 interaction sites)
+ - This code is found in platonic_solids directory
+2. Create a protein based on a protein downloaded from a Protein Databank (PDB)
+ - This code is foundin pdb/database
+
+Interpreting NERDSS Outputs
+
+1. Determine which proteins are in a complex of a certain size
+ - Can use 
