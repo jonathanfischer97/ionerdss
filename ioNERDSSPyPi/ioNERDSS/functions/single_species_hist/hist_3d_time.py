@@ -7,7 +7,7 @@ from .read_file import read_file
 
 def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                  SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
-    """Takes in a histogram.dat file from NERDSS, and creates a 3D histogram that represents the average number of each complex size, over time.
+    """Takes in a histogram.dat file from NERDSS, and creates a 3D histogram that represents the average number of monomers in each complex size, over time.
 
     Args:
         FileName (str): Path to the histogram.dat file

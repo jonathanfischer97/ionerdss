@@ -6,7 +6,7 @@ from .filter_complexes import filter_complexes
 from .write_new_PDB import write_new_PDB
 
 
-def locate_position_PDB(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
+def filter_PDB_op_no_restart(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
     """
     Locates specific complexes of a certain size from a PDB file after simulation and outputs the result as a separated file
     named "output_file.pdb" containing only the desired complex.

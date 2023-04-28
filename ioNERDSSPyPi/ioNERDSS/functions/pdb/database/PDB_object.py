@@ -22,48 +22,48 @@ class ProteinComplex():
 
     ## EDITS DATA ##
 
-    def calc_angle(self):
+    def dtb_PDB_calc_angle(self):
         """This function calculates the 5 associating angles of each pair of interfaces.
         The default normal vector will be assigned as (0, 0, 1). If the co-linear issue occurs, 
         the system will use (0, 1, 0) instead to resolve co-linear issue. The calculated 5 angles 
         will be shown on the screen automatically."""
-        from . import real_PDB_separate_angle
+        from . import dtb_PDB_calc_angle
 
-        op = real_PDB_separate_angle((self.reaction_chain, self.int_site, self.int_site_distance, 
+        op = dtb_PDB_calc_angle((self.reaction_chain, self.int_site, self.int_site_distance, 
                                       self.unique_chain, self.COM))
         self.set_self_from_tuple(op)
     
 
 
-    def set_COM(self):
+    def dtb_PDB_norm_COM(self):
         """Normalizes the COM of each chain in the given Result and subtracts the interface coordinates of each chain by their respective COM.
         """
-        from . import real_PDB_separate_COM 
+        from . import dtb_PDB_norm_COM 
 
-        op = real_PDB_separate_COM((self.reaction_chain, self.int_site, self.int_site_distance, 
+        op = dtb_PDB_norm_COM((self.reaction_chain, self.int_site, self.int_site_distance, 
                                     self.unique_chain, self.COM, self.angle, self.normal_point_lst1, 
                                     self.normal_point_lst2, self.one_site_chain))
         self.set_self_from_tuple(op)
 
 
 
-    def filter(self,ChainList):
+    def dtb_PDB_filter(self,ChainList):
         """This function will filter the desired chain according to the input list of chain and exclude all the 
             unnecessary coordinate information for future analysis.
         Args:
             ChainList (list): The desired name of chains that users intend to examine. 
 
         """
-        from . import real_PDB_separate_filter
+        from . import dtb_PDB_filter
 
-        op =  real_PDB_separate_filter((self.reaction_chain, self.int_site, self.int_site_distance, 
+        op =  dtb_PDB_filter((self.reaction_chain, self.int_site, self.int_site_distance, 
                                     self.unique_chain, self.COM),ChainList)
 
         self.set_self_from_tuple(op)
 
 
 
-    def set_sigma(self):
+    def dtb_PDB_change_sigma(self):
         """This function allows users to change the value of sigma (the distance between two binding interfaces). 
         The new sigma value and the corresponding coordinates of interfaces will be shown on the screen and the 
         returns will contain all the information for further analysis. 
@@ -80,45 +80,45 @@ class ProteinComplex():
             NewSigma (list, optional): It consists of the actual sigma value that users desire to change, according 
                                     to the sequence of input ‘SiteList’. 
         """
-        from . import real_PDB_separate_sigma
+        from . import dtb_PDB_change_sigma
 
-        op = real_PDB_separate_sigma((self.reaction_chain, self.int_site, self.int_site_distance, 
+        op = dtb_PDB_change_sigma((self.reaction_chain, self.int_site, self.int_site_distance, 
                                     self.unique_chain, self.COM))
         self.set_self_from_tuple(op)
     
 
     ## OUTPUTS DATA ##
 
-    def write_new_input(self):
+    def dtb_PDB_write_input(self):
         """Generates a PDB file containing the calculated COMs and reaction interfaces for visualization and comparison with the 
         original PDB file. The input must be the output result of the 'real_PDB_separate_read' function. Note that the unit for 
         the coordinates in the PDB file is Angstrom, not nm, so the values will be 10 times larger than those in NERDSS input 
         files.
         """
-        from . import real_PDB_separate_write
+        from . import dtb_PDB_write_input
 
-        real_PDB_separate_write((self.reaction_chain, self.int_site, self.int_site_distance, 
+        dtb_PDB_write_input((self.reaction_chain, self.int_site, self.int_site_distance, 
                                     self.unique_chain, self.COM, self.angle, self.normal_point_lst1, 
                                     self.normal_point_lst2, self.one_site_chain))
 
 
 
-    def show_3D_graph(self):
+    def dtb_PDB_3D_plot(self):
         """Generate a 3D plot to display the spatial geometry of each simplified chain.
         """
-        from . import real_PDB_show_3D
+        from . import dtb_PDB_3D_plot
 
-        real_PDB_show_3D((self.reaction_chain, self.int_site, self.int_site_distance, 
+        dtb_PDB_3D_plot((self.reaction_chain, self.int_site, self.int_site_distance, 
                                     self.unique_chain, self.COM))
         
 
 
-    def write_new_PDB(self):
+    def dtb_PDB_write_PDB(self):
         """Generate a 3D plot to display the spatial geometry of each simplified chain.
         """
-        from . import real_PDB_show_PDB
+        from . import dtb_PDB_write_PDB
 
-        real_PDB_show_PDB((self.reaction_chain, self.int_site, self.int_site_distance, 
+        dtb_PDB_write_PDB((self.reaction_chain, self.int_site, self.int_site_distance, 
                                     self.unique_chain, self.COM))
 
 

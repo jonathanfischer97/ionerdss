@@ -1,6 +1,6 @@
 
 
-def real_PDB_separate_COM(Result: tuple):
+def dtb_PDB_norm_COM(Result: tuple):
     """
     Normalizes the COM of each chain in the given Result and subtracts the interface coordinates of each chain by their respective COM.
 

@@ -13,7 +13,7 @@ from .gen.real_PDB_norm_check import real_PDB_norm_check
 #   1) generalize the sign determination of phi and omega
 #   2) created a function for phi cacluation
 
-def real_PDB_separate_angle(Result: tuple):
+def dtb_PDB_calc_angle(Result: tuple):
     """
     This function calculates the 5 associating angles of each pair of interfaces.
     The default normal vector will be assigned as (0, 0, 1). If the co-linear issue occurs, 

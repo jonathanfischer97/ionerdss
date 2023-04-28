@@ -1,4 +1,4 @@
-def real_PDB_separate_write(Result: tuple):
+def dtb_PDB_write_input(Result: tuple):
     """
     Writes '.inp' and '.mol' files based on the calculations and modifications performed by the previous functions. Multiple '.mol' files and a single '.inp' file will be created in the same directory as the Jupyter Notebook file once the function finishes running.
 

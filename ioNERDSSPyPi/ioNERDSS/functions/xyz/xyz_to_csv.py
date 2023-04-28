@@ -1,9 +1,9 @@
-def xyz_to_csv(FileName: str, LitNum: int):
+def xyz_to_csv(FileName: str, LitNum: int = -1):
     """Converts a .xyz file to a .csv file for a specific or entire time frame.
 
     Args:
         FileName (str): The path to the input .xyz file, usually named 'trajectory.xyz'.
-        LitNum (int): The number of iterations to examine. If -1, the entire iteration will be extracted.
+        LitNum (int, optional = -1): The number of iterations to examine. If -1, the entire iteration will be extracted.
 
     Returns:
         A .csv file.

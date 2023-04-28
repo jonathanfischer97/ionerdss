@@ -3,7 +3,7 @@ import copy
 from .gen.real_PDB_mag import real_PDB_mag
 
 
-def real_PDB_separate_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: list = [], NewSigma: list = []):
+def dtb_PDB_change_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: list = [], NewSigma: list = []):
     """
     This function allows users to change the value of sigma (the distance between two binding interfaces). 
     The new sigma value and the corresponding coordinates of interfaces will be shown on the screen and the 

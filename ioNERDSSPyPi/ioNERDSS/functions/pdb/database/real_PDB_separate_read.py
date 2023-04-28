@@ -117,7 +117,7 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
     inner_resi_position_every_atom = []
 
     # determine number of atoms in each chain
-    chain_counter = 0
+    chain_counter = 1
 
     for i in range(len(total_atom_count)):
 

@@ -1,4 +1,4 @@
-def real_PDB_separate_filter(Result: tuple, ChainList: list):
+def dtb_PDB_filter(Result: tuple, ChainList: list):
     """
     This function will filter the desired chain according to the input list of chain and exclude all the 
     unnecessary coordinate information for future analysis. 

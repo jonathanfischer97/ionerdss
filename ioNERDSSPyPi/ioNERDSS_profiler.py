@@ -20,8 +20,11 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.sphere_regularization_index(FileNameHist = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", SpeciesName = "dode", LitNum = 1, TimeStep = 0.001,
-                                ComplexNum = 1, Radius = 180)
+#ion.multi_3D_hist(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, SpeciesList = ["A","B"],
+#         xAxis = "A", yAxis = "B", xBarSize = 1, yBarSize = 1, ShowFig = True, SaveFig = False)
+#print(ion.multi_hist_to_csv(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat"))
+print(ion.traj_track(FileName="ioNERDSSPyPi\TestingFunctions\\trajectory.xyz", SiteNum=3, MolIndex = [1,4,10]))
+
 last = badTimer('start',last)
 
 

@@ -1,4 +1,4 @@
-def real_PDB_show_PDB(Result: bool):
+def dtb_PDB_write_PDB(Result: bool):
     """
     Generates a PDB file containing the calculated COMs and reaction interfaces for visualization and comparison with the 
     original PDB file. The input must be the output result of the 'real_PDB_separate_read' function. Note that the unit for 
