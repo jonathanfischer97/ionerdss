@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from .read_file import read_file
 
 
-def hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
+def hist_complex_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
          BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
     """Creates histogram of the average number of complex species that have a certain number of species.
 

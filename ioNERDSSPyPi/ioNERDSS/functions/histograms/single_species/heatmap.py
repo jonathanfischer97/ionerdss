@@ -4,12 +4,14 @@ from .hist_temp import hist_temp
 from .read_file import read_file
 
 
-def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def heatmap(GraphType: int, GraphedData: int, FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                                SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
                                ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
-    """Generates a 2D histogram from histogram.dat of the % of the original monomers forming into different complex sizes over time
+    """Creates all 3 kinds of heatmaps. For info on each type look at main funcs for each type
 
     Args:
+        GraphType (int): what type of graph is being shown. (1: heatmap, 2: 3D histogram)
+        GraphedData (int): what type of data is being shown. (1: "complex_count", 2: "monomer_count", 3: "monomer_fraction")
         FileName (str): file location (relative) histogram.dat that will be read
         FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
         InitialTime (float): The starting time. Must not be smaller / larger then times in file.
@@ -21,9 +23,6 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
         ShowMean (bool, optional): If means will be shown in each box. Defaults to False.
         ShowStd (bool, optional): If std values will be shown in each box. Defaults to False.
         SaveFig (bool, optional): If the plot is saved. Defaults to False.
-
-    Returns:
-        2D heatnao. X-axis = complex species size. Y-axis = time. Color = fraction of monomers forming into that complex at that time
     """
     
     #creates equal time chunks b/w initial and final based on # of timebins
@@ -37,6 +36,21 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
     z_list_tot = [] #list of list of each complex type/size. Each sublist = file. Subsublist = timebin.
     x_list_tot = [] #list of list of average count of each complex type/size. Each sublist = file. Subsublist = timebin.
     
+    #write name of the plot / y label (if applicable)
+    if GraphedData == 1:
+        graphTitle = "Size Distribution with Changing of Time"
+        zLabel = "Number of complexes"
+    elif GraphedData == 2:
+        graphTitle = "Total Number of Monomers in Complexes with Changing of Time"
+        zLabel = "Number of monomers"
+    elif GraphedData == 3:
+        graphTitle = "Fraction of Monomers in Complexes with Changing of Time"
+        zLabel = "Fraction of monomers"
+    else:
+        raise Exception("Invalid data type")
+
+
+
     for histogram_file_number in range(1, FileNum+1):
         
         #determining file name (if there are multiple or none)
@@ -48,10 +62,11 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
         #load in the file
         hist = read_file(temp_file_name,SpeciesName)
 
-        #find total number of monomers
-            #xx, zz = hist_temp(hist, 0, 0)
-            #n_tot = sum(zz)
-        n_tot = hist[0][1][0]
+        #find total number of monomers (ONLY FOR MONO FRACTION)
+        if GraphedData == 3: 
+            n_tot = hist[0][1][0]
+        else:
+            n_tot = 1
 
         max_num = 0 #size of the largest species type
         x_lst = [] #list of list of each species type in a time bin
@@ -60,9 +75,14 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
 
         for time_bin in range(0, len(t_arr)-1):
             
-            #creates time plot
-            t_plt.append(str(round(t_arr[time_bin], 2)) +
-                         's ~ ' + str(round(t_arr[time_bin+1], 2)) + 's')
+            #creates time plot (different for 3d graphs and heatmaps)
+            if GraphType == 1:
+                t_plt.append(str(round(t_arr[time_bin], 2)) +
+                            's ~ ' + str(round(t_arr[time_bin+1], 2)) + 's')
+            elif GraphType == 2:
+                t_plt.append((t_arr[time_bin]+t_arr[time_bin+1])/2)
+            else: 
+                raise Exception("Invalid graph type enterred")
             
             #finds each species type and average number of them during this timebin
             x, z = hist_temp(hist, t_arr[time_bin], t_arr[time_bin+1])
@@ -81,15 +101,20 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
             for protein_index,protein_complex in enumerate(timebin):
                 z_plt[protein_complex-1, timebin_index] = z_lst[timebin_index][protein_index]
         
-        #determines number of monomers in each complex size (as a fraction of the whole number of monomers)
-        z_plt_mod = []
-        for complex_size,protein_complex in enumerate(z_plt):
-            z_plt_mod_temp = []
-            for time_bin in protein_complex:
-                z_plt_mod_temp.append(time_bin * complex_size / n_tot)
-            z_plt_mod.append(z_plt_mod_temp)
+        
+
+        #determines number of monomers in each complex size (ONLY FOR MONO COUNT) or their fraction of the whole (ONLY FOR MONO FRAC)
+        if GraphedData >= 2:
+            z_plt_mod = []
+            for complex_size,protein_complex in enumerate(z_plt):
+                z_plt_mod_temp = []
+                for time_bin in protein_complex:
+                    z_plt_mod_temp.append(time_bin * complex_size / n_tot)
+                z_plt_mod.append(z_plt_mod_temp)
+            z_plt = z_plt_mod
+
        
-        z_plt = np.array(z_plt_mod).T #tranpose back
+        z_plt = np.array(z_plt).T #tranpose back
 
         
         z_plt_ = []
@@ -145,34 +170,54 @@ def hist_time_heatmap_fraction(FileName: str, FileNum: int, InitialTime: float, 
     
     
     if ShowFig:
-        fig, ax = plt.subplots()
-        im = ax.imshow(count_list_mean)
-        ax.set_xticks(np.arange(len(n_list)))
-        ax.set_yticks(np.arange(len(t_plt)))
-        ax.set_xticklabels(n_list)
-        ax.set_yticklabels(t_plt)
-        if ShowMean and ShowStd:
-            print('Cannot show both maen and std!')
-            return 0
-        if ShowMean:
-            for i in range(len(t_plt)):
-                for j in range(len(n_list)):
-                    text = ax.text(j, i, round(
-                        count_list_mean[i, j], 1), ha='center', va='center', color='w')
-        elif ShowStd and FileNum != 1:
-            for i in range(len(t_plt)):
-                for j in range(len(n_list)):
-                    text = ax.text(j, i, round(
-                        count_list_std[i, j], 1), ha='center', va='center', color='w')
-        ax.set_title('Franction of Monomers in Complexes with Changing of Time')
-        fig.tight_layout()
-        plt.colorbar(im)
-        plt.xlabel('Size of Complex')
-        plt.ylabel('Time (s)')
-        if SaveFig:
-            plt.savefig('hist_heatmap_fraction.png',
-                        dpi=500, bbox_inches='tight')
-        plt.show()
+        
+        if GraphType == 1:
+            fig, ax = plt.subplots()
+            im = ax.imshow(count_list_mean)
+            ax.set_xticks(np.arange(len(n_list)))
+            ax.set_yticks(np.arange(len(t_plt)))
+            ax.set_xticklabels(n_list)
+            ax.set_yticklabels(t_plt)
+            if ShowMean and ShowStd:
+                print('Cannot show both mean and Std!')
+                return 0
+            if ShowMean:
+                for i in range(len(t_plt)):
+                    for j in range(len(n_list)):
+                        text = ax.text(j, i, round(
+                            count_list_mean[i, j], 1), ha='center', va='center', color='w')
+            elif ShowStd and FileNum != 1:
+                for i in range(len(t_plt)):
+                    for j in range(len(n_list)):
+                        text = ax.text(j, i, round(
+                            count_list_std[i, j], 1), ha='center', va='center', color='w')
+            ax.set_title(graphTitle)
+            fig.tight_layout()
+            plt.colorbar(im)
+            plt.xlabel('Size of Complex')
+            plt.ylabel('Time (s)')
+            if SaveFig:
+                plt.savefig('hist_heatmap_fraction.png',
+                            dpi=500, bbox_inches='tight')
+            plt.show()
+        else:
+            xx, yy = np.meshgrid(n_list, t_plt)
+            X, Y = xx.ravel(), yy.ravel()
+            Z = np.array(count_list_mean.ravel())
+            bottom = np.zeros_like(Z)
+            width = xBarSize
+            depth = 1/TimeBins
+            fig = plt.figure()
+            ax = fig.add_subplot(2,2,1,projection="3d")
+            ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
+            ax.set_xlabel('Number of ' + SpeciesName + ' in sigle complex')
+            ax.set_ylabel('Time (s)')
+            ax.set_zlabel(zLabel)
+            if SaveFig:
+                plt.savefig('histogram_3D.png', dpi=500)
+            plt.show()         
+        
+    
     return n_list, t_plt, count_list_mean, count_list_std
 
 

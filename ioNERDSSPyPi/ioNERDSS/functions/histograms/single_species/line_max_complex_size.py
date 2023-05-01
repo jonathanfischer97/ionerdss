@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from .read_file import read_file
 
 
-def max_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def line_max_complex_size(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                 SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
     """Creates graph of the max number of species in a single complex molecule over a time period.
 

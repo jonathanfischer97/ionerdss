@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-from .hist_temp import hist_temp
-from .read_file import read_file
+from ..hist_temp import hist_temp
+from ..read_file import read_file
 
 
-def hist_3d_time(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def hist_3d_monomer_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                  SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
     """Takes in a histogram.dat file from NERDSS, and creates a 3D histogram that represents the average number of monomers in each complex size, over time.
 

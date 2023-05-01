@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .hist_temp import hist_temp
-from .read_file import read_file
+from ..hist_temp import hist_temp
+from ..read_file import read_file
 
 
-def hist_time_heatmap_mono_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def heatmap_monomer_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                                  SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
                                  ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     """Creates a 2D Heatmap from a histogram.dat file that shows average mumber of monomers in each complex size over time.

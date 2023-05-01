@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from .read_file import read_file
 
 
-def mean_complex(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def line_mean_complex_size(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                  SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
     """Creates graph of the mean number of species in a single complex molecule over a time period.
 
