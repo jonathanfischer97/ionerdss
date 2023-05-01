@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def multi_hist_to_csv(FileName: str):
+def hist_to_csv(FileName: str):
     """Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
 
     Args:
