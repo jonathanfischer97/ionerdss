@@ -1,9 +1,9 @@
 from .platonic_solids import *
 from .transition_matrix import *
 from .histograms import *
-from .pdb import *
+from .database_PDB import *
+from .locate_pos import *
 from .xyz import *
-from .restart import *
 from .acf import *
 
 
