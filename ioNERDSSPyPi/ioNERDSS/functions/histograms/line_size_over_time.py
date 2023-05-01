@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 
 
 def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,
-                 SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
-    """Creates graph of the mean number of species in a single complex molecule over a time period.
+                 SpeciesName: str, ExcludeSize: int = 0, SpeciesList: list = ["na"], ShowFig: bool = True, SaveFig: bool = False):
+    """Creates a graph counting the number of protein species in a complex molecule over a time period.
+        Can either be average count or the max count of that protein species at that time stamp .
 
     Args:
         Data (int): what will the graph show (1: mean, 2: max)
@@ -14,6 +15,7 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
         FinalTime (float): The ending time. Must not be smaller / larger then times in file.
         SpeciesName (str): The name of the species you want to examine. Should be in the .dat file.
         ExcludeSize (int): Monomers in the complex that are smaller or equal to this number will not be included. 
+        SpeciesList (lst, optional): lists all of the species in the doc. Only needed for multi species hists.
         ShowFig (bool, optional): If the plot is shown. Defaults to True.
         SaveFig (bool, optional): If the plot is saved. Defaults to False.
 
@@ -41,25 +43,24 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
         total_time_list = [] #list of mean sizes (index of this = index of timestep)
 
         #create list of means / timesteps, based on what sizes are excluded/not
-        if ExcludeSize == 0:
+        if ExcludeSize >= 0:
             for timestep in hist:
                 if InitialTime <= timestep[0] <= FinalTime:
                     total_time_list.append(timestep[0])
                     
-                    if Data == 1: #if it is a mean / max line graph
-                        total_size_list.append(np.mean(timestep[2]))
+                    #create a list of each complex size at this timestamp
+                    if SpeciesList != ['na']:
+                        timestep_edited = []
+                        ind = SpeciesList.index(SpeciesName)
+                        for complex in timestep[1:]:
+                            timestep_edited.append(complex[ind])
                     else:
-                        total_size_list.append(np.max(timestep[2]))
-
+                        timestep_edited = timestep[2]
         
-        elif ExcludeSize > 0:
-            for timestep in hist:
-                if InitialTime <= timestep[0] <= FinalTime:
-                    timestep_edited = [ele for ele in timestep[2] if ele>ExcludeSize] #create new list that only includes elements greater then exclude size
-                    if timestep_edited == []: timestep_edited.append(0)
+                    if ExcludeSize > 0:
+                        timestep_edited = [ele for ele in timestep_edited if ele>ExcludeSize] #create new list that only includes elements greater then exclude size
+                        if timestep_edited == []: timestep_edited.append(0)
 
-                    total_time_list.append(timestep[0])
-                    
                     if Data == 1: #if it is a mean / max line graph
                         total_size_list.append(np.mean(timestep_edited))
                     else:

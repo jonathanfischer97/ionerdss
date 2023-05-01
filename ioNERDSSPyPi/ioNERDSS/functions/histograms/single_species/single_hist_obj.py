@@ -1,6 +1,6 @@
 from .read_file import read_file
 from .complex_time_3d import complex_time_3d
-from .line_size_over_time import line_size_over_time
+from ..line_size_over_time import line_size_over_time
 from .hist_complex_count import hist_complex_count
 from ..hist_to_csv import hist_to_csv
 from ..hist_to_df import hist_to_df

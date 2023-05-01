@@ -20,9 +20,11 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-test = ion.SingleHistogram(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, 
-                                  SpeciesName = 'dode') 
-test.hist_3d_monomer_fraction(TimeBins = 10)
+test = ion.MultiHistogram(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, 
+                                  SpeciesList = ['A','B']) 
+#test = ion.SingleHistogram(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, 
+#                                  SpeciesName = "dode") 
+test.line_max_complex_size(SpeciesName="A",ExcludeSize=5,ShowFig=False)
 
 
 last = badTimer('start',last)

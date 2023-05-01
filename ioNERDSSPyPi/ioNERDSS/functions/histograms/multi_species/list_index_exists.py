@@ -8,6 +8,7 @@ def list_index_exists(lst,index):
     Returns:
         boolean: if that index exists for that list
     """
+    
     try:
         lst[index]
         return True
