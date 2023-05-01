@@ -4,15 +4,15 @@ from .hist_temp import hist_temp
 from .read_file import read_file
 
 
-def heatmap(GraphType: int, GraphedData: int, FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,
                                SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
                                ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
-    """Creates all 3 kinds of heatmaps. For info on each type look at main funcs for each type
+    """Creates all kinds of 3d time graphs. For info on each type look at main funcs for each type
 
     Args:
         GraphType (int): what type of graph is being shown. (1: heatmap, 2: 3D histogram)
         GraphedData (int): what type of data is being shown. (1: "complex_count", 2: "monomer_count", 3: "monomer_fraction")
-        FileName (str): file location (relative) histogram.dat that will be read
+        full_hist (list): list that holds all of that data from histogram.dat
         FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
         InitialTime (float): The starting time. Must not be smaller / larger then times in file.
         FinalTime (float): The ending time. Must not be smaller / larger then times in file.
@@ -28,10 +28,6 @@ def heatmap(GraphType: int, GraphedData: int, FileName: str, FileNum: int, Initi
     #creates equal time chunks b/w initial and final based on # of timebins
     t_arr = np.arange(InitialTime, FinalTime, (FinalTime-InitialTime)/TimeBins)
     t_arr = np.append(t_arr, FinalTime)
-   
-    #setup file naming
-    file_name_head = FileName.split('.')[0]
-    file_name_tail = FileName.split('.')[1]
     
     z_list_tot = [] #list of list of each complex type/size. Each sublist = file. Subsublist = timebin.
     x_list_tot = [] #list of list of average count of each complex type/size. Each sublist = file. Subsublist = timebin.
@@ -51,16 +47,7 @@ def heatmap(GraphType: int, GraphedData: int, FileName: str, FileNum: int, Initi
 
 
 
-    for histogram_file_number in range(1, FileNum+1):
-        
-        #determining file name (if there are multiple or none)
-        if FileNum == 1:
-            temp_file_name = FileName
-        else:
-            temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
-        
-        #load in the file
-        hist = read_file(temp_file_name,SpeciesName)
+    for hist in full_hist:
 
         #find total number of monomers (ONLY FOR MONO FRACTION)
         if GraphedData == 3: 

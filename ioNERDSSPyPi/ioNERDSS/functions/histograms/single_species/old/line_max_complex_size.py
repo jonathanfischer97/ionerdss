@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .read_file import read_file
+from ..read_file import read_file
 
 
 def line_max_complex_size(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

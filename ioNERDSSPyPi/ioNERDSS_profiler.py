@@ -20,12 +20,11 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.hist_3d_monomer_count(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, 
-                                  SpeciesName = 'dode', ShowFig = True, SaveFig = False, TimeBins=10) 
+test = ion.SingleHistogram(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, 
+                                  SpeciesName = 'dode') 
+test.hist_3d_monomer_fraction(TimeBins = 10)
 
-#print(ion.multi_hist_to_csv(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat"))
-#print(ion.traj_track(FileName="ioNERDSSPyPi\TestingFunctions\\trajectory.xyz", SiteNum=3, MolIndex = [1,4,10]))
-#ion.single_hist_to_csv(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat")
+
 last = badTimer('start',last)
 
 

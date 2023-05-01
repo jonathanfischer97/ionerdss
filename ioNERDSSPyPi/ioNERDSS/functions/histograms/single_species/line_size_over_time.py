@@ -1,14 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .read_file import read_file
 
 
-def line_mean_complex_size(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,
                  SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
     """Creates graph of the mean number of species in a single complex molecule over a time period.
 
     Args:
-        FileName (str): Path to the histogram.dat file
+        Data (int): what will the graph show (1: mean, 2: max)
+        full_hist (list): holds all of that data in the histogram.dat file
         FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
         InitialTime (float): The starting time. Must not be smaller / larger then times in file.
         FinalTime (float): The ending time. Must not be smaller / larger then times in file.
@@ -21,40 +21,49 @@ def line_mean_complex_size(FileName: str, FileNum: int, InitialTime: float, Fina
         graph. X-axis = time. Y-axis = mean number of species in a single complex molecule.
     """
     
-    #for file names
-    file_name_head = FileName.split('.')[0]
-    file_name_tail = FileName.split('.')[1]
-    
     time_list = [] #list of every timestamp
     size_list = [] #list of mean sizes (index of this = index of timestep)
 
-    for histogram_file_number in range(1, FileNum+1):
-        
-        #determining file name (if there are multiple or none)
-        if FileNum == 1:
-            temp_file_name = FileName
-        else:
-            temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
+    #write name of the plot / y label (if applicable)
+    if Data == 1:
+        graphTitle = 'Average Number of ' + str(SpeciesName) + ' in Single Complex'
+        yLabel = 'Average Number of ' + str(SpeciesName)
+    elif Data == 2:
+        graphTitle = 'Maximum Number of ' + str(SpeciesName) + ' in Single Complex'
+        yLabel = 'Maximum Number of ' + str(SpeciesName)
+    else:
+        raise Exception("Invalid data type")
+
+
+    for hist in full_hist:
 
         total_size_list = [] #list of every timestamp for this file
         total_time_list = [] #list of mean sizes (index of this = index of timestep)
-        
-        #real file
-        hist = read_file(temp_file_name, SpeciesName)
-        
+
         #create list of means / timesteps, based on what sizes are excluded/not
         if ExcludeSize == 0:
             for timestep in hist:
                 if InitialTime <= timestep[0] <= FinalTime:
                     total_time_list.append(timestep[0])
-                    total_size_list.append(np.mean(timestep[2]))
+                    
+                    if Data == 1: #if it is a mean / max line graph
+                        total_size_list.append(np.mean(timestep[2]))
+                    else:
+                        total_size_list.append(np.max(timestep[2]))
+
         
         elif ExcludeSize > 0:
             for timestep in hist:
                 if InitialTime <= timestep[0] <= FinalTime:
                     timestep_edited = [ele for ele in timestep[2] if ele>ExcludeSize] #create new list that only includes elements greater then exclude size
+                    if timestep_edited == []: timestep_edited.append(0)
+
                     total_time_list.append(timestep[0])
-                    total_size_list.append(np.mean(timestep_edited))
+                    
+                    if Data == 1: #if it is a mean / max line graph
+                        total_size_list.append(np.mean(timestep_edited))
+                    else:
+                        total_size_list.append(np.max(timestep_edited))
         else:
             print('ExcludeSize cannot smaller than 0!')
             return 0
@@ -90,10 +99,9 @@ def line_mean_complex_size(FileName: str, FileNum: int, InitialTime: float, Fina
         if FileNum > 1:
             plt.errorbar(time_list[0], mean, color='C0',
                          yerr=std, ecolor=errorbar_color)
-        plt.title('Average Number of ' +
-                  str(SpeciesName) + ' in Single Complex')
+        plt.title(graphTitle)
         plt.xlabel('Time (s)')
-        plt.ylabel('Average Number of ' + str(SpeciesName))
+        plt.ylabel(yLabel)
         if SaveFig:
             plt.savefig('mean_complex.png', dpi=500)
         plt.show()

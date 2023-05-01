@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 from .read_file import read_file
 
 
-def hist_complex_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
+def hist_complex_count(full_hist: list, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
          BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
     """Creates histogram of the average number of complex species that have a certain number of species.
 
     Args:
-        FileName (str): Path to the histogram.dat file
+        full_hist (list): List that holds all of the data from the histogram.dat file
         FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
         InitialTime (float): The starting time. Must not be smaller / larger then times in file.
         FinalTime (float): The ending time. Must not be smaller / larger then times in file.
@@ -21,29 +21,17 @@ def hist_complex_count(FileName: str, FileNum: int, InitialTime: float, FinalTim
         Histogram. X-axis = # of species in a complexes. Y-axis = relative count of each complex over the whole timeframe
     """
 
-    #fore determining file names
-    file_name_head = FileName.split('.')[0]
-    file_name_tail = FileName.split('.')[1]
     
     #main lists, each sublist = 1 folder
     count_list = []
     size_list = []
     
     #runs through each file
-    for histogram_file_number in range(1, FileNum+1):
-        
-        #determining file name (if there are multiple or none)
-        if FileNum == 1:
-            temp_file_name = FileName
-        else:
-            temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
-        
+    for hist in full_hist:
+
         #lists for this file
         total_size_list = [] #list of each size
         total_count_list = [] #list of lists that hold the counts of eachsize
-        
-        #reads through the file
-        hist = read_file(temp_file_name, SpeciesName)
 
         data_count = 0
         for timestep in hist:
