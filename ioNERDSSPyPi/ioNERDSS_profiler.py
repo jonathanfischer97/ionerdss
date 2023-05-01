@@ -24,7 +24,7 @@ test = ion.MultiHistogram(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_mu
                                   SpeciesList = ['A','B']) 
 #test = ion.SingleHistogram(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, 
 #                                  SpeciesName = "dode") 
-test.line_max_complex_size(SpeciesName="A",ExcludeSize=5,ShowFig=False)
+test.multi_3D_hist("A","B")
 
 
 last = badTimer('start',last)
