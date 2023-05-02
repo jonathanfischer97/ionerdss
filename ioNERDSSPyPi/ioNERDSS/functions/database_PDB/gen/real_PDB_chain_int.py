@@ -3,7 +3,7 @@ import math
 
 def real_PDB_chain_int(unique_chain, split_position, split_resi_count, split_atom_count, split_resi_type, split_atom_type, split_resi_position):
     """
-    This function takes in the necessary data for a protein structure and determines which chains and residues are interacting
+    This function takes a complex protein structure and determines which chains and residues are interacting
     with each other based on the distance between atoms. The output is a tuple that includes the following lists:
 
     Args:

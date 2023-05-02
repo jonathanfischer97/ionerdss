@@ -12,17 +12,17 @@ class ProteinComplex():
             Filename (str): The full path of the desired PDB file or name of the file if in same directory. 
             ChainsIncluded (list, optional): A list of which chains you want to be included. MUST BE MORE THAN 2!
         """
-        from . import real_PDB_separate_read
+        from . import dtb_PDB_separate_read
 
         if len(ChainsIncluded) >= 2 or ChainsIncluded == [None]:
-            self.reaction_chain, self.int_site, self.int_site_distance, self.unique_chain, self.COM = real_PDB_separate_read(FileName,ChainsIncluded)
+            self.reaction_chain, self.int_site, self.int_site_distance, self.unique_chain, self.COM = dtb_PDB_separate_read(FileName,ChainsIncluded)
         else:
             raise Exception('The ChainsIncluded list, if included, must be greater then 2')
 
 
     ## EDITS DATA ##
 
-    def dtb_PDB_calc_angle(self):
+    def calc_angle(self):
         """This function calculates the 5 associating angles of each pair of interfaces.
         The default normal vector will be assigned as (0, 0, 1). If the co-linear issue occurs, 
         the system will use (0, 1, 0) instead to resolve co-linear issue. The calculated 5 angles 
@@ -35,7 +35,7 @@ class ProteinComplex():
     
 
 
-    def dtb_PDB_norm_COM(self):
+    def norm_COM(self):
         """Normalizes the COM of each chain in the given Result and subtracts the interface coordinates of each chain by their respective COM.
         """
         from . import dtb_PDB_norm_COM 
@@ -47,7 +47,7 @@ class ProteinComplex():
 
 
 
-    def dtb_PDB_filter(self,ChainList):
+    def filter(self,ChainList):
         """This function will filter the desired chain according to the input list of chain and exclude all the 
             unnecessary coordinate information for future analysis.
         Args:
@@ -63,7 +63,7 @@ class ProteinComplex():
 
 
 
-    def dtb_PDB_change_sigma(self):
+    def change_sigma(self):
         """This function allows users to change the value of sigma (the distance between two binding interfaces). 
         The new sigma value and the corresponding coordinates of interfaces will be shown on the screen and the 
         returns will contain all the information for further analysis. 
@@ -89,7 +89,7 @@ class ProteinComplex():
 
     ## OUTPUTS DATA ##
 
-    def dtb_PDB_write_input(self):
+    def write_input(self):
         """Generates a PDB file containing the calculated COMs and reaction interfaces for visualization and comparison with the 
         original PDB file. The input must be the output result of the 'real_PDB_separate_read' function. Note that the unit for 
         the coordinates in the PDB file is Angstrom, not nm, so the values will be 10 times larger than those in NERDSS input 
@@ -103,7 +103,7 @@ class ProteinComplex():
 
 
 
-    def dtb_PDB_3D_plot(self):
+    def _3D_plot(self):
         """Generate a 3D plot to display the spatial geometry of each simplified chain.
         """
         from . import dtb_PDB_3D_plot
@@ -113,7 +113,7 @@ class ProteinComplex():
         
 
 
-    def dtb_PDB_write_PDB(self):
+    def write_PDB(self):
         """Generate a 3D plot to display the spatial geometry of each simplified chain.
         """
         from . import dtb_PDB_write_PDB

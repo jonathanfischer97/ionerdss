@@ -20,11 +20,9 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-test = ion.MultiHistogram(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, 
-                                  SpeciesList = ['A','B']) 
-#test = ion.SingleHistogram(FileName = "ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat", FileNum = 1, InitialTime = 0.0, FinalTime = 1.00, 
-#                                  SpeciesName = "dode") 
-test.multi_3D_hist("A","B")
+test = ion.ProteinComplex(FileName="ioNERDSSPyPi\TestingFunctions\databse.pdb")
+test.calc_angle()
+print(test.COM)
 
 
 last = badTimer('start',last)

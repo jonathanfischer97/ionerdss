@@ -1,10 +1,11 @@
 import math
+import numpy as np
 import sys
 from .gen.real_PDB_data_check import real_PDB_data_check
-from .gen.real_PDB_chain_int import real_PDB_chain_int
+from .gen.real_PDB_chain_int_simple import real_PDB_chain_int_simple
 
 
-def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
+def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
     """
     This function will extract the coordinate information stored inside a real PDB file and calculate 
     the COM of each unique chain, as well as recognize the binding information between each pair of chains 
@@ -17,24 +18,30 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
         ChainIncluded (lst): A list of which chains you want to be included
 
     Returns:
-        5 length tuple: The tuple contains all the information for further analysis.
+        reaction_chain: list of coordinates to each chains COM. Indicies connect with unique chain.
+        int_site: holds interaction site data. [i]: each reaction. [0][i]: each chain involved. [0][0][i]: position of that chains int site
+        int_site_distance: distance between each interaction. Indice connects with int_site
+        unique_chain: Each chain included
+        COM: COM of each chain. Indicies connect with unique chain.
 
     """
 
+    ##  PART 1: CREATING THE MAIN LISTS WITH ALL THE DATA
+    
+    # these lists have the same length as as total atom numbers in the protein.
     total_atom_count = [] # holds the index of every atom
     total_chain = [] # specific chain the atom belongs to (such as A or B or C, etc).
     total_resi_count = []  # residue number
     total_position = []  # the coordinate of each atom
     total_atom_type = []  # to show whether the atom is a alpha carbon, N, etc.
     total_resi_type = []  # to show the type of residue
-    # indicate the position of alpha carbon of the residue the atom is in.
-    total_resi_position_every_atom = []
-    total_resi_position = []  # list of position of all alpha carbon atom position
-    total_alphaC_resi_count = []  # indicate which residue the alphaC belongs to
-    # The length of last two lists are the same as total residue numbers in the chain and the length of rest of the lists
-    # are the same as total atom numbers in the protein.
+    total_resi_position_every_atom = []  # indicate the position of alpha carbon of the residue the atom is in.
     
-    #read in user pdb file, and output data into corresponding lists
+    # The length of these two lists are the same as total residue numbers in the chain and the length of rest of the lists
+    total_resi_position = []  # list of position of all alpha carbon atom position
+    total_alphaC_resi_count = []  # indicate which residule the alphaC belongs to
+    
+    #read in user pdb file, and output data about each atom into different lists.
     with open(FileName, "r") as filename:
         
         #go through each line in the file
@@ -71,41 +78,56 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
                     position_coords.append(float(data[6+i])/10)
                 total_position.append(position_coords)
                 
-                #create lists of all residuals
+                #create lists of all residuals (residual pos = location of Alpha C)
                 if data[2] == "CA":
                     total_resi_position.append(position_coords)
                     total_alphaC_resi_count.append(data[5])
     print('Finish reading pdb file')
 
-    #create a list that holds the residual location of every atom (based on the residuals CA)
+    #go through as each residual, then run through all of the atoms (kinda) and if the atoms are 
+    #in the residual set that atoms position to the residual (Creates total_resi_position_every_atom)
     count = 0
-    for i in range(len(total_alphaC_resi_count)):
+    for residualIndex,residual in enumerate(total_alphaC_resi_count):
+        
+        #once the end of the atom list is reached, break
         if count >= len(total_atom_type):
             break
+        
+        #go through each atom, and if the current residual = that atom, set that atoms position to this residual
         for j in range(count, len(total_atom_type)):
-            if total_resi_count[j] == total_alphaC_resi_count[i]:
-                total_resi_position_every_atom.append(total_resi_position[i])
+            if total_resi_count[j] == residual:
+                total_resi_position_every_atom.append(total_resi_position[residualIndex])
                 count = count + 1
-            else:
+            else: #since all atoms in 1 residual are next to each other, once one in a different one is reached, we know all have been read.
                 break
 
     # determine how many unique chains exist
-    unique_chain = list(set(total_chain))
+    unique_chain = []
+    for atom_chain in total_chain:
+        if atom_chain not in unique_chain :
+            unique_chain.append(atom_chain)  
+    
     print(str(len(unique_chain)) + ' chain(s) in total: ' + str(unique_chain))
 
     # exit if there's only one chain.
     if len(unique_chain) == 1:
         sys.exit()
+    
+    ##  END OF PART 1
+
+
+
+    ## PART 2: CREATE NEW LISTS WHERE EACH CHAIN = 1 SUBLIST
 
     # create lists of lists where each sublist contains the data for different chains.
-    split_atom_count = []
-    split_chain = []
-    split_resi_count = []
-    split_position = []
-    split_atom_type = []
-    split_resi_type = []
-    chain_end_atom = []
-    split_resi_position_every_atom = []
+    split_atom_count = [] #index of each atom (sublisted)
+    split_chain = [] #chain of each atom (sublisted?)
+    split_resi_count = [] #residual # of each atom (sublisted)
+    split_position = [] #position of each atom (sublisted)
+    split_atom_type = [] #type (ex: alpha C, N) of each atom (sublisted)
+    split_resi_type = [] #the typing of the residual of each atom (sublisted)
+    chain_end_atom = [] #???
+    split_resi_position_every_atom = [] #position of the alpha carbon of this atom's residual of each atom (sublisted)
 
     # inner lists are sublists of each list, each of the sublist represents data about a list
     inner_atom_count = []
@@ -117,15 +139,17 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
     inner_resi_position_every_atom = []
 
     # determine number of atoms in each chain
-    chain_counter = 1
+    chain_counter = 0
 
+    #runs through each atom
     for i in range(len(total_atom_count)):
 
+        #if a new chain has been reached append the sublists to the main lists, and reset the temp lists
         if total_chain[i] != unique_chain[chain_counter]:
             split_atom_count.append(inner_atom_count)
             split_chain.append(inner_chain)
             split_resi_count.append(inner_resi_count)
-            split_position.append(inner_position)
+            split_position.append(np.array(inner_position))
             split_atom_type.append(inner_atom_type)
             split_resi_type.append(inner_resi_type)
             split_resi_position_every_atom.append(
@@ -149,12 +173,13 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
             inner_resi_type.append(total_resi_type[i])
             inner_resi_position_every_atom.append(
                 total_resi_position_every_atom[i])
-
+    
+        #if all atoms have been iterated through append the sublists to the main lists
         if i == (len(total_atom_count) - 1):
             split_atom_count.append(inner_atom_count)
             split_chain.append(inner_chain)
             split_resi_count.append(inner_resi_count)
-            split_position.append(inner_position)
+            split_position.append(np.array(inner_position))
             split_atom_type.append(inner_atom_type)
             split_resi_type.append(inner_resi_type)
             split_resi_position_every_atom.append(
@@ -163,45 +188,53 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
 
     print('Each of them has ' + str(chain_end_atom) + ' atoms.')
 
-    # determine the interaction between each two chains by using function chain_int()
-    # the output is a tuple with 7 list of list including: reaction_chain, reaction_atom, reaction_atom_position,
-    # reaction_atom_distance, reaction_resi_count, reaction_resi_type and  reaction_atom_type
+    ## END PART 2
 
-    interaction = real_PDB_chain_int(unique_chain, split_position, split_resi_count, split_atom_count,
+
+
+    ## PART 3:
+    ## determine the interaction between each two chains by using function chain_int()
+    ## the output is a tuple with 7 list of list including: reaction_chain, reaction_atom, reaction_atom_position,
+    ## reaction_atom_distance, reaction_resi_count, reaction_resi_type and  reaction_atom_type
+
+    interaction = real_PDB_chain_int_simple(unique_chain, split_position, split_resi_count, split_atom_count,
                                      split_resi_type, split_atom_type, split_resi_position_every_atom)
-    reaction_chain = interaction[0]
-    reaction_atom = interaction[1]
-    reaction_atom_position = interaction[2]
-    reaction_atom_distance = interaction[3]
-    reaction_resi_count = interaction[4]
-    reaction_resi_type = interaction[5]
-    reaction_atom_type = interaction[6]
-    reaction_resi_position = interaction[7]
+    reaction_chain = interaction[0] #[i]: holds each chain interaction. [0][i]: name of each chain in this interaction
+    reaction_resi_position = interaction[1] #[i]: holds each different chain interaction. [0][i]: each atomic interaction. [0][0][1-2]: position of both atoms in the interaction
 
-    # calculating center of mass (COM) and interaction site
+    ##END OF PART 3
 
-    # COM
-    COM = []
-    for i in range(len(split_position)):
+
+
+
+    #PART 4: calculating center of mass (COM), and interaction site
+
+    #Calculate COM
+    COM = [] # list of coordinates to each chains COM. Indicies connect with unique chain.
+    
+    #goes through each chain, and calculates the average location of every atom.
+    for chain in split_position:
         sumx = 0
         sumy = 0
         sumz = 0
-        for j in range(len(split_position[i])):
-            sumx = sumx + split_position[i][j][0]
-            sumy = sumy + split_position[i][j][1]
-            sumz = sumz + split_position[i][j][2]
-        inner_COM = [sumx / len(split_position[i]), sumy /
-                     len(split_position[i]), sumz / len(split_position[i])]
+        chain_length =  len(chain)
+        for atom_position in chain:
+            sumx = sumx + atom_position[0]
+            sumy = sumy + atom_position[1]
+            sumz = sumz + atom_position[2]
+        inner_COM = [sumx / chain_length, sumy /
+                     chain_length, sumz / chain_length]
         COM.append(inner_COM)
 
-    for i in range(len(COM)):
+    for i,chain_com in enumerate(COM):
         print("Center of mass of  " + unique_chain[i] + " is: " +
-              "[%.3f, %.3f, %.3f]" % (COM[i][0], COM[i][1], COM[i][2]))
+              "[%.3f, %.3f, %.3f]" % (chain_com[0], chain_com[1], chain_com[2]))
 
-    # int_site
-    int_site = []
+    #Calculate int_site
+    int_site = [] #holds interaction site data. [i]: each reaction. [0][i]: each chain involved. [0][0][i]: position of that chains int site
     two_chain_int_site = []
 
+    #goes through reaction, and calculates the average position of each residual.
     for i in range(len(reaction_resi_position)):
         for j in range(0, 2):
             sumx = 0
@@ -221,21 +254,28 @@ def real_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
         int_site.append(two_chain_int_site)
         two_chain_int_site = []
 
-    # calculate distance between interaction site.
+    ##END OF PART 4
+    
+    
+    
+    ##PART 5: calculate distance between interaction site.
+    
     int_site_distance = []
-    for i in range(len(int_site)):
-        distance = math.sqrt((int_site[i][0][0] - int_site[i][1][0]) ** 2 + (int_site[i][0][1] - int_site[i][1][1]) ** 2
-                             + (int_site[i][0][2] - int_site[i][1][2]) ** 2)
+    for reaction in int_site:
+        distance = math.sqrt((reaction[0][0] - reaction[1][0]) ** 2 + (reaction[0][1] - reaction[1][1]) ** 2
+                             + (reaction[0][2] - reaction[1][2]) ** 2)
         int_site_distance.append(distance)
 
-    for i in range(len(int_site)):
+    for i,reaction in enumerate(int_site):
         print("Interaction site of " + reaction_chain[i][0] + " & " + reaction_chain[i][1] + " is: "
-              + "[%.3f, %.3f, %.3f]" % (int_site[i][0][0],
-                                        int_site[i][0][1], int_site[i][0][2]) + " and "
-              + "[%.3f, %.3f, %.3f]" % (int_site[i][1][0],
-                                        int_site[i][1][1], int_site[i][1][2])
+              + "[%.3f, %.3f, %.3f]" % (reaction[0][0],
+                                        reaction[0][1], reaction[0][2]) + " and "
+              + "[%.3f, %.3f, %.3f]" % (reaction[1][0],
+                                        reaction[1][1], reaction[1][2])
               + " distance between interaction sites is: %.3f nm" % (int_site_distance[i]))
 
+    
+    # finally ouputs
     return reaction_chain, int_site, int_site_distance, unique_chain, COM
 
 
