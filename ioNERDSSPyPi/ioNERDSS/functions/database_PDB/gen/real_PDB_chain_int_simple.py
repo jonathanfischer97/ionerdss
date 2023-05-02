@@ -30,9 +30,7 @@ def distance_bw_atoms_in_chains(split_position,split_resi_position,i,j):
             distance = math.sqrt((atom_coords_ch1[0]-atom_coords_ch2[0])**2 + (atom_coords_ch1[1]-atom_coords_ch2[1])**2 + (atom_coords_ch1[2]-atom_coords_ch2[2])**2)
 
             if distance <= 0.3:
-                if [split_resi_position[i][m], split_resi_position[j][n]] not in inner_reaction_resi_position:
-                    inner_reaction_resi_position.append([split_resi_position[i][m], split_resi_position[j][n]])
-                else: print('already im')
+                inner_reaction_resi_position.append([split_resi_position[i][m], split_resi_position[j][n]])
                 count += 1
     return inner_reaction_resi_position,count
 

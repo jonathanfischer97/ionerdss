@@ -20,14 +20,13 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-test = ion.ProteinComplex(FileName="ioNERDSSPyPi\TestingFunctions\databse.pdb")
-test.calc_angle()
-print(test.COM)
+ion.real_PDB_UI()
+print()
 
 
 last = badTimer('start',last)
 
-
+#ioNERDSSPyPi\TestingFunctions\databse.pdb
 
 
 

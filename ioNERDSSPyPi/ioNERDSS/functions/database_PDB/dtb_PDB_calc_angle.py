@@ -13,7 +13,7 @@ from .gen.real_PDB_norm_check import real_PDB_norm_check
 #   1) generalize the sign determination of phi and omega
 #   2) created a function for phi cacluation
 
-def dtb_PDB_calc_angle(Result: tuple):
+def dtb_PDB_calc_angle(Result: tuple, NormVector: list = [0.,0.,1.], ThrowError: bool = True):
     """
     This function calculates the 5 associating angles of each pair of interfaces.
     The default normal vector will be assigned as (0, 0, 1). If the co-linear issue occurs, 
@@ -23,6 +23,9 @@ def dtb_PDB_calc_angle(Result: tuple):
     
     Args:
         Result (5 length tuple): The output result of function(s): 'read','filter','sigma', or first five of function(s): 'COM'
+        NormVector (list, optional): The normal vector used to calculate the angles
+        ThrowError(bool, optional = True): If a co-linear or syntax error occurs, whether 
+        it will continue or stop the program. Recommended to keep as True.
     
     Returns:
         9 length Tuple: All the information for further analysis, including the 5 associating angles of each pair of interfaces.
@@ -43,21 +46,38 @@ def dtb_PDB_calc_angle(Result: tuple):
             if reaction_chain[i][0] == unique_chain[chain1] and reaction_chain[i][1] == unique_chain[chain2]:
                 break
         
-        while True:
+        if NormVector == [0.,0.,1.]:
             normal_point_lst1.append([0., 0., 1.])
             if real_PDB_norm_check(normal_point_lst1[-1], COM[chain1], new_int_site[i][0]) == False:
-                break
+                pass
             else:
                 normal_point_lst1.remove(normal_point_lst1[-1])
                 normal_point_lst1.append([0., 1., 0.])
 
-        while True:
             normal_point_lst2.append([0., 0., 1.])
             if real_PDB_norm_check(normal_point_lst2[-1], COM[chain2], new_int_site[i][1]) == False:
-                break
+                pass
             else:
                 normal_point_lst2.remove(normal_point_lst2[-1])
                 normal_point_lst2.append([0., 1., 0.])
+        else:
+            normal_point_lst1.append(NormVector)
+            if real_PDB_norm_check(normal_point_lst1[-1], COM[chain1], new_int_site[i][0]) == False:
+                pass
+            else:
+                if ThrowError:
+                    raise Exception("Value inputted is invalid because of co-linear or syntax issues")
+                else:
+                    return False,False,False,False,False,False,False,False,False
+
+            normal_point_lst2.append(NormVector)
+            if real_PDB_norm_check(normal_point_lst2[-1], COM[chain2], new_int_site[i][1]) == False:
+                pass
+            else:
+                if ThrowError:
+                    raise Exception("Value inputted is invalid because of co-linear or syntax issues")
+                else:
+                    return False,False,False,False,False,False,False,False,False
 
         inner_angle = real_PDB_angles(COM[chain1], COM[chain2], new_int_site[i][0], new_int_site[i][1], np.array(
             COM[chain1]) + np.array(normal_point_lst1[-1]), np.array(COM[chain2]) + np.array(normal_point_lst2[-1]))

@@ -1,5 +1,4 @@
 import math
-import numpy as np
 import sys
 from .gen.real_PDB_data_check import real_PDB_data_check
 from .gen.real_PDB_chain_int_simple import real_PDB_chain_int_simple
@@ -149,7 +148,7 @@ def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
             split_atom_count.append(inner_atom_count)
             split_chain.append(inner_chain)
             split_resi_count.append(inner_resi_count)
-            split_position.append(np.array(inner_position))
+            split_position.append(inner_position)
             split_atom_type.append(inner_atom_type)
             split_resi_type.append(inner_resi_type)
             split_resi_position_every_atom.append(
@@ -179,7 +178,7 @@ def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
             split_atom_count.append(inner_atom_count)
             split_chain.append(inner_chain)
             split_resi_count.append(inner_resi_count)
-            split_position.append(np.array(inner_position))
+            split_position.append(inner_position)
             split_atom_type.append(inner_atom_type)
             split_resi_type.append(inner_resi_type)
             split_resi_position_every_atom.append(

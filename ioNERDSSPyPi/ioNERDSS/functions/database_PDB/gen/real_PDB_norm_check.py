@@ -16,7 +16,6 @@ def real_PDB_norm_check(norm, COM, site, buffer_ratio=1e-3):
     The function first checks the input lists for type and length correctness, and returns True if any error is found. Then, it computes the projection of the norm onto the plane, and checks whether it is within the expected range defined by the buffer ratio. The function returns True if the projection is within the range, and False otherwise.
 
     """
-
     for i in norm:
         if type(i) != float:
             return True
@@ -30,6 +29,7 @@ def real_PDB_norm_check(norm, COM, site, buffer_ratio=1e-3):
         return True
     if norm == [0, 0, 0]:
         return True
+    
     norm = np.array(norm)
     COM = np.array(COM)
     site = np.array(site)
@@ -43,6 +43,8 @@ def real_PDB_norm_check(norm, COM, site, buffer_ratio=1e-3):
     for i in range(len(vec2)):
         if vec2[i] == 0:
             zero_pos_2.append(i)
+    
+    
     if len(zero_pos_1) == 1 and len(zero_pos_2) == 1 and zero_pos_1 == zero_pos_2:
         pool = [0, 1, 2]
         pool.remove(zero_pos_1[0])
