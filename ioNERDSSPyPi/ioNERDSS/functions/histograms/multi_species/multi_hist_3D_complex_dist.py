@@ -4,7 +4,7 @@ import warnings
 from .read_multi_hist import read_multi_hist
 from mpl_toolkits import mplot3d
 
-def multi_3D_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def multi_hist_3D_complex_dist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                   SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1,
                   ShowFig: bool = True, SaveFig: bool = False):
     """ Creates 3D Histogram from a histogram.dat (multi-species) that shows the distribution of size of the different species.

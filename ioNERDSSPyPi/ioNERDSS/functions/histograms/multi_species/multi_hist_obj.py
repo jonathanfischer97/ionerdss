@@ -1,9 +1,9 @@
 from .read_multi_hist import read_multi_hist 
 from ..line_size_over_time import line_size_over_time
-from .multi_hist import multi_hist
-from .multi_hist_stacked import multi_hist_stacked
-from .multi_heatmap import multi_heatmap
-from .multi_3D_hist import multi_3D_hist
+from .multi_hist_complex_count import multi_hist_complex_count
+from .multi_stack_hist_complex_count import multi_stack_hist_complex_count
+from .multi_heatmap_complex_dist import multi_heatmap_complex_dist
+from .multi_hist_3D_complex_dist import multi_hist_3D_complex_dist
 
 
 class MultiHistogram ():
@@ -86,7 +86,7 @@ class MultiHistogram ():
 
 
     ##Frequency of each complex size
-    def multi_hist(self, BinNums: int = 10, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+    def hist_complex_count(self, BinNums: int = 10, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
         """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.
 
         Args:
@@ -99,13 +99,13 @@ class MultiHistogram ():
             3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Color: relative occurance of each complex.
         """
 
-        return multi_hist(self.FileName, self.FileNum, self.InitialTime, self.FinalTime, SpeciesList=self.SpeciesList,
+        return multi_hist_complex_count(self.FileName, self.FileNum, self.InitialTime, self.FinalTime, SpeciesList=self.SpeciesList,
                           BinNums=BinNums, ExcludeSize=ExcludeSize, ShowFig=ShowFig, SaveFig=SaveFig)
 
 
 
     ##Frequency of each kind of complex (stacked histogram)
-    def multi_hist_stacked(self,xAxis: str, DivideSpecies: str, DivideSize: int,
+    def stack_hist_complex_count(self,xAxis: str, DivideSpecies: str, DivideSize: int,
                         BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
         """Creates a stacked histogram from histogram.dat (multi-species) that shows the average number of each type of 
         complex species (based on protein composition) over the whole sim. 
@@ -122,12 +122,12 @@ class MultiHistogram ():
             Histogram. X-axis = size of selected species, Y-axis = average number of each corresponds.
         """
 
-        return multi_hist_stacked(FileName=self.FileName, FileNum=self.FileNum, InitialTime= self.InitialTime, FinalTime = self.FinalTime, SpeciesList=self.SpeciesList, 
+        return multi_stack_hist_complex_count(FileName=self.FileName, FileNum=self.FileNum, InitialTime= self.InitialTime, FinalTime = self.FinalTime, SpeciesList=self.SpeciesList, 
                                   xAxis=xAxis, DivideSpecies=DivideSpecies, DivideSize=DivideSize, BarSize=BarSize,ExcludeSize=ExcludeSize, ShowFig=ShowFig, SaveFig=SaveFig)
 
 
     ##Average count of each complex composition over the entire simulation time
-    def multi_heatmap(self,xAxis: str, yAxis: str, SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
+    def heatmap_complex_dist(self,xAxis: str, yAxis: str, SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
                     ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
         """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.
 
@@ -145,12 +145,12 @@ class MultiHistogram ():
             3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Color: relative occurance of each complex.
         """
 
-        return multi_heatmap(FileName=self.FileName, FileNum=self.FileNum, InitialTime=self.InitialTime, FinalTime=self.FinalTime, xAxis=xAxis, yAxis=yAxis,
+        return multi_heatmap_complex_dist(FileName=self.FileName, FileNum=self.FileNum, InitialTime=self.InitialTime, FinalTime=self.FinalTime, xAxis=xAxis, yAxis=yAxis,
                              SpeciesList=SpeciesList, xBarSize=xBarSize, yBarSize=yBarSize, ShowFig=ShowFig, ShowMean=ShowMean,
                              ShowStd=ShowStd, SaveFig=SaveFig)
     
 
-    def multi_3D_hist(self,xAxis: str, yAxis: str, SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
+    def hist_3D_complex_dist(self,xAxis: str, yAxis: str, SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
                     ShowFig: bool = True, SaveFig: bool = False):
         """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.
 
@@ -168,7 +168,7 @@ class MultiHistogram ():
             3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Color: relative occurance of each complex.
         """
 
-        return multi_3D_hist(FileName=self.FileName, FileNum=self.FileNum, InitialTime=self.InitialTime, FinalTime=self.FinalTime, xAxis=xAxis, yAxis=yAxis,
+        return multi_hist_3D_complex_dist(FileName=self.FileName, FileNum=self.FileNum, InitialTime=self.InitialTime, FinalTime=self.FinalTime, xAxis=xAxis, yAxis=yAxis,
                              SpeciesList=SpeciesList, xBarSize=xBarSize, yBarSize=yBarSize, ShowFig=ShowFig, SaveFig=SaveFig)
 
 

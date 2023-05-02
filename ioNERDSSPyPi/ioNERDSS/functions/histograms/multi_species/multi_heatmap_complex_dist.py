@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
 
 
-def multi_heatmap(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, xAxis: str, yAxis: str,
+def multi_heatmap_complex_dist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, xAxis: str, yAxis: str,
                   SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
                   ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
     """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.

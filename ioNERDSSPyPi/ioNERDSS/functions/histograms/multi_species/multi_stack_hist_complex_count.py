@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
 
 
-def multi_hist_stacked(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                        SpeciesList: list, xAxis: str, DivideSpecies: str, DivideSize: int,
                        BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
     """Creates a stacked histogram from histogram.dat (multi-species) that shows the average number of each type of 

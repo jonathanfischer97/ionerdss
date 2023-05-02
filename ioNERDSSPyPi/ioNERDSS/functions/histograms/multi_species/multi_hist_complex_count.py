@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-def multi_hist(FileName: str = 'histogram_complexes_time.dat', FileNum: int = 1, InitialTime: float = 0, FinalTime: float = 1E10,
+def multi_hist_complex_count(FileName: str = 'histogram_complexes_time.dat', FileNum: int = 1, InitialTime: float = 0, FinalTime: float = 1E10,
                SpeciesList: list = ['all'], BinNums: int = 10, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False) -> tuple:
     """
     Generate histogram of the size of target species for a multiple species system for the given species 
