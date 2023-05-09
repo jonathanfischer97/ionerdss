@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
-
+from ...save_vars_to_file import save_vars_to_file
 
 def multi_heatmap_complex_dist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, xAxis: str, yAxis: str,
                   SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
-                  ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+                  ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False, SaveVars: bool = False):
     """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.
 
     Args:
@@ -22,6 +22,7 @@ def multi_heatmap_complex_dist(FileName: str, FileNum: int, InitialTime: float, 
         ShowStd (bool, optional): If std values will be shown in each box. Defaults to False.
         ShowFig (bool, optional): If the plot is shown. Defaults to True.
         SaveFig (bool, optional): If the plot is saved. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Color: relative occurance of each complex.
@@ -128,6 +129,11 @@ def multi_heatmap_complex_dist(FileName: str, FileNum: int, InitialTime: float, 
     x_list = np.arange(0, max_x_size+1) * xBarSize
     y_list = np.arange(0, max_y_size+1) * yBarSize
     
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"mean_x":x_list, "mean_y":y_list, "mean_count":count_list_mean, "std":count_list_std})
+
+
     #create figure
     if ShowFig:
         fig, ax = plt.subplots()

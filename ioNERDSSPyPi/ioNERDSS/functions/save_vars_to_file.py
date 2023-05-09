@@ -84,8 +84,10 @@ def save_vars_to_file(var_dict: dict):
             #if it is a 1dim list
             elif type == "1list":
                 file.write(str(value[0]))
-                for var in value:
-                    file.write(f",{var}")
+                
+                if len(value) > 1:
+                    for var in value[1:]:
+                        file.write(f",{var}")
             
             #if it is a 2dem list
             elif type == "2list":
@@ -99,8 +101,10 @@ def save_vars_to_file(var_dict: dict):
                     
                     #write in entire sublist
                     file.write(f"{list1[0]}")
-                    for list2 in list1:
-                        file.write(f",{list2}")
+                    
+                    if len(list1) > 1:
+                        for list2 in list1:
+                            file.write(f",{list2}")
 
 
 

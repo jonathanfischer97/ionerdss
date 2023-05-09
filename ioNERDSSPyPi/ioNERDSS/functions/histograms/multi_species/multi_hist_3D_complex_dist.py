@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import warnings
 from .read_multi_hist import read_multi_hist
 from mpl_toolkits import mplot3d
+from ...save_vars_to_file import save_vars_to_file
 
 def multi_hist_3D_complex_dist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                   SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1,
-                  ShowFig: bool = True, SaveFig: bool = False):
+                  ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
     """ Creates 3D Histogram from a histogram.dat (multi-species) that shows the distribution of size of the different species.
 
     Args:
@@ -21,6 +22,7 @@ def multi_hist_3D_complex_dist(FileName: str, FileNum: int, InitialTime: float, 
         yBarSize (int, optional): The size of each data bar in the Y-dimension. Defaults to 1.
         ShowFig (bool, optional): If the plot is shown. Defaults to True.
         SaveFig (bool, optional): If the plot is saved. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Z-axis: relative occurance of each complex.
@@ -128,6 +130,12 @@ def multi_hist_3D_complex_dist(FileName: str, FileNum: int, InitialTime: float, 
     x_list = np.arange(0, max_x_size+1) * xBarSize
     y_list = np.arange(0, max_y_size+1) * yBarSize
     
+
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"mean_x":x_list, "mean_y":y_list, "mean_count":count_list_mean})
+
+
     if ShowFig:
         xx, yy = np.meshgrid(x_list, y_list)
         X, Y = xx.ravel(), yy.ravel()

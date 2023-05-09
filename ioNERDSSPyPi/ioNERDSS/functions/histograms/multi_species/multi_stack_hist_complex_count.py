@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
-
+from ...save_vars_to_file import save_vars_to_file
 
 def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                        SpeciesList: list, xAxis: str, DivideSpecies: str, DivideSize: int,
-                       BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+                       BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
     """Creates a stacked histogram from histogram.dat (multi-species) that shows the average number of each type of 
     complex species (based on protein composition) over the whole sim. 
 
@@ -22,6 +22,8 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
         ExcludeSize (int, optional): Monomers in the complex that are smaller or equal to this number will not be included. 
         ShowFig (bool, optional): If the plot is shown. Defaults to True.
         SaveFig (bool, optional): If the plot is saved. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
     Returns:
         Histogram. X-axis = size of selected species, Y-axis = average number of each corresponds.
     """
@@ -198,6 +200,10 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
     std_below_ = np.array(std_below_)
     n_list_ = np.array(n_list_)
     
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"size":n_list_, "mean_count":[mean_below_, mean_equal_, mean_above_], "std":[std_below_, std_equal_, std_above_]})
+
     #show figure!
     if ShowFig:
         if DivideSize != 0:

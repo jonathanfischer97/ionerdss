@@ -1,10 +1,11 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+from ...save_vars_to_file import save_vars_to_file
 
 
 def frac_of_assemble(FileName: str = 'histogram_complexes_time.dat', FileNum: int = 1, 
-               Mol: str = '', Threshold: int = 2, ShowFig: bool = True, SaveFig: bool = False) -> tuple:
+               Mol: str = '', Threshold: int = 2, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False) -> tuple:
     """
     Generate time dependence of the fraction of asssembled molecules from the histogram_complexes_time.dat in the input file within the specified size threshold.
 
@@ -15,6 +16,7 @@ def frac_of_assemble(FileName: str = 'histogram_complexes_time.dat', FileNum: in
         Threshold (int, optional): The minimum size considered to be assembled. Default is 2.
         ShowFig (bool, optional): Whether to display the generated figures. Default is True.
         SaveFig (bool, optional): Whether to save the generated figures. Default is False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         the np.arrays of time, means, and standard deviations for the fraction.
@@ -104,6 +106,10 @@ def frac_of_assemble(FileName: str = 'histogram_complexes_time.dat', FileNum: in
     average_time_array = np.mean(stacked_time_arrays, axis=0)
     average_frac_array = np.mean(stacked_frac_arrays, axis=0)
     std_frac_array = np.std(stacked_frac_arrays, axis=0)
+
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"time":average_time_array, "mean_frac":average_frac_array, "std":std_frac_array})
 
     # Plot the average_frac_array versus average_time_array with an error band
     plt.plot(average_time_array, average_frac_array)

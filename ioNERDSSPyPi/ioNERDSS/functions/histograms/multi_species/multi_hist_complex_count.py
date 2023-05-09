@@ -1,10 +1,10 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-
+from ...save_vars_to_file import save_vars_to_file
 
 def multi_hist_complex_count(FileName: str = 'histogram_complexes_time.dat', FileNum: int = 1, InitialTime: float = 0, FinalTime: float = 1E10,
-               SpeciesList: list = ['all'], BinNums: int = 10, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False) -> tuple:
+               SpeciesList: list = ['all'], BinNums: int = 10, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False) -> tuple:
     """
     Generate histogram of the size of target species for a multiple species system for the given species 
     and targets from the histogram_complexes_time.dat in the input file within the specified time range.
@@ -19,6 +19,7 @@ def multi_hist_complex_count(FileName: str = 'histogram_complexes_time.dat', Fil
         ExcludeSize (int, optional): The minimum value required to include a data point in the histogram. Default is 0.
         ShowFig (bool, optional): Whether to display the generated figures. Default is True.
         SaveFig (bool, optional): Whether to save the generated figures. Default is False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         the np.arrays of normalized counts, means, and standard deviations for the histograms.
@@ -108,7 +109,11 @@ def multi_hist_complex_count(FileName: str = 'histogram_complexes_time.dat', Fil
     size_array = np.array(list(mean_std.keys()))
     mean_array = np.array([value[0] for value in mean_std.values()])
     std_array = np.array([value[1] for value in mean_std.values()])
-        
+    
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"size":size_array, "mean_count":mean_array, "std":std_array})
+
     plt.hist(size_array, bins=BinNums, weights=mean_array, density=True, histtype='bar', alpha=0.75)
 
     plt.xlabel('Size of complex')

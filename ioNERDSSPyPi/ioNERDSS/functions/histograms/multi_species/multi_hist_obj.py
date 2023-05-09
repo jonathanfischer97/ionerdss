@@ -88,7 +88,7 @@ class MultiHistogram ():
 
 
     ##Frequency of each complex size
-    def hist_complex_count(self, BinNums: int = 10, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+    def hist_complex_count(self, BinNums: int = 10, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.
 
         Args:
@@ -96,19 +96,20 @@ class MultiHistogram ():
             ExcludeSize (int, optional): The minimum value required to include a data point in the histogram. Default is 0.
             ShowFig (bool, optional): Whether to display the generated figures. Default is True.
             SaveFig (bool, optional): Whether to save the generated figures. Default is False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
         Returns:
             3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Color: relative occurance of each complex.
         """
 
         return multi_hist_complex_count(self.FileName, self.FileNum, self.InitialTime, self.FinalTime, SpeciesList=self.SpeciesList,
-                          BinNums=BinNums, ExcludeSize=ExcludeSize, ShowFig=ShowFig, SaveFig=SaveFig)
+                          BinNums=BinNums, ExcludeSize=ExcludeSize, ShowFig=ShowFig, SaveFig=SaveFig, SaveVars=SaveVars)
 
 
 
     ##Frequency of each kind of complex (stacked histogram)
     def stack_hist_complex_count(self,xAxis: str, DivideSpecies: str, DivideSize: int,
-                        BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+                        BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Creates a stacked histogram from histogram.dat (multi-species) that shows the average number of each type of 
         complex species (based on protein composition) over the whole sim. 
 
@@ -120,17 +121,19 @@ class MultiHistogram ():
             ExcludeSize (int, optional): Monomers in the complex that are smaller or equal to this number will not be included. 
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
         Returns:
             Histogram. X-axis = size of selected species, Y-axis = average number of each corresponds.
         """
 
         return multi_stack_hist_complex_count(FileName=self.FileName, FileNum=self.FileNum, InitialTime= self.InitialTime, FinalTime = self.FinalTime, SpeciesList=self.SpeciesList, 
-                                  xAxis=xAxis, DivideSpecies=DivideSpecies, DivideSize=DivideSize, BarSize=BarSize,ExcludeSize=ExcludeSize, ShowFig=ShowFig, SaveFig=SaveFig)
+                                  xAxis=xAxis, DivideSpecies=DivideSpecies, DivideSize=DivideSize, BarSize=BarSize,ExcludeSize=ExcludeSize, ShowFig=ShowFig, SaveFig=SaveFig, SaveVars=SaveVars)
 
 
     ##Average count of each complex composition over the entire simulation time
     def heatmap_complex_dist(self,xAxis: str, yAxis: str, SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
-                    ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+                    ShowFig: bool = True, ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False, SaveVars: bool = False):
         """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.
 
         Args:
@@ -142,6 +145,7 @@ class MultiHistogram ():
             ShowStd (bool, optional): If std values will be shown in each box. Defaults to False.
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
         Returns:
             3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Color: relative occurance of each complex.
@@ -149,11 +153,11 @@ class MultiHistogram ():
 
         return multi_heatmap_complex_dist(FileName=self.FileName, FileNum=self.FileNum, InitialTime=self.InitialTime, FinalTime=self.FinalTime, xAxis=xAxis, yAxis=yAxis,
                              SpeciesList=SpeciesList, xBarSize=xBarSize, yBarSize=yBarSize, ShowFig=ShowFig, ShowMean=ShowMean,
-                             ShowStd=ShowStd, SaveFig=SaveFig)
+                             ShowStd=ShowStd, SaveFig=SaveFig, SaveVars=SaveVars)
     
 
     def hist_3D_complex_dist(self,xAxis: str, yAxis: str, SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,
-                    ShowFig: bool = True, SaveFig: bool = False):
+                    ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """ Creates a 3D heatmap from a histogram.dat (multi-species) that shows distrubution of sizes of selected species.
 
         Args:
@@ -165,13 +169,14 @@ class MultiHistogram ():
             ShowStd (bool, optional): If std values will be shown in each box. Defaults to False.
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
         Returns:
             3D Histogram. X-axis / Y-axis: the distribution of sizes of each specified species. Color: relative occurance of each complex.
         """
 
         return multi_hist_3D_complex_dist(FileName=self.FileName, FileNum=self.FileNum, InitialTime=self.InitialTime, FinalTime=self.FinalTime, xAxis=xAxis, yAxis=yAxis,
-                             SpeciesList=SpeciesList, xBarSize=xBarSize, yBarSize=yBarSize, ShowFig=ShowFig, SaveFig=SaveFig)
+                             SpeciesList=SpeciesList, xBarSize=xBarSize, yBarSize=yBarSize, ShowFig=ShowFig, SaveFig=SaveFig, SaveVars=SaveVars)
 
 
 

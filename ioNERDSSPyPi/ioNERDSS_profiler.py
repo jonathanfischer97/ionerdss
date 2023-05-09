@@ -21,8 +21,8 @@ import ioNERDSS as ion
 
 last = badTimer('start',0)
 #ion.save_vars_to_file({"word":[[0,0,0],[0,0,0],[0,0,0],[1,1,1]]})
-test = ion.SingleHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat",FileNum=1,InitialTime=0,FinalTime=1,SpeciesName="dode")
-test.heatmap_monomer_fraction(TimeBins=10,ShowFig = True, SaveFig = False, SaveVars=True)
+test = ion.MultiHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat",FileNum=1,InitialTime=0,FinalTime=1,SpeciesList=["A","B"])
+test.hist_3D_complex_dist(xAxis="A",yAxis="B",SaveVars=True)
 
 print()
 
