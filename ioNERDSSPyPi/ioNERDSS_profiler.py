@@ -20,14 +20,13 @@ import ioNERDSS as ion
 
 
 last = badTimer('start',0)
-ion.real_PDB_UI()
+#ion.save_vars_to_file({"word":[[0,0,0],[0,0,0],[0,0,0],[1,1,1]]})
+test = ion.SingleHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_single_component.dat",FileNum=1,InitialTime=0,FinalTime=1,SpeciesName="dode")
+test.heatmap_monomer_fraction(TimeBins=10,ShowFig = True, SaveFig = False, SaveVars=True)
+
 print()
 
 
 last = badTimer('start',last)
-
-#ioNERDSSPyPi\TestingFunctions\databse.pdb
-
-
 
 #ioNERDSSPyPi\TestingFunctions\databse.pdb

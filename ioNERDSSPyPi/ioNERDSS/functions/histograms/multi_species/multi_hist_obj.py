@@ -49,7 +49,7 @@ class MultiHistogram ():
 
 
     ##Number of complexes over time (2d)
-    def line_mean_complex_size(self, SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+    def line_mean_complex_size(self, SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Creates graph of the mean number of species in a single complex molecule over a time period.
 
         Args:
@@ -57,6 +57,7 @@ class MultiHistogram ():
             ExcludeSize (int, optional): Monomers in the complex that are smaller or equal to this number will not be included. 
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
         Returns:
             graph. X-axis = time. Y
@@ -64,10 +65,10 @@ class MultiHistogram ():
         """
 
         return line_size_over_time(Data = 1, full_hist = self.full_hist, FileNum = self.FileNum, InitialTime = self.InitialTime, FinalTime = self.FinalTime,
-                SpeciesName = SpeciesName, ExcludeSize = ExcludeSize, SpeciesList = self.SpeciesList, ShowFig = ShowFig, SaveFig = SaveFig)
+                SpeciesName = SpeciesName, ExcludeSize = ExcludeSize, SpeciesList = self.SpeciesList, ShowFig = ShowFig, SaveFig = SaveFig, SaveVars = SaveVars)
 
 
-    def line_max_complex_size(self, SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+    def line_max_complex_size(self, SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
             """Creates graph of the mean number of species in a single complex molecule over a time period.
 
             Args:
@@ -75,6 +76,7 @@ class MultiHistogram ():
                 ExcludeSize (int, optional): Monomers in the complex that are smaller or equal to this number will not be included. 
                 ShowFig (bool, optional): If the plot is shown. Defaults to True.
                 SaveFig (bool, optional): If the plot is saved. Defaults to False.
+                SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
             Returns:
                 graph. X-axis = time. Y
@@ -82,7 +84,7 @@ class MultiHistogram ():
             """
 
             return line_size_over_time(Data = 2, full_hist = self.full_hist, FileNum = self.FileNum, InitialTime = self.InitialTime, FinalTime = self.FinalTime,
-                    SpeciesName = SpeciesName, ExcludeSize = ExcludeSize, SpeciesList = self.SpeciesList, ShowFig = ShowFig, SaveFig = SaveFig)
+                    SpeciesName = SpeciesName, ExcludeSize = ExcludeSize, SpeciesList = self.SpeciesList, ShowFig = ShowFig, SaveFig = SaveFig, SaveVars = SaveVars)
 
 
     ##Frequency of each complex size

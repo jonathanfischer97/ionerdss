@@ -48,7 +48,7 @@ class SingleHistogram ():
 
     ##Count of monomers in each type / complexes of each type over time (3d)
     def heatmap_complex_count(self, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
-                        ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+                        ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False, SaveVars: bool = False):
         """Creates a 2D Heatmap from a histogram.dat file that represents the average number of each complex size, over time.
 
         Args:
@@ -58,6 +58,8 @@ class SingleHistogram ():
             ShowMean (bool, optional): If means will be shown in each box. Defaults to False.
             ShowStd (bool, optional): If std values will be shown in each box. Defaults to False.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
 
         Returns:
             2D heatmap. X-axis: size of complex species. Y-axis = time 'bins'. Color = relative number of each species.
@@ -65,11 +67,11 @@ class SingleHistogram ():
         
         return complex_time_3d(1,1,self.full_hist, self.FileNum, self.InitialTime, self.FinalTime,
                 self.SpeciesName, TimeBins, xBarSize, ShowFig,
-                ShowMean, ShowStd, SaveFig)
+                ShowMean, ShowStd, SaveFig, SaveVars)
 
 
     def heatmap_monomer_count(self,TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
-                                    ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+                                    ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False, SaveVars: bool = False):
         """Creates a 2D Heatmap from a histogram.dat file that shows average number of monomers in each complex size over time.
 
         Args:
@@ -79,6 +81,8 @@ class SingleHistogram ():
             ShowMean (bool, optional): If means will be shown in each box. Defaults to False.
             ShowStd (bool, optional): If std values will be shown in each box. Defaults to False.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
 
         Returns:
             2D heatmap. X-axis = size of complex species. Y-axis = time. Color = total number of corresponding monomers in N-mers.
@@ -86,11 +90,11 @@ class SingleHistogram ():
 
         return complex_time_3d(1,2,self.full_hist, self.FileNum, self.InitialTime, self.FinalTime,
                 self.SpeciesName, TimeBins, xBarSize, ShowFig,
-                ShowMean, ShowStd, SaveFig)      
+                ShowMean, ShowStd, SaveFig, SaveVars)      
 
 
     def heatmap_monomer_fraction(self,TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
-                                ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+                                ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False, SaveVars: bool = False):
         """Generates a 2D histogram from histogram.dat of the % of the original monomers forming into different complex sizes over time
 
         Args:
@@ -100,6 +104,8 @@ class SingleHistogram ():
             ShowMean (bool, optional): If means will be shown in each box. Defaults to False.
             ShowStd (bool, optional): If std values will be shown in each box. Defaults to False.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
 
         Returns:
             2D heatnao. X-axis = complex species size. Y-axis = time. Color = fraction of monomers forming into that complex at that time
@@ -107,10 +113,10 @@ class SingleHistogram ():
         
         return complex_time_3d(1,3,self.full_hist, self.FileNum, self.InitialTime, self.FinalTime,
                 self.SpeciesName, TimeBins, xBarSize, ShowFig,
-                ShowMean, ShowStd, SaveFig)
+                ShowMean, ShowStd, SaveFig, SaveVars)
         
 
-    def hist_3d_complex_count(self,TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
+    def hist_3d_complex_count(self,TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Takes in a histogram.dat file from NERDSS, and creates a 3D histogram that represents the average count each complex size, over time.
 
         Args:
@@ -118,6 +124,8 @@ class SingleHistogram ():
             xBarSize (int, optional): The size of each data bar in the x-dimension. Defaults to 1.
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
 
         Returns:
             Returns a 3D histogram representing the aver count of each complex over time. X-axis = species type/size. Y-axis = averaged time. Z-axis = relative occurance.
@@ -125,10 +133,10 @@ class SingleHistogram ():
 
         return complex_time_3d(2,1,self.full_hist, self.FileNum, self.InitialTime, self.FinalTime,
                 self.SpeciesName, TimeBins, xBarSize, ShowFig,
-                False, False, SaveFig)
+                False, False, SaveFig, SaveVars)
 
 
-    def hist_3d_monomer_count(self,TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
+    def hist_3d_monomer_count(self,TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Takes in a histogram.dat file from NERDSS, and creates a 3D histogram that shows average number of monomers in each complex size over time.
 
         Args:
@@ -136,6 +144,8 @@ class SingleHistogram ():
             xBarSize (int, optional): The size of each data bar in the x-dimension. Defaults to 1.
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
 
         Returns:
             Returns a 3D histogram representing the aver count of each complex over time. X-axis = species type/size. Y-axis = averaged time. Z-axis = relative occurance.
@@ -143,10 +153,10 @@ class SingleHistogram ():
 
         return complex_time_3d(2,2,self.full_hist, self.FileNum, self.InitialTime, self.FinalTime,
                 self.SpeciesName, TimeBins, xBarSize, ShowFig,
-                False, False, SaveFig)
+                False, False, SaveFig, SaveVars)
 
 
-    def hist_3d_monomer_fraction(self,TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
+    def hist_3d_monomer_fraction(self,TimeBins: int, xBarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Takes in a histogram.dat file from NERDSS, and creates a 3D histogram that shows % of monomers in each complex size over time.
 
         Args:
@@ -154,6 +164,8 @@ class SingleHistogram ():
             xBarSize (int, optional): The size of each data bar in the x-dimension. Defaults to 1.
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
 
         Returns:
             Returns a 3D histogram representing the aver count of each complex over time. X-axis = species type/size. Y-axis = averaged time. Z-axis = relative occurance.
@@ -161,59 +173,58 @@ class SingleHistogram ():
 
         return complex_time_3d(2,3,self.full_hist, self.FileNum, self.InitialTime, self.FinalTime,
                 self.SpeciesName, TimeBins, xBarSize, ShowFig,
-                False, False, SaveFig)
+                False, False, SaveFig, SaveVars)
 
 
     ##Number of complexes over time (2d)
-    def line_mean_complex_size(self, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+    def line_mean_complex_size(self, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Creates graph of the mean number of species in a single complex molecule over a time period.
 
         Args:
-            FileName (str): Path to the histogram.dat file
-            FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
-            InitialTime (float): The starting time. Must not be smaller / larger then times in file.
-            FinalTime (float): The ending time. Must not be smaller / larger then times in file.
-            SpeciesName (str): The name of the species you want to examine. Should be in the .dat file.
             ExcludeSize (int): Monomers in the complex that are smaller or equal to this number will not be included. 
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
         Returns:
             graph. X-axis = time. Y-axis = mean number of species in a single complex molecule.
         """
         return line_size_over_time(Data = 1, full_hist = self.full_hist, FileNum = self.FileNum, InitialTime = self.InitialTime, FinalTime = self.FinalTime,
-                SpeciesName = self.SpeciesName, ExcludeSize = ExcludeSize, ShowFig = ShowFig, SaveFig = SaveFig)
+                SpeciesName = self.SpeciesName, ExcludeSize = ExcludeSize, ShowFig = ShowFig, SaveFig = SaveFig, SaveVars = SaveVars)
 
 
-    def line_max_complex_size(self, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False):
+    def line_max_complex_size(self, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Creates graph of the max number of species in a single complex molecule over a time period.
 
         Args:
             ExcludeSize (int, optional): Monomers in the complex that are smaller or equal to this number will not be included. 
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
         Returns:
             graph. X-axis = time. Y-axis = max number of species in a single complex molecule.
         """  
         return line_size_over_time(Data = 2, full_hist = self.full_hist, FileNum = self.FileNum, InitialTime = self.InitialTime, FinalTime = self.FinalTime,
-                SpeciesName = self.SpeciesName, ExcludeSize = ExcludeSize, ShowFig = ShowFig, SaveFig = SaveFig)
+                SpeciesName = self.SpeciesName, ExcludeSize = ExcludeSize, ShowFig = ShowFig, SaveFig = SaveFig, SaveVars=SaveVars)
 
 
     ##Baby Basic Histogram
-    def hist_complex_count(self, BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
+    def hist_complex_count(self, BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Creates histogram of the average number of complex species that have a certain number of species.
 
         Args:
             ExcludeSize (int, optional): Monomers in the complex that are smaller or equal to this number will not be included. 
             ShowFig (bool, optional): If the plot is shown. Defaults to True.
             SaveFig (bool, optional): If the plot is saved. Defaults to False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
 
         Returns:
             Histogram. X-axis = # of species in a complexes. Y-axis = relative count of each complex over the whole timeframe
         """
         return hist_complex_count(full_hist=self.full_hist, FileNum=self.FileNum,InitialTime= self.InitialTime, FinalTime= self.FinalTime, 
-                           SpeciesName=self.SpeciesName, BarSize=BarSize, ShowFig=ShowFig, SaveFig=SaveFig)
+                           SpeciesName=self.SpeciesName, BarSize=BarSize, ShowFig=ShowFig, SaveFig=SaveFig, SaveVars=SaveVars)
 
 
     ##general histogram functions

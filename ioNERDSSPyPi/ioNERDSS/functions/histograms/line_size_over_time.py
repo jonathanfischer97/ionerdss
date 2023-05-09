@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from ..save_vars_to_file import save_vars_to_file
 
 
 def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,
-                 SpeciesName: str, ExcludeSize: int = 0, SpeciesList: list = ["na"], ShowFig: bool = True, SaveFig: bool = False):
+                 SpeciesName: str, ExcludeSize: int = 0, SpeciesList: list = ["na"], ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
     """Creates a graph counting the number of protein species in a complex molecule over a time period.
         Can either be average count or the max count of that protein species at that time stamp .
 
@@ -18,6 +19,7 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
         SpeciesList (lst, optional): lists all of the species in the doc. Only needed for multi species hists.
         ShowFig (bool, optional): If the plot is shown. Defaults to True.
         SaveFig (bool, optional): If the plot is saved. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         graph. X-axis = time. Y-axis = mean number of species in a single complex molecule.
@@ -93,6 +95,13 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
             mean.append(np.nanmean(timestamps))
             if FileNum > 1: std.append(np.nanstd(timestamps))
     
+    #output variables
+    if SaveVars:
+        if Data == 1:
+            save_vars_to_file({"time":time_list[0],"mean":mean,"std":std})
+        if Data == 2:
+            save_vars_to_file({"time":time_list[0],"max":mean,"std":std})
+
     #show figure
     if ShowFig:
         errorbar_color = '#c9e3f6'

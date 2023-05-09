@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .hist_temp import hist_temp
-from .read_file import read_file
+from ...save_vars_to_file import save_vars_to_file
 
 
 def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,
                                SpeciesName: str, TimeBins: int, xBarSize: int = 1, ShowFig: bool = True,
-                               ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False):
+                               ShowMean: bool = False, ShowStd: bool = False, SaveFig: bool = False, SaveVars: bool = False):
     """Creates all kinds of 3d time graphs. For info on each type look at main funcs for each type
 
     Args:
@@ -23,6 +23,8 @@ def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: 
         ShowMean (bool, optional): If means will be shown in each box. Defaults to False.
         ShowStd (bool, optional): If std values will be shown in each box. Defaults to False.
         SaveFig (bool, optional): If the plot is saved. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
     """
     
     #creates equal time chunks b/w initial and final based on # of timebins
@@ -155,6 +157,9 @@ def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: 
             count_list_mean[i][j] += np.mean(temp_list)
             count_list_std[i][j] += np.std(temp_list)
     
+    #save vars
+    if SaveVars:
+        save_vars_to_file({"complex_sizes":n_list, "t_bins":t_plt, "mean":count_list_mean, "std":count_list_std})
     
     if ShowFig:
         

@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .read_file import read_file
+from ...save_vars_to_file import save_vars_to_file
 
 
 def hist_complex_count(full_hist: list, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
-         BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
+         BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
     """Creates histogram of the average number of complex species that have a certain number of species.
 
     Args:
@@ -16,6 +16,7 @@ def hist_complex_count(full_hist: list, FileNum: int, InitialTime: float, FinalT
         BarSize (int, optional): The size of each data bar in the x-dimension. Defaults to 1.
         ShowFig (bool, optional): If the plot is shown. Defaults to True.
         SaveFig (bool, optional): If the plot is saved. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         Histogram. X-axis = # of species in a complexes. Y-axis = relative count of each complex over the whole timeframe
@@ -124,6 +125,11 @@ def hist_complex_count(full_hist: list, FileNum: int, InitialTime: float, FinalT
     std_ = np.array(std_)
     n_list_ = np.array(n_list_)
     
+    #save vars
+    if SaveVars:
+        save_vars_to_file({"time":n_list_, "mean":mean_, "std":std_})
+
+
     #show figure!
     if ShowFig:
         if FileNum != 1:
