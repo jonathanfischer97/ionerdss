@@ -127,7 +127,7 @@ def hist_complex_count(full_hist: list, FileNum: int, InitialTime: float, FinalT
     
     #save vars
     if SaveVars:
-        save_vars_to_file({"time":n_list_, "mean":mean_, "std":std_})
+        save_vars_to_file({"cmplx_sizes":n_list_, "mean":mean_, "std":std_})
 
 
     #show figure!

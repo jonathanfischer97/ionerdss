@@ -112,7 +112,7 @@ def multi_hist_complex_count(FileName: str = 'histogram_complexes_time.dat', Fil
     
     #output variables
     if SaveVars:
-        save_vars_to_file({"size":size_array, "mean_count":mean_array, "std":std_array})
+        save_vars_to_file({"cmplx_sizes":size_array, "cmplx_count":mean_array, "std":std_array})
 
     plt.hist(size_array, bins=BinNums, weights=mean_array, density=True, histtype='bar', alpha=0.75)
 

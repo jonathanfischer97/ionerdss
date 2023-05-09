@@ -133,7 +133,7 @@ def multi_hist_3D_complex_dist(FileName: str, FileNum: int, InitialTime: float, 
 
     #output variables
     if SaveVars:
-        save_vars_to_file({"mean_x":x_list, "mean_y":y_list, "mean_count":count_list_mean})
+        save_vars_to_file({"x_mono_count":x_list, "y_mono_count":y_list, "cmplx_count":count_list_mean})
 
 
     if ShowFig:

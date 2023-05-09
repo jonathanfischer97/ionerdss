@@ -159,7 +159,12 @@ def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: 
     
     #save vars
     if SaveVars:
-        save_vars_to_file({"complex_sizes":n_list, "t_bins":t_plt, "mean":count_list_mean, "std":count_list_std})
+        if GraphedData == 1:
+            save_vars_to_file({"cmplx_sizes":n_list, "time_bins":t_plt, "cmplx_count":count_list_mean, "std":count_list_std})
+        if GraphedData == 2:
+            save_vars_to_file({"cmplx_sizes":n_list, "time_bins":t_plt, "mono_count":count_list_mean, "std":count_list_std}) 
+        if GraphedData == 3:
+            save_vars_to_file({"cmplx_sizes":n_list, "time_bins":t_plt, "mono_fraction":count_list_mean, "std":count_list_std})         
     
     if ShowFig:
         

@@ -6,6 +6,7 @@ from .multi_heatmap_complex_dist import multi_heatmap_complex_dist
 from .multi_hist_3D_complex_dist import multi_hist_3D_complex_dist
 from ..hist_to_csv import hist_to_csv
 from ..hist_to_df import hist_to_df
+from .frac_of_assemble import frac_of_assemble
 
 
 class MultiHistogram ():
@@ -206,3 +207,20 @@ class MultiHistogram ():
         """
         return hist_to_df(self.FileName,SaveCsv)
 
+    ##The Mysterious Frac of Assemble....
+    def frac_of_assemble(self, Mol: int = "", Threshold: int = 2, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
+        """Generates time dependence of the fraction of asssembled molecules from the histogram_complexes_time.dat in the input file within the specified size threshold.
+
+        Args:
+            Mol (str): The name of the molecule. Default is empty string.
+            Threshold (int, optional): The minimum size considered to be assembled. Default is 2.
+            ShowFig (bool, optional): Whether to display the generated figures. Default is True.
+            SaveFig (bool, optional): Whether to save the generated figures. Default is False.
+            SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+
+        Returns:
+            Line graph. X-axis: time stamps. Y-axis: average frac of assembly.
+        """
+
+        return frac_of_assemble(FileName=self.FileName, FileNum=self.FileNum, Mol = Mol, Threshold = Threshold, ShowFig=ShowFig,SaveFig=SaveFig, SaveVars=SaveVars)
+    

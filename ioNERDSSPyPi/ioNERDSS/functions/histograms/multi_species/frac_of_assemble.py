@@ -109,7 +109,7 @@ def frac_of_assemble(FileName: str = 'histogram_complexes_time.dat', FileNum: in
 
     #output variables
     if SaveVars:
-        save_vars_to_file({"time":average_time_array, "mean_frac":average_frac_array, "std":std_frac_array})
+        save_vars_to_file({"time_stamp":average_time_array, "frac_assembled_monos":average_frac_array, "std":std_frac_array})
 
     # Plot the average_frac_array versus average_time_array with an error band
     plt.plot(average_time_array, average_frac_array)

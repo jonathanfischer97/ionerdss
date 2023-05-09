@@ -98,9 +98,9 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
     #output variables
     if SaveVars:
         if Data == 1:
-            save_vars_to_file({"time":time_list[0],"mean":mean,"std":std})
+            save_vars_to_file({"time_stamp":time_list[0],"mean_cmplx_size":mean,"std":std})
         if Data == 2:
-            save_vars_to_file({"time":time_list[0],"max":mean,"std":std})
+            save_vars_to_file({"time_stamp":time_list[0],"max_cmplx_size":mean,"std":std})
 
     #show figure
     if ShowFig:

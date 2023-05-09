@@ -202,7 +202,7 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
     
     #output variables
     if SaveVars:
-        save_vars_to_file({"size":n_list_, "mean_count":[mean_below_, mean_equal_, mean_above_], "std":[std_below_, std_equal_, std_above_]})
+        save_vars_to_file({"x_mono_count":n_list_, "cmplx_count":[mean_below_, mean_equal_, mean_above_], "std":[std_below_, std_equal_, std_above_]})
 
     #show figure!
     if ShowFig:
