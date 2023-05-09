@@ -58,7 +58,7 @@ class ProteinComplex():
         from . import dtb_PDB_norm_COM 
 
         if self.one_site_chain == ["na"]:
-            raise Exception("In oyder to run this function, you must have previously run calc_angle.")
+            raise Exception("In order to run this function, you must have previously run calc_angle.")
 
         op = dtb_PDB_norm_COM((self.reaction_chain, self.int_site, self.int_site_distance, 
                                     self.unique_chain, self.COM, self.angle, self.normal_point_lst1, 
@@ -131,7 +131,7 @@ class ProteinComplex():
         from . import dtb_PDB_write_input
 
         if self.one_site_chain == ["na"]:
-            raise Exception("In oyder to run this function, you must have previously run calc_angle.")
+            raise Exception("In order to run this function, you must have previously run calc_angle.")
         
         dtb_PDB_write_input((self.reaction_chain, self.int_site, self.int_site_distance, 
                                     self.unique_chain, self.COM, self.angle, self.normal_point_lst1, 
@@ -167,7 +167,6 @@ class ProteinComplex():
             op (tuple): The output of one of the functions
         """
 
-        print('setting self from tuple')
         if len(op) == 5:
             self.reaction_chain, self.int_site, self.int_site_distance, self.unique_chain, self.COM = op
         elif len(op) == 9:

@@ -8,7 +8,7 @@ def real_PDB_UI():
     
     Open .pdb files:
      - When run, the first thing that will be asked is "Enter pdb file name: []". You must enter the relative / absolute path to the file.
-     - Ex: Enter pdb file name: "ioNERDSSPyPi\TestingFunctions\\1si4.pdb" (Note: I have to '\' before 1, so python does not see it as a weird charecter)
+     - Ex: Enter pdb file name: "ioNERDSSPyPi\TestingFunctions\\1si4.pdb" (Note: I have to add a 2nd '\' before 1, so python does not see it as a weird charecter)
     Chaning distance between interaction sites:
      - After the .pdb file in initilized, it will ask "Would you like to chang...", and ask for you to write 'yes' or 'no'
      - If you write yes, keep reading, if you write no, it will just go to the next section
