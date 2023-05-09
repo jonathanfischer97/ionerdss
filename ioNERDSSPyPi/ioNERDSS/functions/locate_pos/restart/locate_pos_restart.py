@@ -4,7 +4,7 @@ from .find_complexes import find_complexes
 from .write_pdb import write_pdb
 
 
-def filter_PDB_op_restart(FileNamePdb, NumDict, FileNameRestart='restart.dat'):
+def locate_pos_restart(FileNamePdb, NumDict, FileNameRestart='restart.dat'):
     """
     Locates specific complexes of a certain size from a PDB file along with 'restart.dat' file after simulation and outputs the result
     as a separated file named "output_file.pdb" containing only the desired complex.

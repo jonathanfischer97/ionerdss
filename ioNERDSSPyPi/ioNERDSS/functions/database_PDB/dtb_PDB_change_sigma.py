@@ -30,10 +30,12 @@ def dtb_PDB_change_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: lis
     # user can choose to change the interaction site
     new_int_site_distance = copy.deepcopy(int_site_distance)
     new_int_site = copy.deepcopy(int_site)
+    
     if ChangeSigma:
         for i in range(len(SiteList)):
             n = SiteList[i] - 1
             new_distance = NewSigma[i]
+            
             if new_distance >= 0:
                 if n == -1:
                     for p in range(0, len(reaction_chain)):
@@ -82,6 +84,7 @@ def dtb_PDB_change_sigma(Result: tuple, ChangeSigma: bool = False, SiteList: lis
                         #     + "[%.3f, %.3f, %.3f]" % (
                         #     new_int_site[p][1][0], new_int_site[p][1][1], new_int_site[p][1][2])
                         #     + " distance between interaction sites is: %.3f" % (new_int_site_distance[p]))
+                
                 if n >= 0:
                     new_int_site_distance[n] = copy.deepcopy(
                         new_distance)
