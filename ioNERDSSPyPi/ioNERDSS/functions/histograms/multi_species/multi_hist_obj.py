@@ -4,6 +4,8 @@ from .multi_hist_complex_count import multi_hist_complex_count
 from .multi_stack_hist_complex_count import multi_stack_hist_complex_count
 from .multi_heatmap_complex_dist import multi_heatmap_complex_dist
 from .multi_hist_3D_complex_dist import multi_hist_3D_complex_dist
+from ..hist_to_csv import hist_to_csv
+from ..hist_to_df import hist_to_df
 
 
 class MultiHistogram ():
@@ -179,5 +181,28 @@ class MultiHistogram ():
                              SpeciesList=SpeciesList, xBarSize=xBarSize, yBarSize=yBarSize, ShowFig=ShowFig, SaveFig=SaveFig, SaveVars=SaveVars)
 
 
+    def hist_to_csv(self):
+        """Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
 
+        Args:
+            None
+
+        Returns:
+            histogram.csv file: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
+            is the number of that complex molecule at that time stamp.
+        """  
+        return hist_to_csv(self.FileName)
+
+
+    def hist_to_df(self, SaveCsv: bool = True):
+        """Creates a pandas dataframe from a histogram.dat (multi-species)
+
+        Args:
+            SaveCsv (bool, optional): If a .csv file is saved as well. Defaults to True.
+
+        Returns:
+        pandas.df: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
+            is the number of that complex molecule at that time stamp.
+        """
+        return hist_to_df(self.FileName,SaveCsv)
 
