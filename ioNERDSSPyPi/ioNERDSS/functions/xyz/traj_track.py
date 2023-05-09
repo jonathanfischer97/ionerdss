@@ -1,4 +1,6 @@
-def traj_track(FileName: str, SiteNum: int, MolIndex: list):
+from ..save_vars_to_file import save_vars_to_file
+
+def traj_track(FileName: str, SiteNum: int, MolIndex: list, SaveVars: bool = False):
     """Tracks the center of mass (COM) coordinate changing of one or more molecules.
 
     Args:
@@ -44,4 +46,9 @@ def traj_track(FileName: str, SiteNum: int, MolIndex: list):
                     list_index = MolIndex.index((index//SiteNum)+1)
                     array[list_index].append(coord)
                 index += 1
+    
+    
+    if SaveVars:
+        save_vars_to_file({"trajectory":array})
+
     return array
