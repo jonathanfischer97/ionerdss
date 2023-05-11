@@ -57,12 +57,11 @@ def save_vars_to_file(var_dict: dict):
             file_end = f"{key}_string.txt"
             type = "txt"    
         elif isinstance(value,list) or isinstance(value,np.ndarray): #list
-            
-            #if empty lists, add a zero
-            if value == []:
+            value = list(value) #turn numpy into normal list
+            if len(value) == 0: #if empty lists, add a zero
                 value.append("EMPTY LIST")
-
             file_end = f"{key}_list.csv"
+            
             if isinstance(value[0],list) or isinstance(value[0],np.ndarray): #2dim+ deep list
                 type = "2list" 
             else: #1dim list
@@ -72,6 +71,7 @@ def save_vars_to_file(var_dict: dict):
             type = "txt"
         
         file_name = file_start + file_end
+
 
 
         #Create file name and open file 
