@@ -2,12 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 from .read_transition_matrix import read_transition_matrix
-
+from ..save_vars_to_file import save_vars_to_file
 
 def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
-                             SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
-    """
-    Plots the probability of association between complexes of different sizes and other complexes of different sizes.
+                             SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
+    """ Plots the probability of association between complexes of different sizes and other complexes of different sizes.
 
     Args:
         FileName (str): Path to the histogram data file (usually named as 'transition_matrix_time.dat') to be analyzed.
@@ -18,6 +17,7 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
         DivideSize (int, optional): Value that distinguishes the size of the associate complex. Defaults to 2.
         ShowFig (bool, optional): Whether to show the plot. Defaults to True.
         SaveFig (bool, optional): Whether to save the plot as a '.png' file in the current directory. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         A tuple of four lists containing: 
@@ -153,7 +153,11 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
 
         
     n_list = list(range(1, 1 + len(matrix_list[0])))
-    
+        
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"cmplx_size":n_list,"mean_associate_probability":[mean_above, mean_equal, mean_below],"std":[std_above, std_equal, std_below]})
+
     #show figure!
     if ShowFig:
         errorbar_color_1 = '#c9e3f6'
