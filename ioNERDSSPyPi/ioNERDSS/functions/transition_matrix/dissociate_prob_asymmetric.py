@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 from .read_transition_matrix import read_transition_matrix
-
+from ..save_vars_to_file import save_vars_to_file
 
 def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
-                               SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
+                               SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
     """
     Create a line plot representing the probability of dissociation of complexes of different sizes into other complexes of different sizes.
 
@@ -18,6 +18,7 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
         DivideSize (int, optional): The value that separates the size of the dissociate complex. Defaults to 2.
         ShowFig (bool, optional): If True, the plot will be shown; if False, the plot will not be shown. Defaults to True.
         SaveFig (bool, optional): If True, the plot will be saved as a '.png' file in the current directory; if False, the figure will not be saved. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         A tuple containing the following:
@@ -35,17 +36,29 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
     """
     
     warnings.filterwarnings('ignore')
+    
     matrix_list = []
+ 
+    #create name head/tail
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
-    for i in range(1, FileNum+1):
-        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+    
+    #for each transition matrix file input
+    for matrix_file_number in range(1, FileNum+1):
+        
+        #determining file name (if there are multiple or none)
         if FileNum == 1:
             temp_file_name = FileName
+        else:
+            temp_file_name = file_name_head + '_' + str(matrix_file_number) + '.' + file_name_tail
+        
+        #reads file and determines difference
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
         matrix_list.append(matrix)
+    
+    #magic
     above = []
     equal = []
     below = []
@@ -87,6 +100,8 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
         above.append(above_temp)
         equal.append(equal_temp)
         below.append(below_temp)
+    
+    #more magic
     above_prob = []
     equal_prob = []
     below_prob = []
@@ -107,6 +122,8 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
         above_prob.append(above_prob_temp)
         equal_prob.append(equal_prob_temp)
         below_prob.append(below_prob_temp)
+    
+    #transpose
     above_prob_rev = []
     for i in range(len(above_prob[0])):
         temp = []
@@ -125,6 +142,8 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
         for j in range(len(below_prob)):
             temp.append(below_prob[j][i])
         below_prob_rev.append(temp)
+    
+    #determine means / stds
     mean_above = []
     mean_equal = []
     mean_below = []
@@ -142,7 +161,16 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
     mean_above = np.nan_to_num(mean_above)
     mean_equal = np.nan_to_num(mean_equal)
     mean_below = np.nan_to_num(mean_below)
+    
+    #create list of complex sizes
     n_list = list(range(1, 1 + len(matrix_list[0])))
+
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"cmplx_size":n_list,"mean_dissociate_probability":[mean_above, mean_equal, mean_below],"std":[std_above, std_equal, std_below]})
+
+    
+    #show figure
     if ShowFig:
         errorbar_color_1 = '#c9e3f6'
         errorbar_color_2 = '#ffe7d2'
