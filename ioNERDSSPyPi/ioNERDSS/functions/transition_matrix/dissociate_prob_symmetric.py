@@ -2,12 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 from .read_transition_matrix import read_transition_matrix
-
+from ..save_vars_to_file import save_vars_to_file
 
 def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
-                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
-    """
-    Calculates and displays the probability of dissociation of complexes of different sizes into other complexes of different sizes.
+                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
+    """ Calculates and displays the probability of dissociation of complexes of different sizes into other complexes of different sizes.
 
     Args:
         FileName (str): Path to the '.dat' file representing the histogram data to be analyzed.
@@ -18,7 +17,8 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
         DivideSize (int, optional): The value that distinguishes the size of the dissociate complex (default=2). For example, if DivideSize=2, that means the dissociate events are classified as 'dissociate size < 2', 'dissociate size = 2' and 'dissociate size > 2'.
         ShowFig (bool, optional): If True, the plot will be displayed (default=True).
         SaveFig (bool, optional): If True, the plot will be saved as a '.png' file in the current directory (default=False).
-
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+        
     Returns:
         A tuple containing the following: 
          - The x-axis data
@@ -31,17 +31,29 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
         - The function generates a line plot of the probability of dissociation of complexes of different sizes into other complexes of different sizes. The x-axis represents the size of the complex, and the y-axis represents the dissociate probability. Three lines will exist in the line graph, representing dissociating to complexes of sizes less than, equal to, or greater than the specified size, respectively. 'Symmetric' in the function name means that for the dissociate reaction, both sizes of complexes are counted as dissociating events symmetrically, for example, if a dissociate event occurs where a heptamer dissociates into a tetramer and a trimer, then this event is counted twice, which are heptamer dissociates to tetramer and heptamer dissociates to trimer. If multiple input files are given, the output plot will be the average value of all files and an error bar will also be included.
     """
     warnings.filterwarnings('ignore')
+    
     matrix_list = []
+    
+    #create name head/tail
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
-    for i in range(1, FileNum+1):
-        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+    
+    #for each transition matrix file input
+    for matrix_file_number in range(1, FileNum+1):
+        
+        #determining file name (if there are multiple or none)
         if FileNum == 1:
             temp_file_name = FileName
+        else:
+            temp_file_name = file_name_head + '_' + str(matrix_file_number) + '.' + file_name_tail
+        
+        #reads file and determines difference
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
         matrix_list.append(matrix)
+    
+    #magic
     above = []
     equal = []
     below = []
@@ -65,6 +77,8 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
         above.append(above_temp)
         equal.append(equal_temp)
         below.append(below_temp)
+    
+    #magic
     above_prob = []
     equal_prob = []
     below_prob = []
@@ -85,6 +99,8 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
         above_prob.append(above_prob_temp)
         equal_prob.append(equal_prob_temp)
         below_prob.append(below_prob_temp)
+    
+    #transpose
     above_prob_rev = []
     for i in range(len(above_prob[0])):
         temp = []
@@ -103,6 +119,8 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
         for j in range(len(below_prob)):
             temp.append(below_prob[j][i])
         below_prob_rev.append(temp)
+    
+    #determine means / std devs
     mean_above = []
     mean_equal = []
     mean_below = []
@@ -120,7 +138,14 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
     mean_above = np.nan_to_num(mean_above)
     mean_equal = np.nan_to_num(mean_equal)
     mean_below = np.nan_to_num(mean_below)
+    
     n_list = list(range(1, 1 + len(matrix_list[0])))
+    
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"cmplx_size":n_list,"mean_dissociate_probability":[mean_above, mean_equal, mean_below],"std":[std_above, std_equal, std_below]})
+
+    #show figure
     if ShowFig:
         errorbar_color_1 = '#c9e3f6'
         errorbar_color_2 = '#ffe7d2'

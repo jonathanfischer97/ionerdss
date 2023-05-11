@@ -23,7 +23,7 @@ last = badTimer('start',0)
 #ion.save_vars_to_file({"word":[[0,0,0],[0,0,0],[0,0,0],[1,1,1]]})
 #test = ion.MultiHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_multi_component.dat",FileNum=1,InitialTime=0,FinalTime=1,SpeciesList=["A","B"])
 #test.frac_of_assemble(Mol="B")
-ion.associate_prob_asymmetric(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat",FileNum=1,InitialTime=0,FinalTime=1,SpeciesName="dode",DivideSize=2,ShowFig=True,SaveFig=False,SaveVars=True)
+ion.dissociate_prob_symmetric(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat",FileNum=1,InitialTime=0,FinalTime=1,SpeciesName="dode",DivideSize=2,ShowFig=True,SaveFig=False,SaveVars=True)
 
 print()
 
