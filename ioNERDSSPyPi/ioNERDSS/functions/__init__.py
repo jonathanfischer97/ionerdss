@@ -5,6 +5,9 @@ from .database_PDB import *
 from .locate_pos import *
 from .xyz import *
 from .acf import *
+from .pdb import *
+from .file_managment import *
+from .sphere_reg import *
 
 
 """Welcome to the main ioNERDSS function library folder! Here I will give a brief description of each folder and sub folder!

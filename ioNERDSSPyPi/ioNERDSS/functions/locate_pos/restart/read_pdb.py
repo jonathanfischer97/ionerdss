@@ -52,8 +52,8 @@ def read_pdb(file_name_pdb,complex_lst,NumDict):
             check = True
             if len(complex[protein_name]) != 0:
                 check = False
-            if check:
-                raise Exception(f"Protein {protein_name} was not found in any complex. Maybe you misspelled?")
+        if check:
+            raise Exception(f"Protein {protein_name} was not found in any complex. Maybe you misspelled?")
 
 
     return sorted_complexes
