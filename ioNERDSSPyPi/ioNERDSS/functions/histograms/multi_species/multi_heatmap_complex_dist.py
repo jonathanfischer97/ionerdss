@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
-from ...save_vars_to_file import save_vars_to_file
+from ...file_managment.save_vars_to_file import save_vars_to_file
 
 def multi_heatmap_complex_dist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, xAxis: str, yAxis: str,
                   SpeciesList: list = [], xBarSize: int = 1, yBarSize: int = 1,

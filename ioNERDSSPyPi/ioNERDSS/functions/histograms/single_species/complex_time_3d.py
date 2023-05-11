@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .hist_temp import hist_temp
-from ...save_vars_to_file import save_vars_to_file
+from ...file_managment.save_vars_to_file import save_vars_to_file
 
 
 def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,

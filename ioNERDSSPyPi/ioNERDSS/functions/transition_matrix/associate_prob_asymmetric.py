@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 from .read_transition_matrix import read_transition_matrix
-from ..save_vars_to_file import save_vars_to_file
+from ..file_managment.save_vars_to_file import save_vars_to_file
 
 
 def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,

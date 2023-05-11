@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
-from ...save_vars_to_file import save_vars_to_file
+from ...file_managment.save_vars_to_file import save_vars_to_file
 
 def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                        SpeciesList: list, xAxis: str, DivideSpecies: str, DivideSize: int,

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from ..save_vars_to_file import save_vars_to_file
+from ..file_managment.save_vars_to_file import save_vars_to_file
 
 
 def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,

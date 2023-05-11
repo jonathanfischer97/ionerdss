@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import warnings
 from .read_multi_hist import read_multi_hist
 from mpl_toolkits import mplot3d
-from ...save_vars_to_file import save_vars_to_file
+from ...file_managment.save_vars_to_file import save_vars_to_file
 
 def multi_hist_3D_complex_dist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
                   SpeciesList: list, xAxis: str, yAxis: str, xBarSize: int = 1, yBarSize: int = 1,

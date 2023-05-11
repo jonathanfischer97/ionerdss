@@ -148,7 +148,8 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
         FileNameHist: A string representing the file name of the histogram
         SpeciesName: A string representing the species name
         LitNum: An integer representing the number of the litter
-        TimeStep: A float representing the time steComplexNum: An integer representing the number of complexes
+        TimeStep: A float representing the time step
+        ComplexNum: An integer representing the number of complexes
         Radius: A float representing the radius
     
     Returns:

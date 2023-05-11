@@ -1,4 +1,4 @@
-from ..save_vars_to_file import save_vars_to_file
+from ..file_managment.save_vars_to_file import save_vars_to_file
 
 def traj_track(FileName: str, SiteNum: int, MolIndex: list, SaveVars: bool = False):
     """Tracks the center of mass (COM) coordinate changing of one or more molecules.

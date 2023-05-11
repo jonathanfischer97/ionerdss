@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-from ...save_vars_to_file import save_vars_to_file
+from ...file_managment.save_vars_to_file import save_vars_to_file
 
 
 def frac_of_assemble(FileName: str = 'histogram_complexes_time.dat', FileNum: int = 1, 

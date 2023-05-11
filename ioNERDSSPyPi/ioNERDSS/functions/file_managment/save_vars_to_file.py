@@ -25,33 +25,15 @@ def add_empty_lists(input_list: list):
 
 
 
-
 def save_vars_to_file(var_dict: dict):
     """This function takes a dictionary of variables and saves them to a file in the correct format.
 
         Parameters
             var_dict: A dictionary of variables to be saved.
-
-        Returns
-            Nothing.
-
-        Example
-            # Create a dictionary of variables to save
-            var_dict = {
-                "var1": 1,
-                "var2": "string",
-                "var3": [1,2,3],
-                "var4": np.array([[1,2],[3,4]])
-            }
-
-            # Save the variables to a file
-            save_vars_to_file(var_dict)
         
         Explanation
             If the variable is a number or a string, it saves it to a .txt file. If the variable is a list, 
             it saves it to a .csv file. If the list is two-dimensional or deeper, it will save each sublist on a different line.
-
-
     """
 
 
