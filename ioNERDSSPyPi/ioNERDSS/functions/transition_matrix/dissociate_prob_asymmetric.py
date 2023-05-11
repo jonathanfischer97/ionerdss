@@ -168,7 +168,6 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
     #output variables
     if SaveVars:
         save_vars_to_file({"cmplx_size":n_list,"mean_dissociate_probability":[mean_above, mean_equal, mean_below],"std":[std_above, std_equal, std_below]})
-
     
     #show figure
     if ShowFig:
