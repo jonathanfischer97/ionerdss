@@ -2,12 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 from .read_transition_matrix import read_transition_matrix
-
+from ..save_vars_to_file import save_vars_to_file
 
 def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
-                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False):
-    """
-    This function plots a line graph representing the probability of association between complexes of different sizes and other complexes of different sizes.
+                              SpeciesName: str, DivideSize: int = 2, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
+    """ This function plots a line graph representing the probability of association between complexes of different sizes and other complexes of different sizes.
 
     Args:
         FileName (str): Path to the ‘.dat’ file, which is usually named as ‘transition_complexes_time.dat’.
@@ -18,6 +17,7 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
         DivideSize (int, optional): Value that distinguishes the size of the associate complex, for example, if DivideSize = 2, that means the associate events are classified as ‘associate size < 2’, ‘associate size = 2’ and ‘associate size > 2’. Default value is 2.
         ShowFig (bool, optional): If True, the plot will be shown; if False, the plot will not be shown. No matter the plot is shown or not, the returns will remain the same. Default value is True.
         SaveFig (bool, optional): If True, the plot will be saved as a ‘.png’ file in the current directory; if False, the figure will not be saved. Default value is False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         Line graph. X-axis = size of the complex molecule. Y-axis: Associate probability.
@@ -27,17 +27,29 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
         Naming rule for input files: If single file is provided, the input file should be named as its original name (‘transition_matrix_time.dat’); if multiple files are provided, the name of input file should also include serial number as ‘transition_matrix_time_X.dat’ where X = 1,2,3,4,5…
     """
     warnings.filterwarnings('ignore')
-    matrix_list = []
+    
+    matrix_list = [] #list of matrix from each file
+    
+    #create name head/tail
     file_name_head = FileName.split('.')[0]
     file_name_tail = FileName.split('.')[1]
-    for i in range(1, FileNum+1):
-        temp_file_name = file_name_head + '_' + str(i) + '.' + file_name_tail
+    
+    #for each transition matrix file input
+    for matrix_file_number in range(1, FileNum+1):
+        
+        #determining file name (if there are multiple or none)
         if FileNum == 1:
             temp_file_name = FileName
+        else:
+            temp_file_name = file_name_head + '_' + str(matrix_file_number) + '.' + file_name_tail
+        
+        #reads file and determines difference
         ti_matrix, tf_matrix = read_transition_matrix(
             temp_file_name, SpeciesName, InitialTime, FinalTime)
         matrix = tf_matrix - ti_matrix
         matrix_list.append(matrix)
+    
+    #magic
     above = []
     equal = []
     below = []
@@ -79,6 +91,8 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
         above.append(above_temp)
         equal.append(equal_temp)
         below.append(below_temp)
+    
+    #more magic
     above_prob = []
     equal_prob = []
     below_prob = []
@@ -99,6 +113,8 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
         above_prob.append(above_prob_temp)
         equal_prob.append(equal_prob_temp)
         below_prob.append(below_prob_temp)
+    
+    #transpose each matrix
     above_prob_rev = []
     for i in range(len(above_prob[0])):
         temp = []
@@ -117,6 +133,8 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
         for j in range(len(below_prob)):
             temp.append(below_prob[j][i])
         below_prob_rev.append(temp)
+    
+    #determine mean / std dev
     mean_above = []
     mean_equal = []
     mean_below = []
@@ -132,6 +150,12 @@ def associate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, F
             std_equal.append(np.nanstd(equal_prob_rev[i]))
             std_below.append(np.nanstd(below_prob_rev[i]))
     n_list = list(range(1, 1 + len(matrix_list[0])))
+    
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"cmplx_size":n_list,"mean_associate_probability":[mean_above, mean_equal, mean_below],"std":[std_above, std_equal, std_below]})
+
+    #show figure
     if ShowFig:
         errorbar_color_1 = '#c9e3f6'
         errorbar_color_2 = '#ffe7d2'
