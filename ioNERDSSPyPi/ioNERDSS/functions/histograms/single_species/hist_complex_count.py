@@ -143,6 +143,6 @@ def hist_complex_count(full_hist: list, FileNum: int, InitialTime: float, FinalT
         if SaveFig:
             plt.savefig('Histogram.png', dpi=500)
         plt.show()
-    return n_list_, mean_, 'Nan', std_
+    return n_list_, mean_, std_
 
 

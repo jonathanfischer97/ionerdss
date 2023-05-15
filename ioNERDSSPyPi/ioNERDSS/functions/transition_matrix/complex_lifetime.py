@@ -87,6 +87,6 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
         if SaveFig:
             plt.savefig('complex_lifetime.png', dpi=500)
         plt.show()
-    return size_list, mean, 'Nan', std
+    return size_list, mean, std
 
 

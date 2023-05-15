@@ -6,7 +6,7 @@ from .filter_complexes import filter_complexes
 from .write_new_PDB import write_new_PDB
 
 
-def locate_pos_no_restart(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
+def locate_pos_no_restart(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01, OpName = "output_file"):
     """
     Locates specific complexes of a certain size from a PDB file after simulation and outputs the result as a separated file
     named "output_file.pdb" containing only the desired complex.
@@ -18,6 +18,7 @@ def locate_pos_no_restart(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
         FileNameInp (str): The path to the '.inp' file, which usually stores the reaction information.
         BufferRatio (float, optional): The buffer ratio used to determine whether two reaction interfaces can be considered as bonded.
             Defaults to 0.01.
+        OpName (str, optional = “output_file”): The name of the outputted file. 
 
     Returns:
         output_file.pdb: A file containing the desired complex.
@@ -57,7 +58,7 @@ def locate_pos_no_restart(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01):
 
     #writes a new PDB file that only includs proteins that are in complexes of the correct size
     print('Writing new PDB files......')
-    write_new_PDB(complex_filtered, main_pdb_list)
+    write_new_PDB(complex_filtered, main_pdb_list, OpName)
     print('PDB writing complete! (named as output_file.pdb)')
     return 0
 

@@ -65,22 +65,7 @@ def real_PDB_UI():
             print("Invalid answer, please try again.")
 
     # normalize vector
-    while True:
-        answer_norm = str(
-            input("Would you like to use the default norm vector (0,0,1)? (Type 'yes' or 'no'): "))
-        if answer_norm == 'yes' or answer_norm == 'no':
-            break
-    if answer_norm == 'no':
-        value = True 
-        while value:
-            answer_norm_2 = input("What do you want the norm vector to be? Please insert with a , between each number and no spaces. (ex: 1,1,3)")
-            answer_norm_2 = answer_norm_2.split(',')
-            answer_norm_2 = [float(ele) for ele in answer_norm_2]
-            value = not UI_PDB.calc_angle(answer_norm_2,False)
-
-    # calculate angles
-    if answer_norm == 'yes':
-        UI_PDB.calc_angle()
+    UI_PDB.calc_angle()
 
     # asking whether to center the COM of every chain to origin.
     while True:

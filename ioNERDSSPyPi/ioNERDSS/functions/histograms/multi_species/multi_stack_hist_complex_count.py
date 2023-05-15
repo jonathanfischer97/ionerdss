@@ -241,6 +241,6 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
         if SaveFig:
             plt.savefig(fig_name, dpi=500)
         plt.show()
-    return n_list_, [mean_below_, mean_equal_, mean_above_], 'Nan', [std_below_, std_equal_, std_above_]
+    return n_list_, [mean_below_, mean_equal_, mean_above_], [std_below_, std_equal_, std_above_]
 
 

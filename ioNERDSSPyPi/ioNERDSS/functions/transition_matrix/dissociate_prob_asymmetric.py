@@ -193,6 +193,6 @@ def dissociate_prob_asymmetric(FileName: str, FileNum: int, InitialTime: float, 
         if SaveFig:
             plt.savefig('dissociate_probability_asymmetric.png', dpi=500)
         plt.show()
-    return n_list, [mean_above, mean_equal, mean_below], 'Nan', [std_above, std_equal, std_below]
+    return n_list, [mean_above, mean_equal, mean_below], [std_above, std_equal, std_below]
 
 

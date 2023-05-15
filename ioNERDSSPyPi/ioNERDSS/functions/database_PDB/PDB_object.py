@@ -23,13 +23,12 @@ class ProteinComplex():
 
     ## EDITS DATA ##
 
-    def calc_angle(self,NormVector: list = [0.,0.,1.],ThrowError: bool = True):
+    def calc_angle(self,NormVector: list = [0.,0.,1.]):
         """This function calculates the 5 associating angles of each pair of interfaces.
         The default normal vector will be assigned as (0, 0, 1). If the co-linear issue occurs, 
         the system will use (0, 1, 0) instead to resolve co-linear issue. The calculated 5 angles 
         will be shown on the screen automatically.
         
-        Can be run at any time
 
         Args:
             NormVector (list, optional): The normal vector used to calculate the angles
@@ -41,7 +40,7 @@ class ProteinComplex():
         from . import dtb_PDB_calc_angle
 
         op = dtb_PDB_calc_angle((self.reaction_chain, self.int_site, self.int_site_distance, 
-                                      self.unique_chain, self.COM),NormVector,ThrowError)
+                                      self.unique_chain, self.COM),NormVector)
         if op[0] == False:
             return False
         else:

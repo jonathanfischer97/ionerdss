@@ -1,9 +1,10 @@
-def write_pdb(file_name_pdb, protein_remain):
+def write_pdb(file_name_pdb, protein_remain, OpName):
     """Reads a PDB file and creates a new PDB file with only the atoms that correspond to the protein_remain list.
 
     Args:
         file_name_pdb (str): the name of the input PDB file
         protein_remain (List[int]): a list of integers with the protein numbers to be kept in the new PDB file
+        OpName (string): name of the outputted file
 
     Returns:
         int: 0, indicating that the function has finished executing
@@ -12,6 +13,7 @@ def write_pdb(file_name_pdb, protein_remain):
         >>> RESTART_new_pdb('input_file.pdb', [1, 2, 3, 5])
         0
     """
+    
     with open(file_name_pdb, 'r') as file:
         write_lst = []
         for line in file.readlines():
@@ -29,7 +31,10 @@ def write_pdb(file_name_pdb, protein_remain):
                 info[9] = info[9].strip('\n')
                 if int(info[4]) in protein_remain:
                     write_lst.append(line)
-    with open('output_file.pdb', 'w') as file_:
+    
+    OpName = f"{OpName}.pdb"
+    
+    with open(OpName, 'w') as file_:
         file_.seek(0)
         file_.truncate()
         for i in write_lst:

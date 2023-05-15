@@ -1,4 +1,4 @@
-def write_new_PDB(protein_remain, main_pdb_list):
+def write_new_PDB(protein_remain, main_pdb_list, OpName):
     """Generates a new PDB file with protein information based on a list of remaining protein numbers.
 
     This function reads a PDB file, extracts protein information for the proteins whose numbers are specified
@@ -7,15 +7,16 @@ def write_new_PDB(protein_remain, main_pdb_list):
     Args:
         protein_remain (list): A list of protein numbers that had the correct number of sub-proteins.
         main_pdb_list (list): A list of lists of every single line of the original inputted pdb file. info[i][0] = important data from line, info[i][1] = the line string
+        OpName (str): The name of the outputted file. 
 
     Returns:
         .pdb file: holds all of the proteins sites that are in the complexes of the correct sizes
     """
 
-        
+    OpName = f"{OpName}.pdb"
     
     #write new file
-    with open('output_file.pdb', 'w') as file:
+    with open(OpName, 'w') as file:
         file.seek(0)
         file.truncate()
         

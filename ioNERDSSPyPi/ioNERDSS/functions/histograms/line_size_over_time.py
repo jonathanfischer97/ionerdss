@@ -143,6 +143,6 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
         if SaveFig:
             plt.savefig('mean_complex.png', dpi=500)
         plt.show()
-    return time_list[0], mean, 'Nan', std
+    return time_list[0], mean, std
 
 

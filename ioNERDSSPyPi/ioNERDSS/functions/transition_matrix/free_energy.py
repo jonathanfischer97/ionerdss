@@ -133,6 +133,6 @@ def free_energy(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         if SaveFig:
             plt.savefig('free_energy.png', dpi=500)
         plt.show()
-    return n_list, mean_energy_list, 'Nan', std_energy_list
+    return n_list, mean_energy_list, std_energy_list
 
 

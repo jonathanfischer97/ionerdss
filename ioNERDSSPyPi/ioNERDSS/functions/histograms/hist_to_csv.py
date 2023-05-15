@@ -1,58 +1,80 @@
 import numpy as np
 
 
-def hist_to_csv(FileName: str):
-    """Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
+def hist_to_csv(FullHist: list, SpeciesList: list, OpName: str):
+    """WARNING: THIS FUNCTION CURRENTLY HAS TO BE GIVEN FILES OF THE SAME SIZE OR ELSE IT WILL BREAK. (if given multiple)
+    Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
 
     Args:
-        FileName (str): Path to the histogram.dat file
+        FullHist (list): holds all of the histogram data
+        OpName (str): name of the outputted .csv file
 
     Returns:
         histogram.csv file: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
         is the number of that complex molecule at that time stamp.
+    
     """
     
     column_list = [] #holds the name of each column (Time + each complex name)
     time_list = [] #holds each time. Index corresponds to a sublist in name_count_dict_List
     name_count_dict_list = [] #holds each name/count. Index corresponds with size_list
-    csv_name = FileName.split("\\")[-1].split('.')[0]
 
-    name_count_dict_sub = {} #holds dictionary that holds names and counts. Appends to name_count_dict_list
+    #determine longest file
+    length = 0
+    for file_index,file in enumerate(FullHist):
+        if len(file) > length:
+            length = len(file)
+            length_index = file_index 
+    
+
+    #create list with dictionaries for each timestep
+    for na in range(0,length+1):
+        name_count_dict_list.append({})
+
 
     #Creates list with every complex type/size
-    with open(FileName, 'r') as file:
-        for index,line in enumerate(file.readlines()):
-            
-            #if it is a time stamp
-            if line[0:9] == 'Time (s):':
-                time = float(line.split(' ')[-1])
-                time_list.append(time)
+    for file_index,file in enumerate(FullHist):
+        
+        for time_index,time in enumerate(file):
 
-                #if there was a previous timestamp before it that needs to be initilized
-                if index != 0:
-                    name_count_dict_list.append(name_count_dict_sub)
-                    name_count_dict_sub = {}
+            #get timestamps
+            if time[0] not in time_list:
+                time_list.append(time[0])
 
-            else:
+            #get complex names and counts
+            for complex_index,complexes in enumerate(time[1:]):
                 
-                #get name of species & get number of species in this complex
-                name = line.split('	')[1].strip(' \n')
-                count = int(line.split('\t')[0])
-                name_count_dict_sub[name] = count
-                #input(f"Time: {time} \n Name: {name} \n Count: {count}")
+                #get name
+                name = ""
+                for index_sp,species in enumerate(complexes[:-1]):
+                    name = f"{name}{SpeciesList[index_sp]}: {species}.  "
+                    if name not in name_count_dict_list[time_index].keys():
+                        name_count_dict_list[time_index][name] = []
+                        
+                #get count
+                name_count_dict_list[time_index][name].append(complexes[-1])
 
                 #creates a list of every 'name'
                 if name not in column_list:
                     column_list.append(name)
-    
-    #at the end append the final subs because of the fence problem thing :(
-    name_count_dict_list.append(name_count_dict_sub)
-    name_count_dict_sub = {}
-    #input(name_count_dict_list)
-    column_list.sort()
-    
+
+    #takes mean of each complex type at each timestep
+    for time_index,time in enumerate(name_count_dict_list):
+        for key in time.keys():
+            
+            #will add 0s to a list if it does not have data from each file.
+            if len(time[key]) < len(FullHist):
+                for na in range(len(time[key]), len(FullHist)):
+                    time[key].append(0)
+
+            #takes mean of list
+            name_count_dict_list[time_index][key] = np.round(np.mean(time[key]),5)
+            
+
+
+
     #write the file!
-    with open(f'{csv_name}.csv', 'w') as write_file:
+    with open(f'{OpName}.csv', 'w') as write_file:
         
         #create column names
         head = 'Time(s):'
@@ -82,58 +104,6 @@ def hist_to_csv(FileName: str):
             #commit to file
             write += '\n'
             write_file.write(write)
-    
-    
-    
-    
-    
-    """name_list = ['Time (s)']
-    with open(FileName, 'r') as file:
-        for line in file.readlines():
-            if line[0:9] != 'Time (s):':
-                name = line.split('	')[1].strip(' \n')
-                if name not in name_list:
-                    name_list.append(name)
-    file.close()
-    with open(FileName, 'r') as read_file, open('histogram.csv', 'w') as write_file:
-        head = ''
-        for i in name_list:
-            head += i
-            if i != name_list[-1]:
-                head += ','
-            else:
-                head += '\n'
-        write_file.write(head)
-        stat = np.zeros(len(name_list))
-        for line in read_file.readlines():
-            if line[0:9] == 'Time (s):':
-                if line != 'Time (s): 0\n':
-                    write_line = ''
-                    for i in range(len(stat)):
-                        write_line += str(stat[i])
-                        if i != len(stat)-1:
-                            write_line += ','
-                        else:
-                            write_line += '\n'
-                    write_file.write(write_line)
-                stat = np.zeros(len(name_list))
-                write_line = ''
-                info = float(line.split(' ')[-1])
-                stat[0] += info
-            else:
-                name = line.split('	')[-1].strip(' \n')
-                num = float(line.split('	')[0])
-                index = name_list.index(name)
-                stat[index] += num
-        for i in range(len(stat)):
-            write_line += str(stat[i])
-            if i != len(stat)-1:
-                write_line += ','
-            else:
-                write_line += '\n'
-        write_file.write(write_line)
-    read_file.close()
-    write_file.close()
-    return 0"""
+
 
 

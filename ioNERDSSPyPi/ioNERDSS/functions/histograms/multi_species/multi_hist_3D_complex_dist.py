@@ -157,5 +157,5 @@ def multi_hist_3D_complex_dist(FileName: str, FileNum: int, InitialTime: float, 
             plt.savefig('3D_hisogram_of_' + xAxis + '_and_' +
                         yAxis, dpi=500,  bbox_inches='tight')
         plt.show()
-    return x_list, y_list, count_list_mean, 'Nan'
+    return x_list, y_list, count_list_mean
 

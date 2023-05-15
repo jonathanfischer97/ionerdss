@@ -4,7 +4,7 @@ from .find_complexes import find_complexes
 from .write_pdb import write_pdb
 
 
-def locate_pos_restart(FileNamePdb, NumDict, FileNameRestart='restart.dat'):
+def locate_pos_restart(FileNamePdb, NumDict, FileNameRestart='restart.dat', OpName = "output_file"):
     """
     Locates specific complexes of a certain size from a PDB file along with 'restart.dat' file after simulation and outputs the result
     as a separated file named "output_file.pdb" containing only the desired complex.
@@ -13,7 +13,8 @@ def locate_pos_restart(FileNamePdb, NumDict, FileNameRestart='restart.dat'):
         FileNamePdb (str): The path to the PDB file, which is usually the last frame of simulation.
         NumDict (dictionary): A dictionary that holds the requested number of protein types in a complex
             Ex: {'dod':11,'clat':4}       
-        FileNameRestart (str, optional): The path to the 'restart.dat' file. Defaults to 'restart.dat'.
+        FileNameRestart (str): The path to the 'restart.dat' file. Defaults to 'restart.dat'.
+        OpName (string, Optional = "output_file"): the name of the outputted file
 
     Returns:
         output_file.pdb: seperate file containing only the desired complex(es)
@@ -48,7 +49,7 @@ def locate_pos_restart(FileNamePdb, NumDict, FileNameRestart='restart.dat'):
 
     #Writes the new PDB file
     print('Writing new PDB files......')
-    write_pdb(FileNamePdb, protein_remain)
+    write_pdb(FileNamePdb, protein_remain, OpName)
     print('PDB writing complete!(named as output_file.pdb)')
     
     return 0

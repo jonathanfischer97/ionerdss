@@ -117,6 +117,6 @@ def growth_prob(FileName: str, FileNum: int, InitialTime: float, FinalTime: floa
         if SaveFig:
             plt.savefig('growth_probability.png', dpi=500)
         plt.show()
-    return n_list, mean, 'Nan', std
+    return n_list, mean, std
 
 

@@ -1,9 +1,10 @@
-def xyz_to_csv(FileName: str, LitNum: int = -1):
+def xyz_to_csv(FileName: str, LitNum: int = -1, OpName: str = "output_file"):
     """Converts a .xyz file to a .csv file for a specific or entire time frame.
 
     Args:
         FileName (str): The path to the input .xyz file, usually named 'trajectory.xyz'.
         LitNum (int, optional = -1): The number of iterations to examine. If -1, the entire iteration will be extracted.
+        OpName (str, optional = “output_file”): The name of the outputted file. 
 
     Returns:
         A .csv file.
@@ -17,12 +18,12 @@ def xyz_to_csv(FileName: str, LitNum: int = -1):
     """
     
     #determines which iterations will be included
+    write_file_name = f"{OpName}.csv"
+
     if LitNum != -1:
         lit_switch = False
-        write_file_name = 'trajectory_' + str(LitNum) + '.csv'
     else:
         lit_switch = True
-        write_file_name = 'trajectory_full.csv'
     
     #open read and write file
     with open(FileName, 'r') as read_file, open(write_file_name, 'w') as write_file:
