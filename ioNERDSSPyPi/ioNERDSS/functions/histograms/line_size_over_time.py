@@ -4,7 +4,7 @@ from ..file_managment.save_vars_to_file import save_vars_to_file
 
 
 def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,
-                 SpeciesName: str, ExcludeSize: int = 0, SpeciesList: list = ["na"], ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
+                 SpeciesName: str = "tot", ExcludeSize: int = 0, SpeciesList: list = ["na"], ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
     """Creates a graph counting the number of protein species in a complex molecule over a time period.
         Can either be average count or the max count of that protein species at that time stamp .
 
@@ -27,6 +27,9 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
     
     time_list = [] #list of every timestamp
     size_list = [] #list of mean sizes (index of this = index of timestep)
+    max_size = 0 #the longest histogram
+    max_index = 0 #the index of the longest histogram
+    count = 0 #used to find number of species in a complex
 
     #write name of the plot / y label (if applicable)
     if Data == 1:
@@ -39,7 +42,7 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
         raise Exception("Invalid data type")
 
 
-    for hist in full_hist:
+    for index,hist in enumerate(full_hist):
 
         total_size_list = [] #list of every timestamp for this file
         total_time_list = [] #list of mean sizes (index of this = index of timestep)
@@ -53,9 +56,18 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
                     #create a list of each complex size at this timestamp
                     if SpeciesList != ['na']:
                         timestep_edited = []
-                        ind = SpeciesList.index(SpeciesName)
-                        for complex in timestep[1:]:
-                            timestep_edited.append(complex[ind])
+                        
+                        #if all species are included or just 1 (for multi)
+                        if SpeciesName != "tot":
+                            ind = SpeciesList.index(SpeciesName)
+                            for complex in timestep[1:]:
+                                timestep_edited.append(complex[ind])
+                        else:
+                            for complex in timestep[1:]:
+                                count = 0
+                                for species in complex[:-1]:
+                                    count += species
+                                timestep_edited.append(count)
                     else:
                         timestep_edited = timestep[2]
         
@@ -67,6 +79,13 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
                         total_size_list.append(np.mean(timestep_edited))
                     else:
                         total_size_list.append(np.max(timestep_edited))
+        
+            #determine size of hist
+            if len(total_size_list) > max_size:
+                max_size = len(total_size_list)
+                max_index = index
+
+
         else:
             print('ExcludeSize cannot smaller than 0!')
             return 0
@@ -74,7 +93,16 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
         #add time/size lists to main, cross function lists
         time_list.append(total_time_list)
         size_list.append(total_size_list)
-    
+
+    #ensure all lists are tranposible (have equal shape)
+    for index_file,file_size in enumerate(size_list):
+        if len(file_size) != max_size:
+            zero_list = np.zeros(max_size)
+            for index_size,size in enumerate(file_size):
+                zero_list[index_size] =+ size
+            size_list[index_file] = zero_list
+
+
     #transpose list (each sub-list = 1 timesteps across every file)
     size_list_rev = []
     size_list_rev = np.transpose(size_list)
@@ -86,7 +114,7 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
     for index,timestamps in enumerate(size_list_rev):
         
         #if this timestamp is equal to previous, copy previous. 
-        if timestamps == size_list_rev[index-1]:
+        if (timestamps == size_list_rev[index-1]).all():
             mean.append(mean[index-1])
             if FileNum > 1: std.append(std[index-1])
         
@@ -105,9 +133,9 @@ def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: f
     #show figure
     if ShowFig:
         errorbar_color = '#c9e3f6'
-        plt.plot(time_list[0], mean, color='C0')
+        plt.plot(time_list[max_index], mean, color='C0')
         if FileNum > 1:
-            plt.errorbar(time_list[0], mean, color='C0',
+            plt.errorbar(time_list[max_index], mean, color='C0',
                          yerr=std, ecolor=errorbar_color)
         plt.title(graphTitle)
         plt.xlabel('Time (s)')

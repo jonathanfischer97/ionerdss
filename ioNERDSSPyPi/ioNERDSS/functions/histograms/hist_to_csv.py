@@ -15,6 +15,7 @@ def hist_to_csv(FileName: str):
     column_list = [] #holds the name of each column (Time + each complex name)
     time_list = [] #holds each time. Index corresponds to a sublist in name_count_dict_List
     name_count_dict_list = [] #holds each name/count. Index corresponds with size_list
+    csv_name = FileName.split("\\")[-1].split('.')[0]
 
     name_count_dict_sub = {} #holds dictionary that holds names and counts. Appends to name_count_dict_list
 
@@ -51,7 +52,7 @@ def hist_to_csv(FileName: str):
     column_list.sort()
     
     #write the file!
-    with open('histogram.csv', 'w') as write_file:
+    with open(f'{csv_name}.csv', 'w') as write_file:
         
         #create column names
         head = 'Time(s):'

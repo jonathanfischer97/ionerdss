@@ -15,9 +15,12 @@ def hist_to_df(FileName: str, SaveCsv: bool = True):
         is the number of that complex molecule at that time stamp.
     """
     hist_to_csv(FileName)
-    df = pd.read_csv('histogram.csv')
+    csv_name = FileName.split("\\")[-1].split('.')[0]
+
+    
+    df = pd.read_csv(f'{csv_name}.csv')
     if not SaveCsv:
-        os.remove('histogram.csv')
+        os.remove(f'{csv_name}.csv')
     return df
 
 

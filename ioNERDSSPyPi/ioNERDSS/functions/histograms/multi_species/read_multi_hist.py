@@ -40,6 +40,7 @@ def read_multi_hist(FileName: str, SpeciesList: list):
     histogramList = []  # Initialize empty list to store histograms
     # Initialize empty list to store complex counts for each time step
     timeStepComplexCounts = []
+    previous_time = -1 # to ensure that multiple lines are not added for the same timestep
 
     # Create dictionary to store species indices
     speciesIndexDict = {speciesName: index for index, speciesName in enumerate(speciesListArray)}
@@ -47,11 +48,13 @@ def read_multi_hist(FileName: str, SpeciesList: list):
     # Open file and read line-by-line
     with open(FileName, 'r') as file:
         for line in file:
+            
             # Check if line contains time information
             if line.startswith('Time (s):'):
                 time = float(line.split()[-1])   # Extract time value from line
                 # Start new time step with current time value
                 timeStepComplexCounts = [time]
+            
             else:   # Line contains complex count information
                 # Extract count and complex information
                 count, complexInfoStr = line.strip().split('\t')
@@ -72,7 +75,10 @@ def read_multi_hist(FileName: str, SpeciesList: list):
                 # Add complexCounts to current time step
                 timeStepComplexCounts.append(complexCounts)
             # Append final time step to histogram list
-            histogramList.append(timeStepComplexCounts)
+            if timeStepComplexCounts[0] != previous_time:
+                histogramList.append(timeStepComplexCounts)
+                previous_time = timeStepComplexCounts[0]
+    
 
     return histogramList   # Return list of histograms for each time step
 

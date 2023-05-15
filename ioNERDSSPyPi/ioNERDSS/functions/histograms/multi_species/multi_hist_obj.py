@@ -52,7 +52,7 @@ class MultiHistogram ():
 
 
     ##Number of complexes over time (2d)
-    def line_mean_complex_size(self, SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
+    def line_mean_complex_size(self, SpeciesName: str = "tot", ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Creates graph of the mean number of species in a single complex molecule over a time period.
 
         Args:
@@ -71,7 +71,7 @@ class MultiHistogram ():
                 SpeciesName = SpeciesName, ExcludeSize = ExcludeSize, SpeciesList = self.SpeciesList, ShowFig = ShowFig, SaveFig = SaveFig, SaveVars = SaveVars)
 
 
-    def line_max_complex_size(self, SpeciesName: str, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
+    def line_max_complex_size(self, SpeciesName: str = "tot", ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
             """Creates graph of the mean number of species in a single complex molecule over a time period.
 
             Args:
@@ -182,20 +182,36 @@ class MultiHistogram ():
                              SpeciesList=SpeciesList, xBarSize=xBarSize, yBarSize=yBarSize, ShowFig=ShowFig, SaveFig=SaveFig, SaveVars=SaveVars)
 
 
-    def hist_to_csv(self):
+    def hist_to_csv(self,FileNum: int = -1):
         """Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
 
         Args:
-            None
+            FileNum (int, optional): If there are multiple input files, the number here will specify which one will be turned into a csv.
 
         Returns:
             histogram.csv file: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
             is the number of that complex molecule at that time stamp.
         """  
-        return hist_to_csv(self.FileName)
+        if self.FileNum == 1:
+            return hist_to_csv(self.FileName)
+        else:
+            op = []
+            if FileNum == -1:
+                for histogram_file_number in range(1, self.FileNum+1):
+                        file_name_head = self.FileName.split('.')[0]
+                        file_name_tail = self.FileName.split('.')[1]
 
+                        temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
+                        op.append(hist_to_csv(temp_file_name))
+            else:
+                file_name_head = self.FileName.split('.')[0]
+                file_name_tail = self.FileName.split('.')[1]
 
-    def hist_to_df(self, SaveCsv: bool = True):
+                temp_file_name = file_name_head + '_' + str(FileNum) + '.' + file_name_tail
+                op.append(hist_to_csv(temp_file_name))
+            return op
+
+    def hist_to_df(self, FileNum: int = -1, SaveCsv: bool = True):
         """Creates a pandas dataframe from a histogram.dat (multi-species)
 
         Args:
@@ -205,8 +221,24 @@ class MultiHistogram ():
         pandas.df: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
             is the number of that complex molecule at that time stamp.
         """
-        return hist_to_df(self.FileName,SaveCsv)
+        if self.FileNum == 1:
+            return hist_to_df(self.FileName, SaveCsv)
+        else:
+            op = []
+            if FileNum == -1:
+                for histogram_file_number in range(1, self.FileNum+1):
+                        file_name_head = self.FileName.split('.')[0]
+                        file_name_tail = self.FileName.split('.')[1]
 
+                        temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
+                        op.append(hist_to_df(temp_file_name, SaveCsv))
+            else:
+                file_name_head = self.FileName.split('.')[0]
+                file_name_tail = self.FileName.split('.')[1]
+
+                temp_file_name = file_name_head + '_' + str(FileNum) + '.' + file_name_tail
+                op.append(hist_to_df(temp_file_name, SaveCsv))
+            return op
     ##The Mysterious Frac of Assemble....
     def frac_of_assemble(self, Mol: int = "", Threshold: int = 2, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
         """Generates time dependence of the fraction of asssembled molecules from the histogram_complexes_time.dat in the input file within the specified size threshold.

@@ -228,17 +228,33 @@ class SingleHistogram ():
 
 
     ##general histogram functions
-    def hist_to_csv(self):
+    def hist_to_csv(self, FileNum: int = -1):
         """Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
 
         Args:
-            None
+            FileNum (int, optional): If there are multiple input files, the number here will specify which one will be turned into a csv 
 
         Returns:
             histogram.csv file: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
             is the number of that complex molecule at that time stamp.
         """  
-        return hist_to_csv(self.FileName)
+        
+        if self.FileNum == 1:
+            return hist_to_csv(self.FileName)
+        else:
+            if FileNum == -1:
+                for histogram_file_number in range(1, self.FileNum+1):
+                        file_name_head = self.FileName.split('.')[0]
+                        file_name_tail = self.FileName.split('.')[1]
+
+                        temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
+                        hist_to_csv(temp_file_name)
+            else:
+                file_name_head = self.FileName.split('.')[0]
+                file_name_tail = self.FileName.split('.')[1]
+
+                temp_file_name = file_name_head + '_' + str(FileNum) + '.' + file_name_tail
+                hist_to_csv(temp_file_name)  
 
 
     def hist_to_df(self, SaveCsv: bool = True):
