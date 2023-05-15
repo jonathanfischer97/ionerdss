@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def hist_to_csv(FullHist: list, SpeciesList: list, OpName: str):
+def hist_to_csv_old(FullHist: list, SpeciesList: list, OpName: str):
     """WARNING: THIS FUNCTION CURRENTLY HAS TO BE GIVEN FILES OF THE SAME SIZE OR ELSE IT WILL BREAK. (if given multiple)
     Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
 
@@ -31,44 +31,46 @@ def hist_to_csv(FullHist: list, SpeciesList: list, OpName: str):
     for na in range(0,length+1):
         name_count_dict_list.append({})
 
-    #goes through every timestep (usese the longest file for this)
-    for time_index,time in enumerate(FullHist[file_index]):
 
-        #create list of every timestep
-        time_list.append(time[0])
+    #Creates list with every complex type/size
+    for file_index,file in enumerate(FullHist):
+        
+        for time_index,time in enumerate(file):
 
-        #go through every file
-        counter = 0
-        for file_index,file in enumerate(FullHist):
+            #get timestamps
+            if time[0] not in time_list:
+                time_list.append(time[0])
 
-            #go through every complex in this file if this timestep exists
-            if len(file) > time_index:
-                counter =+ 1
-                for complexes in file[time_index][1:]:
+            #get complex names and counts
+            for complex_index,complexes in enumerate(time[1:]):
+                
+                #get name
+                name = ""
+                for index_sp,species in enumerate(complexes[:-1]):
+                    name = f"{name}{SpeciesList[index_sp]}: {species}.  "
+                    if name not in name_count_dict_list[time_index].keys():
+                        name_count_dict_list[time_index][name] = []
+                        
+                #get count
+                name_count_dict_list[time_index][name].append(complexes[-1])
 
-                    #get name
-                    name = ""
-                    for index_sp,species in enumerate(complexes[:-1]):
-                        name = f"{name}{SpeciesList[index_sp]}: {species}.  "
-                        if name not in name_count_dict_list[time_index].keys():
-                            name_count_dict_list[time_index][name] = []
-                    
-                    #get count
-                    name_count_dict_list[time_index][name].append(complexes[-1])
+                #creates a list of every 'name'
+                if name not in column_list:
+                    column_list.append(name)
 
-                    #creates a list of every 'name'
-                    if name not in column_list:
-                        column_list.append(name)
-
-        #determine the average
-        for key,value in name_count_dict_list[time_index].items():
-            #ensure the list has all of the included histograms
-            if len(value) < counter:
-                for na in range(len(value), counter):
-                    value.append(0)
+    #takes mean of each complex type at each timestep
+    for time_index,time in enumerate(name_count_dict_list):
+        for key in time.keys():
+            
+            #will add 0s to a list if it does not have data from each file.
+            if len(time[key]) < len(FullHist):
+                for na in range(len(time[key]), len(FullHist)):
+                    time[key].append(0)
 
             #takes mean of list
-            #name_count_dict_list[time_index][key] = np.round(np.mean(value),5)
+            name_count_dict_list[time_index][key] = np.round(np.mean(time[key]),5)
+            
+
 
 
     #write the file!
