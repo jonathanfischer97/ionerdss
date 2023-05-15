@@ -49,18 +49,6 @@ if __name__ == "__main__":
     numberOfLines = 0
     docStringCount = 0
     needsDoc = []
-    notInSpreadsheet = []
-    notRealFuncs = []
-
-    #opens up list of every var in the spreadsheet
-    with open("ioNERDSSPyPi\\thefuncs",mode="r") as open_file:
-        thefuncs = open_file.readlines()
-        thefuncs = [func[0:-1] for func in thefuncs if func.endswith('\n')]
-
-    #find if there are vars in the spreadsheet that do not exist
-    for func in thefuncs:
-        if not func in mainFunctions:
-            notRealFuncs.append(func)
 
     #run through each py file
     for file in py_list:
@@ -96,20 +84,14 @@ if __name__ == "__main__":
             
             #if there was at least one """/''' in this file, docstring number goes up. If no tho :///, it gets added to the LIST
             if docString: docStringCount = docStringCount + 1
-            else: needsDoc.append(file.split('\\')[-1])
-
-            #checks if this file is in the funcs
-            if not file.split('\\')[-1][0:-3] in thefuncs:
-                notInSpreadsheet.append(file.split('\\')[-1][0:-3])
-                
+            else: needsDoc.append(file.split('\\')[-1])                
 
 
     mainFunctions.sort()
     print(f"Imports: {importSet}\nNumber of Lines: {numberOfLines}\nNumber of Main Functions: {len(mainFunctions)}\
           \nNumber of Functions: {len(allFuncNames)}\nNumber of Subfunctions: {len(allFuncNames)-len(mainFunctions)}\
           \n% of Files Docstringed: {round(docStringCount/len(allFuncNames),2)*100}%")
-    print(f"Fake spreadsheet vars: {notRealFuncs}\nVars not in spreadsheet: {notInSpreadsheet}")
-    print(f'Needs Doc: {needsDoc}')
+    print(f'Needs Docstring: {needsDoc}')
 #\nNeeds Docstring: {needsDoc}
 
 

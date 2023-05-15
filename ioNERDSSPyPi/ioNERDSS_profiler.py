@@ -1,22 +1,24 @@
-''''
-This is just a workspace to test the speed of functions. Has some NERDSS output files as tests.
+#This is just a workspace to test the speed of functions. Has some NERDSS output files as tests.
 
-NERDSS Output File Explanation:
- - histogram_single_component: (Normally called histogram_complexes_time.dat) is a histogram that shows the number of each type (type = how many monomers are in it) 
- of complex molecule at every time step in single-component NERDSS sim.
- - histogram_multi_component: (Normally called histogram_complexes_time.dat) is a histogram that shows the number of each type (type = how many monomers of each type are in it) 
- of complex molecule at every time step in multi-component NERDSS sim.
- - trajectory: i dont really know. I think shows the trajectories of the molecules in the simulation.
- - transition_matrix_time: idk
- - database.pdb: describes the atoms / residuals of a protein. Comes from a protein database
- - nerdss_output.pdb: describes protiens (com, edges). Comes from NERDSS.
-'''
+def badTimer(event,last):
+    #find the current time
+    import time 
+    current = time.perf_counter()
+    
+    #print which event is running
+    print(f'\nEvent: {event}')
 
-from TestingFunctions.awful_tmr import badTimer
+    #print how long since previous time
+    if not last == 0:
+        print(f'Time to Run: {current-last}')
+
+    #update last time
+    last = current
+    return last
+
+
 import ioNERDSS as ion
 ## CURRENTLY TESTING: something
-
-
 
 
 last = badTimer('start',0)
