@@ -45,7 +45,7 @@ def multi_hist_complex_count(FileName: str = 'histogram_complexes_time.dat', Fil
             else:
                 raise FileNotFoundError(f"File {FileName} does not exist.")
         else:
-            temp_FileName = f"{FileName_head}_{i}.{FileName_tail}"
+            temp_FileName = f"{FileName_head}_{i}{FileName_tail}"
             if not os.path.isfile(temp_FileName):
                 raise FileNotFoundError(f"File {temp_FileName} does not exist.")
 
