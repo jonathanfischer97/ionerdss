@@ -2,8 +2,7 @@ import numpy as np
 
 
 def hist_to_csv(FullHist: list, SpeciesList: list, OpName: str):
-    """WARNING: THIS FUNCTION CURRENTLY HAS TO BE GIVEN FILES OF THE SAME SIZE OR ELSE IT WILL BREAK. (if given multiple)
-    Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
+    """Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species). If given multiple histograms, it will calculate the average between them.
 
     Args:
         FullHist (list): holds all of the histogram data
@@ -12,7 +11,6 @@ def hist_to_csv(FullHist: list, SpeciesList: list, OpName: str):
     Returns:
         histogram.csv file: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
         is the number of that complex molecule at that time stamp.
-    
     """
     
     column_list = [] #holds the name of each column (Time + each complex name)
@@ -43,7 +41,7 @@ def hist_to_csv(FullHist: list, SpeciesList: list, OpName: str):
 
             #go through every complex in this file if this timestep exists
             if len(file) > time_index:
-                counter =+ 1
+                counter = counter + 1
                 for complexes in file[time_index][1:]:
 
                     #get name
@@ -68,7 +66,7 @@ def hist_to_csv(FullHist: list, SpeciesList: list, OpName: str):
                     value.append(0)
 
             #takes mean of list
-            #name_count_dict_list[time_index][key] = np.round(np.mean(value),5)
+            name_count_dict_list[time_index][key] = np.mean(value)
 
 
     #write the file!
