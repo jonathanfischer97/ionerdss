@@ -6,6 +6,7 @@ def hist_to_csv(FullHist: list, SpeciesList: list, OpName: str):
 
     Args:
         FullHist (list): holds all of the histogram data
+        SpeciesList (list): list of each included species type
         OpName (str): name of the outputted .csv file
 
     Returns:

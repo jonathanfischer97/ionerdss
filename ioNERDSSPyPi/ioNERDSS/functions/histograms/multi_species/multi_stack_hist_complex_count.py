@@ -3,14 +3,14 @@ import matplotlib.pyplot as plt
 from .read_multi_hist import read_multi_hist
 from ...file_managment.save_vars_to_file import save_vars_to_file
 
-def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
+def multi_stack_hist_complex_count(FullHist: list, FileNum: int, InitialTime: float, FinalTime: float,
                        SpeciesList: list, xAxis: str, DivideSpecies: str, DivideSize: int,
                        BarSize: int = 1, ExcludeSize: int = 0, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
     """Creates a stacked histogram from histogram.dat (multi-species) that shows the average number of each type of 
     complex species (based on protein composition) over the whole sim. 
 
     Args:
-        FileName (str): Path to the histogram.dat file
+        FullHist (list): Holds all of the information from the .dat file
         FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
         InitialTime (float): The starting time. Must not be smaller / larger then times in file.
         FinalTime (float): The ending time. Must not be smaller / larger then times in file.
@@ -28,35 +28,23 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
         Histogram. X-axis = size of selected species, Y-axis = average number of each corresponds.
     """
 
-    file_name_head = FileName.split('.')[0]
-    file_name_tail = FileName.split('.')[1]
     above_list = []
     equal_list = []
     below_list = []
 
     #create species list. (Other species = 0:-1, devide species = -1).
-    if xAxis == 'tot':
-        SpeciesList.remove(DivideSpecies)
-        SpeciesList.append(DivideSpecies)
-    else:
-        SpeciesList = []
-        SpeciesList.append(xAxis)
-        SpeciesList.append(DivideSpecies)
+    SpeciesList.remove(DivideSpecies)
+    SpeciesList.append(DivideSpecies)
+
+    #get index of the xAxis species
+    x_species_index = SpeciesList.index(xAxis)
 
     #for each file
-    for histogram_file_number in range(1, FileNum+1):
-        #determining file name (if there are multiple or none)
-        if FileNum == 1:
-            temp_file_name = FileName
-        else:
-            temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
+    for hist_list in FullHist:
 
         total_above_dict = {}
         total_equal_dict = {}
         total_below_dict = {}
-
-        #read histogram file
-        hist_list = read_multi_hist(temp_file_name, SpeciesList)
 
         data_count = 0
 
@@ -74,7 +62,7 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
                         if xAxis == 'tot' and DivideSpecies in SpeciesList:
                             total_size = sum(protein_complex[0:-1])
                         elif xAxis in SpeciesList and DivideSpecies in SpeciesList:
-                            total_size = protein_complex[0]
+                            total_size = protein_complex[x_species_index]
                         
                         if total_size >= ExcludeSize:
                             divide_spe_size = protein_complex[-2]
@@ -201,7 +189,6 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
     #output variables
     if SaveVars:
         save_vars_to_file({"x_mono_count":n_list_, "cmplx_count":[mean_below_, mean_equal_, mean_above_], "std":[std_below_, std_equal_, std_above_]})
-    raise Exception("f")
     #show figure!
     if ShowFig:
         if DivideSize != 0:

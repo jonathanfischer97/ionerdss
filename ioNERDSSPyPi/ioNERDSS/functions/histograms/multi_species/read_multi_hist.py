@@ -67,7 +67,10 @@ def read_multi_hist(FileName: str, SpeciesList: list):
                     speciesName, numStr = item.split(': ')
                     num = int(numStr)
                     # Get index of species from dictionary
-                    index = speciesIndexDict[speciesName]
+                    if speciesName in speciesIndexDict:
+                        index = speciesIndexDict[speciesName]
+                    else:
+                        raise Exception(f"{speciesName} was not included in SpeciesList")
                     # Increment count for species in complexCounts
                     complexCounts[index] += num
                 # Add total count to last element of complexCounts
