@@ -109,7 +109,7 @@ def save_vars_to_file(var_dict: dict):
                     file.write(f"{list1[0]}")
                     
                     if len(list1) > 1:
-                        for list2 in list1:
+                        for list2 in list1[1:]:
                             file.write(f",{list2}")
 
 

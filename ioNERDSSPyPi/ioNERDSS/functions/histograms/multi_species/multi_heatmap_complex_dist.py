@@ -95,39 +95,44 @@ def multi_heatmap_complex_dist(FileName: str, FileNum: int, InitialTime: float, 
             true_max_y = max_y_size
         if max_x_size > true_max_x:
             true_max_x = max_x_size
+        
 
         #turns array (# of proteins with specific XY counts) into mean (b/w all timestamps) than adds it to main, multi-file list
-        count_list = np.divide(count_list,data_count)
+        count_list = np.divide(count_list,data_count).tolist()
         count_list_sum.append(count_list)
     
+
     #makes it so the arrays all go up to max_x and max_y
-    for array in count_list_sum:
-        max_y_size = len(array)
-        max_x_size = len(array[0])
-        if max_y_size < true_max_y: 
-            for i in range(max_y_size,y_size):
-                array.append([])
-                for i in range(max_x_size+1):
-                    array[-1].append(0)
-            max_y_size = y_size
-        if max_x_size < true_max_x: 
-            for column_index in range(len(array)):
-                for i in range(max_x_size,x_size):
-                    array[column_index].append(0)
-            max_x_size = x_size
+    true_max_x = true_max_x + 1
+    true_max_y = true_max_y + 1
+    
+    for file_index,array in enumerate(count_list_sum):
+        y_size = len(array)
+        
+        if y_size < true_max_y: 
+            for na1 in range(y_size,true_max_y):
+                count_list_sum[file_index].append([])
+                for na2 in range(true_max_x+1):
+                    count_list_sum[file_index][-1].append(0)
+        
+        for column_index in range(len(array)):
+            x_size = len(array[column_index])
+            if x_size < true_max_x: 
+                for i in range(x_size,true_max_x):
+                    count_list_sum[file_index][column_index].append(0)
     
     #find mean and std
-    count_list_mean = np.zeros([max_y_size+1, max_x_size+1])
-    count_list_std = np.zeros([max_y_size+1, max_x_size+1])
-    for i in range(len(count_list_sum[0])):
-        for j in range(len(count_list_sum[0][0])):
+    count_list_mean = np.zeros([true_max_y, true_max_x])
+    count_list_std = np.zeros([true_max_y, true_max_x])
+    for y in range(len(count_list_sum[0])):
+        for x in range(len(count_list_sum[0][0])):
             temp_list = []
             for file in count_list_sum:
-                temp_list.append(file[i][j])
-            count_list_mean[i][j] += np.mean(temp_list)
-            count_list_std[i][j] += np.std(temp_list)
-    x_list = np.arange(0, max_x_size+1) * xBarSize
-    y_list = np.arange(0, max_y_size+1) * yBarSize
+                temp_list.append(file[y][x])
+            count_list_mean[y][x] += np.mean(temp_list)
+            count_list_std[y][x] += np.std(temp_list)
+    x_list = np.arange(0, true_max_x) * xBarSize
+    y_list = np.arange(0, true_max_y) * yBarSize
     
     #output variables
     if SaveVars:
