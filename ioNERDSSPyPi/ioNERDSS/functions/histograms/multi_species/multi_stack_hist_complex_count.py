@@ -103,30 +103,28 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
         above_list.append(total_above_dict)
         equal_list.append(total_equal_dict)
         below_list.append(total_below_dict)
-    
     #find max size
     max_size = 0
     for key in total_above_dict:
         if max_size < int(key):
             max_size = int(key)
-        n_list = range(0,int(key+1))
+        n_list = list(range(1,int(max_size+1)))
 
     #add dictionary values to filled lists and transposes them for prep for mean
-    above_list_filled = np.zeros([max_size+1,FileNum])
+    above_list_filled = np.zeros([max_size,FileNum])
     for indexX,dict in enumerate(above_list):
         for key in dict:
-            above_list_filled[int(key)][indexX] += dict[key]
+            above_list_filled[int(key)-1][indexX] += dict[key]
 
-    equal_list_filled = np.zeros([max_size+1,FileNum])
+    equal_list_filled = np.zeros([max_size,FileNum])
     for indexX,dict in enumerate(equal_list):
         for key in dict:
-            equal_list_filled[int(key)][indexX] += dict[key]
+            equal_list_filled[int(key)-1][indexX] += dict[key]
     
-    below_list_filled = np.zeros([max_size+1,FileNum])
+    below_list_filled = np.zeros([max_size,FileNum])
     for indexX,dict in enumerate(below_list):
         for key in dict:
-            below_list_filled[int(key)][indexX] += dict[key]
-
+            below_list_filled[int(key)-1][indexX] += dict[key]
     #is it mean time?
     mean_above = []
     std_above = []
@@ -169,7 +167,7 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
         temp_std_equal += std_equal[i]
         temp_std_below += std_below[i]
         bar_size_count += 1
-        if bar_size_count >= BarSize:
+        if bar_size_count >= BarSize and i != len(mean_above) - 1:
             mean_above_.append(temp_mean_above)
             mean_equal_.append(temp_mean_equal)
             mean_below_.append(temp_mean_below)
@@ -203,7 +201,7 @@ def multi_stack_hist_complex_count(FileName: str, FileNum: int, InitialTime: flo
     #output variables
     if SaveVars:
         save_vars_to_file({"x_mono_count":n_list_, "cmplx_count":[mean_below_, mean_equal_, mean_above_], "std":[std_below_, std_equal_, std_above_]})
-
+    raise Exception("f")
     #show figure!
     if ShowFig:
         if DivideSize != 0:

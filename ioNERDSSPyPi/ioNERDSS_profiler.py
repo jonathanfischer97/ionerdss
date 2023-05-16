@@ -24,7 +24,7 @@ import ioNERDSS as ion
 last = badTimer('start',0)
 #ion.save_vars_to_file({"word":[[0,0,0],[0,0,0],[0,0,0],[1,1,1]]})
 multi_species = ion.MultiHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_multi\histogram_complexes_time_dode.dat",FileNum=5,InitialTime=0,FinalTime=1,SpeciesList=["A","B"])
-result = multi_species.hist_to_csv()
+result = multi_species.stack_hist_complex_count(xAxis = 'tot', DivideSpecies = 'A', DivideSize = 5, SaveVars=True)
 #print(result)
 #test.heatmap_complex_dist(xAxis="clat",yAxis="ap2")
 #ion.associate_prob_asymmetric(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix_time.dat",FileNum=1,InitialTime=0,FinalTime=1,SpeciesName="dode",ShowFig=True,SaveFig=False,SaveVars=True)
