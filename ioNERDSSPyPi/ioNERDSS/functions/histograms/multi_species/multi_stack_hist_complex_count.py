@@ -31,13 +31,11 @@ def multi_stack_hist_complex_count(FullHist: list, FileNum: int, InitialTime: fl
     above_list = []
     equal_list = []
     below_list = []
+    max_size = 0 # largest complex size
 
-    #create species list. (Other species = 0:-1, devide species = -1).
-    SpeciesList.remove(DivideSpecies)
-    SpeciesList.append(DivideSpecies)
-
-    #get index of the xAxis species
+    #get index of the xAxis and devide species
     x_species_index = SpeciesList.index(xAxis)
+    divide_species_index = SpeciesList.index(DivideSpecies)
 
     #for each file
     for hist_list in FullHist:
@@ -65,7 +63,7 @@ def multi_stack_hist_complex_count(FullHist: list, FileNum: int, InitialTime: fl
                             total_size = protein_complex[x_species_index]
                         
                         if total_size >= ExcludeSize:
-                            divide_spe_size = protein_complex[-2]
+                            divide_spe_size = protein_complex[divide_species_index]
                                 
                             #check if there is already a key for a protein of this size. If there isn't add it
                             if not total_size in total_above_dict:
@@ -80,23 +78,31 @@ def multi_stack_hist_complex_count(FullHist: list, FileNum: int, InitialTime: fl
                                 total_equal_dict[total_size] += (protein_complex[-1])
                             else:
                                 total_below_dict[total_size] += (protein_complex[-1])
-
-        #devide each protein by # of timesteps to get average
-        for dict in (total_above_dict,total_below_dict,total_equal_dict):
-            for key in dict:
-                dict[key] /= data_count
-
+                            
+        #find max size and devide each protein by # of timesteps to get average
+        for key in total_above_dict:
+            total_above_dict[key] = total_above_dict[key] / data_count
+            if max_size < int(key):
+                max_size = int(key)
+            n_list = list(range(1,int(max_size+1)))
+        
+        for key in total_equal_dict:
+            total_equal_dict[key] = total_equal_dict[key] / data_count
+            if max_size < int(key):
+                max_size = int(key)
+            n_list = list(range(1,int(max_size+1)))
+        
+        for key in total_below_dict:
+            total_below_dict[key] = total_below_dict[key] / data_count
+            if max_size < int(key):
+                max_size = int(key)
+            n_list = list(range(1,int(max_size+1)))
 
         #add dictionaries to main lists
         above_list.append(total_above_dict)
         equal_list.append(total_equal_dict)
         below_list.append(total_below_dict)
-    #find max size
-    max_size = 0
-    for key in total_above_dict:
-        if max_size < int(key):
-            max_size = int(key)
-        n_list = list(range(1,int(max_size+1)))
+
 
     #add dictionary values to filled lists and transposes them for prep for mean
     above_list_filled = np.zeros([max_size,FileNum])
@@ -113,6 +119,7 @@ def multi_stack_hist_complex_count(FullHist: list, FileNum: int, InitialTime: fl
     for indexX,dict in enumerate(below_list):
         for key in dict:
             below_list_filled[int(key)-1][indexX] += dict[key]
+    
     #is it mean time?
     mean_above = []
     std_above = []

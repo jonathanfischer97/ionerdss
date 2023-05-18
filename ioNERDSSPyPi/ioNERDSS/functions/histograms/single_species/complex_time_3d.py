@@ -98,7 +98,7 @@ def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: 
             for complex_size,protein_complex in enumerate(z_plt):
                 z_plt_mod_temp = []
                 for time_bin in protein_complex:
-                    z_plt_mod_temp.append(time_bin * complex_size / n_tot)
+                    z_plt_mod_temp.append(time_bin * (complex_size+1) / n_tot)
                 z_plt_mod.append(z_plt_mod_temp)
             z_plt = z_plt_mod
 
@@ -140,11 +140,12 @@ def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: 
             n_list = file
     
     #ensure that the % of og monomers in a certain species size list has equal length to the other ... lists
-    for file in z_list_tot:
-        for time_bin in file:
+    for file_index,file in enumerate(z_list_tot):
+        for time_index,time_bin in enumerate(file):
             if len(time_bin) < len(n_list):
                 for na in range(0, 1 + len(n_list) - len(time_bin)):
-                    time_bin.append(0.0)
+                    z_list_tot[file_index][time_index] = time_bin.tolist()
+                    z_list_tot[file_index][time_index].append(0.0)
     
     #determine mean count / std of monomers in a each complex species in a time bin over each file
     count_list_mean = np.zeros([TimeBins, len(n_list)])

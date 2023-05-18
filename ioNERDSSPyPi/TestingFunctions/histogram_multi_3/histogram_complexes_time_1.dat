@@ -1,0 +1,85 @@
+Time (s): 0
+10000	pip2: 1. 
+177	ap2: 1. 
+192	clat: 1. 
+Time (s): 1.5
+9840	pip2: 1. 
+158	ap2: 1. pip2: 1. 
+17	ap2: 1. 
+2	ap2: 1. clat: 1. pip2: 1. 
+181	clat: 1. 
+3	clat: 2. 
+1	clat: 3. 
+Time (s): 3
+9842	pip2: 1. 
+157	ap2: 1. pip2: 1. 
+18	ap2: 1. 
+173	clat: 1. 
+7	clat: 2. 
+1	ap2: 1. clat: 3. pip2: 1. 
+1	ap2: 1. clat: 2. 
+Time (s): 4.5
+9839	pip2: 1. 
+159	ap2: 1. pip2: 1. 
+16	ap2: 1. 
+174	clat: 1. 
+1	clat: 3. 
+5	clat: 2. 
+1	ap2: 1. clat: 2. pip2: 1. 
+1	ap2: 1. clat: 3. pip2: 1. 
+Time (s): 6
+9840	pip2: 1. 
+159	ap2: 1. pip2: 1. 
+16	ap2: 1. 
+175	clat: 1. 
+5	clat: 2. 
+1	ap2: 1. clat: 2. pip2: 1. 
+1	clat: 3. 
+1	ap2: 1. clat: 2. 
+Time (s): 7.5
+9840	pip2: 1. 
+157	ap2: 1. pip2: 1. 
+17	ap2: 1. 
+177	clat: 1. 
+6	clat: 2. 
+1	ap2: 1. clat: 1. pip2: 1. 
+1	ap2: 2. clat: 2. pip2: 2. 
+Time (s): 9
+9834	pip2: 1. 
+163	ap2: 1. pip2: 1. 
+11	ap2: 1. 
+179	clat: 1. 
+5	clat: 2. 
+1	ap2: 3. clat: 3. pip2: 3. 
+Time (s): 10.5
+9847	pip2: 1. 
+151	ap2: 1. pip2: 1. 
+23	ap2: 1. 
+178	clat: 1. 
+6	clat: 2. 
+1	ap2: 1. clat: 1. 
+1	ap2: 2. clat: 1. pip2: 2. 
+Time (s): 12
+9835	pip2: 1. 
+162	ap2: 1. pip2: 1. 
+12	ap2: 1. 
+180	clat: 1. 
+4	clat: 2. 
+1	ap2: 1. clat: 2. pip2: 1. 
+1	ap2: 2. clat: 2. pip2: 2. 
+Time (s): 13.5
+9838	pip2: 1. 
+159	ap2: 1. pip2: 1. 
+15	ap2: 1. 
+176	clat: 1. 
+1	ap2: 1. clat: 1. pip2: 1. 
+7	clat: 2. 
+1	ap2: 2. clat: 1. pip2: 2. 
+Time (s): 15
+9839	pip2: 1. 
+159	ap2: 1. pip2: 1. 
+15	ap2: 1. 
+177	clat: 1. 
+6	clat: 2. 
+1	ap2: 2. clat: 2. pip2: 2. 
+1	ap2: 1. clat: 1. 

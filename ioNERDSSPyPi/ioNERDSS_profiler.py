@@ -23,8 +23,8 @@ import ioNERDSS as ion
 
 last = badTimer('start',0)
 #ion.save_vars_to_file({"word":[[0,0,0],[0,0,0],[0,0,0],[1,1,1]]})
-#multi_species = ion.MultiHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_complexes_time_clat (1).dat",FileNum=1,InitialTime=0,FinalTime=5,SpeciesList=["clat","ap2","pip2"])
-#result = multi_species.hist_complex_count()
+multi_species = ion.MultiHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_multi_3\histogram_complexes_time.dat",FileNum=3,InitialTime=0,FinalTime=15,SpeciesList=["clat","ap2","pip2"])
+result = multi_species.stack_hist_complex_count(xAxis="clat",DivideSpecies="ap2",DivideSize=0,SaveVars=True,ExcludeSize=1)
 #result = multi_species.stack_hist_complex_count(xAxis = 'clat',  DivideSpecies = 'ap2', DivideSize = 0, BarSize = 1)
 #print(result)
 #test.heatmap_complex_dist(xAxis="clat",yAxis="ap2")
@@ -32,7 +32,7 @@ last = badTimer('start',0)
 #ion.locate_pos_restart(FileNamePdb = "ioNERDSSPyPi\TestingFunctions\\nerdss_output.pdb", NumDict = {"dod":8}, FileNameRestart = "ioNERDSSPyPi\TestingFunctions\\restart.dat",OpName="help") 
 #ion.plot_proteins(FileName = "ioNERDSSPyPi\RealClathrinTest\PDB\\25000000.pdb")
 #ion.real_PDB_UI()
-ion.gui()
+#ion.gui()
 
 last = badTimer('start',last)
 

@@ -44,8 +44,7 @@ def read_file(FileName: str, SpeciesName: str):
                 string = '	' + str(SpeciesName) + ': '
                 line = line.strip('. \n').split(string)
                 if len(line) != 2:
-                    print('Wrong species name!')
-                    return 0
+                    raise Exception('invalid species name')
                 
                 #adds values to the sub - temp list
                 else:
