@@ -19,7 +19,8 @@ def filter_complexes(complex_lst,num_name_dict,num_dict):
         
         #count up each protein type in the complex
         for protein in complex:
-            temp_complex_num[num_name_dict[str(protein)]] += 1
+            if num_name_dict[str(protein)] in temp_complex_num.keys():
+                temp_complex_num[num_name_dict[str(protein)]] += 1
 
         #if it has the corret number of proteins, add it to the new list
         if temp_complex_num == num_dict:
