@@ -24,13 +24,14 @@ We have created a new development branch where we will be improving the code qua
  - **ExamplesIoNERDSS:** Holds a lot of files that (i may be wrong) seem to be environments for using IoNERDSS or examples of it being used
  - **TestingFunctions:** Holds the different files necessary to try out all of ioNERDSS' functions. 
     - Recommended to be moved to ioNERDSSPyPi folder along with ioNERDSS_profiler.py
+ - pre_update_ioNERDSS.py: this is the ioNERDSS from before the update. If there are functions not working, they may be working in this version (just slower).
  - Some python scripts that were helpful for testing / profiling
 
 ### Note From Ian 5/18/2023
 This is my last day in the lab, and so my last day (probably) working with ioNERDSS. I have tried to tie up all of the loose ends, however there are still some of note:
  (1) The ReadRealPDBTutorial is out of date 
  (2) Certain functions are not in the UserGuide - you can find them listed at the bottom under ``2.7 Needs to be added``
- (3) Under certain circumastances functions may break, if you find any issues let me know in a ticket and I will fix it (if you ask before my school starts at least!)
+ (3) Under certain circumastances functions may break, if you find any issues let me know and if it is before my school starts I will try to fix it
    - Functions are especially prone to breaking if you have a multi species system or multiple files (histogram will work fine)
  (4) The docs, docstrings and actual code may be slightly out of sync. If you find any issues please let me know
 
