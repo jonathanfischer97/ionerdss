@@ -50,6 +50,6 @@ def locate_pos_restart(FileNamePdb, NumDict, FileNameRestart='restart.dat', OpNa
     #Writes the new PDB file
     print('Writing new PDB files......')
     write_pdb(FileNamePdb, protein_remain, OpName)
-    print('PDB writing complete!(named as output_file.pdb)')
+    print(f'PDB writing complete! (named as {OpName}.pdb)')
     
     return 0

@@ -48,8 +48,8 @@ def read_pdb(file_name_pdb,complex_lst,NumDict):
     
     #If any proteins inputted where not found anywhere, raise an exception
     for protein_name in protein_name_list:
+        check = True
         for complex in sorted_complexes:
-            check = True
             if len(complex[protein_name]) != 0:
                 check = False
         if check:

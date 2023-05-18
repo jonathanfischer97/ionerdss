@@ -50,6 +50,7 @@ def locate_pos_no_restart(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01, O
     print('Finding complexes......')
     complex_lst = create_complex_list(bonds_lst)
     print('Finding complexes complete!')
+    input(complex_lst)
 
     #creates list of each complex that has the correct number of each type
     print('Filtering complexes......')
@@ -59,7 +60,7 @@ def locate_pos_no_restart(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01, O
     #writes a new PDB file that only includs proteins that are in complexes of the correct size
     print('Writing new PDB files......')
     write_new_PDB(complex_filtered, main_pdb_list, OpName)
-    print('PDB writing complete! (named as output_file.pdb)')
+    print(f'PDB writing complete! (named as {OpName}.pdb)')
     return 0
 
 
