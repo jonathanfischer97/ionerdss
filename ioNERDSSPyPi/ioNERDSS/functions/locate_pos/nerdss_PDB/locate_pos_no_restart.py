@@ -50,7 +50,6 @@ def locate_pos_no_restart(FileNamePdb, NumDict, FileNameInp, BufferRatio=0.01, O
     print('Finding complexes......')
     complex_lst = create_complex_list(bonds_lst)
     print('Finding complexes complete!')
-    input(complex_lst)
 
     #creates list of each complex that has the correct number of each type
     print('Filtering complexes......')

@@ -228,43 +228,27 @@ class SingleHistogram ():
 
 
     ##general histogram functions
-    def hist_to_csv(self, FileNum: int = -1):
+    def hist_to_csv(self,OpName: int = "histogram"):
         """Creates a .csv (spreadsheet) file from a histogram.dat file (multi-species)
 
         Args:
-            FileNum (int, optional): If there are multiple input files, the number here will specify which one will be turned into a csv 
+            OpName (str, Optional = "histogram"): what the outputted .csv file will be named
 
         Returns:
             histogram.csv file: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
             is the number of that complex molecule at that time stamp.
         """  
-        
-        if self.FileNum == 1:
-            return hist_to_csv(self.FileName)
-        else:
-            if FileNum == -1:
-                for histogram_file_number in range(1, self.FileNum+1):
-                        file_name_head = self.FileName.split('.')[0]
-                        file_name_tail = self.FileName.split('.')[1]
+        return hist_to_csv(self.full_hist, [self.SpeciesName], OpName, True)
 
-                        temp_file_name = file_name_head + '_' + str(histogram_file_number) + '.' + file_name_tail
-                        hist_to_csv(temp_file_name)
-            else:
-                file_name_head = self.FileName.split('.')[0]
-                file_name_tail = self.FileName.split('.')[1]
-
-                temp_file_name = file_name_head + '_' + str(FileNum) + '.' + file_name_tail
-                hist_to_csv(temp_file_name)  
-
-
-    def hist_to_df(self, SaveCsv: bool = True):
+    def hist_to_df(self, OpName: int = "histogram", SaveCsv: bool = True):
         """Creates a pandas dataframe from a histogram.dat (multi-species)
 
         Args:
+            OpName (str, Optional = "histogram"): what the outputted .csv file will be named
             SaveCsv (bool, optional): If a .csv file is saved as well. Defaults to True.
 
         Returns:
-        pandas.df: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
-            is the number of that complex molecule at that time stamp.
+            pandas.df: Each row is a different time stamp (all times listed in column A). Each column is a different size of complex molecule (all sizes listed in row 1). Each box 
+                is the number of that complex molecule at that time stamp.
         """
-        return hist_to_df(self.FileName,SaveCsv)
+        return hist_to_df(self.full_hist, [self.SpeciesName], OpName, SaveCsv, True)
