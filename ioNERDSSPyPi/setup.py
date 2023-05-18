@@ -10,7 +10,7 @@ classifiers = [
 
 setup(
     name='ioNERDSS',
-    version='1.0.14',
+    version='1.0.15',
     description='Package for analysing NERDSS inputs and outputs.',
     long_description='A python package for analysing inputs and outputs for NERDSS simulator, including generating input files for Platonic solids and output visualization, etc.',
     url='',
@@ -20,5 +20,5 @@ setup(
     classifiers=classifiers,
     keywords='NERDSS Simulation, Analysis Tools',
     packages=find_packages(),
-    install_requires=['numpy','pandas','matplotlib','seaborn','tqd']
+    install_requires=['numpy','pandas','matplotlib','seaborn','tqdm']
 )
