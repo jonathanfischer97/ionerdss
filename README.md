@@ -25,12 +25,12 @@ This repository primarily contains Python code for creating user-friendly analys
 
 ### Note From Ian 5/18/2023
 This is my last day in the lab, and so my last day (probably) working with ioNERDSS. I have tried to tie up all of the loose ends, however there are still some of note:
- (1) The ReadRealPDBTutorial is out of date 
- (2) Certain functions are not in the UserGuide - you can find them listed at the bottom under ``2.7 Needs to be added``
- (3) Under certain circumastances functions may break, if you find any issues let me know and if it is before my school starts I will try to fix it
+ - The ReadRealPDBTutorial is out of date 
+ - Certain functions are not in the UserGuide - you can find them listed at the bottom under ``2.7 Needs to be added``
+ - Under certain circumastances functions may break, if you find any issues let me know and if it is before my school starts I will try to fix it
    - Functions are especially prone to breaking if you have a multi species system or multiple files (histogram will work fine)
- (4) The docs, docstrings and actual code may be slightly out of sync. If you find any issues please let me know
- (5) A couple functions are in the folder, but not incorperated into the library (such as gag_reshape), and are currently unable to be used
+ - The docs, docstrings and actual code may be slightly out of sync. If you find any issues please let me know
+ - A couple functions are in the folder, but not incorperated into the library (such as gag_reshape), and are currently unable to be used
 
 
 ### Install
