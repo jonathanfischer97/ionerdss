@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 from .read_cluster_lifetime import read_cluster_lifetime
-
+from ..file_managment.save_vars_to_file import save_vars_to_file
 
 def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime: float,
-                     SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False):
+                     SpeciesName: str, ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
     """This line plot indicates the lifetime for different sizes of complexes. The x-axis is the size of complexes, and the y-axis is the corresponding lifetime in unit of second. If multiple input files are given, the output plot will be the average value of all files and an error bar will also be included.
 
     Args:
@@ -16,6 +16,7 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
         SpeciesName (str): The name of species that users want to examine, which should also be identical with the name written in the input (.inp and .mol) files.
         ShowFig (bool, optional): If True, the plot will be shown; if False, the plot will not be shown. No matter the plot is shown or not, the returns will remain the same. Defaults to True.
         SaveFig (bool, optional): If True, the plot will be saved as a '.png' file in the current directory; if False, the figure will not be saved. Defaults to False.
+        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
 
     Returns:
         A tuple containing the following:
@@ -62,7 +63,7 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
     std = []
     if FileNum != 1:
         for index,size in enumerate(mean_lifetime_rev):
-            if size != mean_lifetime_rev[index-1]:
+            if np.any(size != mean_lifetime_rev[index-1]):
                 mean.append(np.nanmean(size))
                 std.append(np.nanstd(size))
             else:
@@ -72,6 +73,9 @@ def complex_lifetime(FileName: str, FileNum: int, InitialTime: float, FinalTime:
         for size in mean_lifetime_rev:
             mean.append(size[0])
                  
+    #output variables
+    if SaveVars:
+        save_vars_to_file({"cmplx_size":size_list,"mean_complex_lifetime":mean,"std":std})
     
     #show figure!!!
     if ShowFig:

@@ -125,21 +125,21 @@ def associate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, Fi
    #for every column (across all files) determine mean / std
     if FileNum != 1: 
         for i in range(len(above_prob_rev)):
-            if above_prob_rev[i] != above_prob_rev[i-1] or i == 0:
+            if np.any(above_prob_rev[i] != above_prob_rev[i-1]) or i == 0:
                 mean_above.append(np.nanmean(above_prob_rev[i]))
                 std_above.append(np.nanstd(above_prob_rev[i]))
             else:
                 mean_above.append(mean_above[i-1])
                 std_above.append(std_above[i-1])
             
-            if equal_prob_rev[i] != equal_prob_rev[i-1] or i == 0:
+            if np.any(equal_prob_rev[i] != equal_prob_rev[i-1]) or i == 0:
                 mean_equal.append(np.nanmean(equal_prob_rev[i]))
                 std_equal.append(np.nanstd(equal_prob_rev[i]))
             else:
                 mean_equal.append(mean_equal[i-1])
                 std_equal.append(std_equal[i-1])
 
-            if equal_prob_rev[i] != equal_prob_rev[i-1] or i == 0:
+            if np.any(below_prob_rev[i] != below_prob_rev[i-1]) or i == 0:
                 mean_below.append(np.nanmean(below_prob_rev[i]))
                 std_below.append(np.nanstd(below_prob_rev[i]))
             else:

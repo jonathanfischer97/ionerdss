@@ -23,8 +23,9 @@ import ioNERDSS as ion
 
 last = badTimer('start',0)
 #ion.save_vars_to_file({"word":[[0,0,0],[0,0,0],[0,0,0],[1,1,1]]})
-multi_species = ion.MultiHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_multi_3\histogram_complexes_time.dat",FileNum=3,InitialTime=0,FinalTime=15,SpeciesList=["clat","ap2","pip2"])
-result = multi_species.stack_hist_complex_count(xAxis="clat",DivideSpecies="ap2",DivideSize=0,SaveVars=True,ExcludeSize=1)
+#multi_species = ion.MultiHistogram(FileName="ioNERDSSPyPi\TestingFunctions\histogram_multi_3\histogram_complexes_time.dat",FileNum=3,InitialTime=0,FinalTime=15,SpeciesList=["clat","ap2","pip2"])
+#result = multi_species.stack_hist_complex_count(xAxis="clat",DivideSpecies="ap2",DivideSize=0,SaveVars=True,ExcludeSize=1)
+ion.complex_lifetime(FileName="ioNERDSSPyPi\TestingFunctions\\transition_matrix\\transition_matrix_time.dat",FileNum=5,InitialTime=0,FinalTime=1,SpeciesName="dode",ShowFig=True,SaveFig=False,SaveVars=True) 
 #result = multi_species.stack_hist_complex_count(xAxis = 'clat',  DivideSpecies = 'ap2', DivideSize = 0, BarSize = 1)
 #print(result)
 #test.heatmap_complex_dist(xAxis="clat",yAxis="ap2")

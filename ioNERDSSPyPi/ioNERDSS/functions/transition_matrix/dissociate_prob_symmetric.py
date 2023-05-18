@@ -120,21 +120,43 @@ def dissociate_prob_symmetric(FileName: str, FileNum: int, InitialTime: float, F
             temp.append(below_prob[j][i])
         below_prob_rev.append(temp)
     
-    #determine means / std devs
+    #calculate means and stds devss
     mean_above = []
     mean_equal = []
     mean_below = []
     std_above = []
     std_equal = []
     std_below = []
-    for i in range(len(above_prob_rev)):
-        mean_above.append(np.nanmean(above_prob_rev[i]))
-        mean_equal.append(np.nanmean(equal_prob_rev[i]))
-        mean_below.append(np.nanmean(below_prob_rev[i]))
-        if FileNum != 1:
-            std_above.append(np.nanstd(above_prob_rev[i]))
-            std_equal.append(np.nanstd(equal_prob_rev[i]))
-            std_below.append(np.nanstd(below_prob_rev[i]))
+   
+   #for every column (across all files) determine mean / std
+    if FileNum != 1: 
+        for i in range(len(above_prob_rev)):
+            if np.any(above_prob_rev[i] != above_prob_rev[i-1]) or i == 0:
+                mean_above.append(np.nanmean(above_prob_rev[i]))
+                std_above.append(np.nanstd(above_prob_rev[i]))
+            else:
+                mean_above.append(mean_above[i-1])
+                std_above.append(std_above[i-1])
+            
+            if np.any(equal_prob_rev[i] != equal_prob_rev[i-1]) or i == 0:
+                mean_equal.append(np.nanmean(equal_prob_rev[i]))
+                std_equal.append(np.nanstd(equal_prob_rev[i]))
+            else:
+                mean_equal.append(mean_equal[i-1])
+                std_equal.append(std_equal[i-1])
+
+            if np.any(below_prob_rev[i] != below_prob_rev[i-1]) or i == 0:
+                mean_below.append(np.nanmean(below_prob_rev[i]))
+                std_below.append(np.nanstd(below_prob_rev[i]))
+            else:
+                mean_below.append(mean_below[i-1])        
+                std_below.append(std_below[i-1])
+    else:
+        for i in range(len(above_prob_rev)):
+            mean_above.append(above_prob_rev[i])
+            mean_equal.append(equal_prob_rev[i])
+            mean_below.append(below_prob_rev[i])
+
     mean_above = np.nan_to_num(mean_above)
     mean_equal = np.nan_to_num(mean_equal)
     mean_below = np.nan_to_num(mean_below)
