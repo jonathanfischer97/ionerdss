@@ -2,10 +2,6 @@
 
 This repository primarily contains Python code for creating user-friendly analysis tools for setting up models and analyzing output from the reaction-diffusion simulator NERDSS.
 
-### Branch description
-
-We have created a new development branch where we will be improving the code quality, cleaning up tutorials, optimizing certain functions, and reorganizing directories for better readability.
-
 ### Folder Descriptions
 
 **IoNERDSSPyPi: Holds the main code of the library + extra files necessary for PyPi**
@@ -20,7 +16,7 @@ We have created a new development branch where we will be improving the code qua
  - **SingleSpeciesTutorial:** Describes how to create inputs for a NERDSS sim & how to create graphs and spreadsheets 
                               from a single-component histogram file or transition matrix outputted by NERDSS.
 
-**Unimportant: Holds files that may be useful for ioNERDSS development**
+**unimportant: Holds files that may be useful for ioNERDSS development**
  - **ExamplesIoNERDSS:** Holds a lot of files that (i may be wrong) seem to be environments for using IoNERDSS or examples of it being used
  - **TestingFunctions:** Holds the different files necessary to try out all of ioNERDSS' functions. 
     - Recommended to be moved to ioNERDSSPyPi folder along with ioNERDSS_profiler.py
@@ -34,6 +30,7 @@ This is my last day in the lab, and so my last day (probably) working with ioNER
  (3) Under certain circumastances functions may break, if you find any issues let me know and if it is before my school starts I will try to fix it
    - Functions are especially prone to breaking if you have a multi species system or multiple files (histogram will work fine)
  (4) The docs, docstrings and actual code may be slightly out of sync. If you find any issues please let me know
+ (5) A couple functions are in the folder, but not incorperated into the library (such as gag_reshape), and are currently unable to be used
 
 
 ### Install
