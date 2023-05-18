@@ -12,22 +12,24 @@ We have created a new development branch where we will be improving the code qua
  - **IoNERDSS:** Holds the actual code. Each function can be find as a seperate file in /functions.
  - **ioNERDSS.egg-info:** text that is necessary for PyPi.
  - **TestingFunctions:** Holds the different files necessary to try out all of ioNERDSS' functions
+ - Then some text files that are all for PyPi
 
 **Tutorial: Holds developer and user tutorials**
  - **DevelopersGuide:** Describes how to edit library, and then upload it to PyPi.
  - **MultiSpeciesTutorial:** Desribes how to create graphs and spreadsheets from a multi-component histogram file outputted by NERDSS.
- - **ReadRealPDBTutorial:** Describes how to interpret a pdb file from a database & create NERDSS inputs based off of it.
+ - **ReadRealPDBTutorial:** **WARNING OUTDATED** Describes how to interpret a pdb file from a database & create NERDSS inputs based off of it. **WARNING OUTDATED**
  - **SingleSpeciesTutorial:** Describes how to create inputs for a NERDSS sim & how to create graphs and spreadsheets 
                               from a single-component histogram file or transition matrix outputted by NERDSS.
+
 **Unimportant: Holds files that may be useful for ioNERDSS development**
    - **ExamplesIoNERDSS:** Holds a lot of files that (i may be wrong) seem to be environments for using IoNERDSS or examples of it being used
-   - 
+   - Some python scripts that were helpful for testing / profiling
 
 
 ### Install
 
 To install via pip, use the command: 
-pip install ioNERDSS
+run ``pip install ioNERDSS`` on the command line
 
 ### Syncing PyPi from GitHub
 
