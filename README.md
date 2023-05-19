@@ -26,11 +26,13 @@ This repository primarily contains Python code for creating user-friendly analys
 ### Note From Ian 5/18/2023
 This is my last day in the lab, and so my last day (probably) working with ioNERDSS. I have tried to tie up all of the loose ends, however there are still some of note:
  - The ReadRealPDBTutorial is out of date 
- - Certain functions are not in the UserGuide - you can find them listed at the bottom under ``2.7 Needs to be added``
+ - Certain functions are not in the UserGuide - you can find some of them listed at the bottom under ``2.7 Needs to be added``
+     - Complete List: gag_reshape, sphere_reg_index, merge_files, merge_sim_results, acf_coord, and gui
  - Under certain circumastances functions may break, if you find any issues let me know and if it is before my school starts I will try to fix it
-   - Functions are especially prone to breaking if you have a multi species system or multiple files (histogram will work fine)
- - The docs, docstrings and actual code may be slightly out of sync. If you find any issues please let me know
- - A couple functions are in the folder, but not incorperated into the library (such as gag_reshape), and are currently unable to be used
+   - I am especially worried about (1) multi-species transition matrix and (2) multi-species locate position. The rest should be fine outside of the weirdest situations.
+ - The docs, docstrings and actual code may be slightly out of sync. If you find any issues please let me know.
+ - A couple functions are in the folder, but not incorperated into the library, and are currently unable to be used
+   - The only one truly unincorperated is gag_reshape, though sphere_reg_index also needs some work
 
 
 ### Install
