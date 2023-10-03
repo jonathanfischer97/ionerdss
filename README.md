@@ -34,6 +34,11 @@ This is my last day in the lab, and so my last day (probably) working with ioNER
  - A couple functions are in the folder, but not incorperated into the library, and are currently unable to be used
    - The only one truly unincorperated is gag_reshape, though sphere_reg_index also needs some work
 
+### Note from Yufeng 10/03/2023
+-Updated ReadRealPDBTutorial, now renamed as ReadPDBTutorial
+-Fixed and included left out functions in the user guide
+  -Still need to included gag_reshape in the user guide
+-Need to write tutorials for gag_reshape, merge_sim_results, acf_coord, gui, and sphere_reg_index
 
 ### Install
 
