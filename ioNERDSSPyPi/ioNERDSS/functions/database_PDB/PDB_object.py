@@ -138,7 +138,7 @@ class ProteinComplex():
 
 
 
-    def _3D_plot(self):
+    def plot_3D(self):
         """Generate a 3D plot to display the spatial geometry of each simplified chain.
         """
         from . import dtb_PDB_3D_plot

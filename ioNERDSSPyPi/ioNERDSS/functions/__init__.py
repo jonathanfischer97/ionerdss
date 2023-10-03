@@ -8,7 +8,7 @@ from .acf import *
 from .pdb import *
 from .file_managment import *
 from .sphere_reg import *
-
+from .gagReshape import *
 
 """Welcome to the main ioNERDSS function library folder! Here I will give a brief description of each folder and sub folder!
     *Note: Each main folder is named after the file it reads in, except platonic solids since it reads in no files.

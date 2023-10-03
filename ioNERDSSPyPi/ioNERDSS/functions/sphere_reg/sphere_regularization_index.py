@@ -1,180 +1,52 @@
-
-#probably broken because of changes to other things. I added in the old functions under 'fake' to try and get it working again
-
 import numpy as np
-import warnings
-import matplotlib as plt
 from .fitSphere import fitSphere
 from .single_restart_to_df import single_restart_to_df
+from ..histograms.single_species import single_hist_obj
+import os
 
-def fake_read_file(FileName: str, SpeciesName: str):
-    hist = []
-    hist_temp = []
-    hist_conv = []
-    hist_count = []
-    with open(FileName, 'r') as file:
-        for line in file.readlines():
-            if line[0:4] == 'Time':
-                if hist_count != [] and hist_conv != []:
-                    hist_temp.append(hist_count)
-                    hist_temp.append(hist_conv)
-                    hist.append(hist_temp)
-                hist_count = []
-                hist_conv = []
-                hist_temp = []
-                hist_temp.append(float(line.strip('Time (s): ')))
-            else:
-                string = '	' + str(SpeciesName) + ': '
-                line = line.strip('. \n').split(string)
-                if len(line) != 2:
-                    print('Wrong species name!')
-                    return 0
-                else:
-                    hist_count.append(int(line[0]))
-                    hist_conv.append(int(line[1]))
-            if len(hist_temp) == 0:
-                hist_temp.append(hist_count)
-                hist_temp.append(hist_conv)
-                hist.append(hist_temp)
-    hist_temp.append(hist_count)
-    hist_temp.append(hist_conv)
-    hist.append(hist_temp)
-    return hist
-
-
-def fake_hist(FileName: str, FileNum: int, InitialTime: float, FinalTime: float, SpeciesName: str,
-         BarSize: int = 1, ShowFig: bool = True, SaveFig: bool = False):
-    file_name_head = FileName.split('.')[0]
-    file_name_tail = FileName.split('.')[1]
-    count_list = []
-    size_list = []
-    for k in range(1, FileNum+1):
-        temp_file_name = file_name_head + '_' + str(k) + '.' + file_name_tail
-        if FileNum == 1:
-            temp_file_name = FileName
-        total_size_list = []
-        total_count_list = []
-        hist = fake_read_file(temp_file_name, SpeciesName)
-        data_count = 0
-        for i in hist:
-            if InitialTime <= i[0] <= FinalTime:
-                data_count += 1
-                for j in i[2]:
-                    if j not in total_size_list:
-                        total_size_list.append(j)
-                        total_count_list.append(i[1][i[2].index(j)])
-                    else:
-                        index = total_size_list.index(j)
-                        total_count_list[index] += i[1][i[2].index(j)]
-        total_count_list = np.array(total_count_list)/data_count
-        if len(total_size_list) != 0:
-            total_size_list_sorted = np.arange(1, max(total_size_list)+1, 1)
-        else:
-            total_size_list_sorted = np.array([])
-        total_count_list_sorted = []
-        for i in total_size_list_sorted:
-            if i in total_size_list:
-                index = total_size_list.index(i)
-                total_count_list_sorted.append(total_count_list[index])
-            else:
-                total_count_list_sorted.append(0.0)
-        size_list.append(total_size_list_sorted)
-        count_list.append(total_count_list_sorted)
-    max_size = 0
-    for i in size_list:
-        if max_size < len(i):
-            max_size = len(i)
-            n_list = i
-    count_list_filled = np.zeros([FileNum, max_size])
-    for i in range(len(count_list)):
-        for j in range(len(count_list[i])):
-            count_list_filled[i][j] += count_list[i][j]
-    count_list_rev = []
-    for i in range(len(count_list_filled[0])):
-        temp = []
-        for j in range(len(count_list_filled)):
-            temp.append(count_list_filled[j][i])
-        count_list_rev.append(temp)
-    mean = []
-    std = []
-    for i in count_list_rev:
-        mean.append(np.nanmean(i))
-        std.append(np.nanstd(i))
-    mean_ = []
-    std_ = []
-    n_list_ = []
-    temp_mean = 0
-    temp_std = 0
-    bar_size_count = 0
-    for i in range(len(mean)):
-        temp_mean += mean[i]
-        temp_std += std[i]
-        bar_size_count += 1
-        if i+1 == len(mean):
-            mean_.append(temp_mean)
-            std_.append(temp_std)
-            n_list_.append(n_list[i])
-        elif bar_size_count >= BarSize:
-            mean_.append(temp_mean)
-            std_.append(temp_std)
-            n_list_.append(n_list[i])
-            temp_mean = 0
-            temp_std = 0
-            bar_size_count = 0
-    mean_ = np.array(mean_)
-    std_ = np.array(std_)
-    n_list_ = np.array(n_list_)
-    if ShowFig:
-        if FileNum != 1:
-            plt.bar(n_list_, mean_, width=BarSize, color='C0',
-                    yerr=std_, ecolor='C1', capsize=2)
-        else:
-            plt.bar(n_list_, mean_, width=BarSize)
-        plt.title('Histogram of ' + str(SpeciesName))
-        plt.xlabel('Number of ' + SpeciesName + ' in sigle complex')
-        plt.ylabel('Count')
-        if SaveFig:
-            plt.savefig('Histogram.png', dpi=500)
-        plt.show()
-    return n_list_, mean_, 'Nan', std_
-
-
-def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int, TimeStep: float,
-                                ComplexNum: int, Radius: float):
+def sphere_regularization_index(PathName: str, IterNum: int, TimeStep: float,
+                                ComplexNum: int, SpeciesName: str = "gag"):
     """This function calculates the regularization index of the given parameters.
-    Note: This was made with chatgpt and may be wrong
 
     Parameters:
-        FileNameHist: A string representing the file name of the histogram
-        SpeciesName: A string representing the species name
-        LitNum: An integer representing the number of the litter
-        TimeStep: A float representing the time step
-        ComplexNum: An integer representing the number of complexes
-        Radius: A float representing the radius
+        PathName(String): The path of the histogram file, PDB, and restart file
+        IterNum(int): The iteration number of the simulation
+        TimeStep(float): the time step of the simulation in micro-seconds
+        ComplexNum(int): The number of complexes to be analyzed, starting from the largest complex size
+        SpeciesName(String): The of the species intended to be analyzed
     
     Returns:
-        max_complex_size_return: A list of integers representing the maximum complex size
-        theta_ideal_return: A list of floats representing the ideal spherical angle
-        sphere_radius_return: A list of floats representing the sphere radius
-        sphere_center_position_return: A list of floats representing the sphere center position
-        complex_COM_return: A list of floats representing the complex center of mass
-        regularization_index_return: A list of floats representing the regularization index
+        max_complex_size_return: A list of integers representing the maximum complex size of each complex
+        theta_ideal_return: A list of floats representing the ideal spherical angle of each complex
+        sphere_radius_return: A list of floats representing the sphere radius of each complex
+        sphere_center_position_return: A list of floats representing the sphere center position of each complex
+        complex_COM_return: A list of floats representing the center of mass of each complex
+        regularization_index_return: A list of floats representing the regularization index of each complex
     
-    This function calculates the regularization index of the given parameters. It firsts get the data from the histogram and then calculates the maximum complex size. It then fits 3 spheres and does a sanity check. It then calculates the center of mass of the max complex and determines the spherical angle corresponding to the ideal complex with surface area. It then determines if the monomer on complex is on the ideal cap and returns the regularization index.
+    This function calculates the regularization index of the given parameters. 
+    It firsts get the data from the histogram and then calculates the maximum complex size. 
+    It then fits 3 spheres and does a sanity check. 
+    It then calculates the center of mass of the max complex and determines the spherical angle
+    corresponding to the ideal complex with surface area. 
+    It then determines if the monomer on complex is on the ideal cap and returns the regularization index.
     """
-    warnings.simplefilter("ignore")
-    t = TimeStep * LitNum
-    data = fake_hist(FileName=FileNameHist,
-                FileNum=1, InitialTime=t, FinalTime=t+TimeStep,
-                SpeciesName=SpeciesName, ShowFig=False)
-    x_data = data[0]
-    y_data = data[1]
+    
+    # reads in the histogram file and obtain the size of complexes formed and their corresponding counts at inputted simulation step
+    t = TimeStep * IterNum * 0.000001
+    FileNameHist = os.path.join(PathName, 'histogram_complexes_time.dat')
+    histogram_obj = single_hist_obj.SingleHistogram(FileNameHist, FileNum = 1, InitialTime = t, FinalTime = t+TimeStep, SpeciesName = SpeciesName)
+    data = histogram_obj.hist_complex_count(ShowFig = False)
+    cmplx_sizes = data[0]
+    cmplx_count = data[1]
+    
+    # obtain the list of complex sizes that have non-zero counts and sort them in descending order
     size_list = []
-    i = len(x_data)-1
+    i = len(cmplx_sizes)-1
     while i >= 0:
-        if y_data[i] != 0:
-            size_list.append(x_data[i])
+        if cmplx_count[i] != 0:
+            size_list.append(cmplx_sizes[i])
         i -= 1
+
 
     max_complex_size_return = []
     theta_ideal_return = []
@@ -182,17 +54,16 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
     sphere_center_position_return = []
     complex_COM_return = []
     regularization_index_return = []
-
     SerialNum = 0
-    protein_remain = []
+    
+    # For the specificed ComplexNum of complexes from the greatest size to the least size, fit a sphere and calculate the regularization index
     for m in range(ComplexNum):
-        pdb_file_name = str(LitNum)+'.pdb'
-        restart_file_name = 'restart'+str(LitNum)+'.dat'
+        pdb_file_name = os.path.join(PathName, "PDB", str(IterNum)+'.pdb')
+        restart_file_name = os.path.join(PathName, "RESTARTS",'restart'+str(IterNum)+'.dat')
         complex_pdb_df, SerialNum = single_restart_to_df(FileNamePdb=pdb_file_name,
                                                          ComplexSizeList=size_list,
                                                          FileNameRestart=restart_file_name,
                                                          SerialNum=SerialNum)
-
         max_complex_size = len(complex_pdb_df)
         sphere_center_position_candidate = np.zeros((3, 3))
         sphere_radius_candidate = np.zeros((3, 1))
@@ -204,26 +75,29 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
         # if the differences of sphere center coordinates are smaller than 0.1
         # and the |fiited radius - 50| < 0.1 , we consider the fitting as good
         x_list = np.array(complex_pdb_df['x_coord'])
-        y_list = np.array(complex_pdb_df['y_coord'])
-        z_list = np.array(complex_pdb_df['z_coord'])
-
-        partition = [[0, int(len(x_list)/3)], [int(len(x_list)/3),
+        if(x_list.size > 30):
+            partition = [[0, int(len(x_list)/3)], [int(len(x_list)/3),
                                                int(len(x_list)/3*2)], [int(len(x_list)/3*2), -1]]
-
-        for ind, part in enumerate(partition):
-            r, cx, cy, cz = fitSphere(np.array(complex_pdb_df['x_coord'][part[0]:part[1]]),
-                                      np.array(
-                                          complex_pdb_df['y_coord'][part[0]:part[1]]),
-                                      np.array(complex_pdb_df['z_coord'][part[0]:part[1]]))
-            sphere_center_position_candidate[ind, :] = [cx, cy, cz]
-            sphere_radius_candidate[ind, :] = r
-
-        # sanity check
+            for ind, part in enumerate(partition):
+                r, cx, cy, cz = fitSphere(np.array(complex_pdb_df['x_coord'][part[0]:part[1]]),
+                                          np.array(
+                                              complex_pdb_df['y_coord'][part[0]:part[1]]),
+                                          np.array(complex_pdb_df['z_coord'][part[0]:part[1]]))
+                sphere_center_position_candidate[ind, :] = [cx[0], cy[0], cz[0]]
+                sphere_radius_candidate[ind, :] = r
+        else:
+            r, cx, cy, cz = fitSphere(np.array(complex_pdb_df['x_coord']),
+                                      np.array(complex_pdb_df['y_coord']),
+                                      np.array(complex_pdb_df['z_coord']))
+            for i in range(3):
+                sphere_center_position_candidate[i, :] = [cx[0], cy[0], cz[0]]
+                sphere_radius_candidate[i, :] = r
+        # check sphere radius error. If the error is > 0.1, print a warning
         if sum(abs(np.array(sphere_radius_candidate) - r)) >= 0.1 * 3:
             print("Caution, the radius error is > 0.1! The fitted radii are: \n",
                   sphere_radius_candidate)
 
-        # check sphere center coordinate error
+        # check sphere center coordinate error. If the error is > 0.1, print a warning
         count = 0
         for i in range(3):
             if abs(sphere_center_position_candidate[0][i] - sphere_center_position_candidate[1][i]) >= 0.1 \
@@ -238,12 +112,11 @@ def sphere_regularization_index(FileNameHist: str, SpeciesName: str, LitNum: int
         sphere_radius = np.mean(sphere_radius_candidate)
 
         # calculate the center of mass of the max complex
-        complex_COM = np.mean(
-            complex_pdb_df[['x_coord', 'y_coord', 'z_coord']])
+        complex_COM = [np.mean(complex_pdb_df['x_coord']), np.mean(complex_pdb_df['y_coord']), np.mean(complex_pdb_df['z_coord'])]
         # directional vector that directs from sphere center to complex COM
         dir_vector = complex_COM - sphere_center_position
 
-        # the surface area of a Gag compelx is
+        # the surface area of a Gag complex is
         S_whole_sphere = 4*np.pi*50**2  # nm^2
         S_per_Gag = S_whole_sphere/3697  # nm^2
         S_max_complex = S_per_Gag*max_complex_size  # nm^2

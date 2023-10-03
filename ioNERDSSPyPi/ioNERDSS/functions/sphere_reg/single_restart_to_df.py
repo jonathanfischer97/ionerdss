@@ -1,13 +1,15 @@
-
-
-#probably broken because of changes to other things. I added in the old functions under 'fake' to try and get it working again
-
-
 import pandas as pd
 
+def helper_PDB_pdb_to_df(file_name, protein_num):
+    """Helper function to read PDB file and return a pandas dataframe
 
+    Args:
+        file_name (String): The path and name of the PDB file
+        protein_num (int): the protein number intended to be incorporated into the dataframe
 
-def fake_PDB_pdb_to_df(file_name, drop_COM):
+    Returns:
+        dataframe: the pandas dataframe contains the atom information read from the PDB file
+    """
     df = pd.DataFrame(columns=['Protein_Num', 'Protein_Name',
                       'Cite_Name', 'x_coord', 'y_coord', 'z_coord'])
     with open(file_name, 'r') as file:
@@ -19,21 +21,29 @@ def fake_PDB_pdb_to_df(file_name, drop_COM):
                 for i in line:
                     if i != '':
                         info.append(i)
-                df.loc[index, 'Protein_Num'] = int(info[4])
-                df.loc[index, 'Protein_Name'] = info[3]
-                df.loc[index, 'Cite_Name'] = info[2]
-                df.loc[index, 'x_coord'] = float(info[5])
-                df.loc[index, 'y_coord'] = float(info[6])
-                df.loc[index, 'z_coord'] = float(info[7])
-            index += 1
+                if info[2] == 'COM' and int(info[4]) in protein_num:
+                    df.loc[index, 'Protein_Num'] = int(info[4])
+                    df.loc[index, 'Protein_Name'] = info[3]
+                    df.loc[index, 'Cite_Name'] = info[2]
+                    df.loc[index, 'x_coord'] = float(info[5])
+                    df.loc[index, 'y_coord'] = float(info[6])
+                    df.loc[index, 'z_coord'] = float(info[7])
+                    index += 1
         df = df.dropna()
-        if drop_COM:
-            df = df.drop(index=df[(df.Cite_Name == 'COM')].index.tolist())
         df = df.reset_index(drop=True)
     return df
 
 
-def fake_RESTART_read_restart(file_name_restart):
+def helper_RESTART_read_restart(file_name_restart):
+    """helper function to read restart file and return a list of the complexes existing at the end of the iteration
+
+    Args:
+        file_name_restart (String): The path and name of the RESTART file
+
+    Returns:
+        list: a list of the complexes existing at the end of the iteration. For instance, [[1,2,3],[4,5,6]] 
+        means there are two complexes, one contains molecule 1,2,3 and the other contains molecule 4,5,6
+    """
     with open(file_name_restart, 'r') as file:
         status = False
         count = 0
@@ -70,7 +80,7 @@ def single_restart_to_df(FileNamePdb, ComplexSizeList, FileNameRestart='restart.
     """
     if SerialNum == -1:
         return 0, -1
-    complex_list = fake_RESTART_read_restart(FileNameRestart)
+    complex_list = helper_RESTART_read_restart(FileNameRestart)
     index = 0
     protein_remain = []
     for i in range(len(ComplexSizeList)):
@@ -80,12 +90,9 @@ def single_restart_to_df(FileNamePdb, ComplexSizeList, FileNameRestart='restart.
                 if SerialNum == index-1:
                     protein_remain = complex_list[j]
                     SerialNum += 1
-                    complex_pdb_df = fake_PDB_pdb_to_df(FileNamePdb, False)
-                    complex_pdb_df = complex_pdb_df[complex_pdb_df['Cite_Name'] == 'COM']
-                    complex_pdb_df = complex_pdb_df[complex_pdb_df['Protein_Num'].isin(
-                        protein_remain)]
-                    if 0 in complex_pdb_df.index:
-                        complex_pdb_df = complex_pdb_df.drop(0)
+                    complex_pdb_df = helper_PDB_pdb_to_df(FileNamePdb, protein_remain)
+                    # if 0 in complex_pdb_df.index:
+                    #     complex_pdb_df = complex_pdb_df.drop(0)
                     return complex_pdb_df, SerialNum
-    print('Cannot find more desired size of comolex!')
+    print('Cannot find more desired size of complex!')
     return 0, -1

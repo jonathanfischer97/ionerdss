@@ -4,7 +4,6 @@ import numpy as np
 
 def fitSphere(x, y, z):
     """This function takes three arrays of equal length x, y and z and returns the radius and center of a sphere that best fits the data.
-    Note: This was made with chatgpt and may be wrong
 
     Parameters
         x: array of x coordinates
@@ -24,7 +23,7 @@ def fitSphere(x, y, z):
     A[:, 3] = 1
     f = np.zeros((len(x), 1))
     f[:, 0] = x*x+y*y+z*z
-    C, residules, rank, singval = np.linalg.lstsq(A, f)
+    C, residules, rank, singval = np.linalg.lstsq(A, f, rcond=None)
     t = (C[0]*C[0])+(C[1]*C[1])+(C[2]*C[2])+C[3]
     radius = math.sqrt(t)
     return radius, C[0], C[1], C[2]

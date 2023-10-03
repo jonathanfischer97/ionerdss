@@ -67,6 +67,17 @@ def real_PDB_UI():
     # normalize vector
     UI_PDB.calc_angle()
 
+    # ask to whether display 3D graph
+    while True:
+        answer3 = input("Display a 3D plot of the protein complex? (Type 'yes' or 'no'): ")
+        if answer3 == "yes":
+            UI_PDB.plot_3D()
+            break
+        if answer3 == "no":
+            break
+        else:
+            print("Invalid answer, please try again.")
+
     # asking whether to center the COM of every chain to origin.
     while True:
         answer2 = input(
