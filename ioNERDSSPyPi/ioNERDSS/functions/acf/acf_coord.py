@@ -11,6 +11,14 @@ def acf_coord(PDBDirectory: str, mol_list: list, sim_num: int = 1, time_step: in
     The pdb files is in the PDB folder of each simulation outputs. Will plot each acf of each simulation 
     and the averaged acf of all simulations.
 
+    Args:
+    PDBDirectory: the directory of the pdb files
+    mol_list: the list of molecule names to calculate the acf
+    sim_num: the number of simulations to calculate the acf
+    time_step: the time step of the NERDSS simulation, if not provided, will use the 1 micro seconds as the time step
+    show_fig: whether to show the figure
+    save_fig: whether to save the figure
+
     Return:
     the times (unit is simulation steps if timestep is not provided, unit is second otherwise), averaged acfs, and std
     """
@@ -23,7 +31,7 @@ def acf_coord(PDBDirectory: str, mol_list: list, sim_num: int = 1, time_step: in
     columns = math.ceil(math.sqrt(sim_num))
     
     rows = columns
-    plt.figure(figsize=(columns*4, rows*4))
+    plt.figure(figsize=(columns*6, rows*6))
     font = {'size': 6}
     plt.rc('font', **font)
     indexFig = 0
@@ -46,7 +54,7 @@ def acf_coord(PDBDirectory: str, mol_list: list, sim_num: int = 1, time_step: in
         time_serials = sorted([int(f[:-4]) for f in file_names])
 
         # Remove the first file
-        time_serials = time_serials[1:]
+        #time_serials = time_serials[1:]
 
         # Remove the last file
         time_serials = time_serials[:-1]
@@ -74,15 +82,15 @@ def acf_coord(PDBDirectory: str, mol_list: list, sim_num: int = 1, time_step: in
                     all_mol.append(molIndex)
         f.close()
         mol_type_num = len(mol_list)
-        all_mol = all_mol[mol_type_num:]
+        # all_mol = all_mol[mol_type_num:]
         # record all the coords
         all_x = [[None for _ in range(
-            int((end_time-start_time)/interval))] for _ in range(len(all_mol))]
+            int((end_time-start_time)/interval)+1)] for _ in range(len(all_mol))]
         all_y = [[None for _ in range(
-            int((end_time-start_time)/interval))] for _ in range(len(all_mol))]
+            int((end_time-start_time)/interval)+1)] for _ in range(len(all_mol))]
         all_z = [[None for _ in range(
-            int((end_time-start_time)/interval))] for _ in range(len(all_mol))]
-        for j in range(start_time, end_time, interval):
+            int((end_time-start_time)/interval)+1)] for _ in range(len(all_mol))]
+        for j in range(start_time, end_time+1, interval):
             count_line = 0
             file_name = os.path.join(pdb_directory, str(j)+'.pdb')
             f = open(file_name)
@@ -91,6 +99,7 @@ def acf_coord(PDBDirectory: str, mol_list: list, sim_num: int = 1, time_step: in
             while line:
                 line = f.readline()
                 count_line += 1
+                count_mol = 0
                 if len(line) == 0 or count_line < mol_type_num + 3:
                     if count_line == 3:
                         boxX, boxY, boxZ = float(line[30:38]), float(line[38:46]), float(line[46:54])
@@ -104,9 +113,10 @@ def acf_coord(PDBDirectory: str, mol_list: list, sim_num: int = 1, time_step: in
                         coordX1 = float(line[30:38])
                         coordY1 = float(line[38:46])
                         coordZ1 = float(line[46:54])
-                        all_x[molIndex-1][int((j-start_time) / interval)] = coordX1 - boxX/2.0
-                        all_y[molIndex-1][int((j-start_time) / interval)] = coordY1 - boxY/2.0
-                        all_z[molIndex-1][int((j-start_time) / interval)] = coordZ1 - boxZ/2.0
+                        all_x[count_mol][int((j-start_time) / interval)] = coordX1 - boxX/2.0
+                        all_y[count_mol][int((j-start_time) / interval)] = coordY1 - boxY/2.0
+                        all_z[count_mol][int((j-start_time) / interval)] = coordZ1 - boxZ/2.0
+                        count_mol += 1
                         
             f.close()
         
@@ -132,6 +142,8 @@ def acf_coord(PDBDirectory: str, mol_list: list, sim_num: int = 1, time_step: in
         plt.plot(np.array(all_time), np.array(all_rk_mean))
         plt.ylim(-1, 1)
         plt.title("Simulation #" + str(i))
+        plt.xlabel("time (us)")
+        plt.ylabel("ACF")
 
     plt.show()
     
@@ -155,7 +167,7 @@ def acf_coord(PDBDirectory: str, mol_list: list, sim_num: int = 1, time_step: in
     # Plot the average_acf_array versus average_time_array with an error band
     plt.plot(average_time_array, average_acf_array)
     plt.fill_between(average_time_array, average_acf_array - std_acf_array, average_acf_array + std_acf_array, alpha=0.2)
-    plt.xlabel('Interations')
+    plt.xlabel('time (us)')
     plt.ylabel('ACF')
     plt.title('Mean ACF')
     if save_fig:

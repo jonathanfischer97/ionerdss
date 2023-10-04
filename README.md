@@ -2,6 +2,8 @@
 
 This repository primarily contains Python code for creating user-friendly analysis tools for setting up models and analyzing output from the reaction-diffusion simulator NERDSS.
 
+(The user guide in the pdf format is Not up to date. Please refer to the user guide in the docx format for the most up to date version.)
+
 ### Folder Descriptions
 
 **IoNERDSSPyPi: Holds the main code of the library + extra files necessary for PyPi**
@@ -9,10 +11,11 @@ This repository primarily contains Python code for creating user-friendly analys
  - **ioNERDSS.egg-info:** text that is necessary for PyPi.
  - Then some text files that are all for PyPi
 
+
 **Tutorial: Holds developer and user tutorials**
  - **DevelopersGuide:** Describes how to edit library, and then upload it to PyPi.
  - **MultiSpeciesTutorial:** Desribes how to create graphs and spreadsheets from a multi-component histogram file outputted by NERDSS.
- - **ReadRealPDBTutorial:** **WARNING OUTDATED** Describes how to interpret a pdb file from a database & create NERDSS inputs based off of it. **WARNING OUTDATED**
+ - **ReadPDBTutorial:** Describes how to interpret a pdb file from Protein Data Bank & create NERDSS inputs based off of it.
  - **SingleSpeciesTutorial:** Describes how to create inputs for a NERDSS sim & how to create graphs and spreadsheets 
                               from a single-component histogram file or transition matrix outputted by NERDSS.
 
@@ -35,10 +38,10 @@ This is my last day in the lab, and so my last day (probably) working with ioNER
    - The only one truly unincorperated is gag_reshape, though sphere_reg_index also needs some work
 
 ### Note from Yufeng 10/03/2023
--Updated ReadRealPDBTutorial, now renamed as ReadPDBTutorial
--Fixed and included left out functions in the user guide
-  -Still need to included gag_reshape in the user guide
--Need to write tutorials for gag_reshape, merge_sim_results, acf_coord, gui, and sphere_reg_index
+- Updated ReadRealPDBTutorial, now renamed as ReadPDBTutorial
+- Fixed and included left out functions in the user guide
+- Still need to included gag_reshape in the user guide
+- Need to write tutorials for gag_reshape, merge_sim_results, acf_coord, gui, and sphere_reg_index
 
 ### Install
 

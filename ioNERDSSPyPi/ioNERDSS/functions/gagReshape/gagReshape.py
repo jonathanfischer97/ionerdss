@@ -5,9 +5,6 @@ from .calculate_gradient import *
 from .determine_gagTemplate_structure import *
 from .translate_gags_on_sphere import *
 from .xyz_to_sphere_coordinates import *
-from .restart_pdb_to_df import *
-
-# Haven't fixed yet
 
 def reshape_gag():
     """
@@ -16,14 +13,11 @@ def reshape_gag():
 
 
     """
-    #R0 = 65.0           # the target radius of the gag capsid, nm
-    R0 = 50.0           # the target radius of the gag capsid, nm
+    R0 = 65.0           # the target radius of the gag capsid, nm
+    #R0 = 50.0           # the target radius of the gag capsid, nm
     distanceCC = 10.0   # the distance between two hexamers, center-to-center distance, nm
     # read gag positions
-    #positions = pd.read_excel('gagspositions.xlsx', header=None)
-    positions = restart_pdb_to_df("unimportant/TestingFunctions/gagsphere/PDB/200000.pdb", [6], "unimportant/TestingFunctions/gagsphere/RESTARTS/restart200000.dat", SerialNum=0)
-    positions = positions[0].drop(columns=['Protein_Num','Protein_Name','Cite_Name'])
-    positions.columns = ['x','y','z']
+    positions = pd.read_excel('gagspositions.xlsx', header=None)
     positionsVec = positions.to_numpy()
     ##############################################
     # find the sphere radius and the sphere center
