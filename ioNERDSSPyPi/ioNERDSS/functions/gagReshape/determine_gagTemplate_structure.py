@@ -14,8 +14,6 @@ def determine_gagTemplate_structure(numGag, positionsVec):
         vec1 = center
         vec1 = vec1/np.linalg.norm(vec1) 
         vec2 = interfaces[0,:] - center
-        vec2 = np.array([vec2[0], vec2[1], vec2[2]])
-        vec1 = np.array([vec1[0], vec1[1], vec1[2]])
         vec3 = np.cross(vec1,vec2)
         vec3 = vec3/np.linalg.norm(vec3)
         vec2 = np.cross(vec3,vec1)

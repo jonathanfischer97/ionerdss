@@ -33,7 +33,7 @@ def real_PDB_UI():
     #read in file
     file_name = input("Enter pdb file name: ")
     UI_PDB = ProteinComplex(file_name)
-    
+
 
     # user can choose to change the interaction site
     while True:

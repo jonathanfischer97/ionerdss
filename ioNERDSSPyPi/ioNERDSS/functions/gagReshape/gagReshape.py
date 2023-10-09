@@ -5,20 +5,36 @@ from .calculate_gradient import *
 from .determine_gagTemplate_structure import *
 from .translate_gags_on_sphere import *
 from .xyz_to_sphere_coordinates import *
+from .restart_pdb_to_df import *
 
-def reshape_gag():
+def reshape_gag(PathName: str):
     """
-    Haven't fixed yet
-
-
+    
 
     """
     R0 = 65.0           # the target radius of the gag capsid, nm
-    #R0 = 50.0           # the target radius of the gag capsid, nm
     distanceCC = 10.0   # the distance between two hexamers, center-to-center distance, nm
-    # read gag positions
-    positions = pd.read_excel('gagspositions.xlsx', header=None)
-    positionsVec = positions.to_numpy()
+    #read gag positions
+    positions = fake_PDB_pdb_to_df(PathName)
+    positions = positions[["Cite_Name","x_coord", "y_coord", "z_coord"]]
+
+    positionsVec = np.zeros([108,3])
+    count = 0
+    for i in range(18):
+        for j in range(6):
+            if(positions.iloc[count]["Cite_Name"]== "COM" and j!=0):
+                continue
+            positionsVec[i*6+j][0] = positions.iloc[count]["x_coord"]
+            positionsVec[i*6+j][1] = positions.iloc[count]["y_coord"]
+            positionsVec[i*6+j][2] = positions.iloc[count]["z_coord"]
+            count += 1
+            if count >= len(positions):
+                break
+            
+
+    #convert coordinate unit from angstrom to nm
+    positionsVec = positionsVec/10.0
+    
     ##############################################
     # find the sphere radius and the sphere center
     # 18 gags, center + 5 nodes' positions, so each gag has 6 positions. I will
@@ -81,12 +97,12 @@ def reshape_gag():
     ##############################################
     # Fifth, adjust the hexmerGags 0, 3, 6, 9, 12, 15 
     center0 = centersVec[0,:]   
-    # center3 = centersVec[3,:]   
-    # center6 = centersVec[6,:]   
-    # center9 = centersVec[9,:]
-    # center12 = centersVec[12,:]
-    # center15 = centersVec[15,:]
-    # hexmerCenter = (center0 + center9) / 2.0 
+    center3 = centersVec[3,:]   
+    center6 = centersVec[6,:]   
+    center9 = centersVec[9,:]
+    center12 = centersVec[12,:]
+    center15 = centersVec[15,:]
+    hexmerCenter = (center0 + center9) / 2.0 
 
     # the hexamerCenter is almost along the Z axis, just set as along Z axis, then it would be easier for the following rotation and translation of gags
     hexmerCenter = np.zeros([3])

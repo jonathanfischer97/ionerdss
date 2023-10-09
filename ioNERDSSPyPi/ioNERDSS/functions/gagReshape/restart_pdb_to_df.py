@@ -1,6 +1,6 @@
 import pandas as pd
 
-def fake_PDB_pdb_to_df(file_name, protein_num):
+def fake_PDB_pdb_to_df(file_name):
     """Helper function to read PDB file and return a pandas dataframe
 
     Args:
@@ -21,14 +21,13 @@ def fake_PDB_pdb_to_df(file_name, protein_num):
                 for i in line:
                     if i != '':
                         info.append(i)
-                if int(info[4]) in protein_num:
-                    df.loc[index, 'Protein_Num'] = int(info[4])
-                    df.loc[index, 'Protein_Name'] = info[3]
-                    df.loc[index, 'Cite_Name'] = info[2]
-                    df.loc[index, 'x_coord'] = float(info[5])
-                    df.loc[index, 'y_coord'] = float(info[6])
-                    df.loc[index, 'z_coord'] = float(info[7])
-                    index += 1
+                df.loc[index, 'Protein_Num'] = int(info[4])
+                df.loc[index, 'Protein_Name'] = info[3]
+                df.loc[index, 'Cite_Name'] = info[2]
+                df.loc[index, 'x_coord'] = float(info[5])
+                df.loc[index, 'y_coord'] = float(info[6])
+                df.loc[index, 'z_coord'] = float(info[7])
+                index += 1
         df = df.dropna()
         df = df.reset_index(drop=True)
     return df
