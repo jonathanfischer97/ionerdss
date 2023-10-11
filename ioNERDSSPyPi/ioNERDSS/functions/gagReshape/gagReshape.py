@@ -248,3 +248,5 @@ def reshape_gag(PathName: str):
         print(gagNames[i],'\n')
         positions = finalPositionsVec[8*i:8+8*i,:]
         print(positions,'\n')
+
+    return finalPositionsVec
