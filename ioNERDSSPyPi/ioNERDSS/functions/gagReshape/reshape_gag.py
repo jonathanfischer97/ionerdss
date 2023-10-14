@@ -6,15 +6,32 @@ from .determine_gagTemplate_structure import *
 from .translate_gags_on_sphere import *
 from .xyz_to_sphere_coordinates import *
 from .restart_pdb_to_df import *
+from .gag_write_PDB import *
+from ..database_PDB.dtb_PDB_separate_read import *
+from ..database_PDB.dtb_PDB_write_PDB import *
 
-def reshape_gag(PathName: str):
+def reshape_gag(PathName: str, WritePDB: bool = False):
     """
+    This function reshapes the gag lattice recorded experimentally in a PDB file and outputs the standardized sites coordinates of the gag monomers.
+
+    Parameters:
+        PathName (str): The full path of the desired PDB file or name of the file if in same directory.
+        WritePDB (bool, optional): If True, the function will generate a file in .pdb format containing the standardized COMs 
+        and reaction interfaces. The default is False.
     
+    Returns:
+        finalPositionsVec: The array contains the standardized sites coordinates of the gag monomers.
 
     """
+    # Obtain the coordinates of the COM and interfaces on the gag monomers
+
+    #dtb_PDB_write_PDB(dtb_PDB_separate_read(PathName))
+    print("\n")
+
     R0 = 65.0           # the target radius of the gag capsid, nm
     distanceCC = 10.0   # the distance between two hexamers, center-to-center distance, nm
     #read gag positions
+    #positions = fake_PDB_pdb_to_df("show_structure.pdb")
     positions = fake_PDB_pdb_to_df(PathName)
     positions = positions[["Cite_Name","x_coord", "y_coord", "z_coord"]]
 
@@ -248,5 +265,8 @@ def reshape_gag(PathName: str):
         print(gagNames[i],'\n')
         positions = finalPositionsVec[8*i:8+8*i,:]
         print(positions,'\n')
+    
+    if WritePDB:
+        gag_write_PDB(finalPositionsVec)
 
     return finalPositionsVec

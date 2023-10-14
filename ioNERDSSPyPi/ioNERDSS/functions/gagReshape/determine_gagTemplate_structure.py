@@ -2,6 +2,19 @@ import numpy as np
 
 
 def determine_gagTemplate_structure(numGag, positionsVec):
+    """
+    Determine the template structure of the gags, which is the average structure of the first gag.
+    The template structure is used to determine the internal basis system of each gag, and the internal
+    coordinates of each interface in the internal basis system.
+
+    Parameters:
+        numGag (int): number of gags
+        positionsVec (np.array): positions of all atoms in the system, rowvec
+    
+    Returns:
+        template (np.array): the template structure of the gags, rowvec
+    """
+
     internalBasis = np.zeros([3,3,numGag]) # 18 gags, each gag has 3 vectors of internal basises, rowvec
     coefficients = np.zeros([5,3,numGag])  # internal coords of interfaces in the internal basis system
     # set up the internal coord system for each gag: basis vec1, vec2, vec3 

@@ -1,7 +1,7 @@
 import numpy as np
 from .PDB_object import ProteinComplex
 
-def real_PDB_UI():
+def PDB_UI():
     """A user friendly UI to allow for open, minupulating, and then outputting .pdb files.
 
     Functions:

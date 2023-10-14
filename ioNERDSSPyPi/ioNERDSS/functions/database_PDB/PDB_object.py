@@ -80,8 +80,7 @@ class ProteinComplex():
             raise Exception("This function must be run before calc_angles")
 
 
-        op =  dtb_PDB_filter(self.reaction_chain, self.int_site, self.int_site_distance, 
-                                    self.unique_chain, self.COM,ChainList)
+        op =  dtb_PDB_filter((self.reaction_chain, self.int_site, self.int_site_distance, self.unique_chain, self.COM),ChainList)
 
         self.set_self_from_tuple(op)
 
