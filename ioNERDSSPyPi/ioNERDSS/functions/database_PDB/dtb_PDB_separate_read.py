@@ -4,7 +4,7 @@ from .gen.real_PDB_data_check import real_PDB_data_check
 from .gen.real_PDB_chain_int_simple import real_PDB_chain_int_simple
 
 
-def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
+def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None], MaxBoundLength: float = 0.3):
     """
     This function will extract the coordinate information stored inside a real PDB file and calculate 
     the COM of each unique chain, as well as recognize the binding information between each pair of chains 
@@ -15,6 +15,7 @@ def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
     Args:
         FileName (str): The full path of the desired PDB file or name of the file if in same directory. 
         ChainIncluded (lst): A list of which chains you want to be included
+        max_bound_length(float): atoms that are less than this length apart are seen as bound
 
     Returns:
         reaction_chain: list of coordinates to each chains COM. Indicies connect with unique chain.
@@ -197,7 +198,7 @@ def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None]):
     ## reaction_atom_distance, reaction_resi_count, reaction_resi_type and  reaction_atom_type
 
     interaction = real_PDB_chain_int_simple(unique_chain, split_position, split_resi_count, split_atom_count,
-                                     split_resi_type, split_atom_type, split_resi_position_every_atom)
+                                     split_resi_type, split_atom_type, split_resi_position_every_atom, MaxBoundLength)
     reaction_chain = interaction[0] #[i]: holds each chain interaction. [0][i]: name of each chain in this interaction
     reaction_resi_position = interaction[1] #[i]: holds each different chain interaction. [0][i]: each atomic interaction. [0][0][1-2]: position of both atoms in the interaction
 

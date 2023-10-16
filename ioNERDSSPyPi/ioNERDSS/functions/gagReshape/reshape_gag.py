@@ -25,16 +25,15 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     """
     # Obtain the coordinates of the COM and interfaces on the gag monomers
 
-    #dtb_PDB_write_PDB(dtb_PDB_separate_read(PathName))
-    print("\n")
-
+    dtb_PDB_write_PDB(dtb_PDB_separate_read(PathName))
+    
     R0 = 65.0           # the target radius of the gag capsid, nm
     distanceCC = 10.0   # the distance between two hexamers, center-to-center distance, nm
     #read gag positions
-    #positions = fake_PDB_pdb_to_df("show_structure.pdb")
-    positions = fake_PDB_pdb_to_df(PathName)
+    positions = fake_PDB_pdb_to_df("show_structure.pdb")
+    #positions = fake_PDB_pdb_to_df(PathName)
     positions = positions[["Cite_Name","x_coord", "y_coord", "z_coord"]]
-
+    
     positionsVec = np.zeros([108,3])
     count = 0
     for i in range(18):
@@ -47,8 +46,9 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
             count += 1
             if count >= len(positions):
                 break
-            
-
+    
+    
+    
     #convert coordinate unit from angstrom to nm
     positionsVec = positionsVec/10.0
     
