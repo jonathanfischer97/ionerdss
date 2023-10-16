@@ -1,0 +1,21 @@
+Name = clat
+checkOverlap = True
+countTransition = True
+transitionMatrixSize = 500
+D = [13, 13, 13]
+Dr = [0.3, 0.3, 0.3]
+COM    0.0000    0.0000    0.0000
+cd1	3	5.1962	0
+cd2	3	-5.1962	0
+cd3	-6	0	0
+td1	1.8750	3.2476	-3
+td2	1.8750	-3.2476	-3
+td3	-3.75	0	-3
+
+bonds = 6
+com cd1
+com cd2
+com cd3
+com td1
+com td2
+com td3

@@ -1,0 +1,12 @@
+Name = pip2
+checkOverlap = False
+countTransition = False
+transitionMatrixSize = 500
+isImplicitLipid = true
+D = [0.5,0.5,0.5]
+Dr = [0,0,0.01]
+COM    0.0000    0.0000    0.0000
+head	0	0	0.0001
+
+bonds = 1
+com head
