@@ -115,7 +115,7 @@ def gui():
             if ',' not in site_str:
                 site_name, site_coord = site_str.split(':')
                 x, y, z = site_coord.split()
-                coords_formatted += site_name + '\t' + x + '\t' + y + '\t' + z + '\n'
+                coords_formatted += site_name.strip() + '\t' + f"{float(x):.4f}" + '\t' + f"{float(y):.4f}" + '\t' + f"{float(z):.4f}" + '\n'
                 sites.append(Site(site_name))
             else:
                 coord_str, state_str = site_str.split(',')
@@ -123,13 +123,13 @@ def gui():
                 state_str = state_str.strip()
                 site_name, site_coord = coord_str.split(':')
                 x, y, z = site_coord.split()
-                coords_formatted += site_name + '\t' + x + '\t' + y + '\t' + z + '\n'
+                coords_formatted += site_name.strip() + '\t' + f"{float(x):.4f}" + '\t' + f"{float(y):.4f}" + '\t' + f"{float(z):.4f}" + '\n'
                 states = []
                 states_str = state_str.split('~')
                 for state in states_str:
                     states.append(State(state))
                 sites.append(Site(site_name, states=states)) 
-
+        print(coords_formatted)
 
         bonds = [bond.strip() for bond in bonds_entry.get().split(';')]
 

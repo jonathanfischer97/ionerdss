@@ -25,14 +25,16 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     """
     # Obtain the coordinates of the COM and interfaces on the gag monomers
 
-    dtb_PDB_write_PDB(dtb_PDB_separate_read(PathName))
+    #dtb_PDB_write_PDB(dtb_PDB_separate_read(PathName))
     
     R0 = 65.0           # the target radius of the gag capsid, nm
     distanceCC = 10.0   # the distance between two hexamers, center-to-center distance, nm
     #read gag positions
-    positions = fake_PDB_pdb_to_df("show_structure.pdb")
-    #positions = fake_PDB_pdb_to_df(PathName)
+    #positions = fake_PDB_pdb_to_df("show_structure.pdb")
+    positions = fake_PDB_pdb_to_df(PathName)
     positions = positions[["Cite_Name","x_coord", "y_coord", "z_coord"]]
+
+    
     
     positionsVec = np.zeros([108,3])
     count = 0
@@ -49,8 +51,27 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     
     
     
+
     #convert coordinate unit from angstrom to nm
     positionsVec = positionsVec/10.0
+
+    positionsVec_t = positionsVec.copy()
+    for i in range(18):
+        x = positionsVec_t[i*6][0]
+        y = positionsVec_t[i*6][1]
+        z = positionsVec_t[i*6][2]
+        for j in range(5):
+            if(positionsVec_t[i*6+j+1][0] == 0 and positionsVec_t[i*6+j+1][1] == 0 and positionsVec_t[i*6+j+1][2] == 0):
+                continue
+            positionsVec_t[i*6+j+1][0] -= x
+            positionsVec_t[i*6+j+1][1] -= y
+            positionsVec_t[i*6+j+1][2] -= z
+    coor_dist = []
+    for i in range(len(positionsVec_t)):
+        coor_dist.append(np.linalg.norm(positionsVec_t[i]))
+    
+    print(coor_dist)
+    return
     
     ##############################################
     # find the sphere radius and the sphere center
