@@ -260,83 +260,106 @@ def gui():
             phi1 = 'nan'
             phi2 = 'nan'
             omega = 'nan'
-            # get c1
-            c1_list = c1_str[1:-1].split(',')
-            c1 = np.array([float(one) for one in c1_list])
-            # get c2
-            c2_list = c2_str[1:-1].split(',')
-            c2 = np.array([float(one) for one in c2_list])
-            # get p1
-            p1_list = p1_str[1:-1].split(',')
-            p1 = np.array([float(one) for one in p1_list])
-            # get p2
-            p2_list = p2_str[1:-1].split(',')
-            p2 = np.array([float(one) for one in p2_list])
-            # get sigma1
-            sigma1 = p1 - p2
-            # get sigma2
-            sigma2 = -sigma1
-            # get sigma
-            sigma = np.linalg.norm(sigma1)
 
-            v1 = p1 - c1
-            v2 = p2 - c2
+            if(associated_angle_entry != "" and associated_angle_entry != "[nan,nan,nan,nan,nan]" 
+               and sigma_entry != "" and n1_entry != "[0,0,0]" and n1_entry != ""
+               and n2_entry != "[0,0,0]" and n2_entry != ""):
+                associ_angles_str = associated_angle_entry.get().strip()
+                angle_list_str = associ_angles_str[1:-1].split(',')
+                angle_list_float = np.array([float(one) for one in angle_list_str])
+                theta1 = angle_list_float[0]
+                theta2 = angle_list_float[1]
+                phi1 = angle_list_float[2]
+                phi2 = angle_list_float[3]
+                omega = angle_list_float[4]
+                sigma = sigma_entry.get().strip()
+                n1_str = n1_entry.get().strip()
+                n1_list = n1_str[1:-1].split(',')
+                n1 = np.array([float(one) for one in n1_list])
+                n2_str = n2_entry.get().strip()
+                n2_list = n2_str[1:-1].split(',')
+                n2 = np.array([float(one) for one in n2_list])
+            else:
 
-            # get n1
-            n1 = np.cross(v1, sigma1)
-            if not np.isclose(np.linalg.norm(n1), 0):
-                n1 = n1 / np.linalg.norm(n1)
-            else:
-                n1 = np.array([0,0,1])
+                # get c1
+                c1_list = c1_str[1:-1].split(',')
+                c1 = np.array([float(one) for one in c1_list])
+                # get c2
+                c2_list = c2_str[1:-1].split(',')
+                c2 = np.array([float(one) for one in c2_list])
+                # get p1
+                p1_list = p1_str[1:-1].split(',')
+                p1 = np.array([float(one) for one in p1_list])
+                # get p2
+                p2_list = p2_str[1:-1].split(',')
+                p2 = np.array([float(one) for one in p2_list])
+                # get sigma1
+                sigma1 = p1 - p2
+                # get sigma2
+                sigma2 = -sigma1
+                # get sigma
+                sigma = np.linalg.norm(sigma1)
 
-            # get n2
-            n2 = np.cross(v2, sigma2)
-            if not np.isclose(np.linalg.norm(n2), 0):
-                n2 = n2 / np.linalg.norm(n2)
-            else:
-                n2 = np.array([0,0,1])
+                v1 = p1 - c1
+                v2 = p2 - c2
 
-            # get theta1, theta2
-            if not np.isclose(np.linalg.norm(v1), 0):
-                theta1 = np.arccos(np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1)))
-            else:
-                theta1 = 'nan'
-            if not np.isclose(np.linalg.norm(v2), 0):
-                theta2 = np.arccos(np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2)))
-            else:
-                theta2 = 'nan'
-
-            # get phi1, phi2
-            if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0):
-                t1 = np.cross(v1, sigma1)
-                t2 = np.cross(v1, n1)
-                norm_t1 = t1 / np.linalg.norm(t1)
-                norm_t2 = t2 / np.linalg.norm(t2)
-                phi1 = np.arccos(np.dot(norm_t1, norm_t2))
-            else:
-                phi1 = 'nan'
-            
-            if not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
-                t1 = np.cross(v2, sigma2)
-                t2 = np.cross(v2, n2)
-                norm_t1 = t1 / np.linalg.norm(t1)
-                norm_t2 = t2 / np.linalg.norm(t2)
-                phi2 = np.arccos(np.dot(norm_t1, norm_t2))
-            else:
-                phi1 = 'nan'
-
-            # get omega
-            if not np.isclose(np.linalg.norm(v1), 0) and not np.isclose(np.linalg.norm(v2), 0):
-                if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
-                    t1 = np.cross(sigma1, v1)
-                    t2 = np.cross(sigma1, v2)
+                # get n1
+                n1 = np.cross(v1, sigma1)
+                if not np.isclose(np.linalg.norm(n1), 0):
+                    n1 = n1 / np.linalg.norm(n1)
                 else:
-                    t1 = np.cross(sigma1, n1)
-                    t2 = np.cross(sigma1, n2)
+                    n1 = np.array([0,0,1])
 
-                omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
-            else:
-                omega = 'nan'
+                # get n2
+                n2 = np.cross(v2, sigma2)
+                if not np.isclose(np.linalg.norm(n2), 0):
+                    n2 = n2 / np.linalg.norm(n2)
+                else:
+                    n2 = np.array([0,0,1])
+
+                # get theta1, theta2
+                if not np.isclose(np.linalg.norm(v1), 0):
+                    theta1 = np.arccos(np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1)))
+                else:
+                    theta1 = 'nan'
+                if not np.isclose(np.linalg.norm(v2), 0):
+                    theta2 = np.arccos(np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2)))
+                else:
+                    theta2 = 'nan'
+
+                # get phi1, phi2
+                if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0):
+                    t1 = np.cross(v1, sigma1)
+                    t2 = np.cross(v1, n1)
+                    norm_t1 = t1 / np.linalg.norm(t1)
+                    norm_t2 = t2 / np.linalg.norm(t2)
+                    phi1 = np.arccos(np.dot(norm_t1, norm_t2))
+                else:
+                    phi1 = 'nan'
+                
+                if not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
+                    t1 = np.cross(v2, sigma2)
+                    t2 = np.cross(v2, n2)
+                    norm_t1 = t1 / np.linalg.norm(t1)
+                    norm_t2 = t2 / np.linalg.norm(t2)
+                    phi2 = np.arccos(np.dot(norm_t1, norm_t2))
+                else:
+                    phi1 = 'nan'
+
+                # get omega
+                if not np.isclose(np.linalg.norm(v1), 0) and not np.isclose(np.linalg.norm(v2), 0):
+                    if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
+                        t1 = np.cross(sigma1, v1)
+                        t2 = np.cross(sigma1, v2)
+                    else:
+                        t1 = np.cross(sigma1, n1)
+                        t2 = np.cross(sigma1, n2)
+
+                    omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
+                else:
+                    omega = 'nan'
+
+            
 
             react_str = '    '
             if react1_state == '':
@@ -456,83 +479,105 @@ def gui():
             phi1 = 'nan'
             phi2 = 'nan'
             omega = 'nan'
-            # get c1
-            c1_list = c1_str[1:-1].split(',')
-            c1 = np.array([float(one) for one in c1_list])
-            # get c2
-            c2_list = c2_str[1:-1].split(',')
-            c2 = np.array([float(one) for one in c2_list])
-            # get p1
-            p1_list = p1_str[1:-1].split(',')
-            p1 = np.array([float(one) for one in p1_list])
-            # get p2
-            p2_list = p2_str[1:-1].split(',')
-            p2 = np.array([float(one) for one in p2_list])
-            # get sigma1
-            sigma1 = p1 - p2
-            # get sigma2
-            sigma2 = -sigma1
-            # get sigma
-            sigma = np.linalg.norm(sigma1)
 
-            v1 = p1 - c1
-            v2 = p2 - c2
+            if(associated_angle_entry != "" and associated_angle_entry != "[nan,nan,nan,nan,nan]" 
+               and sigma_entry != "" and n1_entry != "[0,0,0]" and n1_entry != ""
+               and n2_entry != "[0,0,0]" and n2_entry != ""):
+                associ_angles_str = associated_angle_entry.get().strip()
+                angle_list_str = associ_angles_str[1:-1].split(',')
+                angle_list_float = np.array([float(one) for one in angle_list_str])
+                theta1 = angle_list_float[0]
+                theta2 = angle_list_float[1]
+                phi1 = angle_list_float[2]
+                phi2 = angle_list_float[3]
+                omega = angle_list_float[4]
+                sigma = sigma_entry.get().strip()
+                n1_str = n1_entry.get().strip()
+                n1_list = n1_str[1:-1].split(',')
+                n1 = np.array([float(one) for one in n1_list])
+                n2_str = n2_entry.get().strip()
+                n2_list = n2_str[1:-1].split(',')
+                n2 = np.array([float(one) for one in n2_list])
+            else:
+                # get c1
+                c1_list = c1_str[1:-1].split(',')
+                c1 = np.array([float(one) for one in c1_list])
+                # get c2
+                c2_list = c2_str[1:-1].split(',')
+                c2 = np.array([float(one) for one in c2_list])
+                # get p1
+                p1_list = p1_str[1:-1].split(',')
+                p1 = np.array([float(one) for one in p1_list])
+                # get p2
+                p2_list = p2_str[1:-1].split(',')
+                p2 = np.array([float(one) for one in p2_list])
+                # get sigma1
+                sigma1 = p1 - p2
+                # get sigma2
+                sigma2 = -sigma1
+                # get sigma
+                sigma = np.linalg.norm(sigma1)
 
-            # get n1
-            n1 = np.cross(v1, sigma1)
-            if not np.isclose(np.linalg.norm(n1), 0):
-                n1 = n1 / np.linalg.norm(n1)
-            else:
-                n1 = np.array([0,0,1])
+                v1 = p1 - c1
+                v2 = p2 - c2
 
-            # get n2
-            n2 = np.cross(v2, sigma2)
-            if not np.isclose(np.linalg.norm(n2), 0):
-                n2 = n2 / np.linalg.norm(n2)
-            else:
-                n2 = np.array([0,0,1])
-
-            # get theta1, theta2
-            if not np.isclose(np.linalg.norm(v1), 0):
-                theta1 = np.arccos(np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1)))
-            else:
-                theta1 = 'nan'
-            if not np.isclose(np.linalg.norm(v2), 0):
-                theta2 = np.arccos(np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2)))
-            else:
-                theta2 = 'nan'
-
-            # get phi1, phi2
-            if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0):
-                t1 = np.cross(v1, sigma1)
-                t2 = np.cross(v1, n1)
-                norm_t1 = t1 / np.linalg.norm(t1)
-                norm_t2 = t2 / np.linalg.norm(t2)
-                phi1 = np.arccos(np.dot(norm_t1, norm_t2))
-            else:
-                phi1 = 'nan'
-            
-            if not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
-                t1 = np.cross(v2, sigma2)
-                t2 = np.cross(v2, n2)
-                norm_t1 = t1 / np.linalg.norm(t1)
-                norm_t2 = t2 / np.linalg.norm(t2)
-                phi2 = np.arccos(np.dot(norm_t1, norm_t2))
-            else:
-                phi1 = 'nan'
-
-            # get omega
-            if not np.isclose(np.linalg.norm(v1), 0) and not np.isclose(np.linalg.norm(v2), 0):
-                if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
-                    t1 = np.cross(sigma1, v1)
-                    t2 = np.cross(sigma1, v2)
+                # get n1
+                n1 = np.cross(v1, sigma1)
+                if not np.isclose(np.linalg.norm(n1), 0):
+                    n1 = n1 / np.linalg.norm(n1)
                 else:
-                    t1 = np.cross(sigma1, n1)
-                    t2 = np.cross(sigma1, n2)
+                    n1 = np.array([0,0,1])
 
-                omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
-            else:
-                omega = 'nan'
+                # get n2
+                n2 = np.cross(v2, sigma2)
+                if not np.isclose(np.linalg.norm(n2), 0):
+                    n2 = n2 / np.linalg.norm(n2)
+                else:
+                    n2 = np.array([0,0,1])
+
+                # get theta1, theta2
+                if not np.isclose(np.linalg.norm(v1), 0):
+                    theta1 = np.arccos(np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1)))
+                else:
+                    theta1 = 'nan'
+                if not np.isclose(np.linalg.norm(v2), 0):
+                    theta2 = np.arccos(np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2)))
+                else:
+                    theta2 = 'nan'
+
+                # get phi1, phi2
+                if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0):
+                    t1 = np.cross(v1, sigma1)
+                    t2 = np.cross(v1, n1)
+                    norm_t1 = t1 / np.linalg.norm(t1)
+                    norm_t2 = t2 / np.linalg.norm(t2)
+                    phi1 = np.arccos(np.dot(norm_t1, norm_t2))
+                else:
+                    phi1 = 'nan'
+                
+                if not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
+                    t1 = np.cross(v2, sigma2)
+                    t2 = np.cross(v2, n2)
+                    norm_t1 = t1 / np.linalg.norm(t1)
+                    norm_t2 = t2 / np.linalg.norm(t2)
+                    phi2 = np.arccos(np.dot(norm_t1, norm_t2))
+                else:
+                    phi1 = 'nan'
+
+                # get omega
+                if not np.isclose(np.linalg.norm(v1), 0) and not np.isclose(np.linalg.norm(v2), 0):
+                    if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
+                        t1 = np.cross(sigma1, v1)
+                        t2 = np.cross(sigma1, v2)
+                    else:
+                        t1 = np.cross(sigma1, n1)
+                        t2 = np.cross(sigma1, n2)
+
+                    omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
+                else:
+                    omega = 'nan'
+                
+            
 
             react_str = '    '
             if react1_state == '':
@@ -660,83 +705,104 @@ def gui():
             phi1 = 'nan'
             phi2 = 'nan'
             omega = 'nan'
-            # get c1
-            c1_list = c1_str[1:-1].split(',')
-            c1 = np.array([float(one) for one in c1_list])
-            # get c2
-            c2_list = c2_str[1:-1].split(',')
-            c2 = np.array([float(one) for one in c2_list])
-            # get p1
-            p1_list = p1_str[1:-1].split(',')
-            p1 = np.array([float(one) for one in p1_list])
-            # get p2
-            p2_list = p2_str[1:-1].split(',')
-            p2 = np.array([float(one) for one in p2_list])
-            # get sigma1
-            sigma1 = p1 - p2
-            # get sigma2
-            sigma2 = -sigma1
-            # get sigma
-            sigma = np.linalg.norm(sigma1)
 
-            v1 = p1 - c1
-            v2 = p2 - c2
+            if(associated_angle_entry != "" and associated_angle_entry != "[nan,nan,nan,nan,nan]" 
+               and sigma_entry != "" and n1_entry != "[0,0,0]" and n1_entry != ""
+               and n2_entry != "[0,0,0]" and n2_entry != ""):
+                associ_angles_str = associated_angle_entry.get().strip()
+                angle_list_str = associ_angles_str[1:-1].split(',')
+                angle_list_float = np.array([float(one) for one in angle_list_str])
+                theta1 = angle_list_float[0]
+                theta2 = angle_list_float[1]
+                phi1 = angle_list_float[2]
+                phi2 = angle_list_float[3]
+                omega = angle_list_float[4]
+                sigma = sigma_entry.get().strip()
+                n1_str = n1_entry.get().strip()
+                n1_list = n1_str[1:-1].split(',')
+                n1 = np.array([float(one) for one in n1_list])
+                n2_str = n2_entry.get().strip()
+                n2_list = n2_str[1:-1].split(',')
+                n2 = np.array([float(one) for one in n2_list])
+            else:
+                # get c1
+                c1_list = c1_str[1:-1].split(',')
+                c1 = np.array([float(one) for one in c1_list])
+                # get c2
+                c2_list = c2_str[1:-1].split(',')
+                c2 = np.array([float(one) for one in c2_list])
+                # get p1
+                p1_list = p1_str[1:-1].split(',')
+                p1 = np.array([float(one) for one in p1_list])
+                # get p2
+                p2_list = p2_str[1:-1].split(',')
+                p2 = np.array([float(one) for one in p2_list])
+                # get sigma1
+                sigma1 = p1 - p2
+                # get sigma2
+                sigma2 = -sigma1
+                # get sigma
+                sigma = np.linalg.norm(sigma1)
 
-            # get n1
-            n1 = np.cross(v1, sigma1)
-            if not np.isclose(np.linalg.norm(n1), 0):
-                n1 = n1 / np.linalg.norm(n1)
-            else:
-                n1 = np.array([0,0,1])
+                v1 = p1 - c1
+                v2 = p2 - c2
 
-            # get n2
-            n2 = np.cross(v2, sigma2)
-            if not np.isclose(np.linalg.norm(n2), 0):
-                n2 = n2 / np.linalg.norm(n2)
-            else:
-                n2 = np.array([0,0,1])
-
-            # get theta1, theta2
-            if not np.isclose(np.linalg.norm(v1), 0):
-                theta1 = np.arccos(np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1)))
-            else:
-                theta1 = 'nan'
-            if not np.isclose(np.linalg.norm(v2), 0):
-                theta2 = np.arccos(np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2)))
-            else:
-                theta2 = 'nan'
-
-            # get phi1, phi2
-            if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0):
-                t1 = np.cross(v1, sigma1)
-                t2 = np.cross(v1, n1)
-                norm_t1 = t1 / np.linalg.norm(t1)
-                norm_t2 = t2 / np.linalg.norm(t2)
-                phi1 = np.arccos(np.dot(norm_t1, norm_t2))
-            else:
-                phi1 = 'nan'
-            
-            if not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
-                t1 = np.cross(v2, sigma2)
-                t2 = np.cross(v2, n2)
-                norm_t1 = t1 / np.linalg.norm(t1)
-                norm_t2 = t2 / np.linalg.norm(t2)
-                phi2 = np.arccos(np.dot(norm_t1, norm_t2))
-            else:
-                phi1 = 'nan'
-
-            # get omega
-            if not np.isclose(np.linalg.norm(v1), 0) and not np.isclose(np.linalg.norm(v2), 0):
-                if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
-                    t1 = np.cross(sigma1, v1)
-                    t2 = np.cross(sigma1, v2)
+                # get n1
+                n1 = np.cross(v1, sigma1)
+                if not np.isclose(np.linalg.norm(n1), 0):
+                    n1 = n1 / np.linalg.norm(n1)
                 else:
-                    t1 = np.cross(sigma1, n1)
-                    t2 = np.cross(sigma1, n2)
+                    n1 = np.array([0,0,1])
 
-                omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
-            else:
-                omega = 'nan'
+                # get n2
+                n2 = np.cross(v2, sigma2)
+                if not np.isclose(np.linalg.norm(n2), 0):
+                    n2 = n2 / np.linalg.norm(n2)
+                else:
+                    n2 = np.array([0,0,1])
+
+                # get theta1, theta2
+                if not np.isclose(np.linalg.norm(v1), 0):
+                    theta1 = np.arccos(np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1)))
+                else:
+                    theta1 = 'nan'
+                if not np.isclose(np.linalg.norm(v2), 0):
+                    theta2 = np.arccos(np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2)))
+                else:
+                    theta2 = 'nan'
+
+                # get phi1, phi2
+                if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0):
+                    t1 = np.cross(v1, sigma1)
+                    t2 = np.cross(v1, n1)
+                    norm_t1 = t1 / np.linalg.norm(t1)
+                    norm_t2 = t2 / np.linalg.norm(t2)
+                    phi1 = np.arccos(np.dot(norm_t1, norm_t2))
+                else:
+                    phi1 = 'nan'
+                
+                if not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
+                    t1 = np.cross(v2, sigma2)
+                    t2 = np.cross(v2, n2)
+                    norm_t1 = t1 / np.linalg.norm(t1)
+                    norm_t2 = t2 / np.linalg.norm(t2)
+                    phi2 = np.arccos(np.dot(norm_t1, norm_t2))
+                else:
+                    phi1 = 'nan'
+
+                # get omega
+                if not np.isclose(np.linalg.norm(v1), 0) and not np.isclose(np.linalg.norm(v2), 0):
+                    if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(np.linalg.norm(np.cross(v2, sigma2)), 0):
+                        t1 = np.cross(sigma1, v1)
+                        t2 = np.cross(sigma1, v2)
+                    else:
+                        t1 = np.cross(sigma1, n1)
+                        t2 = np.cross(sigma1, n2)
+
+                    omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
+                else:
+                    omega = 'nan'
+
 
             react_str = '    '
             if react1_state == '':
@@ -1117,22 +1183,26 @@ def gui():
     coord_site_reactant1_entry = create_labeled_entry_with_hint(reactions_tab, "Enter reactant 1's reaction site coords \nfor bimolecular reaction ([x,y,z](nm)):", "", 8, 2, width=10)
     coord_com_reactant2_entry = create_labeled_entry_with_hint(reactions_tab, "Enter reactant 2's com coords \n(reactant 1 and 2 are in the same coordinate system) ([x,y,z](nm)):", "", 9, 0, width=10)
     coord_site_reactant2_entry = create_labeled_entry_with_hint(reactions_tab, "Enter reactant 2's reaction site coords: ([x,y,z](nm)):", "", 9, 2, width=10)
-    onRate3Dka_entry = create_labeled_entry_with_hint(reactions_tab, "Enter microscopic on rate (nm^3 us^-1):", "", 10, 0, width=10)
-    offRatekb_entry = create_labeled_entry_with_hint(reactions_tab, "Enter microscopic off rate (s^-1):", "", 10, 2, width=10)
-    onRate3DMacro_entry = create_labeled_entry_with_hint(reactions_tab, "Enter macroscopic on rate if micro not provided (uM^-1 s^-1):", "", 11, 0, width=10)
-    offRateMacro_entry = create_labeled_entry_with_hint(reactions_tab, "Enter macroscopic off rate if micro not provided (s^-1):", "", 11, 2, width=10)
-    rate_entry = create_labeled_entry_with_hint(reactions_tab, "Enter rate for creation / destruction / uni statechange \n/ uni creation (M s^-1 / s^-1 / s^-1 / s^-1):", "", 12, 0, width=10)
-    length3dto2d_entry = create_labeled_entry_with_hint(reactions_tab, "Enter length scale to convert 3D rate to 2D rate\n for bimolecular association (nm):", "10", 13, 0, width=10)
-    bindRadSameCom_entry = create_labeled_entry_with_hint(reactions_tab, "Enter distance betweeen two reactants to force reaction \nwithinin the same complex for bimolecular association (sigma):", "1.1", 13, 2, width=10)
-    loopCoopFactor_entry = create_labeled_entry_with_hint(reactions_tab, "Enter scale factor of rate when closing loops \nfor bimolecular association (ka):", "1", 14, 0, width=10)
-    label_entry = create_labeled_entry_with_hint(reactions_tab, "Enter reaction label, used if you want to couple a \ndifferent reaction to this one:", "", 14, 2, width=10)
-    coupledLabel_entry = create_labeled_entry_with_hint(reactions_tab, "Enter coupled reaction label, used if you allow \nthe completion of this reaction to cause another reaction:", "", 15, 0, width=10)
-    kcat_entry = create_labeled_entry_with_hint(reactions_tab, "Enter rate of the coupled reaction (s^-1):", "", 15, 2, width=10)
-    exclude_entry = create_labeled_entry_with_hint(reactions_tab, "Enter if check exclude volume for bound sites:", "False", 16, 0, width=10)
+    associated_angle_entry = create_labeled_entry_with_hint(reactions_tab,"Enter the 5 associ. angles here (optional) (theta1,theta2,phi1,phi2,omega) (rad):", "[nan,nan,nan,nan,nan]", 10,0, width=10)
+    sigma_entry = create_labeled_entry_with_hint(reactions_tab,"Enter sigma here (optional) (nm):", "", 10,2,width = 10)
+    n1_entry = create_labeled_entry_with_hint(reactions_tab,"Enter norm1 here (optional):", "[0,0,0]", 11,0,width = 10)
+    n2_entry = create_labeled_entry_with_hint(reactions_tab,"Enter norm2 here (optional):", "[0,0,0]", 11,2,width = 10)
+    onRate3Dka_entry = create_labeled_entry_with_hint(reactions_tab, "Enter microscopic on rate (nm^3 us^-1):", "", 12, 0, width=10)
+    offRatekb_entry = create_labeled_entry_with_hint(reactions_tab, "Enter microscopic off rate (s^-1):", "", 12, 2, width=10)
+    onRate3DMacro_entry = create_labeled_entry_with_hint(reactions_tab, "Enter macroscopic on rate if micro not provided (uM^-1 s^-1):", "", 13, 0, width=10)
+    offRateMacro_entry = create_labeled_entry_with_hint(reactions_tab, "Enter macroscopic off rate if micro not provided (s^-1):", "", 13, 2, width=10)
+    rate_entry = create_labeled_entry_with_hint(reactions_tab, "Enter rate for creation / destruction / uni statechange \n/ uni creation (M s^-1 / s^-1 / s^-1 / s^-1):", "", 14, 0, width=10)
+    length3dto2d_entry = create_labeled_entry_with_hint(reactions_tab, "Enter length scale to convert 3D rate to 2D rate\n for bimolecular association (nm):", "10", 15, 0, width=10)
+    bindRadSameCom_entry = create_labeled_entry_with_hint(reactions_tab, "Enter distance betweeen two reactants to force reaction \nwithinin the same complex for bimolecular association (sigma):", "1.1", 15, 2, width=10)
+    loopCoopFactor_entry = create_labeled_entry_with_hint(reactions_tab, "Enter scale factor of rate when closing loops \nfor bimolecular association (ka):", "1", 16, 0, width=10)
+    label_entry = create_labeled_entry_with_hint(reactions_tab, "Enter reaction label, used if you want to couple a \ndifferent reaction to this one:", "", 16, 2, width=10)
+    coupledLabel_entry = create_labeled_entry_with_hint(reactions_tab, "Enter coupled reaction label, used if you allow \nthe completion of this reaction to cause another reaction:", "", 17, 0, width=10)
+    kcat_entry = create_labeled_entry_with_hint(reactions_tab, "Enter rate of the coupled reaction (s^-1):", "", 17, 2, width=10)
+    exclude_entry = create_labeled_entry_with_hint(reactions_tab, "Enter if check exclude volume for bound sites:", "False", 18, 0, width=10)
     reaction_type = ['Bimolecular Association: (A + B <-> A.B)', 'Zeroth Creation: null -> A', 'Destruction: A -> null', 'Michaelis-Menten: A + B <-> A.B -> A + C', 'Unimolecular Creation: A -> A + B', 'Bimolecular Statechange: A + B(b~U) -> A + B(b~P)', 'Statechange: B(b~U) -> B(b~P)']
-    reaction_type_entry = create_labeled_combobox_entry(reactions_tab, "Select reaction type:", reaction_type, 17, 0)
+    reaction_type_entry = create_labeled_combobox_entry(reactions_tab, "Select reaction type:", reaction_type, 19, 0)
     add_reaction_button = tk.Button(reactions_tab, text="Add Reaction", command=add_reaction)
-    add_reaction_button.grid(row=18, column=1, pady=10)
+    add_reaction_button.grid(row=20, column=1, pady=10)
 
     # all reactions added
     reactions = []
