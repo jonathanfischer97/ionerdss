@@ -2,7 +2,6 @@ LICENCE
 README.md
 setup.py
 ioNERDSS/__init__.py
-ioNERDSS/gagReshape.py
 ioNERDSS.egg-info/PKG-INFO
 ioNERDSS.egg-info/SOURCES.txt
 ioNERDSS.egg-info/dependency_links.txt
@@ -12,8 +11,10 @@ ioNERDSS/functions/__init__.py
 ioNERDSS/functions/gui.py
 ioNERDSS/functions/acf/__init__.py
 ioNERDSS/functions/acf/acf_coord.py
+ioNERDSS/functions/database_PDB/PDB_UI.py
 ioNERDSS/functions/database_PDB/PDB_object.py
 ioNERDSS/functions/database_PDB/__init__.py
+ioNERDSS/functions/database_PDB/cg.py
 ioNERDSS/functions/database_PDB/dtb_PDB_3D_plot.py
 ioNERDSS/functions/database_PDB/dtb_PDB_calc_angle.py
 ioNERDSS/functions/database_PDB/dtb_PDB_change_sigma.py
@@ -22,7 +23,6 @@ ioNERDSS/functions/database_PDB/dtb_PDB_norm_COM.py
 ioNERDSS/functions/database_PDB/dtb_PDB_separate_read.py
 ioNERDSS/functions/database_PDB/dtb_PDB_write_PDB.py
 ioNERDSS/functions/database_PDB/dtb_PDB_write_input.py
-ioNERDSS/functions/database_PDB/real_PDB_UI.py
 ioNERDSS/functions/database_PDB/gen/__init__.py
 ioNERDSS/functions/database_PDB/gen/real_PDB_angles.py
 ioNERDSS/functions/database_PDB/gen/real_PDB_calculate_phi.py
@@ -37,11 +37,18 @@ ioNERDSS/functions/database_PDB/gen/real_PDB_unit.py
 ioNERDSS/functions/file_managment/__init__.py
 ioNERDSS/functions/file_managment/merge_files.py
 ioNERDSS/functions/file_managment/merge_simulation_results.py
-ioNERDSS/functions/file_managment/plot_multiple_hists.py
-ioNERDSS/functions/file_managment/plot_multiple_lines.py
 ioNERDSS/functions/file_managment/save_multiple_arrays_to_file.py
 ioNERDSS/functions/file_managment/save_variable_to_file.py
 ioNERDSS/functions/file_managment/save_vars_to_file.py
+ioNERDSS/functions/gagReshape/__init__.py
+ioNERDSS/functions/gagReshape/calculate_gradient.py
+ioNERDSS/functions/gagReshape/calculate_rmsd.py
+ioNERDSS/functions/gagReshape/determine_gagTemplate_structure.py
+ioNERDSS/functions/gagReshape/gag_write_PDB.py
+ioNERDSS/functions/gagReshape/reshape_gag.py
+ioNERDSS/functions/gagReshape/restart_pdb_to_df.py
+ioNERDSS/functions/gagReshape/translate_gags_on_sphere.py
+ioNERDSS/functions/gagReshape/xyz_to_sphere_coordinates.py
 ioNERDSS/functions/histograms/__init__.py
 ioNERDSS/functions/histograms/hist_to_csv.py
 ioNERDSS/functions/histograms/hist_to_csv_old.py
@@ -195,6 +202,8 @@ ioNERDSS/functions/sphere_reg/__init__.py
 ioNERDSS/functions/sphere_reg/fitSphere.py
 ioNERDSS/functions/sphere_reg/single_restart_to_df.py
 ioNERDSS/functions/sphere_reg/sphere_regularization_index.py
+ioNERDSS/functions/time_dependent/__init__.py
+ioNERDSS/functions/time_dependent/get_time_dependence.py
 ioNERDSS/functions/transition_matrix/__init__.py
 ioNERDSS/functions/transition_matrix/associate_prob_asymmetric.py
 ioNERDSS/functions/transition_matrix/associate_prob_symmetric.py
