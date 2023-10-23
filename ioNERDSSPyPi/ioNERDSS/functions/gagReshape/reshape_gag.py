@@ -78,7 +78,7 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     coor_dist = coor_dist.reshape(18,6)
     coor_dist.sort(axis=1)
     #print(coor_dist)
-    #print(positions)
+    print(positions)
     return
     
     ##############################################

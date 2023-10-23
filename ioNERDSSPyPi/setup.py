@@ -20,5 +20,5 @@ setup(
     classifiers=classifiers,
     keywords='NERDSS Simulation, Analysis Tools',
     packages=find_packages(),
-    install_requires=['numpy','pandas','matplotlib','seaborn','tqdm']
+    install_requires=['numpy','pandas','matplotlib','seaborn','tqdm', 'tkinter']
 )
