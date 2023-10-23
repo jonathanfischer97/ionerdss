@@ -69,8 +69,16 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     coor_dist = []
     for i in range(len(positionsVec_t)):
         coor_dist.append(np.linalg.norm(positionsVec_t[i]))
-    
-    print(coor_dist)
+    for i in range(len(coor_dist)):
+        if(coor_dist[i] == 0):
+            coor_dist[i] = 100
+    for i in range(18):
+        coor_dist[i*6] = 0
+    coor_dist = np.array(coor_dist)
+    coor_dist = coor_dist.reshape(18,6)
+    coor_dist.sort(axis=1)
+    #print(coor_dist)
+    #print(positions)
     return
     
     ##############################################
