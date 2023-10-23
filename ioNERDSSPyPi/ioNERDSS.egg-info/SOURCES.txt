@@ -14,6 +14,7 @@ ioNERDSS/functions/acf/__init__.py
 ioNERDSS/functions/acf/acf_coord.py
 ioNERDSS/functions/database_PDB/PDB_object.py
 ioNERDSS/functions/database_PDB/__init__.py
+ioNERDSS/functions/database_PDB/cg.py
 ioNERDSS/functions/database_PDB/dtb_PDB_3D_plot.py
 ioNERDSS/functions/database_PDB/dtb_PDB_calc_angle.py
 ioNERDSS/functions/database_PDB/dtb_PDB_change_sigma.py
@@ -195,6 +196,8 @@ ioNERDSS/functions/sphere_reg/__init__.py
 ioNERDSS/functions/sphere_reg/fitSphere.py
 ioNERDSS/functions/sphere_reg/single_restart_to_df.py
 ioNERDSS/functions/sphere_reg/sphere_regularization_index.py
+ioNERDSS/functions/time_dependent/__init__.py
+ioNERDSS/functions/time_dependent/get_time_dependence.py
 ioNERDSS/functions/transition_matrix/__init__.py
 ioNERDSS/functions/transition_matrix/associate_prob_asymmetric.py
 ioNERDSS/functions/transition_matrix/associate_prob_symmetric.py
