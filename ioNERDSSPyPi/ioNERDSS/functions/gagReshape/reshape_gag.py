@@ -34,53 +34,62 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     positions = fake_PDB_pdb_to_df(PathName)
     positions = positions[["Cite_Name","x_coord", "y_coord", "z_coord"]]
 
+    # get the number of monomers
+    monomer_count = 0
+    for i in range(len(positions)):
+        if(positions.iloc[i]["Cite_Name"] == "COM"):
+            monomer_count += 1
     
-    
-    positionsVec = np.zeros([108,3])
+    # get count of interfaces for each monomer
+    interfaces_count = []
     count = 0
-    for i in range(18):
-        for j in range(6):
-            if(positions.iloc[count]["Cite_Name"]== "COM" and j!=0):
-                continue
-            positionsVec[i*6+j][0] = positions.iloc[count]["x_coord"]
-            positionsVec[i*6+j][1] = positions.iloc[count]["y_coord"]
-            positionsVec[i*6+j][2] = positions.iloc[count]["z_coord"]
-            count += 1
-            if count >= len(positions):
-                break
+    for i in range(len(positions)):
+        count += 1
+        if(positions.iloc[i]["Cite_Name"] == "COM"):
+            count = 0
+        if(i+1 == len(positions) or positions.iloc[i+1]["Cite_Name"] == "COM"):
+            interfaces_count.append(count)
+    interfaces_count = np.array(interfaces_count)
+
+    # get the index of the COM
+    COM_index = []
+    curr_index = 0
+    for i in range(len(interfaces_count)):
+        COM_index.append(curr_index)
+        curr_index += (interfaces_count[i]+1)
     
-    
-    
+    # create np array to store positions
+    positionsVec = np.zeros([monomer_count*(np.max(interfaces_count)+1),3])
+    positions_index = 0
+    for i in range(monomer_count):
+        for j in range(interfaces_count[i]+1):
+            positionsVec[i*(np.max(interfaces_count)+1)+j][0] = positions.iloc[positions_index]["x_coord"]
+            positionsVec[i*(np.max(interfaces_count)+1)+j][1] = positions.iloc[positions_index]["y_coord"]
+            positionsVec[i*(np.max(interfaces_count)+1)+j][2] = positions.iloc[positions_index]["z_coord"]
+            positions_index += 1
+
 
     #convert coordinate unit from angstrom to nm
     positionsVec = positionsVec/10.0
+    positions["x_coord"] = positions["x_coord"]/10.0
+    positions["y_coord"] = positions["y_coord"]/10.0
+    positions["z_coord"] = positions["z_coord"]/10.0
 
-    positionsVec_t = positionsVec.copy()
-    for i in range(18):
-        x = positionsVec_t[i*6][0]
-        y = positionsVec_t[i*6][1]
-        z = positionsVec_t[i*6][2]
-        for j in range(5):
-            if(positionsVec_t[i*6+j+1][0] == 0 and positionsVec_t[i*6+j+1][1] == 0 and positionsVec_t[i*6+j+1][2] == 0):
-                continue
-            positionsVec_t[i*6+j+1][0] -= x
-            positionsVec_t[i*6+j+1][1] -= y
-            positionsVec_t[i*6+j+1][2] -= z
-    coor_dist = []
-    for i in range(len(positionsVec_t)):
-        coor_dist.append(np.linalg.norm(positionsVec_t[i]))
-    for i in range(len(coor_dist)):
-        if(coor_dist[i] == 0):
-            coor_dist[i] = 100
-    for i in range(18):
-        coor_dist[i*6] = 0
-    coor_dist = np.array(coor_dist)
-    coor_dist = coor_dist.reshape(18,6)
-    coor_dist.sort(axis=1)
-    #print(coor_dist)
-    print(positions)
-    return
+    # find the distance from each interface to the COM for each monomer
+    distances = []
+    for i in range(len(COM_index)):
+        COM_coord = [positions.iloc[COM_index[i]]["x_coord"], positions.iloc[COM_index[i]]["y_coord"], positions.iloc[COM_index[i]]["z_coord"]]
+        distances.append(0)
+        for j in range(interfaces_count[i]):
+            interface_coord = [positions.iloc[COM_index[i]+j+1]["x_coord"], positions.iloc[COM_index[i]+j+1]["y_coord"], positions.iloc[COM_index[i]+j+1]["z_coord"]]
+            distances.append(np.linalg.norm(np.array(COM_coord)-np.array(interface_coord)))
+    positions["Distance"] = distances
     
+    positions.to_excel("~/7asl_positions.xlsx")
+    print(positions)
+
+    
+    return
     ##############################################
     # find the sphere radius and the sphere center
     # 18 gags, center + 5 nodes' positions, so each gag has 6 positions. I will
