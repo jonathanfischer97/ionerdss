@@ -9,6 +9,7 @@ from .restart_pdb_to_df import *
 from .gag_write_PDB import *
 from ..database_PDB.dtb_PDB_separate_read import *
 from ..database_PDB.dtb_PDB_write_PDB import *
+from .eliminate_inconsistent_sites import *
 
 def reshape_gag(PathName: str, WritePDB: bool = False):
     """
@@ -34,6 +35,12 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     positions = fake_PDB_pdb_to_df(PathName)
     positions = positions[["Cite_Name","x_coord", "y_coord", "z_coord"]]
 
+     #convert coordinate unit from angstrom to nm
+    positions["x_coord"] = positions["x_coord"]/10.0
+    positions["y_coord"] = positions["y_coord"]/10.0
+    positions["z_coord"] = positions["z_coord"]/10.0
+
+
     # get the number of monomers
     monomer_count = 0
     for i in range(len(positions)):
@@ -58,38 +65,19 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
         COM_index.append(curr_index)
         curr_index += (interfaces_count[i]+1)
     
-    # create np array to store positions
-    positionsVec = np.zeros([monomer_count*(np.max(interfaces_count)+1),3])
-    positions_index = 0
-    for i in range(monomer_count):
-        for j in range(interfaces_count[i]+1):
-            positionsVec[i*(np.max(interfaces_count)+1)+j][0] = positions.iloc[positions_index]["x_coord"]
-            positionsVec[i*(np.max(interfaces_count)+1)+j][1] = positions.iloc[positions_index]["y_coord"]
-            positionsVec[i*(np.max(interfaces_count)+1)+j][2] = positions.iloc[positions_index]["z_coord"]
-            positions_index += 1
 
 
-    #convert coordinate unit from angstrom to nm
-    positionsVec = positionsVec/10.0
-    positions["x_coord"] = positions["x_coord"]/10.0
-    positions["y_coord"] = positions["y_coord"]/10.0
-    positions["z_coord"] = positions["z_coord"]/10.0
+   # eliminate inconsistent sites (sites that are only present on some monomers)
+    positions = eliminate_inconsistent_sites(positions, COM_index, interfaces_count)
+    consistent_interfaces_count = np.min(interfaces_count)
 
-    # find the distance from each interface to the COM for each monomer
-    distances = []
-    for i in range(len(COM_index)):
-        COM_coord = [positions.iloc[COM_index[i]]["x_coord"], positions.iloc[COM_index[i]]["y_coord"], positions.iloc[COM_index[i]]["z_coord"]]
-        distances.append(0)
-        for j in range(interfaces_count[i]):
-            interface_coord = [positions.iloc[COM_index[i]+j+1]["x_coord"], positions.iloc[COM_index[i]+j+1]["y_coord"], positions.iloc[COM_index[i]+j+1]["z_coord"]]
-            distances.append(np.linalg.norm(np.array(COM_coord)-np.array(interface_coord)))
-    positions["Distance"] = distances
+    # generate a np array to record the coordinates of the COM and interfaces
+    positionsVec = np.zeros([monomer_count*(consistent_interfaces_count+1),3])
+    for i in range(len(positions)):
+        positionsVec[i,:] = [positions.iloc[i]["x_coord"], positions.iloc[i]["y_coord"], positions.iloc[i]["z_coord"]]
     
-    positions.to_excel("~/7asl_positions.xlsx")
-    print(positions)
-
     
-    return
+    
     ##############################################
     # find the sphere radius and the sphere center
     # 18 gags, center + 5 nodes' positions, so each gag has 6 positions. I will
