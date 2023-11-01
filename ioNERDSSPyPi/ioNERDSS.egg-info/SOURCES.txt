@@ -44,6 +44,7 @@ ioNERDSS/functions/gagReshape/__init__.py
 ioNERDSS/functions/gagReshape/calculate_gradient.py
 ioNERDSS/functions/gagReshape/calculate_rmsd.py
 ioNERDSS/functions/gagReshape/determine_gagTemplate_structure.py
+ioNERDSS/functions/gagReshape/eliminate_inconsistent_sites.py
 ioNERDSS/functions/gagReshape/gag_write_PDB.py
 ioNERDSS/functions/gagReshape/reshape_gag.py
 ioNERDSS/functions/gagReshape/restart_pdb_to_df.py
@@ -87,6 +88,15 @@ ioNERDSS/functions/locate_pos/restart/read_pdb.py
 ioNERDSS/functions/locate_pos/restart/read_restart.py
 ioNERDSS/functions/locate_pos/restart/single_locate_position_restart.py
 ioNERDSS/functions/locate_pos/restart/write_pdb.py
+ioNERDSS/functions/nerdssGui/__init__.py
+ioNERDSS/functions/nerdssGui/advanced_options_parse_pdb.py
+ioNERDSS/functions/nerdssGui/mainwindow.py
+ioNERDSS/functions/nerdssGui/mplwidget.py
+ioNERDSS/functions/nerdssGui/nerdss.py
+ioNERDSS/functions/nerdssGui/nerdss_install.py
+ioNERDSS/functions/nerdssGui/pdb_movie_player.py
+ioNERDSS/functions/nerdssGui/plot_complex.py
+ioNERDSS/functions/nerdssGui/plot_copy_num.py
 ioNERDSS/functions/pdb/__init__.py
 ioNERDSS/functions/pdb/plot_proteins.py
 ioNERDSS/functions/platonic_solids/__init__.py

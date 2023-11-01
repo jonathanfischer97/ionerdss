@@ -3,4 +3,7 @@ pandas
 matplotlib
 seaborn
 tqdm
-tkinker
+pyqt5
+pyqtgraph
+PyOpenGL
+biopython

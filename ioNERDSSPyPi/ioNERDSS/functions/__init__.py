@@ -10,6 +10,7 @@ from .file_managment import *
 from .sphere_reg import *
 from .time_dependent import *
 from .gagReshape import *
+from .nerdssGui import *
 
 
 """Welcome to the main ioNERDSS function library folder! Here I will give a brief description of each folder and sub folder!
