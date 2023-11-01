@@ -41,7 +41,7 @@ class Ui_PlotComplex(object):
         self.pushButtonSaveComplex.setText(_translate("PlotComplex", "Save to CSV"))
         self.pushButtonPlotComplex.setText(_translate("PlotComplex", "Plot"))
         self.pushButtonPlotComplexStoi.setText(_translate("PlotComplex", "Stoichiometry"))
-from mplwidget import MPLWidget
+from .mplwidget import MPLWidget
 
 
 if __name__ == "__main__":

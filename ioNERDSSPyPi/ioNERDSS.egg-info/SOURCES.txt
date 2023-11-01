@@ -89,14 +89,7 @@ ioNERDSS/functions/locate_pos/restart/read_restart.py
 ioNERDSS/functions/locate_pos/restart/single_locate_position_restart.py
 ioNERDSS/functions/locate_pos/restart/write_pdb.py
 ioNERDSS/functions/nerdssGui/__init__.py
-ioNERDSS/functions/nerdssGui/advanced_options_parse_pdb.py
-ioNERDSS/functions/nerdssGui/mainwindow.py
-ioNERDSS/functions/nerdssGui/mplwidget.py
 ioNERDSS/functions/nerdssGui/nerdss.py
-ioNERDSS/functions/nerdssGui/nerdss_install.py
-ioNERDSS/functions/nerdssGui/pdb_movie_player.py
-ioNERDSS/functions/nerdssGui/plot_complex.py
-ioNERDSS/functions/nerdssGui/plot_copy_num.py
 ioNERDSS/functions/pdb/__init__.py
 ioNERDSS/functions/pdb/plot_proteins.py
 ioNERDSS/functions/platonic_solids/__init__.py

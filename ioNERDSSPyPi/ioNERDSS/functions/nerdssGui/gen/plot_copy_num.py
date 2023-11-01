@@ -45,7 +45,7 @@ class Ui_PlotCopyNum(object):
         self.radioButtonPlotSum.setText(_translate("PlotCopyNum", "Plot Sum"))
         self.pushButtonPlotSpecies.setText(_translate("PlotCopyNum", "Plot"))
         self.pushButtonSaveSpecies.setText(_translate("PlotCopyNum", "Save to CSV"))
-from mplwidget import MPLWidget
+from .mplwidget import MPLWidget
 
 
 if __name__ == "__main__":

@@ -12,7 +12,6 @@ Classifier: Intended Audience :: Science/Research
 Classifier: Operating System :: OS Independent
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
-Requires-Python: >=3.8, <=3.10
 License-File: LICENCE
 Requires-Dist: numpy
 Requires-Dist: pandas

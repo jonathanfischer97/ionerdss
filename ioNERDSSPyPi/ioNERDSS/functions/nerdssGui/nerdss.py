@@ -24,13 +24,13 @@ from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt
 from Bio import PDB, BiopythonWarning
 import pyqtgraph as pg
 import pyqtgraph.opengl as gl
-from mainwindow import Ui_MainWindow
-from advanced_options_parse_pdb import Ui_DialogParseParam
-from nerdss_install import Ui_NERDSSInstall
-from pdb_movie_player import Ui_Form
-from mplwidget import MPLWidget
-from plot_copy_num import Ui_PlotCopyNum
-from plot_complex import Ui_PlotComplex
+from .gen.mainwindow import Ui_MainWindow
+from .gen.advanced_options_parse_pdb import Ui_DialogParseParam
+from .gen.nerdss_install import Ui_NERDSSInstall
+from .gen.pdb_movie_player import Ui_Form
+from .gen.mplwidget import MPLWidget
+from .gen.plot_copy_num import Ui_PlotCopyNum
+from .gen.plot_complex import Ui_PlotComplex
 import numpy as np
 import pandas as pd
 
