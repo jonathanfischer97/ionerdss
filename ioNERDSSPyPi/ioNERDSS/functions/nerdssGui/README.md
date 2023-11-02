@@ -3,13 +3,9 @@
 ```bash
 conda create --name myenv python=3.9
 conda activate myenv
-conda install pyqt
-conda install -c conda-forge pyqtgraph
-conda install pyopengl
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
-conda install biopython
+conda install pip
+pip install numpy, pandas, matplotlib, seaborn, tqdm, PyQt6, pyqtgraph, PyOpenGL, biopython
+pip install pyqt6-tools
 ```
 
 ```bash
@@ -22,5 +18,5 @@ generate the .ui file using `designer`
 
 convert the .ui to gui.py:
 ```bash
-pyuic5 -x path_to_ui.ui -o gui.py
+pyuic6 -x path_to_ui.ui -o gui.py
 ```

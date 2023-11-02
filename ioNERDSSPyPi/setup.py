@@ -11,6 +11,7 @@ classifiers = [
 setup(
     name="ioNERDSS",
     version="1.0.26",
+    requires=["python (==3.9)"],
     description="Package for analysing NERDSS inputs and outputs.",
     long_description="A python package for analysing inputs and outputs for NERDSS simulator, including generating input files for Platonic solids and output visualization, etc.",
     url="",
@@ -26,7 +27,7 @@ setup(
         "matplotlib",
         "seaborn",
         "tqdm",
-        "pyqt5",
+        "pyqt6",
         "pyqtgraph",
         "PyOpenGL",
         "biopython",
