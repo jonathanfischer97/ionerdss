@@ -3,7 +3,7 @@ pandas
 matplotlib
 seaborn
 tqdm
-pyqt5
+PyQt6
 pyqtgraph
 PyOpenGL
 biopython

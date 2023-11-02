@@ -39,12 +39,12 @@
     <string>Cancle</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>190</x>
      <y>90</y>
-     <width>129</width>
+     <width>155</width>
      <height>161</height>
     </rect>
    </property>
@@ -72,7 +72,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>340</x>

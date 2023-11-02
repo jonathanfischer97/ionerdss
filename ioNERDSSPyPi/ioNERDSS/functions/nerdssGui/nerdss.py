@@ -5,13 +5,12 @@ import typing
 import warnings
 import shutil
 import glob
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import (
+from PyQt6 import QtCore
+from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
     QFileDialog,
     QVBoxLayout,
-    QErrorMessage,
     QDialog,
     QWidget,
     QMessageBox,
@@ -19,8 +18,10 @@ from PyQt5.QtWidgets import (
     QLabel,
     QLineEdit,
     QDialogButtonBox,
+    QErrorMessage,
 )
-from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt
+from PyQt6.QtCore import QThread, pyqtSignal, QTimer
+from PyQt6.QtCore import Qt, QProcess
 from Bio import PDB, BiopythonWarning
 import pyqtgraph as pg
 import pyqtgraph.opengl as gl
@@ -1049,7 +1050,7 @@ class Interface:
 
 class AdvancedOptionsParsePDB(QDialog, Ui_DialogParseParam):
     def __init__(self, parent=None):
-        super(AdvancedOptionsParsePDB, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.cutoff = 3.5
         self.thresholdResidue = 3
@@ -1061,15 +1062,15 @@ class AdvancedOptionsParsePDB(QDialog, Ui_DialogParseParam):
         self.cutoff = float(self.lineEditCutoff.text())
         self.thresholdResidue = int(self.lineEditThreshold.text())
         self.stretchFactor = float(self.lineEditStretch.text())
-        self.close()
+        self.accept()
 
     def cancel(self):
-        self.close()
+        self.reject()
 
 
 class PDBMoviePlayer(QDialog, Ui_Form):
     def __init__(self, parent=None, path: str = ""):
-        super(PDBMoviePlayer, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.path = path
         if not self.path:
@@ -1116,7 +1117,7 @@ class PDBMoviePlayer(QDialog, Ui_Form):
             self.current_frame = 0
 
     def visualize_pdb(self, pdb_file):
-        for item in self.glview.items[:]:
+        for item in self.glview.items:
             if isinstance(item, gl.GLScatterPlotItem):
                 self.glview.removeItem(item)
 
@@ -1155,7 +1156,7 @@ class PDBMoviePlayer(QDialog, Ui_Form):
 
 class PlotCopyNum(QDialog, Ui_PlotCopyNum):
     def __init__(self, parent=None, path: str = ""):
-        super(PlotCopyNum, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.path = path
         if not self.path:
@@ -1205,7 +1206,7 @@ class PlotCopyNum(QDialog, Ui_PlotCopyNum):
         if not selected_species:
             return
         save_path = QFileDialog.getSaveFileName(
-            self, "Save Copy Number", "", "CSV (*.csv)"
+            self, "Save Copy Number", "", "CSV Files (*.csv);;All Files (*)"
         )
         if save_path[0]:
             if self.radioButtonPlotSep.isChecked():
@@ -1224,7 +1225,7 @@ class PlotCopyNum(QDialog, Ui_PlotCopyNum):
 
 class PlotComplex(QDialog, Ui_PlotComplex):
     def __init__(self, parent=None, path: str = ""):
-        super(PlotComplex, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.path = path
         if not self.path:
@@ -1323,7 +1324,7 @@ class PlotComplex(QDialog, Ui_PlotComplex):
             # Associate the species name with its QLineEdit
             line_edits.append(le)
 
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         layout.addWidget(buttonBox)
 
         # Connect the button signals
@@ -1331,7 +1332,7 @@ class PlotComplex(QDialog, Ui_PlotComplex):
         buttonBox.rejected.connect(stoi_dialog.reject)
 
         # If the dialog was accepted (OK pressed), retrieve the stoichiometries
-        if stoi_dialog.exec_() == QDialog.Accepted:
+        if stoi_dialog.exec() == QDialog.DialogCode.Accepted:
             for i in range(len(line_edits)):
                 self.species_num[i] = int(line_edits[i].text())
 
@@ -1345,7 +1346,7 @@ class PlotComplex(QDialog, Ui_PlotComplex):
 
     def save_complex(self):
         save_path = QFileDialog.getSaveFileName(
-            self, "Save Complex Count", "", "CSV (*.csv)"
+            self, "Save Complex Count", "", "CSV Files (*.csv);;All Files (*)"  # Updated to match PyQt6 syntax
         )
         if save_path[0]:
             df_to_save = pd.DataFrame({"Time (s)": self.time, "Count": self.counts})
@@ -1354,7 +1355,7 @@ class PlotComplex(QDialog, Ui_PlotComplex):
 
 class InstallNERDSS(QDialog, Ui_NERDSSInstall):
     def __init__(self, parent=None):
-        super(InstallNERDSS, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.installPath = None
         self.pushButtonInstall.clicked.connect(self.install)
@@ -1362,14 +1363,16 @@ class InstallNERDSS(QDialog, Ui_NERDSSInstall):
         self.pushButtonInstallPath.clicked.connect(self.set_install_path)
 
     def execute_command(self, cmd):
-        try:
-            result = subprocess.run(cmd, shell=True, check=True)
-            return result.returncode == 0
-        except subprocess.CalledProcessError as e:
+        process = QProcess(self)
+        process.start(cmd)
+        process.waitForFinished(-1)  # Wait indefinitely until finished
+        exitCode = process.exitCode()
+        if exitCode != 0:
+            error = process.errorString()
             QMessageBox.critical(
-                self, "Error", f"Error running command: {e.cmd}\nError: {e}"
+                self, "Error", f"Error running command: {cmd}\nError: {error}"
             )
-            return False
+        return exitCode == 0
 
     def install(self):
         # Change to the install directory
@@ -1415,7 +1418,7 @@ class InstallNERDSS(QDialog, Ui_NERDSSInstall):
 
     def set_install_path(self):
         self.installPath = QFileDialog.getExistingDirectory(
-            self, "Select NERDSS install Folder"
+            self, "Select NERDSS Install Folder", "", QFileDialog.Option.ShowDirsOnly
         )
         self.lineEditInstallPath.setText(self.installPath)
 
@@ -1467,7 +1470,7 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
         # start a QTimer to periodically check the progress and update the progress bar
         self.timer = QTimer(self)
         self.timer.timeout.connect(lambda: self.update_progress(process))
-        self.timer.start(30000)
+        self.timer.start(10000)
 
     def update_progress(self, process):
         progress_percentage = self.calculate_progress_percentage()
@@ -1631,7 +1634,7 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
 
     def open_advance_parameters(self):
         self.dialogParsePDBParam = AdvancedOptionsParsePDB(self)
-        self.dialogParsePDBParam.exec_()
+        self.dialogParsePDBParam.exec()
         self.cutoff = self.dialogParsePDBParam.cutoff
         self.thresholdResidue = self.dialogParsePDBParam.thresholdResidue
         self.stretchFactor = self.dialogParsePDBParam.stretchFactor
@@ -1718,28 +1721,28 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
 
     def install_nerdss(self):
         self.dialogInstallNERDSS = InstallNERDSS(self)
-        self.dialogInstallNERDSS.exec_()
+        self.dialogInstallNERDSS.exec()
 
     def visualize_traj(self):
         self.dialogPDBMoviePlayer = PDBMoviePlayer(
             self, self.lineEditInputsFolder.text()
         )
-        self.dialogPDBMoviePlayer.exec_()
+        self.dialogPDBMoviePlayer.exec()
 
     def plot_copy_num(self):
         self.dialogPlotCopyNum = PlotCopyNum(self, self.lineEditInputsFolder.text())
-        self.dialogPlotCopyNum.exec_()
+        self.dialogPlotCopyNum.exec()
 
     def plot_complex(self):
         self.dialogPlotComplex = PlotComplex(self, self.lineEditInputsFolder.text())
-        self.dialogPlotComplex.exec_()
+        self.dialogPlotComplex.exec()
 
 
 def nerdss():
     app = QApplication(sys.argv)
     window = SimulationApp()
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

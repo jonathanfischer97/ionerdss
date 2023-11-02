@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout
 
 class MPLWidget(QWidget):
     def __init__(self, parent=None):
-        super(MPLWidget, self).__init__(parent)
+        super().__init__(parent)
         
         self.figure = Figure(figsize=(5, 3), dpi=100)
         self.canvas = FigureCanvas(self.figure)
