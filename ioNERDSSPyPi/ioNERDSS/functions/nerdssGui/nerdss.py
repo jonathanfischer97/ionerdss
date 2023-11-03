@@ -1324,7 +1324,9 @@ class PlotComplex(QDialog, Ui_PlotComplex):
             # Associate the species name with its QLineEdit
             line_edits.append(le)
 
-        buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttonBox = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
         layout.addWidget(buttonBox)
 
         # Connect the button signals
@@ -1346,7 +1348,10 @@ class PlotComplex(QDialog, Ui_PlotComplex):
 
     def save_complex(self):
         save_path = QFileDialog.getSaveFileName(
-            self, "Save Complex Count", "", "CSV Files (*.csv);;All Files (*)"  # Updated to match PyQt6 syntax
+            self,
+            "Save Complex Count",
+            "",
+            "CSV Files (*.csv);;All Files (*)",  # Updated to match PyQt6 syntax
         )
         if save_path[0]:
             df_to_save = pd.DataFrame({"Time (s)": self.time, "Count": self.counts})

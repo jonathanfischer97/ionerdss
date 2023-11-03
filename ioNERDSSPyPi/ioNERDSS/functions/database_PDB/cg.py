@@ -1,6 +1,7 @@
 # take in the pdb file and output the pdb file with the corse-grained interfaces added
 
 import numpy as np
+import os
 
 
 class Chain:
@@ -19,6 +20,7 @@ class Residue:
         self.atoms = []
         self.chain = -1
         self.CA = -1
+        self.isDNA = False
 
 
 class Coord:
@@ -33,6 +35,10 @@ class Coord:
         dz = self.z - other.z
         dsquare = dx * dx + dy * dy + dz * dz
         return dsquare
+
+    # define the - between Coord and list, return list
+    def __sub__(self, other):
+        return [self.x - other[0], self.y - other[1], self.z - other[2]]
 
 
 class Atom:
@@ -58,9 +64,50 @@ class Interface:
         self.energy = 0.0
         self.atomsNum = 0
         self.residuesNum = 0
+        self.size = 0
 
 
-def cg(filename, cutoff):
+class Molecule:
+    def __init__(self, name):
+        self.name = name
+        self.COM = None
+        self.COMVisual = None
+        self.interfaces = []
+        self.radius = 0.0
+        self.D = 0.0
+        self.Dr = 0.0
+
+
+class Intf:
+    def __init__(self, name, positions):
+        self.name = name
+        self.positions = positions
+        self.positionsVisual = None
+        self.states = []
+
+
+class State:
+    def __init__(self, name):
+        self.name = name
+
+
+class Reaction:
+    def __init__(self, name, reactants, products):
+        self.name = name
+        self.reactants = reactants
+        self.products = products
+        self.reverse = True
+        self.onRate = 10.0
+        self.offRate = 1.0
+        self.angles = []
+        self.norm1 = []
+        self.norm2 = []
+        self.sigma = 0.0
+        self.energy = 0.0
+        self.size = 0
+
+
+def cg(filename, cutoff=3.5, thresholdResidue=3, stretchFactor=1.0):
     energyTable = {
         "CYS-CYS": 5.44,
         "CYS-MET": 4.99,
@@ -466,7 +513,8 @@ def cg(filename, cutoff):
 
     updatedEnergyTable = {key: -value + 2.27 for key, value in energyTable.items()}
 
-    filename = filename + ".pdb"
+    if filename[-4:] != ".pdb":
+        filename = filename + ".pdb"
     chains = []
     residues = []
     atoms = []
@@ -523,6 +571,9 @@ def cg(filename, cutoff):
                 residues[-1].atoms.append(atomIndex)
                 if atomType == "CA":
                     residues[-1].CA = atomIndex
+                if atomType == "C1'":
+                    residues[-1].isDNA = True
+                    residues[-1].CA = atomIndex
 
     # calculate the center of mass for each chain
     for chain in chains:
@@ -553,6 +604,8 @@ def cg(filename, cutoff):
                 ca2 = []
                 energy = []
                 residuesPair = ()
+                residues1 = ()
+                residues2 = ()
                 # loop all the atoms pair between chain1 and chain2
                 for a1 in chain1.atoms:
                     for a2 in chain2.atoms:
@@ -577,12 +630,19 @@ def cg(filename, cutoff):
                                 bond = atom1.residueType + "-" + atom2.residueType
                                 if bond in updatedEnergyTable:
                                     energy.append(updatedEnergyTable[bond])
-                if len(ca1) > 0:
+                            residues1 += (atom1.resideIndex,)
+                            residues2 += (atom2.resideIndex,)
+                if (
+                    len(ca1) > 0
+                    and len(residues1) >= thresholdResidue
+                    and len(residues2) >= thresholdResidue
+                ):
                     x, y, z = 0, 0, 0
                     for a in ca1:
-                        x += atoms[a].coord.x
-                        y += atoms[a].coord.y
-                        z += atoms[a].coord.z
+                        CAIndex = residues[atoms[a].resideIndex].CA
+                        x += atoms[CAIndex].coord.x
+                        y += atoms[CAIndex].coord.y
+                        z += atoms[CAIndex].coord.z
                     x /= len(ca1)
                     y /= len(ca1)
                     z /= len(ca1)
@@ -594,14 +654,16 @@ def cg(filename, cutoff):
                     interface.energy = sum(energy)
                     interface.atomsNum = len(ca1)
                     interface.residuesNum = len(residuesPair)
+                    interface.size = len(residues1)
                     interfaces.append(interface)
                     chain1.interfaces.append(interfaceIndex)
 
                     x, y, z = 0, 0, 0
                     for a in ca2:
-                        x += atoms[a].coord.x
-                        y += atoms[a].coord.y
-                        z += atoms[a].coord.z
+                        CAIndex = residues[atoms[a].resideIndex].CA
+                        x += atoms[CAIndex].coord.x
+                        y += atoms[CAIndex].coord.y
+                        z += atoms[CAIndex].coord.z
                     x /= len(ca2)
                     y /= len(ca2)
                     z /= len(ca2)
@@ -613,8 +675,22 @@ def cg(filename, cutoff):
                     interface.energy = sum(energy)
                     interface.atomsNum = len(ca2)
                     interface.residuesNum = len(residuesPair)
+                    interface.size = len(residues2)
                     interfaces.append(interface)
                     chain2.interfaces.append(interfaceIndex)
+    # Move the interfaces to center of mass of the chain based on the stretch factor
+    for chain in chains:
+        for interfaceIndex in chain.interfaces:
+            interface = interfaces[interfaceIndex]
+            interface.coord.x = (
+                interface.coord.x - chain.COM.x
+            ) * stretchFactor + chain.COM.x
+            interface.coord.y = (
+                interface.coord.y - chain.COM.y
+            ) * stretchFactor + chain.COM.y
+            interface.coord.z = (
+                interface.coord.z - chain.COM.z
+            ) * stretchFactor + chain.COM.z
 
     # print the center of mass and interfaces for each chain
     for chain in chains:
@@ -719,7 +795,231 @@ def cg(filename, cutoff):
             )
             print(f"       sigma {sigma / 10.0:.3f}")
             print(f"       energy {interface.energy:.3f}")
-            print(f"       residuesNum {interface.residuesNum}")
+            print(f"       size(residuesNum) {interface.size}")
+    # generate the input parameters for the nerdss simulation
+    # Build the NERDSS molecule
+    molecules = []
+    reactions = []
+    for chain in chains:
+        molecules.append(Molecule(chain.name))
+        molecules[-1].COM = chain.COM
+        for interfaceIndex in chain.interfaces:
+            interface = interfaces[interfaceIndex]
+            molecules[-1].interfaces.append(Intf(interface.name, interface.coord))
+
+    # Update the visual coord
+    for molecule in molecules:
+        for interface in molecule.interfaces:
+            interface.positionsVisual = interface.positions
+        molecule.COMVisual = molecule.COM
+
+    # Shift the COM of molecule to [0,0,0]
+    for molecule in molecules:
+        for interface in molecule.interfaces:
+            interface.positions -= [molecule.COM.x, molecule.COM.y, molecule.COM.z]
+            interface.positions = [p / 10.0 for p in interface.positions]
+        molecule.COM = Coord(0, 0, 0)
+
+    # Calculate the radius of the molecule
+    for molecule in molecules:
+        for interface in molecule.interfaces:
+            molecule.radius = max(molecule.radius, np.linalg.norm(interface.positions))
+
+    # Calculate the translational diffusion coefficient and rotational diffusion coefficient
+    for molecule in molecules:
+        molecule.D = 226.95 / molecule.radius
+        molecule.Dr = 170.22 / (molecule.radius**3)
+
+    # Build the NERDSS reaction
+    builtReactions = ()
+    for chain in chains:
+        mol1 = chain.name
+        interfaceName1 = None
+        mol2 = None
+        interfaceName2 = None
+        for i in chain.interfaces:
+            interface = interfaces[i]
+            interfaceName1 = interface.name
+            partnerInterface = None
+            for partnerChain in chains:
+                if partnerChain.index == interface.partner:
+                    mol2 = partnerChain.name
+                    for j in partnerChain.interfaces:
+                        partnerInterface = interfaces[j]
+                        if partnerInterface.partner == chain.index:
+                            interfaceName2 = partnerInterface.name
+                            break
+                    break
+            reactionName = None
+            if mol1 < mol2:
+                reactionName = (
+                    mol1
+                    + "("
+                    + interfaceName1
+                    + ")"
+                    + "-"
+                    + mol2
+                    + "("
+                    + interfaceName2
+                    + ")"
+                )
+            elif mol1 > mol2:
+                reactionName = (
+                    mol2
+                    + "("
+                    + interfaceName2
+                    + ")"
+                    + "-"
+                    + mol1
+                    + "("
+                    + interfaceName1
+                    + ")"
+                )
+            else:
+                if interfaceName1 < interfaceName2:
+                    reactionName = (
+                        mol1
+                        + "("
+                        + interfaceName1
+                        + ")"
+                        + "-"
+                        + mol2
+                        + "("
+                        + interfaceName2
+                        + ")"
+                    )
+                else:
+                    reactionName = (
+                        mol2
+                        + "("
+                        + interfaceName2
+                        + ")"
+                        + "-"
+                        + mol1
+                        + "("
+                        + interfaceName1
+                        + ")"
+                    )
+            if reactionName not in builtReactions:
+                builtReactions += (reactionName,)
+                reaction = Reaction(
+                    reactionName,
+                    [
+                        mol1 + "(" + interfaceName1 + ")",
+                        mol2 + "(" + interfaceName2 + ")",
+                    ],
+                    mol1
+                    + "("
+                    + interfaceName1
+                    + "!1)"
+                    + "."
+                    + mol2
+                    + "("
+                    + interfaceName2
+                    + "!1)",
+                )
+                reaction.angles = calculateAngles(
+                    np.array([chain.COM.x, chain.COM.y, chain.COM.z]),
+                    np.array(
+                        [
+                            chains[interface.partner].COM.x,
+                            chains[interface.partner].COM.y,
+                            chains[interface.partner].COM.z,
+                        ]
+                    ),
+                    np.array([interface.coord.x, interface.coord.y, interface.coord.z]),
+                    np.array(
+                        [
+                            partnerInterface.coord.x,
+                            partnerInterface.coord.y,
+                            partnerInterface.coord.z,
+                        ]
+                    ),
+                    np.array([0, 0, 1]),
+                    np.array([0, 0, 1]),
+                )
+                reaction.norm1 = [0, 0, 1]
+                reaction.norm2 = [0, 0, 1]
+                reaction.sigma = np.linalg.norm(
+                    np.array([interface.coord.x, interface.coord.y, interface.coord.z])
+                    - np.array(
+                        [
+                            partnerInterface.coord.x,
+                            partnerInterface.coord.y,
+                            partnerInterface.coord.z,
+                        ]
+                    )
+                )
+                reaction.sigma = reaction.sigma / 10.0
+                reaction.energy = interface.energy
+                reaction.size = [interface.size, partnerInterface.size]
+                reactions.append(reaction)
+    # Write the NERDSS input file
+    # get the current path
+    folder = os.getcwd()
+    # create the nerdss_inputs folder
+    folder = os.path.join(folder, "nerdss_inputs")
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+
+    # Save the molecule file
+    for mol in molecules:
+        with open(os.path.join(folder, mol.name + ".mol"), "w") as mol_file:
+            mol_file.write(f"Name = {mol.name}\n")
+            mol_file.write("checkOverlap = true\n\n")
+            mol_file.write(f"D = [{mol.D:.2f}, {mol.D:.2f}, {mol.D:.2f}]\n\n")
+            mol_file.write(f"Dr = [{mol.Dr:.2f}, {mol.Dr:.2f}, {mol.Dr:.2f}]\n\n")
+            mol_file.write("COM\t0.0000\t0.0000\t0.0000\n")
+            for intf in mol.interfaces:
+                mol_file.write(
+                    f"{intf.name}\t{intf.positions[0]:.4f}\t{intf.positions[1]:.4f}\t{intf.positions[2]:.4f}\n"
+                )
+            mol_file.write("\n")
+            mol_file.write(f"bonds = {len(mol.interfaces)}\n")
+            for intf in mol.interfaces:
+                mol_file.write(f"com {intf.name}\n")
+
+    # Save the parameter file
+    with open(os.path.join(folder, "parms.inp"), "w") as parm_file:
+        parm_file.write("start parameters\n")
+        parm_file.write("\tnItr = 1000000\n")
+        parm_file.write("\ttimeStep = 0.1\n")
+        parm_file.write("\ttimeWrite = 100\n")
+        parm_file.write("\ttrajWrite = 100000\n")
+        parm_file.write("\tpdbWrite = 1000\n")
+        parm_file.write("\trestartWrite = 1000\n")
+        parm_file.write("\tscaleMaxDisplace = 100.0\n")
+        parm_file.write("\toverlapSepLimit = 1.0\n")
+        parm_file.write("end parameters\n\n")
+        parm_file.write("start boundaries\n")
+        parm_file.write("\tWaterBox = [500.0, 500.0, 500.0]\n")
+        parm_file.write("end boundaries\n\n")
+        parm_file.write("start molecules\n")
+        for mol in molecules:
+            parm_file.write(f"\t{mol.name} : 100\n")
+        parm_file.write("end molecules\n\n")
+        parm_file.write("start reactions\n")
+        for rect in reactions:
+            parm_file.write(
+                f"\t{rect.reactants[0]} + {rect.reactants[1]} <-> {rect.products}\n"
+            )
+            parm_file.write("\t\tonRate3Dka = 10.0\n")
+            parm_file.write("\t\toffRatekb = 1.0\n")
+            parm_file.write(f"\t\tsigma = {rect.sigma:.4f}\n")
+            parm_file.write(
+                f"\t\tnorm1 = [{rect.norm1[0]:.4f}, {rect.norm1[1]:.4f}, {rect.norm1[2]:.4f}]\n"
+            )
+            parm_file.write(
+                f"\t\tnorm2 = [{rect.norm2[0]:.4f}, {rect.norm2[1]:.4f}, {rect.norm2[2]:.4f}]\n"
+            )
+            parm_file.write(
+                f"\t\tassocAngles = [{rect.angles[0]:.4f}, {rect.angles[1]:.4f}, {rect.angles[2]:.4f}, {rect.angles[3]:.4f}, {rect.angles[4]:.4f}]\n"
+            )
+            parm_file.write(f"\t\texcludeVolumeBound = False\n")
+            parm_file.write(
+                f"\t\t#Contact Energy = {rect.energy:.4f}\tInterfaces' size (residues) = {rect.size[0]}, {rect.size[1]}\n\n"
+            )
+        parm_file.write("end reactions\n")
 
 
 def calculateAngles(c1, c2, p1, p2, n1, n2):
