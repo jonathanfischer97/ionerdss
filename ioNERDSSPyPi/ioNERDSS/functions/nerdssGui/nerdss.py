@@ -1471,9 +1471,12 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
     def run_simulation(self):
         os.chdir(self.lineEditInputsFolder.text())
         # copy nerdss to the inputs folder
-        shutil.copy(self.lineEditNERDSSExe.text(), self.lineEditInputsFolder.text())
+        shutil.copy(
+            self.lineEditNERDSSExe.text(),
+            os.path.join(self.lineEditInputsFolder.text(), "nerdss_exe"),
+        )
         # run nerdss
-        cmd = "./nerdss -f *.inp > output.log"
+        cmd = "./nerdss_exe -f *.inp > output.log"
         process = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
