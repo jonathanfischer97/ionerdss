@@ -1367,10 +1367,15 @@ class InstallNERDSS(QDialog, Ui_NERDSSInstall):
         self.pushButtonCancel.clicked.connect(self.cancel)
         self.pushButtonInstallPath.clicked.connect(self.set_install_path)
 
-    def execute_command(self, cmd):
+    def execute_command(self, cmd, work_dir=None):
         process = QProcess(self)
-        process.start(cmd)
+        process.setProgram("/bin/sh")
+        process.setArguments(["-c", cmd])
+        if work_dir:
+            process.setWorkingDirectory(work_dir)
+        process.start()
         process.waitForFinished(-1)  # Wait indefinitely until finished
+
         exitCode = process.exitCode()
         if exitCode != 0:
             error = process.errorString()
@@ -1386,7 +1391,8 @@ class InstallNERDSS(QDialog, Ui_NERDSSInstall):
 
         # Clone the NERDSS repository
         if not self.execute_command(
-            f"git clone https://github.com/mjohn218/NERDSS.git {self.installPath}/NERDSS"
+            f"git clone https://github.com/mjohn218/NERDSS.git {self.installPath}/NERDSS",
+            self.installPath,
         ):
             return
 
@@ -1599,10 +1605,10 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
 
             # show a message to the user
             self.msgBox = QMessageBox(self)
-            self.msgBox.setIcon(QMessageBox.Information)
+            self.msgBox.setIcon(QMessageBox.Icon.Information)
             self.msgBox.setText("Parsing the pdb file, please wait...")
             self.msgBox.setWindowTitle("Parsing...")
-            self.msgBox.setStandardButtons(QMessageBox.NoButton)
+            self.msgBox.setStandardButtons(QMessageBox.StandardButton.NoButton)
             self.msgBox.show()
         except Exception as e:
             errorDialog = QErrorMessage(self)
@@ -1716,12 +1722,12 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
 
         # Pop up a message to tell the user the input files have been saved
         msgBox = QMessageBox(self)
-        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setIcon(QMessageBox.Icon.Information)
         msgBox.setText(
             f"The input files for NERDSS simulation have been saved to {folder}."
         )
         msgBox.setWindowTitle("Saved")
-        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
         msgBox.show()
 
     def install_nerdss(self):
