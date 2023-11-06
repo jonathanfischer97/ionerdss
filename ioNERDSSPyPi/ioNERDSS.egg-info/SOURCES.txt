@@ -93,6 +93,7 @@ ioNERDSS/functions/nerdssGui/nerdss.py
 ioNERDSS/functions/nerdssGui/gen/__init__.py
 ioNERDSS/functions/nerdssGui/gen/advanced_options_parse_pdb.py
 ioNERDSS/functions/nerdssGui/gen/mainwindow.py
+ioNERDSS/functions/nerdssGui/gen/modify_parameters.py
 ioNERDSS/functions/nerdssGui/gen/mplwidget.py
 ioNERDSS/functions/nerdssGui/gen/nerdss_install.py
 ioNERDSS/functions/nerdssGui/gen/pdb_movie_player.py
