@@ -32,6 +32,7 @@ from .gen.pdb_movie_player import Ui_Form
 from .gen.mplwidget import MPLWidget
 from .gen.plot_copy_num import Ui_PlotCopyNum
 from .gen.plot_complex import Ui_PlotComplex
+from .gen.modify_parameters import Ui_ModifyParm
 import numpy as np
 import pandas as pd
 
@@ -954,6 +955,7 @@ class Molecule:
         self.radius = 0.0
         self.D = 0.0
         self.Dr = 0.0
+        self.copyNumber = 100
 
 
 class Intf:
@@ -983,6 +985,8 @@ class Reaction:
         self.sigma = 0.0
         self.energy = 0.0
         self.size = 0
+        self.onRate = 10.0
+        self.offRate = 1.0
 
 
 class Chain:
@@ -1434,6 +1438,206 @@ class InstallNERDSS(QDialog, Ui_NERDSSInstall):
         self.lineEditInstallPath.setText(self.installPath)
 
 
+class ModifyParameters(QDialog, Ui_ModifyParm):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+        self.pushButtonOkModifyParm.clicked.connect(self.apply)
+        self.pushButtonCancelModifyParm.clicked.connect(self.cancel)
+        self.pushButtonSetGeometry.clicked.connect(self.set_geometry)
+        self.pushButtonModifyMol.clicked.connect(self.modify_mol)
+        self.pushButtonModifyReaction.clicked.connect(self.modify_reaction)
+        self.totalTime = 0.0
+        self.isSphere = False
+        self.isBox = False
+        self.sphereRadius = 0.0
+        self.boxSize = [0.0, 0.0, 0.0]
+
+        # list the molecules in the listWidgetMoleculesNerdss with the format: molname : copyNumber
+        self.listWidgetMoleculesNerdss.clear()
+        for molecule in molecules:
+            self.listWidgetMoleculesNerdss.addItem(
+                molecule.name + " : #" + str(molecule.copyNumber)
+            )
+
+        # list the reactions in the listWidgetReactionsNerdss with the format: reactionName : onRate : offRate
+        self.listWidgetReactionsNerdss.clear()
+        for reaction in reactions:
+            self.listWidgetReactionsNerdss.addItem(
+                reaction.name
+                + " : "
+                + str(reaction.onRate)
+                + " uM-1s-1"
+                + " : "
+                + str(reaction.offRate)
+                + " s-1"
+            )
+
+    def modify_mol(self):
+        # pop out a dialog to get the copy number
+        mol_dialog = QDialog(self)
+        mol_dialog.setWindowTitle("Copy Number")
+        mol_dialog.setModal(True)
+        mol_dialog.resize(300, 200)
+
+        layout = QVBoxLayout(mol_dialog)
+        mol_dialog.setLayout(layout)
+
+        # A dictionary to store QLineEdit widgets for each species
+        line_edits = []
+
+        for molecule in molecules:
+            layout.addWidget(QLabel(molecule.name))
+            le = QLineEdit()
+            layout.addWidget(le)
+            # Associate the species name with its QLineEdit
+            line_edits.append(le)
+
+        buttonBox = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        layout.addWidget(buttonBox)
+
+        # Connect the button signals
+        buttonBox.accepted.connect(mol_dialog.accept)
+        buttonBox.rejected.connect(mol_dialog.reject)
+
+        # If the dialog was accepted (OK pressed), retrieve the values
+        if mol_dialog.exec() == QDialog.DialogCode.Accepted:
+            for i in range(len(line_edits)):
+                molecules[i].copyNumber = int(line_edits[i].text())
+
+        self.listWidgetMoleculesNerdss.clear()
+        for molecule in molecules:
+            self.listWidgetMoleculesNerdss.addItem(
+                molecule.name + " : #" + str(molecule.copyNumber)
+            )
+
+    def modify_reaction(self):
+        # pop out a dialog to get the reactions rates, provide a box for each species
+        reaction_dialog = QDialog(self)
+        reaction_dialog.setWindowTitle("Reaction Rate")
+        reaction_dialog.setModal(True)
+        reaction_dialog.resize(300, 200)
+
+        layout = QVBoxLayout(reaction_dialog)
+        reaction_dialog.setLayout(layout)
+
+        # A dictionary to store QLineEdit widgets for each species
+        line_edits_on = []
+        line_edits_off = []
+
+        for reaction in reactions:
+            layout.addWidget(QLabel(reaction.name))
+            layout.addWidget(QLabel("On Rate"))
+            le_on = QLineEdit()
+            layout.addWidget(le_on)
+            line_edits_on.append(le_on)
+            layout.addWidget(QLabel("Off Rate"))
+            le_off = QLineEdit()
+            layout.addWidget(le_off)
+            line_edits_off.append(le_off)
+
+        buttonBox = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        layout.addWidget(buttonBox)
+
+        # Connect the button signals
+        buttonBox.accepted.connect(reaction_dialog.accept)
+        buttonBox.rejected.connect(reaction_dialog.reject)
+
+        # If the dialog was accepted (OK pressed), retrieve the values
+        if reaction_dialog.exec() == QDialog.DialogCode.Accepted:
+            for i in range(len(line_edits_on)):
+                reactions[i].onRate = float(line_edits_on[i].text())
+                reactions[i].offRate = float(line_edits_off[i].text())
+
+        self.listWidgetReactionsNerdss.clear()
+        for reaction in reactions:
+            self.listWidgetReactionsNerdss.addItem(
+                reaction.name
+                + " : "
+                + str(reaction.onRate)
+                + " uM-1s-1"
+                + " : "
+                + str(reaction.offRate)
+                + " s-1"
+            )
+
+    def set_geometry(self):
+        if self.radioButtonBox.isChecked():
+            self.isBox = True
+            self.isSphere = False
+            # pop out a dialog to get the box size [x,y,z]nm
+            box_dialog = QDialog(self)
+            box_dialog.setWindowTitle("Box Size")
+            box_dialog.setModal(True)
+            box_dialog.resize(300, 200)
+            # three line edits for x, y, z with labels and units
+            layout = QVBoxLayout(box_dialog)
+            box_dialog.setLayout(layout)
+            # show the line edits
+            layout.addWidget(QLabel("x (nm)"))
+            le_x = QLineEdit()
+            layout.addWidget(le_x)
+            layout.addWidget(QLabel("y (nm)"))
+            le_y = QLineEdit()
+            layout.addWidget(le_y)
+            layout.addWidget(QLabel("z (nm)"))
+            le_z = QLineEdit()
+            layout.addWidget(le_z)
+
+            buttonBox = QDialogButtonBox(
+                QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+            )
+            layout.addWidget(buttonBox)
+
+            # Connect the button signals
+            buttonBox.accepted.connect(box_dialog.accept)
+            buttonBox.rejected.connect(box_dialog.reject)
+
+            if box_dialog.exec() == QDialog.DialogCode.Accepted:
+                self.boxSize = [float(le_x.text()), float(le_y.text()), float(le_z.text())]
+
+        elif self.radioButtonSphere.isChecked():
+            self.isBox = False
+            self.isSphere = True
+            # pop out a dialog to get the radius of the sphere
+            sphere_dialog = QDialog(self)
+            sphere_dialog.setWindowTitle("Sphere Radius")
+            sphere_dialog.setModal(True)
+            sphere_dialog.resize(300, 200)
+            layout = QVBoxLayout(sphere_dialog)
+            sphere_dialog.setLayout(layout)
+            layout.addWidget(QLabel("r (nm)"))
+            le_r = QLineEdit()
+            layout.addWidget(le_r)
+
+            buttonBox = QDialogButtonBox(
+                QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+            )
+            layout.addWidget(buttonBox)
+
+            # Connect the button signals
+            buttonBox.accepted.connect(sphere_dialog.accept)
+            buttonBox.rejected.connect(sphere_dialog.reject)
+
+            if sphere_dialog.exec() == QDialog.DialogCode.Accepted:
+                self.sphereRadius = float(le_r.text())
+
+        else:
+            # pop out a message to let the user select the sphere or box
+            QMessageBox.critical(self, "Error", "Please select the geometry type!")
+
+    def apply(self):
+        # get the total time from the line edit
+        self.totalTime = float(self.lineEditTime.text())
+        self.accept()
+
+    def cancel(self):
+        self.close()
+
 class SimulationApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
@@ -1452,6 +1656,7 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
         self.thresholdResidue = 3
         self.stretchFactor = 1.0
         self.geometric_center = None
+        self.process = None
 
         self.progressBar.setValue(0)
 
@@ -1467,6 +1672,7 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
         self.pushButtonPlotCopyNum.clicked.connect(self.plot_copy_num)
         self.pushButtonPlotComplex.clicked.connect(self.plot_complex)
         self.commandLinkButtonRunSimulation.clicked.connect(self.run_simulation)
+        self.commandLinkButtonKillSimulation.clicked.connect(self.kill_simulation)
 
     def run_simulation(self):
         os.chdir(self.lineEditInputsFolder.text())
@@ -1477,14 +1683,20 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
         )
         # run nerdss
         cmd = "./nerdss_exe -f *.inp > output.log"
-        process = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        self.process = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
         )
 
         # start a QTimer to periodically check the progress and update the progress bar
         self.timer = QTimer(self)
-        self.timer.timeout.connect(lambda: self.update_progress(process))
+        self.timer.timeout.connect(lambda: self.update_progress(self.process))
         self.timer.start(10000)
+
+    def kill_simulation(self):
+        if self.process:
+            self.process.kill()
+            self.timer.stop()
+            QMessageBox.information(self, "Success", "Simulation has been killed!")
 
     def update_progress(self, process):
         progress_percentage = self.calculate_progress_percentage()
@@ -1551,6 +1763,10 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
         self.lineEditNERDSSExe.setText(filename[0])
 
     def parse_file(self):
+        global molecules
+        global reactions
+        molecules = []
+        reactions = []
         try:
             parser = PDB.PDBParser()
             structure = parser.get_structure("structure", self.lineEditFilePath.text())
@@ -1664,6 +1880,30 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
         # Pop up a dialog to ask for the folder to save the input files
         folder = QFileDialog.getExistingDirectory(self, "Select Folder")
 
+        # calculate the offRate and onRate for each reaction
+        for reaction in reactions:
+            reaction.offRate = 1.0
+            deltaG = reaction.energy
+            kD = np.exp(deltaG)
+            reaction.onRate = reaction.offRate / kD * 1e-6
+
+        totalTime = 0.0
+        isSphere = False
+        isBox = False
+        sphereRadius = 0.0
+        boxSize = [0.0, 0.0, 0.0]
+
+        # pop up the Ui_ModifyParm
+        self.dialogModifyParm = ModifyParameters(self)
+        self.dialogModifyParm.exec()
+
+        # get the parameters from the dialog
+        totalTime = self.dialogModifyParm.totalTime
+        isSphere = self.dialogModifyParm.isSphere
+        isBox = self.dialogModifyParm.isBox
+        sphereRadius = self.dialogModifyParm.sphereRadius
+        boxSize = self.dialogModifyParm.boxSize
+
         # Save the molecule file
         for mol in molecules:
             with open(os.path.join(folder, mol.name + ".mol"), "w") as mol_file:
@@ -1684,29 +1924,33 @@ class SimulationApp(QMainWindow, Ui_MainWindow):
         # Save the parameter file
         with open(os.path.join(folder, "parms.inp"), "w") as parm_file:
             parm_file.write("start parameters\n")
-            parm_file.write("\tnItr = 1000000\n")
+            parm_file.write(f"\tnItr = {int(totalTime/0.1e-6)}\n")
             parm_file.write("\ttimeStep = 0.1\n")
-            parm_file.write("\ttimeWrite = 100\n")
-            parm_file.write("\ttrajWrite = 100000\n")
-            parm_file.write("\tpdbWrite = 1000\n")
-            parm_file.write("\trestartWrite = 1000\n")
+            parm_file.write(f"\ttimeWrite = {int(totalTime/0.1e-6/1000)}\n")
+            parm_file.write(f"\ttrajWrite = {int(totalTime/0.1e-6)}\n")
+            parm_file.write(f"\tpdbWrite = {int(totalTime/0.1e-6/100)}\n")
+            parm_file.write(f"\trestartWrite = {int(totalTime/0.1e-6/100)}\n")
             parm_file.write("\tscaleMaxDisplace = 100.0\n")
             parm_file.write("\toverlapSepLimit = 1.0\n")
             parm_file.write("end parameters\n\n")
             parm_file.write("start boundaries\n")
-            parm_file.write("\tWaterBox = [500.0, 500.0, 500.0]\n")
+            if isBox:
+                parm_file.write(f"\tWaterBox = [{boxSize[0]}, {boxSize[1]}, {boxSize[2]}]\n")
+            elif isSphere:
+                parm_file.write("\tisSphere = true\n")
+                parm_file.write(f"\tsphereR = {sphereRadius}\n")
             parm_file.write("end boundaries\n\n")
             parm_file.write("start molecules\n")
             for mol in molecules:
-                parm_file.write(f"\t{mol.name} : 100\n")
+                parm_file.write(f"\t{mol.name} : {int(mol.copyNumber)}\n")
             parm_file.write("end molecules\n\n")
             parm_file.write("start reactions\n")
             for rect in reactions:
                 parm_file.write(
                     f"\t{rect.reactants[0]} + {rect.reactants[1]} <-> {rect.products}\n"
                 )
-                parm_file.write("\t\tonRate3Dka = 10.0\n")
-                parm_file.write("\t\toffRatekb = 1.0\n")
+                parm_file.write(f"\t\tonRate3DMacro = {rect.onRate}\n")
+                parm_file.write(f"\t\toffRateMacro = {rect.offRate}\n")
                 parm_file.write(f"\t\tsigma = {rect.sigma:.4f}\n")
                 parm_file.write(
                     f"\t\tnorm1 = [{rect.norm1[0]:.4f}, {rect.norm1[1]:.4f}, {rect.norm1[2]:.4f}]\n"

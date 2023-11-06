@@ -232,7 +232,20 @@
        </rect>
       </property>
       <property name="plainText">
-       <string>Press the 'Run Simulation' button to initiate the simulation. The progress bar will refresh every 30 seconds to reflect the current status.</string>
+       <string>Press the 'Run Simulation' button to initiate the simulation. The progress bar will refresh every 10 seconds to reflect the current status.</string>
+      </property>
+     </widget>
+     <widget class="QCommandLinkButton" name="commandLinkButtonKillSimulation">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>170</y>
+        <width>177</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Kill Simulation</string>
       </property>
      </widget>
     </widget>

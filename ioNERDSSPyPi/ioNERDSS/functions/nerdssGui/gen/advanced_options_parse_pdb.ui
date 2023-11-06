@@ -36,15 +36,15 @@
     </rect>
    </property>
    <property name="text">
-    <string>Cancle</string>
+    <string>Cancel</string>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>90</y>
-     <width>155</width>
+     <x>160</x>
+     <y>80</y>
+     <width>173</width>
      <height>161</height>
     </rect>
    </property>
@@ -52,14 +52,14 @@
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Cutoff distance</string>
+       <string>Cutoff distance (Å)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Threshold for residues</string>
+       <string>Residue count threshold</string>
       </property>
      </widget>
     </item>

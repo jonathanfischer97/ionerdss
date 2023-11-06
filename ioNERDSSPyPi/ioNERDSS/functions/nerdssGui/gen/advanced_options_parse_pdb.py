@@ -20,7 +20,7 @@ class Ui_DialogParseParam(object):
         self.pushButtonCancel.setGeometry(QtCore.QRect(330, 290, 80, 25))
         self.pushButtonCancel.setObjectName("pushButtonCancel")
         self.layoutWidget = QtWidgets.QWidget(parent=DialogParseParam)
-        self.layoutWidget.setGeometry(QtCore.QRect(190, 90, 155, 161))
+        self.layoutWidget.setGeometry(QtCore.QRect(160, 80, 173, 161))
         self.layoutWidget.setObjectName("layoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -57,9 +57,9 @@ class Ui_DialogParseParam(object):
         _translate = QtCore.QCoreApplication.translate
         DialogParseParam.setWindowTitle(_translate("DialogParseParam", "Parse PDB parameters"))
         self.pushButtonApply.setText(_translate("DialogParseParam", "Apply"))
-        self.pushButtonCancel.setText(_translate("DialogParseParam", "Cancle"))
-        self.label.setText(_translate("DialogParseParam", "Cutoff distance"))
-        self.label_2.setText(_translate("DialogParseParam", "Threshold for residues"))
+        self.pushButtonCancel.setText(_translate("DialogParseParam", "Cancel"))
+        self.label.setText(_translate("DialogParseParam", "Cutoff distance (Å)"))
+        self.label_2.setText(_translate("DialogParseParam", "Residue count threshold"))
         self.label_3.setText(_translate("DialogParseParam", "Stretch factor"))
 
 
