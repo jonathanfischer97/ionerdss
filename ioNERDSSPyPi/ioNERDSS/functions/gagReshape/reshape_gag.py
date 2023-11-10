@@ -9,7 +9,6 @@ from .restart_pdb_to_df import *
 from .gag_write_PDB import *
 from ..database_PDB.dtb_PDB_separate_read import *
 from ..database_PDB.dtb_PDB_write_PDB import *
-from .eliminate_inconsistent_sites import *
 
 def reshape_gag(PathName: str, WritePDB: bool = False):
     """
@@ -67,7 +66,7 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     
 
 
-   # eliminate inconsistent sites (sites that are only present on some monomers)
+   # eliminate inconsistent interfaces (interfaces that are only present on some monomers)
     positions = eliminate_inconsistent_sites(positions, COM_index, interfaces_count)
     consistent_interfaces_count = np.min(interfaces_count)
 
@@ -85,10 +84,11 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     ##############################################
 
     # first, using the centers of gags to calculate the sphere radius and sphere center 
-    numGag = 18
+    numGag = len(COM_index)
+    numSites = consistent_interfaces_count + 1
     centersVec = np.zeros([numGag,3])
     for i in range(0,numGag):
-        centersVec[i] = positionsVec[6*i]
+        centersVec[i] = positionsVec[numSites*i]
 
     sphereXYZR = [0,0,0,70] # initial trial values for sphere x, y, z, and R respectively 
     rmsdOld = calculate_rmsd(centersVec,sphereXYZR)
@@ -128,15 +128,15 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
         center = centersVec[i,:]
         move = center/np.linalg.norm(center) * r0 - center
         centersVec[i,:] = centersVec[i,:] + move
-        for j in range (0,6):
-            positionsVec[j+6*i,:] = positionsVec[j+6*i,:] + move
+        for j in range (0,numSites):
+            positionsVec[j+numSites*i,:] = positionsVec[j+numSites*i,:] + move
 
     ##############################################
     # Fourth, determine the template of the gag (automatically as the first gag). Other gags will be got by translation and rotation of this template gag
     # gagTemplate is the positions of the gag center and five interfaces
     # gagTemplateInterCoeffs is the coefficients of the gag 5 interfaces in the internal basis system
-    gagTemplate = determine_gagTemplate_structure(numGag, positionsVec)
-
+    gagTemplate = determine_gagTemplate_structure(numGag, numSites, positionsVec)
+    
     ##############################################
     # Fifth, adjust the hexmerGags 0, 3, 6, 9, 12, 15 
     center0 = centersVec[0,:]   
@@ -153,15 +153,15 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     hexmerCenter[1] = 0.0
     hexmerCenter[2] = center0[2]
     # set up the internal coordinate system of the first gag: 3 basis vecs: interBaseVec0, interBaseVec1, interBaseVec2
-    interBaseVec0 = center0 / np.linalg.norm(center0)                   # along the radius diraction
+    interBaseVec0 = center0 / np.linalg.norm(center0)                   # along the radius direction
     interBaseVec1 = center0 - hexmerCenter
     interBaseVec2 = np.cross(interBaseVec0,interBaseVec1)               # along the tangent line of the hexamer circumference
     interBaseVec2 = interBaseVec2 / np.linalg.norm(interBaseVec2) 
     interBaseVec1 = np.cross(interBaseVec2,interBaseVec0)
     interBaseVec1 = interBaseVec1 / np.linalg.norm(interBaseVec1)
     # calculate gag1's (also gagTemplate) coordinates in its internal coordinate-system
-    interCoords = np.zeros([5,3]) # 5 sites, each needs 3 coordinates
-    for i in range (0,5) :
+    interCoords = np.zeros([numSites-1,3]) # each interface needs 3 coordinates
+    for i in range (0,numSites-1) :
         p = gagTemplate[i+1,:] - gagTemplate[0,:] 
         A = np.array([interBaseVec0, interBaseVec1, interBaseVec2])
         interCoords[i,:] = np.dot(p, np.linalg.inv(A))
@@ -183,7 +183,7 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
     hexmerCenter[0] = 0  # since the radius is rebuilt by the target radius R0, then the center of the hexamer needs also updated
     hexmerCenter[1] = 0
     hexmerCenter[2] = sixCenters[0,2]
-    hexmerPositionsVec = np.zeros([6*6,3]) # to store the postions of the hexamer gags, both their center position and interface position
+    hexmerPositionsVec = np.zeros([6*numSites,3]) # to store the postions of the hexamer gags, both their center position and interface position
     for i in range (0,6):
         center = sixCenters[i,:]
         vec1 = center/np.linalg.norm(center) # set up the internal coord system, the three basis vectors. The way is similar as for the template 
@@ -192,26 +192,26 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
         vec3 = vec3/np.linalg.norm(vec3)
         vec2 = np.cross(vec3,vec1)
         vec2 = vec2/np.linalg.norm(vec2)
-        interfaces = np.zeros([5,3])
-        for j in range (0,5):   # using the template internal coords to determine the five interfaces of each gag
+        interfaces = np.zeros([numSites-1,3])
+        for j in range (0,numSites-1):   # using the template internal coords to determine the interfaces of each gag
             interfaces[j,:] = interCoords[j,0]*vec1 + interCoords[j,1]*vec2 + interCoords[j,2]*vec3 + center
-        hexmerPositionsVec[6*i+0,:] = center
-        hexmerPositionsVec[6*i+1:6*i+6,:] = interfaces
+        hexmerPositionsVec[numSites*i+0,:] = center
+        hexmerPositionsVec[numSites*i+1:numSites*i+numSites,:] = interfaces
         
     # store the hexmerPositionsVec to the new positions
-    newPositionsVec = np.zeros([numGag*6,3])
+    newPositionsVec = np.zeros([numGag*numSites,3])
 
-    newPositionsVec[6*0:6*0+6,:]   = hexmerPositionsVec[0:6,:]    # gag0
-    newPositionsVec[6*3:6*3+6,:]   = hexmerPositionsVec[6:12,:]   # gag3      
-    newPositionsVec[6*6:6*6+6,:]   = hexmerPositionsVec[12:18,:]  # gag6
-    newPositionsVec[6*9:6*9+6,:]   = hexmerPositionsVec[18:24,:]  # gag9   
-    newPositionsVec[6*12:6*12+6,:] = hexmerPositionsVec[24:30,:]  # gag12
-    newPositionsVec[6*15:6*15+6,:] = hexmerPositionsVec[30:36,:]  # gag15
+    newPositionsVec[numSites*0:numSites*0+numSites,:]   = hexmerPositionsVec[0:numSites,:]    # gag0
+    newPositionsVec[numSites*3:numSites*3+numSites,:]   = hexmerPositionsVec[numSites:2*numSites,:]   # gag3      
+    newPositionsVec[numSites*6:numSites*6+numSites,:]   = hexmerPositionsVec[2*numSites:3*numSites,:]  # gag6
+    newPositionsVec[numSites*9:numSites*9+numSites,:]   = hexmerPositionsVec[3*numSites:4*numSites,:]  # gag9   
+    newPositionsVec[numSites*12:numSites*12+numSites,:] = hexmerPositionsVec[4*numSites:5*numSites,:]  # gag12
+    newPositionsVec[numSites*15:numSites*15+numSites,:] = hexmerPositionsVec[5*numSites:6*numSites,:]  # gag15
 
     ##############################################
     # Sixth, find the positions of gag 1,2,4,5,7,8,10,11,13,14,16,17, by moving the hexamer on the sphere surface
     # determine the target position that the original hexamer will move to. I use spherical coordinates
-    moveVec = positionsVec[6*2,:] - positionsVec[6*12,:]
+    moveVec = positionsVec[numSites*2,:] - positionsVec[numSites*12,:]
     toPosition = moveVec + np.array([0,0,r])
     sphereCrds = xyz_to_sphere_coordinates(toPosition) 
     phi = sphereCrds[1] 
@@ -219,55 +219,54 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
 
     fromPosition = np.array([0,0,r]) # center of the original hexamer
     deltaAngle = 2.0 * np.pi / 6.0
-    hexmer = hexmerPositionsVec
 
     # gag 1, 2
     phi = phi
     fromPosition = fromPosition 
     toPosition = np.array([r*np.sin(theta)*np.cos(phi), r*np.sin(theta)*np.sin(phi),r*np.cos(theta)]) # center of the newhexamer
     newhexmer = translate_gags_on_sphere(hexmerPositionsVec, fromPosition, toPosition)
-    newPositionsVec[6*1:6+6*1,:] = newhexmer[6*3:6+6*3,:]     # gag 1 comes from the new position of hexmer gag3 
-    newPositionsVec[6*2:6+6*2,:] = newhexmer[6*4:6+6*4,:]     # gag 2 comes from the new position of hexmer gag4
+    newPositionsVec[numSites*1:numSites+numSites*1,:] = newhexmer[numSites*3:numSites+numSites*3,:]     # gag 1 comes from the new position of hexmer gag3 
+    newPositionsVec[numSites*2:numSites+numSites*2,:] = newhexmer[numSites*4:numSites+numSites*4,:]      # gag 2 comes from the new position of hexmer gag4
 
     # gag 4, 5
     phi = phi + deltaAngle
     fromPosition = fromPosition
     toPosition = np.array([r*np.sin(theta)*np.cos(phi), r*np.sin(theta)*np.sin(phi),r*np.cos(theta)])
     newhexmer = translate_gags_on_sphere(hexmerPositionsVec, fromPosition, toPosition)
-    newPositionsVec[6*4:6+6*4,:] = newhexmer[6*4:6+6*4,:]     # gag 4 comes from the new position of hexmer gag4 
-    newPositionsVec[6*5:6+6*5,:] = newhexmer[6*5:6+6*5,:]     # gag 5 comes from the new position of hexmer gag5
+    newPositionsVec[numSites*4:numSites+numSites*4,:] = newhexmer[numSites*4:numSites+numSites*4,:]      # gag 4 comes from the new position of hexmer gag4 
+    newPositionsVec[numSites*5:numSites+numSites*5,:] = newhexmer[numSites*5:numSites+numSites*5,:]       # gag 5 comes from the new position of hexmer gag5
 
     # gag 7, 8
     phi = phi + deltaAngle
     fromPosition = fromPosition
     toPosition = np.array([r*np.sin(theta)*np.cos(phi), r*np.sin(theta)*np.sin(phi),r*np.cos(theta)])
     newhexmer = translate_gags_on_sphere(hexmerPositionsVec, fromPosition, toPosition)
-    newPositionsVec[6*7:6+6*7,:] = newhexmer[6*5:6+6*5,:]     # gag 7 comes from the new position of hexmer gag5 
-    newPositionsVec[6*8:6+6*8,:] = newhexmer[6*0:6+6*0,:]     # gag 8 comes from the new position of hexmer gag0
+    newPositionsVec[numSites*7:numSites+numSites*7,:] = newhexmer[numSites*5:numSites+numSites*5,:]       # gag 7 comes from the new position of hexmer gag5 
+    newPositionsVec[numSites*8:numSites+numSites*8,:] = newhexmer[numSites*0:numSites+numSites*0,:]     # gag 8 comes from the new position of hexmer gag0
 
     # gag 10, 11
     phi = phi + deltaAngle
     fromPosition = fromPosition
     toPosition = np.array([r*np.sin(theta)*np.cos(phi), r*np.sin(theta)*np.sin(phi),r*np.cos(theta)])
     newhexmer = translate_gags_on_sphere(hexmerPositionsVec, fromPosition, toPosition)
-    newPositionsVec[6*10:6+6*10,:] = newhexmer[6*0:6+6*0,:]     # gag 10 comes from the new position of hexmer gag0 
-    newPositionsVec[6*11:6+6*11,:] = newhexmer[6*1:6+6*1,:]     # gag 11 comes from the new position of hexmer gag1
+    newPositionsVec[numSites*10:numSites+numSites*10,:] = newhexmer[numSites*0:numSites+numSites*0,:]       # gag 10 comes from the new position of hexmer gag0 
+    newPositionsVec[numSites*11:numSites+numSites*11,:] = newhexmer[numSites*1:numSites+numSites*1,:]      # gag 11 comes from the new position of hexmer gag1
 
     # gag 13, 14
     phi = phi + deltaAngle
     fromPosition = fromPosition
     toPosition = np.array([r*np.sin(theta)*np.cos(phi), r*np.sin(theta)*np.sin(phi),r*np.cos(theta)])
     newhexmer = translate_gags_on_sphere(hexmerPositionsVec, fromPosition, toPosition)
-    newPositionsVec[6*13:6+6*13,:] = newhexmer[6*1:6+6*1,:]     # gag 13 comes from the new position of hexmer gag1 
-    newPositionsVec[6*14:6+6*14,:] = newhexmer[6*2:6+6*2,:]     # gag 14 comes from the new position of hexmer gag2
+    newPositionsVec[numSites*13:numSites+numSites*13,:] = newhexmer[numSites*1:numSites+numSites*1,:]       # gag 13 comes from the new position of hexmer gag1 
+    newPositionsVec[numSites*14:numSites+numSites*14,:] = newhexmer[numSites*2:numSites+numSites*2,:]       # gag 14 comes from the new position of hexmer gag2
 
     # gag 16, 17
     phi = phi + deltaAngle
     fromPosition = fromPosition
     toPosition = np.array([r*np.sin(theta)*np.cos(phi), r*np.sin(theta)*np.sin(phi),r*np.cos(theta)])
     newhexmer = translate_gags_on_sphere(hexmerPositionsVec, fromPosition, toPosition)
-    newPositionsVec[6*16:6+6*16,:] = newhexmer[6*2:6+6*2,:]     # gag 16 comes from the new position of hexmer gag2 
-    newPositionsVec[6*17:6+6*17,:] = newhexmer[6*3:6+6*3,:]     # gag 17 comes from the new position of hexmer gag3
+    newPositionsVec[numSites*16:numSites+numSites*16,:] = newhexmer[numSites*2:numSites+numSites*2,:]      # gag 16 comes from the new position of hexmer gag2 
+    newPositionsVec[numSites*17:numSites+numSites*17,:] = newhexmer[numSites*3:numSites+numSites*3,:]       # gag 17 comes from the new position of hexmer gag3
 
     ##############################################
     # seventh, add the membrane-bind and RNA-bind sites, then each gag has 8 points

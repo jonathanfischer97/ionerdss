@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def determine_gagTemplate_structure(numGag, positionsVec):
+def determine_gagTemplate_structure(numGag, numSites, positionsVec, returnCoeff = False):
     """
     Determine the template structure of the gags, which is the average structure of the first gag.
     The template structure is used to determine the internal basis system of each gag, and the internal
@@ -9,6 +9,7 @@ def determine_gagTemplate_structure(numGag, positionsVec):
 
     Parameters:
         numGag (int): number of gags
+        numSites (int): number of sites in each gag
         positionsVec (np.array): positions of all atoms in the system, rowvec
     
     Returns:
@@ -16,13 +17,13 @@ def determine_gagTemplate_structure(numGag, positionsVec):
     """
 
     internalBasis = np.zeros([3,3,numGag]) # 18 gags, each gag has 3 vectors of internal basises, rowvec
-    coefficients = np.zeros([5,3,numGag])  # internal coords of interfaces in the internal basis system
+    coefficients = np.zeros([numSites-1,3,numGag])  # internal coords of interfaces in the internal basis system
     # set up the internal coord system for each gag: basis vec1, vec2, vec3 
     # and then calculate the coords of each interface in this internal system: internal coords
     # then the mean value of the internal coords gives the template structure 
     for i in range (0,numGag):
-        center = positionsVec[6*i,:]
-        interfaces = positionsVec[1+6*i:5+1+6*i,:]
+        center = positionsVec[numSites*i,:]
+        interfaces = positionsVec[1+numSites*i:numSites+numSites*i,:]
         # determine the three internal basis: vec1, vec2, vec3
         vec1 = center
         vec1 = vec1/np.linalg.norm(vec1) 
@@ -34,8 +35,8 @@ def determine_gagTemplate_structure(numGag, positionsVec):
         internalBasis[0,:,i] = vec1
         internalBasis[1,:,i] = vec2
         internalBasis[2,:,i] = vec3
-        # calculate the interal coords for the 5 interfaces
-        for j in range (0,5):
+        # calculate the interal coords for the interfaces
+        for j in range (0,numSites-1):
             p = interfaces[j,:] - center
             A = np.array([vec1, vec2, vec3])
             coeff = np.dot(p, np.linalg.inv(A))
@@ -44,8 +45,8 @@ def determine_gagTemplate_structure(numGag, positionsVec):
             coefficients[j,:,i] = coeff
     
     # regularize the gags internal coords
-    coeffReg = np.zeros([5,3]) # five sites, each site has 3 coefficients of internal coords
-    for i in range(0,5) :
+    coeffReg = np.zeros([numSites-1,3]) # each site has 3 coefficients of internal coords
+    for i in range(0,numSites-1) :
         coeffReg[i,0] = np.mean(coefficients[i,0,:])
         coeffReg[i,1] = np.mean(coefficients[i,1,:])
         coeffReg[i,2] = np.mean(coefficients[i,2,:])
@@ -55,11 +56,12 @@ def determine_gagTemplate_structure(numGag, positionsVec):
     vec1 = internalBasis[0,:,chosenGagIndex]
     vec2 = internalBasis[1,:,chosenGagIndex]
     vec3 = internalBasis[2,:,chosenGagIndex]
-    center1 = positionsVec[0+6*chosenGagIndex,:]
-    template = np.zeros([6,3])
+    center1 = positionsVec[numSites*chosenGagIndex,:]
+    template = np.zeros([numSites,3])
     template[0,:] = center1
-    for i in range(0,5):
+    for i in range(0,numSites-1):
         template[i+1,:] = coeffReg[i,0] * vec1 + coeffReg[i,1] * vec2 + coeffReg[i,2] * vec3 + center1
-    
+    if returnCoeff:
+        return coeffReg
     return template
 

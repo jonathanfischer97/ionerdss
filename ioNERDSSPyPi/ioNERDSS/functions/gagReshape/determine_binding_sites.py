@@ -1,21 +1,10 @@
 import numpy as np
 import pandas as pd
 
-def eliminate_inconsistent_sites(positions, COM_index, interfaces_count):
+def sort_sites(positions, COM_index, interfaces_count):
     '''
-    Eliminates inconsistent sites (sites that are only present on some monomers)
-    and obtains the consistent sites, using distances from interfaces to COM to identify sites
-
-    Parameters
-
-    COM_index: list
-        list of indices of the COM of each monomer
+    Sort the sites in the order of increasing distance from the COM of each monomer.
     
-    interfaces_count: list
-        list of number of interfaces for each monomer
-
-    Returns
-    positions: the modified pandas DataFrame
     '''
    # find the distance from each interface to the COM for each monomer
     distances = []
