@@ -1,6 +1,5 @@
 import math
 import sys
-from .gen.real_PDB_data_check import real_PDB_data_check
 from .gen.real_PDB_chain_int_simple import real_PDB_chain_int_simple
 
 
@@ -46,42 +45,39 @@ def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None], MaxBoundL
         
         #go through each line in the file
         for line in filename:
-            data = line.split()  # split a line into list
             
             #based on the data, import data from that line into lists
-            id = data[0]
+            id = line[:4]
+            chain_name = line[21].strip()
             if id == 'ENDMDL':
                 break
-            elif id == 'ATOM' and (data[4] in ChainsIncluded or ChainsIncluded == [None]):  # find all 'atom' lines. But only add atom if it is in 'chainincluded'
+            elif id == 'ATOM' and (chain_name in ChainsIncluded or ChainsIncluded == [None]):  # find all 'atom' lines. But only add atom if it is in 'chainincluded'
                 
                 #check amino acid name, then edit it accordingly
-                pdb_data = real_PDB_data_check(data)
-                if pdb_data == 1:
-                    pass
-                elif pdb_data == -2:
-                    data[3] = data[3].lstrip(data[3][0])
-                elif pdb_data == -1:
-                    amino_name = data[2][-3:]
-                    data.insert(3, amino_name)
-                    data[2] = data[2].rstrip(amino_name)
+                atom_serial_num = line[6:11].strip()
+                atom_name = line[12:16].strip()
+                amino_name = line[17:20].strip()
+                chain_name = line[21].strip()
+                residue_num = line[22:26].strip()
+                x_coord = line[30:38].strip()
+                y_coord = line[38:46].strip()
+                z_coord = line[46:54].strip()
 
                 #add data about the atom's data to the different lists
-                total_atom_count.append(data[1])
-                total_chain.append(data[4])
-                total_resi_count.append(data[5])
-                total_atom_type.append(data[2])
-                total_resi_type.append(data[3])
+                total_atom_count.append(atom_serial_num)
+                total_chain.append(chain_name)
+                total_resi_count.append(residue_num)
+                total_atom_type.append(atom_name)
+                total_resi_type.append(amino_name)
                 
                 #change all strings into floats for position values, also converting to nm from angstroms
-                position_coords = []
-                for i in range(3):
-                    position_coords.append(float(data[6+i])/10)
+                position_coords = [float(x_coord)/10, float(y_coord)/10, float(z_coord)/10]
                 total_position.append(position_coords)
                 
                 #create lists of all residuals (residual pos = location of Alpha C)
-                if data[2] == "CA":
+                if atom_name == "CA":
                     total_resi_position.append(position_coords)
-                    total_alphaC_resi_count.append(data[5])
+                    total_alphaC_resi_count.append(residue_num)
     print('Finish reading pdb file')
 
     #go through as each residual, then run through all of the atoms (kinda) and if the atoms are 

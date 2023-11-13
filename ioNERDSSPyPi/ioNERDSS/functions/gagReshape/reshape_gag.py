@@ -23,16 +23,11 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
         finalPositionsVec: The array contains the standardized sites coordinates of the gag monomers.
 
     """
-    # Obtain the coordinates of the COM and interfaces on the gag monomers
-
-    #dtb_PDB_write_PDB(dtb_PDB_separate_read(PathName))
     
     R0 = 65.0           # the target radius of the gag capsid, nm
     distanceCC = 10.0   # the distance between two hexamers, center-to-center distance, nm
     #read gag positions
-    #positions = fake_PDB_pdb_to_df("show_structure.pdb")
-    positions = fake_PDB_pdb_to_df(PathName)
-    positions = positions[["Cite_Name","x_coord", "y_coord", "z_coord"]]
+    positions = pd.read_excel("gag_sites.xlsx")
 
      #convert coordinate unit from angstrom to nm
     positions["x_coord"] = positions["x_coord"]/10.0
@@ -65,13 +60,8 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
         curr_index += (interfaces_count[i]+1)
     
 
-
-   # eliminate inconsistent interfaces (interfaces that are only present on some monomers)
-    positions = eliminate_inconsistent_sites(positions, COM_index, interfaces_count)
-    consistent_interfaces_count = np.min(interfaces_count)
-
     # generate a np array to record the coordinates of the COM and interfaces
-    positionsVec = np.zeros([monomer_count*(consistent_interfaces_count+1),3])
+    positionsVec = np.zeros([monomer_count*(interfaces_count+1),3])
     for i in range(len(positions)):
         positionsVec[i,:] = [positions.iloc[i]["x_coord"], positions.iloc[i]["y_coord"], positions.iloc[i]["z_coord"]]
     
@@ -85,7 +75,7 @@ def reshape_gag(PathName: str, WritePDB: bool = False):
 
     # first, using the centers of gags to calculate the sphere radius and sphere center 
     numGag = len(COM_index)
-    numSites = consistent_interfaces_count + 1
+    numSites = interfaces_count + 1
     centersVec = np.zeros([numGag,3])
     for i in range(0,numGag):
         centersVec[i] = positionsVec[numSites*i]

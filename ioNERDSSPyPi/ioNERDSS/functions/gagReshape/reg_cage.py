@@ -12,7 +12,11 @@ from ..database_PDB.dtb_PDB_write_PDB import *
 from .plot_3D_sites import *
 
 
-def reg_cage(PathName: str):
+def reg_cage(PathName: str, unique_chain_list: list = [[]]):
+    if(type(unique_chain_list[0]) != list):
+        raise TypeError("unique_chain_list must be a 2 dimensional list")
+    unique_chain_num = len(unique_chain_list)
+    # positions = fake_PDB_pdb_to_df("show_structure.pdb")
     positions = fake_PDB_pdb_to_df(PathName)
     positions = positions[["Protein_Name","Cite_Name","x_coord", "y_coord", "z_coord"]]
 
@@ -118,7 +122,7 @@ def reg_cage(PathName: str):
         for j in range (0,interfaces_count[i]):
             positionsVec[COM_index[i] + j + 1,:] = positionsVec[COM_index[i] + j + 1,:] + move
 
-    plot_3D_sites(positionsVec, COM_index)
+    # plot_3D_sites(positionsVec, COM_index)
     
     for i in range(len(positions)):
         positions.at[i,"x_coord"] = positionsVec[i,0]
@@ -157,9 +161,9 @@ def reg_cage(PathName: str):
     # monomerTemplateInterCoeffs is the coefficients of the gag 5 interfaces in the internal basis system
     numSites = full_interfaces_count + 1
     monomerCoeff = determine_gagTemplate_structure(full_monomer_count, numSites, full_monomer_positionsVec, returnCoeff = True)
-    print(monomerCoeff)    
 
-    # set up the internal coordinate system of the first monomer: 3 basis vecs: interBaseVec0, interBaseVec1, interBaseVec2
+    # set up the internal coordinate system of the monomers: 3 basis vecs: interBaseVec0, interBaseVec1, interBaseVec2
+    # and apply regularization coefficients
     regularized_positionsVec = np.zeros([full_monomer_count*(numSites),3])
     for i in range(0,full_monomer_count):
         center = full_monomer_positionsVec[numSites*i,:]                                            # center of the monomer
