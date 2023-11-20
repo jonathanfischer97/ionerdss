@@ -10,20 +10,26 @@ from .gag_write_PDB import *
 from ..database_PDB.dtb_PDB_separate_read import *
 from ..database_PDB.dtb_PDB_write_PDB import *
 from .plot_3D_sites import *
+from .fake_calc_angle import *
+from .find_nearest_site import *
 
 
 def reg_cage(PathName: str, unique_chain_list: list = [[]]):
     if(type(unique_chain_list[0]) != list):
         raise TypeError("unique_chain_list must be a 2 dimensional list")
-    unique_chain_num = len(unique_chain_list)
+    
     # positions = fake_PDB_pdb_to_df("show_structure.pdb")
     positions = fake_PDB_pdb_to_df(PathName)
-    positions = positions[["Protein_Name","Cite_Name","x_coord", "y_coord", "z_coord"]]
+
 
     # convert coordinate unit from angstrom to nm
     positions["x_coord"] = positions["x_coord"]/10.0
     positions["y_coord"] = positions["y_coord"]/10.0
     positions["z_coord"] = positions["z_coord"]/10.0
+
+    if unique_chain_list == [[]]:
+        unique_chain_list = [positions["Protein_Name"].unique()]
+    
 
     # get the number of monomers
     monomer_count = 0
@@ -48,6 +54,8 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
     for i in range(len(interfaces_count)):
         COM_index.append(curr_index)
         curr_index += (interfaces_count[i]+1)
+
+    # plot before reshaping
     #plot_3D_sites(positionsVec, COM_index)
 
     # sort the sites in the order of increasing distance from the COM of each monomer.
@@ -121,68 +129,124 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
         centersVec[i,:] = centersVec[i,:] + move
         for j in range (0,interfaces_count[i]):
             positionsVec[COM_index[i] + j + 1,:] = positionsVec[COM_index[i] + j + 1,:] + move
-
+    
+    # plot after fitting to sphere
     # plot_3D_sites(positionsVec, COM_index)
     
+    # undate positions dataframe
     for i in range(len(positions)):
         positions.at[i,"x_coord"] = positionsVec[i,0]
         positions.at[i,"y_coord"] = positionsVec[i,1]
         positions.at[i,"z_coord"] = positionsVec[i,2]
     
-
     ##############################################
+    # For each group of unqiue chains,
     # Determine the regulation coefficients and apply the regulation to the monomers
     ##############################################
     # find the "full monomers"
     # monomers that have all interfaces recorded in the PDB file are considered as full monomers
-    full_monomer_COM_index = []
-    full_interfaces_count = np.max(interfaces_count)
-    for i in range(monomer_count):
-        if(interfaces_count[i] == full_interfaces_count):
-            full_monomer_COM_index.append(COM_index[i])
-    full_monomer_count = len(full_monomer_COM_index)
+    for unique_chains in unique_chain_list:
+        # get the indecies of the COM for this group of unique chains
+        unique_chains_COM_index = []
+        for i in range(len(positions)):
+            if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Cite_Name"] == "COM":
+                unique_chains_COM_index.append(i)
+        
+        # get the interfaces count for this group of unique chains
+        unique_chains_interfaces_count = []
+        for i in range(len(COM_index)):
+            if COM_index[i] in unique_chains_COM_index:
+                unique_chains_interfaces_count.append(interfaces_count[i])
 
-    # generate a np array to record the coordinates of the COM and interfaces of the full monomers
-    full_monomer_positionsVec = np.zeros([full_monomer_count*(full_interfaces_count+1),3])
-    for i in range(full_monomer_count):
-        for j in range(full_interfaces_count+1):
-            full_monomer_positionsVec[i*(full_interfaces_count+1)+j] = positionsVec[full_monomer_COM_index[i]+j,:]
+        # get the indecies of the COM for each full monomer in this group of unique chains (monomers that have all interfaces recorded in the PDB file)
+        unique_chains_full_monomer_COM_index = []
+        unique_chains_interfaces_count = np.array(unique_chains_interfaces_count)
+        unique_chains_full_interfaces_count = np.max(unique_chains_interfaces_count)
+        for i in range(len(unique_chains_interfaces_count)):
+            if(unique_chains_interfaces_count[i] == unique_chains_full_interfaces_count):
+                unique_chains_full_monomer_COM_index.append(unique_chains_COM_index[i])
+        unique_chains_full_monomer_count = len(unique_chains_full_monomer_COM_index)
+
+        # generate a np array to record the coordinates of the COM and interfaces of the full monomers
+        full_monomer_positionsVec = np.zeros([unique_chains_full_monomer_count*(unique_chains_full_interfaces_count+1),3])
+        for i in range(unique_chains_full_monomer_count):
+            for j in range(unique_chains_full_interfaces_count+1):
+                full_monomer_positionsVec[i*(unique_chains_full_interfaces_count+1)+j] = positionsVec[unique_chains_full_monomer_COM_index[i]+j,:]
+        
+
+        full_monomer_COM_index_graph = []
+        for i in range(unique_chains_full_monomer_count):
+            full_monomer_COM_index_graph.append(i*(unique_chains_full_interfaces_count+1))
+        
+        # plot this group of unqiue chains before regularization
+        # plot_3D_sites(full_monomer_positionsVec, full_monomer_COM_index_graph)
+
+        # Determine the regularized coefficients. All monomers will be reshaped according to this template
+        # monomerTemplate is the positions of the gag center and five interfaces
+        # monomerTemplateInterCoeffs is the coefficients of the gag 5 interfaces in the internal basis system
+        numSites = unique_chains_full_interfaces_count + 1
+        monomerCoeff = determine_gagTemplate_structure(unique_chains_full_monomer_count, numSites, full_monomer_positionsVec, returnCoeff = True)
+        print("Chains:", unique_chains)
+        print("Interfaces at: \n", monomerCoeff)
+
+        # set up the internal coordinate system of the monomers: 3 basis vecs: interBaseVec0, interBaseVec1, interBaseVec2
+        # and apply regularization coefficients
+        regularized_positionsVec = np.zeros([unique_chains_full_monomer_count*(numSites),3])
+        for i in range(0,unique_chains_full_monomer_count):
+            center = full_monomer_positionsVec[numSites*i,:]                                            # center of the monomer
+            interBaseVec0 = center / np.linalg.norm(center)                   # along the radius direction
+            interBaseVec1 = full_monomer_positionsVec[i*numSites+1,:] - center          # in the direction of the first interface
+            interBaseVec2 = np.cross(interBaseVec0,interBaseVec1)               # orthogonal to the first two basis vecs
+            interBaseVec2 = interBaseVec2 / np.linalg.norm(interBaseVec2) 
+            interBaseVec1 = np.cross(interBaseVec2,interBaseVec0)
+            interBaseVec1 = interBaseVec1 / np.linalg.norm(interBaseVec1)
+            regularized_positionsVec[numSites*i,:] = center
+            for j in range (0,numSites-1) :
+                regularized_positionsVec[numSites*i+j+1,:] = center + interBaseVec0 * monomerCoeff[j,0] + interBaseVec1 * monomerCoeff[j,1] + interBaseVec2 * monomerCoeff[j,2]
+
+        # plot this group of unqiue chains after regularization
+        # plot_3D_sites(regularized_positionsVec, full_monomer_COM_index_graph)
+
+        # update the coordinates of the full monomers
+        for i in range(unique_chains_full_monomer_count):
+            for j in range(unique_chains_full_interfaces_count+1):
+                positions.at[unique_chains_full_monomer_COM_index[i]+j, "x_coord"] = regularized_positionsVec[i*(unique_chains_full_interfaces_count+1)+j,0]
+                positions.at[unique_chains_full_monomer_COM_index[i]+j, "y_coord"] = regularized_positionsVec[i*(unique_chains_full_interfaces_count+1)+j,1]
+                positions.at[unique_chains_full_monomer_COM_index[i]+j, "z_coord"] = regularized_positionsVec[i*(unique_chains_full_interfaces_count+1)+j,2]
+                positionsVec[unique_chains_full_monomer_COM_index[i]+j,:] = regularized_positionsVec[i*(unique_chains_full_interfaces_count+1)+j,:]
     
-
-    full_monomer_COM_index_graph = []
-    for i in range(full_monomer_count):
-        full_monomer_COM_index_graph.append(i*(full_interfaces_count+1))
+    # plot after regularization
+    #plot_3D_sites(positionsVec, COM_index)
     
+    # for unique_chains in unique_chain_list:
+    #     # get the indecies of the COM for this group of unique chains
+    #     unique_chains_COM_index = []
+    #     for i in range(len(positions)):
+    #         if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Cite_Name"] == "COM":
+    #             unique_chains_COM_index.append(i)
+        
+    #     # get the interfaces count for this group of unique chains
+    #     unique_chains_interfaces_count = []
+    #     for i in range(len(COM_index)):
+    #         if COM_index[i] in unique_chains_COM_index:
+    #             unique_chains_interfaces_count.append(interfaces_count[i])
+        
+    #     # calculate the angles of reaction for each chain in this group of unique chains
+    #     theta1_array = np.zeros(len(unique_chains_COM_index))
+    #     theta2_array = np.zeros(len(unique_chains_COM_index))
+    #     phi1_array = np.zeros(len(unique_chains_COM_index))
+    #     phi2_array = np.zeros(len(unique_chains_COM_index))
+    #     omega_array = np.zeros(len(unique_chains_COM_index))
+    #     for i in range(len(unique_chains_COM_index)):
+    #         c1 = positionsVec[unique_chains_COM_index[i]]
+    #         for j in range(unique_chains_interfaces_count[i]):
+    #             p1 = positionsVec[unique_chains_COM_index[i]+j+1,:]
+    #             c2, p2 = find_nearest_site(p1, positionsVec, COM_index, interfaces_count)
+    #             n1 = p1
+    #             n2 = p2
+    #             print(np.linalg.norm(p1-p2))
+    #             #print(calculateAngles(c1,c2,p1,p2,n1,n2))
 
-    plot_3D_sites(full_monomer_positionsVec, full_monomer_COM_index_graph)
 
-    # Determine the regularized coefficients. All monomers will be reshaped according to this template
-    # monomerTemplate is the positions of the gag center and five interfaces
-    # monomerTemplateInterCoeffs is the coefficients of the gag 5 interfaces in the internal basis system
-    numSites = full_interfaces_count + 1
-    monomerCoeff = determine_gagTemplate_structure(full_monomer_count, numSites, full_monomer_positionsVec, returnCoeff = True)
 
-    # set up the internal coordinate system of the monomers: 3 basis vecs: interBaseVec0, interBaseVec1, interBaseVec2
-    # and apply regularization coefficients
-    regularized_positionsVec = np.zeros([full_monomer_count*(numSites),3])
-    for i in range(0,full_monomer_count):
-        center = full_monomer_positionsVec[numSites*i,:]                                            # center of the monomer
-        interBaseVec0 = center / np.linalg.norm(center)                   # along the radius direction
-        interBaseVec1 = full_monomer_positionsVec[i*numSites+1,:] - center          # in the direction of the first interface
-        interBaseVec2 = np.cross(interBaseVec0,interBaseVec1)               # orthogonal to the first two basis vecs
-        interBaseVec2 = interBaseVec2 / np.linalg.norm(interBaseVec2) 
-        interBaseVec1 = np.cross(interBaseVec2,interBaseVec0)
-        interBaseVec1 = interBaseVec1 / np.linalg.norm(interBaseVec1)
-        regularized_positionsVec[numSites*i,:] = center
-        for j in range (0,numSites-1) :
-            regularized_positionsVec[numSites*i+j+1,:] = center + interBaseVec0 * monomerCoeff[j,0] + interBaseVec1 * monomerCoeff[j,1] + interBaseVec2 * monomerCoeff[j,2]
-
-    plot_3D_sites(regularized_positionsVec, full_monomer_COM_index_graph)
-
-    # update the coordinates of the full monomers
-    for i in range(full_monomer_count):
-        for j in range(full_interfaces_count+1):
-            positionsVec[full_monomer_COM_index[i]+j,:] = regularized_positionsVec[i*(full_interfaces_count+1)+j,:]
-    
-    plot_3D_sites(positionsVec, COM_index)
     return positionsVec

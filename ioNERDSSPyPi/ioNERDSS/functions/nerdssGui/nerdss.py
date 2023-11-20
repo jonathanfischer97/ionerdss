@@ -736,6 +736,8 @@ class LongTaskThread(QThread):
                 molecule.radius = max(
                     molecule.radius, np.linalg.norm(interface.positions)
                 )
+                
+        
 
         # Calculate the translational diffusion coefficient and rotational diffusion coefficient
         for molecule in molecules:
