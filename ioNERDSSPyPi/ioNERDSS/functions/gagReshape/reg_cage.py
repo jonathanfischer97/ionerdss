@@ -30,7 +30,6 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
     if unique_chain_list == [[]]:
         unique_chain_list = [positions["Protein_Name"].unique()]
     
-
     # get the number of monomers
     monomer_count = 0
     for i in range(len(positions)):
@@ -107,6 +106,7 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
             isForceSmallEnough = True
 
     print('Sphere center position [x,y,z] and radius [R] are, respectively: \n',sphereXYZR) 
+    print("\n")
     x0 = sphereXYZR[0] 
     y0 = sphereXYZR[1] 
     z0 = sphereXYZR[2] 
@@ -187,7 +187,10 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
         numSites = unique_chains_full_interfaces_count + 1
         monomerCoeff = determine_gagTemplate_structure(unique_chains_full_monomer_count, numSites, full_monomer_positionsVec, returnCoeff = True)
         print("Chains:", unique_chains)
-        print("Interfaces at: \n", monomerCoeff)
+        print("Interfaces at: [x, y, z]")
+        print(monomerCoeff)
+        print("\n")
+        
 
         # set up the internal coordinate system of the monomers: 3 basis vecs: interBaseVec0, interBaseVec1, interBaseVec2
         # and apply regularization coefficients
@@ -218,35 +221,54 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
     # plot after regularization
     #plot_3D_sites(positionsVec, COM_index)
     
-    # for unique_chains in unique_chain_list:
-    #     # get the indecies of the COM for this group of unique chains
-    #     unique_chains_COM_index = []
-    #     for i in range(len(positions)):
-    #         if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Cite_Name"] == "COM":
-    #             unique_chains_COM_index.append(i)
+    for unique_chains in unique_chain_list:
+        print("The binding parameters for chains", unique_chains, "are:")
+        print(" [ sigma,      theta1,     theta1,     phi1,       phi2,       omega]")
+        # get the indecies of the COM for this group of unique chains
+        unique_chains_COM_index = []
+        for i in range(len(positions)):
+            if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Cite_Name"] == "COM":
+                unique_chains_COM_index.append(i)
         
-    #     # get the interfaces count for this group of unique chains
-    #     unique_chains_interfaces_count = []
-    #     for i in range(len(COM_index)):
-    #         if COM_index[i] in unique_chains_COM_index:
-    #             unique_chains_interfaces_count.append(interfaces_count[i])
-        
-    #     # calculate the angles of reaction for each chain in this group of unique chains
-    #     theta1_array = np.zeros(len(unique_chains_COM_index))
-    #     theta2_array = np.zeros(len(unique_chains_COM_index))
-    #     phi1_array = np.zeros(len(unique_chains_COM_index))
-    #     phi2_array = np.zeros(len(unique_chains_COM_index))
-    #     omega_array = np.zeros(len(unique_chains_COM_index))
-    #     for i in range(len(unique_chains_COM_index)):
-    #         c1 = positionsVec[unique_chains_COM_index[i]]
-    #         for j in range(unique_chains_interfaces_count[i]):
-    #             p1 = positionsVec[unique_chains_COM_index[i]+j+1,:]
-    #             c2, p2 = find_nearest_site(p1, positionsVec, COM_index, interfaces_count)
-    #             n1 = p1
-    #             n2 = p2
-    #             print(np.linalg.norm(p1-p2))
-    #             #print(calculateAngles(c1,c2,p1,p2,n1,n2))
+        # get the interfaces count for this group of unique chains
+        unique_chains_interfaces_count = []
+        for i in range(len(COM_index)):
+            if COM_index[i] in unique_chains_COM_index:
+                unique_chains_interfaces_count.append(interfaces_count[i])
 
+        # get the indecies of the COM for each full monomer in this group of unique chains (monomers that have all interfaces recorded in the PDB file)
+        unique_chains_full_monomer_COM_index = []
+        unique_chains_interfaces_count = np.array(unique_chains_interfaces_count)
+        unique_chains_full_interfaces_count = np.max(unique_chains_interfaces_count)
+        for i in range(len(unique_chains_interfaces_count)):
+            if(unique_chains_interfaces_count[i] == unique_chains_full_interfaces_count):
+                unique_chains_full_monomer_COM_index.append(unique_chains_COM_index[i])
+        unique_chains_full_monomer_count = len(unique_chains_full_monomer_COM_index)
+        
+        # calculate the sigma and angles of reaction for each chain in this group of unique chains
+        angles_list = []
+        for i in range(len(unique_chains_full_monomer_COM_index)):
+            c1 = positionsVec[unique_chains_full_monomer_COM_index[i]]
+            for j in range(unique_chains_full_interfaces_count):
+                p1 = positionsVec[unique_chains_COM_index[i]+j+1,:]
+                c2, p2 = find_nearest_site(p1, positionsVec, COM_index, interfaces_count)
+                n1 = p1
+                n2 = p2
+                angles_list.append(np.array(calculateAngles(c1,c2,p1,p2,n1,n2)))
+
+        final_mean_angle_list = []
+        # take the average angles and sigma values 
+        for i in range(unique_chains_full_interfaces_count):
+            temp_angles_list = []
+            mean_angles_list = []
+            for j in range(len(unique_chains_full_monomer_COM_index)):
+                temp_angles_list.append(angles_list[j*unique_chains_full_interfaces_count + i])
+            temp_angles_list = np.array(temp_angles_list)
+            mean_angles_list = np.mean(temp_angles_list, axis = 0)
+            final_mean_angle_list.append(mean_angles_list)
+        final_mean_angle_array = np.array(final_mean_angle_list)
+        print(final_mean_angle_array)    
+        print("\n")
 
 
     return positionsVec

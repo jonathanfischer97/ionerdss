@@ -902,18 +902,29 @@ class LongTaskThread(QThread):
         sigma1 = p1 - p2
         sigma2 = -sigma1
 
-        theta1 = np.arccos(
-            np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1))
-        )
-        theta2 = np.arccos(
-            np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2))
-        )
+        if np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1)) <= 1:  # prevent float point arithematic rounding errors
+            theta1 = np.arccos(
+                np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1))
+            )
+        else:
+            theta1 = 0
+
+
+        if np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2)) <= 1:   # prevent float point arithematic rounding errors
+            theta2 = np.arccos(
+                np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2))
+            )
+        else:
+            theta2 = 0
 
         t1 = np.cross(v1, sigma1)
         t2 = np.cross(v1, n1)
         norm_t1 = t1 / np.linalg.norm(t1)
         norm_t2 = t2 / np.linalg.norm(t2)
-        phi1 = np.arccos(np.dot(norm_t1, norm_t2))
+        if np.dot(norm_t1, norm_t2) <= 1:  # prevent float point arithematic rounding errors
+            phi1 = np.arccos(np.dot(norm_t1, norm_t2))
+        else:
+            phi1 = 0
 
         # the sign of phi1 is determined by the direction of t2 relative to the right-hand rule of cross product of v1 and t1
         if np.dot(np.cross(v1, t1), t2) > 0:
@@ -923,7 +934,10 @@ class LongTaskThread(QThread):
         t2 = np.cross(v2, n2)
         norm_t1 = t1 / np.linalg.norm(t1)
         norm_t2 = t2 / np.linalg.norm(t2)
-        phi2 = np.arccos(np.dot(norm_t1, norm_t2))
+        if np.dot(norm_t1, norm_t2) <= 1:   # prevent float point arithematic rounding errors
+            phi2 = np.arccos(np.dot(norm_t1, norm_t2))
+        else: 
+            phi2 = 0
 
         # the sign of phi2 is determined by the direction of t2 relative to the right-hand rule of cross product of v2 and t1
         if np.dot(np.cross(v2, t1), t2) > 0:
@@ -937,8 +951,12 @@ class LongTaskThread(QThread):
         else:
             t1 = np.cross(sigma1, n1)
             t2 = np.cross(sigma1, n2)
+        
 
-        omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
+        if np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)) <= 1:  # prevent float point arithematic rounding errors
+            omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
+        else:
+            omega = 0
 
         # the sign of omega is determined by the direction of t2 relative to the right-hand rule of cross product of sigma1 and t1
         if np.dot(np.cross(sigma1, t1), t2) > 0:
