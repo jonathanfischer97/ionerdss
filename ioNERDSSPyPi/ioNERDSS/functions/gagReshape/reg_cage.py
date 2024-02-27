@@ -20,8 +20,6 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
     
     # positions = fake_PDB_pdb_to_df("show_structure.pdb")
     positions = fake_PDB_pdb_to_df(PathName)
-
-
     # convert coordinate unit from angstrom to nm
     positions["x_coord"] = positions["x_coord"]/10.0
     positions["y_coord"] = positions["y_coord"]/10.0
@@ -54,8 +52,7 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
         COM_index.append(curr_index)
         curr_index += (interfaces_count[i]+1)
 
-    # plot before reshaping
-    #plot_3D_sites(positionsVec, COM_index)
+    
 
     # sort the sites in the order of increasing distance from the COM of each monomer.
     distances = []
@@ -80,11 +77,13 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
     for i in range(len(positions)):
         positionsVec[i,:] = [positions.iloc[i]["x_coord"], positions.iloc[i]["y_coord"], positions.iloc[i]["z_coord"]]
 
+    # plot before reshaping
+    #plot_3D_sites(positionsVec, COM_index)
+
     # get the coordinates of the COM
     centersVec = np.zeros([monomer_count,3])
     for i in range(len(COM_index)):
         centersVec[i] = positionsVec[COM_index[i]]
-    
     ##############################################
     # find the sphere radius and the sphere center
     ##############################################
@@ -132,13 +131,11 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
     
     # plot after fitting to sphere
     # plot_3D_sites(positionsVec, COM_index)
-    
     # undate positions dataframe
     for i in range(len(positions)):
         positions.at[i,"x_coord"] = positionsVec[i,0]
         positions.at[i,"y_coord"] = positionsVec[i,1]
         positions.at[i,"z_coord"] = positionsVec[i,2]
-    
     ##############################################
     # For each group of unqiue chains,
     # Determine the regulation coefficients and apply the regulation to the monomers
@@ -151,13 +148,11 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
         for i in range(len(positions)):
             if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Cite_Name"] == "COM":
                 unique_chains_COM_index.append(i)
-        
         # get the interfaces count for this group of unique chains
         unique_chains_interfaces_count = []
         for i in range(len(COM_index)):
             if COM_index[i] in unique_chains_COM_index:
                 unique_chains_interfaces_count.append(interfaces_count[i])
-
         # get the indecies of the COM for each full monomer in this group of unique chains (monomers that have all interfaces recorded in the PDB file)
         unique_chains_full_monomer_COM_index = []
         unique_chains_interfaces_count = np.array(unique_chains_interfaces_count)
@@ -222,8 +217,9 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
     #plot_3D_sites(positionsVec, COM_index)
     
     for unique_chains in unique_chain_list:
+        print("With normal vector (1,0,0),")
         print("The binding parameters for chains", unique_chains, "are:")
-        print(" [ sigma,      theta1,     theta1,     phi1,       phi2,       omega]")
+        print(" [ sigma,      theta1,     theta2,     phi1,       phi2,       omega]")
         # get the indecies of the COM for this group of unique chains
         unique_chains_COM_index = []
         for i in range(len(positions)):
@@ -252,10 +248,11 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
             for j in range(unique_chains_full_interfaces_count):
                 p1 = positionsVec[unique_chains_COM_index[i]+j+1,:]
                 c2, p2 = find_nearest_site(p1, positionsVec, COM_index, interfaces_count)
-                n1 = p1
-                n2 = p2
+                n1 = c1
+                n2 = c2
                 angles_list.append(np.array(calculateAngles(c1,c2,p1,p2,n1,n2)))
-
+        angles_list = np.array(angles_list)
+        #print(angles_list)
         final_mean_angle_list = []
         # take the average angles and sigma values 
         for i in range(unique_chains_full_interfaces_count):
@@ -269,6 +266,5 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
         final_mean_angle_array = np.array(final_mean_angle_list)
         print(final_mean_angle_array)    
         print("\n")
-
 
     return positionsVec
