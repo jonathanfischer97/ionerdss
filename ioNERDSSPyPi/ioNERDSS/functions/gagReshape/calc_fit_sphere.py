@@ -12,7 +12,7 @@ def calc_fit_sphere(PathName: str):
     positions["z_coord"] = positions["z_coord"]/10.0
     COM_positions = positions[positions["Cite_Name"] == "COM"]
     res = []
-    for i in range(len(COM_positions) * 100):
+    for i in range(int((len(COM_positions)/50) **4)):
         # sample four random COMs
         
         rand1 = int(np.random.random()* len(COM_positions))

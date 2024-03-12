@@ -14,7 +14,7 @@ from .fake_calc_angle import *
 from .find_nearest_site import *
 
 
-def reg_cage(PathName: str, unique_chain_list: list = [[]]):
+def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: list = [[]]):
     if(type(unique_chain_list[0]) != list):
         raise TypeError("unique_chain_list must be a 2 dimensional list")
     
@@ -78,7 +78,7 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
         positionsVec[i,:] = [positions.iloc[i]["x_coord"], positions.iloc[i]["y_coord"], positions.iloc[i]["z_coord"]]
 
     # plot before reshaping
-    #plot_3D_sites(positionsVec, COM_index)
+    plot_3D_sites(positionsVec, COM_index)
 
     # get the coordinates of the COM
     centersVec = np.zeros([monomer_count,3])
@@ -130,12 +130,16 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
             positionsVec[COM_index[i] + j + 1,:] = positionsVec[COM_index[i] + j + 1,:] + move
     
     # plot after fitting to sphere
-    # plot_3D_sites(positionsVec, COM_index)
+    plot_3D_sites(positionsVec, COM_index)
+
+
     # undate positions dataframe
     for i in range(len(positions)):
         positions.at[i,"x_coord"] = positionsVec[i,0]
         positions.at[i,"y_coord"] = positionsVec[i,1]
         positions.at[i,"z_coord"] = positionsVec[i,2]
+
+    
     ##############################################
     # For each group of unqiue chains,
     # Determine the regulation coefficients and apply the regulation to the monomers
@@ -174,7 +178,7 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
             full_monomer_COM_index_graph.append(i*(unique_chains_full_interfaces_count+1))
         
         # plot this group of unqiue chains before regularization
-        # plot_3D_sites(full_monomer_positionsVec, full_monomer_COM_index_graph)
+        plot_3D_sites(full_monomer_positionsVec, full_monomer_COM_index_graph)
 
         # Determine the regularized coefficients. All monomers will be reshaped according to this template
         # monomerTemplate is the positions of the gag center and five interfaces
@@ -202,8 +206,9 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
             for j in range (0,numSites-1) :
                 regularized_positionsVec[numSites*i+j+1,:] = center + interBaseVec0 * monomerCoeff[j,0] + interBaseVec1 * monomerCoeff[j,1] + interBaseVec2 * monomerCoeff[j,2]
 
+
         # plot this group of unqiue chains after regularization
-        # plot_3D_sites(regularized_positionsVec, full_monomer_COM_index_graph)
+        plot_3D_sites(regularized_positionsVec, full_monomer_COM_index_graph)
 
         # update the coordinates of the full monomers
         for i in range(unique_chains_full_monomer_count):
@@ -214,7 +219,7 @@ def reg_cage(PathName: str, unique_chain_list: list = [[]]):
                 positionsVec[unique_chains_full_monomer_COM_index[i]+j,:] = regularized_positionsVec[i*(unique_chains_full_interfaces_count+1)+j,:]
     
     # plot after regularization
-    #plot_3D_sites(positionsVec, COM_index)
+    plot_3D_sites(positionsVec, COM_index)
     
     for unique_chains in unique_chain_list:
         print("With normal vector (1,0,0),")
