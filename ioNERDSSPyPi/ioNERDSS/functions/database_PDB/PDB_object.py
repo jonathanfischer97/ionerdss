@@ -5,7 +5,7 @@ class ProteinComplex():
     """
 
 
-    def __init__(self,FileName: str,ChainsIncluded: list = [None]):
+    def __init__(self,FileName: str,ChainsIncluded: list = [None], MaxBoundLength: float = 0.3, symmetry_applied: bool = False):
         """Initilizes the ProteinComplex object by reading off of a .pdb file
 
         Args:
@@ -15,7 +15,7 @@ class ProteinComplex():
         from . import dtb_PDB_separate_read
 
         if len(ChainsIncluded) >= 2 or ChainsIncluded == [None]:
-            self.reaction_chain, self.int_site, self.int_site_distance, self.unique_chain, self.COM = dtb_PDB_separate_read(FileName,ChainsIncluded)
+            self.reaction_chain, self.int_site, self.int_site_distance, self.unique_chain, self.COM = dtb_PDB_separate_read(FileName,ChainsIncluded, MaxBoundLength, symmetry_applied)
             self.one_site_chain = ['na']
         else:
             raise Exception('The ChainsIncluded list, if included, must be greater then 2')

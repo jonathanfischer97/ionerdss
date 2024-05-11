@@ -23,10 +23,16 @@ def distance_bw_atoms_in_chains(split_position,split_resi_position,i,j, max_boun
     
     #for each atom in chain 1 (i)
     for m,atom_coords_ch1 in enumerate(split_position[i]):
-                
+        # to improve efficiency, we can disregard atoms that are too far away from each other
+        upper_lim = [atom_coords_ch1[0] + max_bound_length, atom_coords_ch1[1] + max_bound_length, atom_coords_ch1[2] + max_bound_length]
+        lower_lim = [atom_coords_ch1[0] - max_bound_length, atom_coords_ch1[1] - max_bound_length, atom_coords_ch1[2] - max_bound_length]
         #for each atom in chain 2 (j)
         for n,atom_coords_ch2 in enumerate(split_position[j]):
-                    
+            # if the atom is too far away, we can skip it
+            if atom_coords_ch2[0] > upper_lim[0] or atom_coords_ch2[1] > upper_lim[1] or atom_coords_ch2[2] > upper_lim[2]:
+                continue
+            if atom_coords_ch2[0] < lower_lim[0] or atom_coords_ch2[1] < lower_lim[1] or atom_coords_ch2[2] < lower_lim[2]:
+                continue
             #calculate the distance between the two
             distance = math.sqrt((atom_coords_ch1[0]-atom_coords_ch2[0])**2 + (atom_coords_ch1[1]-atom_coords_ch2[1])**2 + (atom_coords_ch1[2]-atom_coords_ch2[2])**2)
 

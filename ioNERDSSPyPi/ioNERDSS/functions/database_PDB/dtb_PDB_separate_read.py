@@ -3,7 +3,7 @@ import sys
 from .gen.real_PDB_chain_int_simple import real_PDB_chain_int_simple
 
 
-def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None], MaxBoundLength: float = 0.3):
+def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None], MaxBoundLength: float = 0.3, SymmetryApplied: bool = False):
     """
     This function will extract the coordinate information stored inside a real PDB file and calculate 
     the COM of each unique chain, as well as recognize the binding information between each pair of chains 
@@ -45,19 +45,25 @@ def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None], MaxBoundL
         
         #go through each line in the file
         for line in filename:
-            
             #based on the data, import data from that line into lists
             id = line[:4]
-            chain_name = line[21].strip()
+            if id != "ATOM":
+                continue
+            if(not SymmetryApplied):
+                chain_name = line[21].strip()
+            else:
+                chain_name = line[72:76].strip()
             if id == 'ENDMDL':
                 break
             elif id == 'ATOM' and (chain_name in ChainsIncluded or ChainsIncluded == [None]):  # find all 'atom' lines. But only add atom if it is in 'chainincluded'
-                
                 #check amino acid name, then edit it accordingly
                 atom_serial_num = line[6:11].strip()
                 atom_name = line[12:16].strip()
                 amino_name = line[17:20].strip()
-                chain_name = line[21].strip()
+                if(not SymmetryApplied):
+                    chain_name = line[21].strip()
+                else:
+                    chain_name = line[72:76].strip()
                 residue_num = line[22:26].strip()
                 x_coord = line[30:38].strip()
                 y_coord = line[38:46].strip()
@@ -79,7 +85,6 @@ def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None], MaxBoundL
                     total_resi_position.append(position_coords)
                     total_alphaC_resi_count.append(residue_num)
     print('Finish reading pdb file')
-
     #go through as each residual, then run through all of the atoms (kinda) and if the atoms are 
     #in the residual set that atoms position to the residual (Creates total_resi_position_every_atom)
     count = 0
@@ -159,7 +164,7 @@ def dtb_PDB_separate_read(FileName: str,ChainsIncluded: list = [None], MaxBoundL
             inner_resi_position_every_atom = []
             chain_end_atom.append(len(split_atom_count[chain_counter]))
             chain_counter = chain_counter + 1
-
+            
         if total_chain[i] == unique_chain[chain_counter]:
             inner_atom_count.append(total_atom_count[i])
             inner_chain.append(total_chain[i])

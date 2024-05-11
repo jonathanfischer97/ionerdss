@@ -11,12 +11,12 @@ from ..database_PDB.dtb_PDB_separate_read import *
 from ..database_PDB.dtb_PDB_write_PDB import *
 from .plot_3D_sites import *
 from .fake_calc_angle import *
-from .find_nearest_site import *
+from .find_complementry_site import *
 
 
-def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: list = [[]]):
-    if(type(unique_chain_list[0]) != list):
-        raise TypeError("unique_chain_list must be a 2 dimensional list")
+def repeated_protein_subunit_regularization(PathName: str, UniqueChainList: list = [[]]):
+    if(type(UniqueChainList[0]) != list):
+        raise TypeError("UniqueChainList must be a 2 dimensional list")
     
     # positions = fake_PDB_pdb_to_df("show_structure.pdb")
     positions = fake_PDB_pdb_to_df(PathName)
@@ -25,23 +25,23 @@ def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: li
     positions["y_coord"] = positions["y_coord"]/10.0
     positions["z_coord"] = positions["z_coord"]/10.0
 
-    if unique_chain_list == [[]]:
-        unique_chain_list = [positions["Protein_Name"].unique()]
+    if UniqueChainList == [[]]:
+        UniqueChainList = [positions["Protein_Name"].unique()]
     
     # get the number of monomers
     monomer_count = 0
     for i in range(len(positions)):
-        if(positions.iloc[i]["Cite_Name"] == "COM"):
+        if(positions.iloc[i]["Site_Name"] == "COM"):
             monomer_count += 1
-    
+
     # get count of interfaces for each monomer
     interfaces_count = []
     count = 0
     for i in range(len(positions)):
         count += 1
-        if(positions.iloc[i]["Cite_Name"] == "COM"):
+        if(positions.iloc[i]["Site_Name"] == "COM"):
             count = 0
-        if(i+1 == len(positions) or positions.iloc[i+1]["Cite_Name"] == "COM"):
+        if(i+1 == len(positions) or positions.iloc[i+1]["Site_Name"] == "COM"):
             interfaces_count.append(count)
     interfaces_count = np.array(interfaces_count)
 
@@ -52,7 +52,6 @@ def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: li
         COM_index.append(curr_index)
         curr_index += (interfaces_count[i]+1)
 
-    
 
     # sort the sites in the order of increasing distance from the COM of each monomer.
     distances = []
@@ -146,11 +145,11 @@ def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: li
     ##############################################
     # find the "full monomers"
     # monomers that have all interfaces recorded in the PDB file are considered as full monomers
-    for unique_chains in unique_chain_list:
+    for unique_chains in UniqueChainList:
         # get the indecies of the COM for this group of unique chains
         unique_chains_COM_index = []
         for i in range(len(positions)):
-            if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Cite_Name"] == "COM":
+            if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Site_Name"] == "COM":
                 unique_chains_COM_index.append(i)
         # get the interfaces count for this group of unique chains
         unique_chains_interfaces_count = []
@@ -194,6 +193,7 @@ def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: li
         # set up the internal coordinate system of the monomers: 3 basis vecs: interBaseVec0, interBaseVec1, interBaseVec2
         # and apply regularization coefficients
         regularized_positionsVec = np.zeros([unique_chains_full_monomer_count*(numSites),3])
+        deviation = np.zeros([unique_chains_full_monomer_count*(numSites)])
         for i in range(0,unique_chains_full_monomer_count):
             center = full_monomer_positionsVec[numSites*i,:]                                            # center of the monomer
             interBaseVec0 = center / np.linalg.norm(center)                   # along the radius direction
@@ -205,6 +205,9 @@ def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: li
             regularized_positionsVec[numSites*i,:] = center
             for j in range (0,numSites-1) :
                 regularized_positionsVec[numSites*i+j+1,:] = center + interBaseVec0 * monomerCoeff[j,0] + interBaseVec1 * monomerCoeff[j,1] + interBaseVec2 * monomerCoeff[j,2]
+                original_interface_position = full_monomer_positionsVec[numSites*i+j+1,:]
+                deviation[numSites*i+j+1] = np.linalg.norm(regularized_positionsVec[numSites*i+j+1] - original_interface_position)
+        # print("Deviation = ", deviation)
 
 
         # plot this group of unqiue chains after regularization
@@ -221,14 +224,14 @@ def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: li
     # plot after regularization
     plot_3D_sites(positionsVec, COM_index)
     
-    for unique_chains in unique_chain_list:
+    for unique_chains in UniqueChainList:
         print("With normal vector (1,0,0),")
-        print("The binding parameters for chains", unique_chains, "are:")
+        print("The binding parameters for the interfaces in chains", unique_chains, "are:")
         print(" [ sigma,      theta1,     theta2,     phi1,       phi2,       omega]")
         # get the indecies of the COM for this group of unique chains
         unique_chains_COM_index = []
         for i in range(len(positions)):
-            if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Cite_Name"] == "COM":
+            if positions.iloc[i]["Protein_Name"] in unique_chains and positions.iloc[i]["Site_Name"] == "COM":
                 unique_chains_COM_index.append(i)
         
         # get the interfaces count for this group of unique chains
@@ -248,16 +251,18 @@ def repeated_protein_subunit_regularization(PathName: str, unique_chain_list: li
         
         # calculate the sigma and angles of reaction for each chain in this group of unique chains
         angles_list = []
-        for i in range(len(unique_chains_full_monomer_COM_index)):
-            c1 = positionsVec[unique_chains_full_monomer_COM_index[i]]
+        for i in unique_chains_full_monomer_COM_index:
+            c1 = positionsVec[i]
             for j in range(unique_chains_full_interfaces_count):
-                p1 = positionsVec[unique_chains_COM_index[i]+j+1,:]
-                c2, p2 = find_nearest_site(p1, positionsVec, COM_index, interfaces_count)
+                p1 = positionsVec[i+j+1,:]
+                c2, p2 = find_complementry_site(p1,positions)
                 n1 = c1
                 n2 = c2
                 angles_list.append(np.array(calculateAngles(c1,c2,p1,p2,n1,n2)))
         angles_list = np.array(angles_list)
-        #print(angles_list)
+        # for i in angles_list:
+        #     print(i)
+
         final_mean_angle_list = []
         # take the average angles and sigma values 
         for i in range(unique_chains_full_interfaces_count):
