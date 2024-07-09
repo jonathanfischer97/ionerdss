@@ -1,3 +1,5 @@
+import os
+
 def merge_files(destination_file: str, source_file: str, file_type: str = ''):
     """
     Merge the contents of the source_file into the destination_file.
@@ -97,5 +99,40 @@ def merge_files(destination_file: str, source_file: str, file_type: str = ''):
         outfile1.close()
 
     if file_type == 'transition':
-        # TODO
-        pass
+        outfile1 = open('tmp.dat', 'w')
+
+        # Find the startiter in the source file
+        with open(source_file) as fp:
+            for line in fp:
+                if line[:4] == "time":
+                    startiter = float(line[6:])
+                    break
+
+        # Read the destination file and source file, and print to outfile1
+        with open(destination_file) as fp:
+            for line in fp:
+                if line[:4] == 'time':
+                    iterStep = float(line[6:])
+                    if iterStep < startiter and abs(iterStep - startiter) > 1e-10:
+                        outfile1.write(line)
+                        outfile1.flush()
+                    else:
+                        break
+                else:
+                    outfile1.write(line)
+                    outfile1.flush()
+
+        with open(source_file) as fp:
+            for line in fp:
+                outfile1.write(line)
+                outfile1.flush()
+
+        # Overwrite the destination file with the contents of outfile1
+        with open(destination_file, "w") as dest_f:
+            with open('tmp.dat', "r") as src_f:
+                dest_f.write(src_f.read())
+
+        outfile1.close()
+
+    if os.path.exists('tmp.dat'):
+        os.remove('tmp.dat')

@@ -8,6 +8,9 @@ from .acf import *
 from .pdb import *
 from .file_managment import *
 from .sphere_reg import *
+from .time_dependent import *
+from .gagReshape import *
+from .nerdssGui import *
 
 
 """Welcome to the main ioNERDSS function library folder! Here I will give a brief description of each folder and sub folder!
@@ -47,4 +50,8 @@ for filename in os.listdir(current_directory):
 
         # Import the module using importlib.import_module and add it to the globals dictionary
         module = importlib.import_module(f".{module_name}", package=__name__)
-        globals().update({n: getattr(module, n) for n in module.__all__} if hasattr(module, '__all__') else {k: v for k, v in module.__dict__.items() if not k.startswith('_')})
+        globals().update(
+            {n: getattr(module, n) for n in module.__all__}
+            if hasattr(module, "__all__")
+            else {k: v for k, v in module.__dict__.items() if not k.startswith("_")}
+        )

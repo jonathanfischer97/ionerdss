@@ -19,8 +19,8 @@ def dtb_PDB_write_PDB(Result: bool):
     f.write('REMARK   0 SO THE VALUE WILL BE 10 TIMES LARGER THAN NERDSS INPUTS.\n')
     tot_count = 0
     for i in range(len(unique_chain)):
-        f.write('ATOM' + ' '*(7-len(str(tot_count))) + str(tot_count) + '  COM' +
-                '   ' + unique_chain[i] + ' '*(5-len(str(i))) + str(i) +
+        f.write('ATOM' + ' '*(7-len(str(tot_count))) + str(tot_count)[:7] + '  COM' +
+                ' '*(4-len(unique_chain[i])) + unique_chain[i][:4] + ' '*(5-len(str(i))) + str(i)[:5] +
                 ' '*(13-len(str(round(COM[i][0]*10, 3)))) + str(round(COM[i][0]*10, 3)) +
                 ' '*(8-len(str(round(COM[i][1]*10, 3)))) + str(round(COM[i][1]*10, 3)) +
                 ' '*(8-len(str(round(COM[i][2]*10, 3)))) + str(round(COM[i][2]*10, 3)) +
@@ -34,11 +34,10 @@ def dtb_PDB_write_PDB(Result: bool):
                 else:
                     # react_site = reaction_chain[j][0].lower()
                     react_coord = int_site[j][1]
-                react_site = reaction_chain[j][0].lower(
-                ) + reaction_chain[j][1].lower()
-                f.write('ATOM' + ' '*(7-len(str(tot_count))) + str(tot_count) +
-                        ' '*(5-len(str(react_site))) + str(react_site) +
-                        '   ' + unique_chain[i] + ' '*(5-len(str(i))) + str(i) +
+                react_site = reaction_chain[j][0] + reaction_chain[j][1]
+                f.write('ATOM' + ' '*(7-len(str(tot_count))) + str(tot_count)[:7] +
+                        ' '*(5-len(str(react_site))) + str(react_site)[:5] +
+                        ' '*(4-len(unique_chain[i])) + unique_chain[i][:4] + ' '*(5-len(str(i))) + str(i)[:5] +
                         ' '*(13-len(str(round(react_coord[0]*10, 3)))) + str(round(react_coord[0]*10, 3)) +
                         ' '*(8-len(str(round(react_coord[1]*10, 3)))) + str(round(react_coord[1]*10, 3)) +
                         ' '*(8-len(str(round(react_coord[2]*10, 3)))) + str(round(react_coord[2]*10, 3)) +

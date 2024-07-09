@@ -63,6 +63,7 @@ def merge_simulation_results():
                 if not os.path.exists(destination_file):
                     shutil.move(source_file, pdb_destination_path)
 
+        # Move restart files from the restart to the root of each simulation folder
             restarts_source_path = os.path.join(folder_path, restart_folder, "RESTARTS")
             restarts_destination_path = os.path.join(folder_path, "RESTARTS")
             for restart_file in os.listdir(restarts_source_path):

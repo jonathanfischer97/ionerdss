@@ -33,7 +33,7 @@ def multi_stack_hist_complex_count(FullHist: list, FileNum: int, InitialTime: fl
     below_list = []
     max_size = 0 # largest complex size
 
-    #get index of the xAxis and devide species
+    #get index of the xAxis and divide species
     x_species_index = SpeciesList.index(xAxis)
     divide_species_index = SpeciesList.index(DivideSpecies)
 

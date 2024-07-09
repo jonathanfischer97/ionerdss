@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-def dtb_PDB_3D_plot(Result: bool):
+def dtb_PDB_3D_plot(Result: tuple):
     """
     Generate a 3D plot to display the spatial geometry of each simplified chain.
 
