@@ -208,7 +208,7 @@ def complex_time_3d(GraphType: int, GraphedData: int, full_hist: list, FileNum: 
             fig = plt.figure()
             ax = fig.add_subplot(2,2,1,projection="3d")
             ax.bar3d(X, Y, bottom, width, depth, Z, shade=True)
-            ax.set_xlabel('Number of ' + SpeciesName + ' in sigle complex')
+            ax.set_xlabel('Number of ' + SpeciesName + ' in single complex')
             ax.set_ylabel('Time (s)')
             ax.set_zlabel(zLabel)
             if SaveFig:

@@ -225,7 +225,7 @@ def multi_stack_hist_complex_count(FullHist: list, FileNum: int, InitialTime: fl
             x_label_name = 'total monomers'
         else:
             x_label_name = xAxis
-        plt.xlabel('Number of ' + x_label_name + ' in sigle complex')
+        plt.xlabel('Number of ' + x_label_name + ' in single complex')
         plt.ylabel('Count')
         plt.legend()
         plt.title('Histogram of Multi-component Assemblies')

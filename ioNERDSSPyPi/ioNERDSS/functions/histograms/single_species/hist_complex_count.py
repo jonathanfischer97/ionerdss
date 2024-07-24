@@ -138,7 +138,7 @@ def hist_complex_count(full_hist: list, FileNum: int, InitialTime: float, FinalT
         else:
             plt.bar(n_list_, mean_, width=BarSize)
         plt.title('Histogram of ' + str(SpeciesName))
-        plt.xlabel('Number of ' + SpeciesName + ' in sigle complex')
+        plt.xlabel('Number of ' + SpeciesName + ' in single complex')
         plt.ylabel('Count')
         if SaveFig:
             plt.savefig('Histogram.png', dpi=500)
