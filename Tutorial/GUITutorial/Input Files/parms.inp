@@ -1,0 +1,40 @@
+start parameters
+    nItr = 10000
+    timeStep = 0.1
+    timeWrite = 1000
+    trajWrite = 1000
+    pdbWrite = 1000
+    transitionWrite = 1000
+    restartWrite = 1000
+    checkPoint = 1000
+    scaleMaxDisplace = 1000
+    overlapSepLimit = 0.1
+    clusterOverlapCheck = False
+end parameters
+
+start boundaries
+    WaterBox = [100,100,100]
+    xBCtype = reflect
+    yBCtype = reflect
+    zBCtype = reflect
+end boundaries
+
+start molecules
+    A : 200
+    B : 150
+end molecules
+
+start reactions
+    A(c1) + B( c2) <-> A(c1!1).B( c2!1)
+    onRate3Dka = 1
+    offRatekb = 1
+    sigma = 0.0
+    bindRadSameCom = 1.1
+    loopCoopFactor = 1
+    length3Dto2D = 10
+    norm1 = [0, 0, 1]
+    norm2 = [0, 0, 1]
+    assocAngles = [nan,nan,nan,nan,nan]
+    excludeVolumeBound = False
+
+end reactions
