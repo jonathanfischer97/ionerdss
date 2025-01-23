@@ -4,7 +4,7 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
 ]
 
@@ -17,7 +17,7 @@ setup(
     url="",
     author="Zixiu (Hugh) Liu",
     author_email="zliu140@jhu.edu",
-    license="MIT",
+    license="GPL-3.0",
     classifiers=classifiers,
     keywords="NERDSS Simulation, Analysis Tools",
     packages=find_packages(),
