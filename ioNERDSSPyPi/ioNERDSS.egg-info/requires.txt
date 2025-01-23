@@ -1,9 +1,0 @@
-numpy
-pandas
-matplotlib
-seaborn
-tqdm
-PyQt6
-pyqtgraph
-PyOpenGL
-biopython
