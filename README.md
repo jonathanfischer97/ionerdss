@@ -1,4 +1,4 @@
-## ioNERDSS
+## ionerdss
 
 This repository primarily contains Python code for creating user-friendly analysis tools for setting up models and analyzing output from the reaction-diffusion simulator NERDSS.
 
