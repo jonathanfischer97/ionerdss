@@ -3,19 +3,32 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ionerdss documentation!
+Welcome to ionerdss Documentation!
 ==================================
 
-**NERDSS** is NonEquilibrium Reaction-Diffusion Self-assembly Simulator. **ioNERDSS** is a Python package for  creating user-friendly analysis tools for setting up models and analyzing output from the reaction-diffusion simulator NERDSS.
+**NERDSS** (NonEquilibrium Reaction-Diffusion Self-assembly Simulator) is a simulator for reaction-diffusion processes.
+**ioNERDSS** is a Python package that streamlines setting up models and analyzing output from NERDSS.
+
+This documentation includes:
+
+- How to install and compile NERDSS  
+- How to install ioNERDSS  
+- Tutorials (via Jupyter notebooks)  
+- Release notes for both NERDSS and ioNERDSS  
+- An auto-generated API reference for `ioNERDSS`
 
 Contents
 --------
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Documentation
 
+   installation
    downloads
    release_notes
-   installation
+   tutorials
+   api_reference
 
 Indices and tables
 ==================

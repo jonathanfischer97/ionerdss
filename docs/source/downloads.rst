@@ -10,10 +10,10 @@ To use NERDSS, first clone the repository:
 
    git clone https://github.com/mjohn218/NERDSS.git
 
-ioNERDSS
+ionerdss
 --------
 
-To use ioNERDSS, first install from PyPI:
+To use ioNERDSS, install from PyPI:
 
 .. code-block:: console
 
