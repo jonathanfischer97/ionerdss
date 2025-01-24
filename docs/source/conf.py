@@ -6,10 +6,10 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'NERDSS'
-copyright = '2024, Margaret Johnson Lab, Johns Hopkins University'
+project = 'ionerdss'
+copyright = '2025, Margaret Johnson Lab, Johns Hopkins University'
 author = 'Margaret Johnson Lab, Johns Hopkins University'
-release = '0.1'
+release = '1.0.36'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
