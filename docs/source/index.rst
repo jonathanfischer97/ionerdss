@@ -9,6 +9,10 @@ Welcome to ionerdss Documentation!
 **NERDSS** (NonEquilibrium Reaction-Diffusion Self-assembly Simulator) is a simulator for reaction-diffusion processes.
 **ioNERDSS** is a Python package that streamlines setting up models and analyzing output from NERDSS.
 
+.. note::
+
+   This project is under active development.
+
 This documentation includes:
 
 - How to install and compile NERDSS  

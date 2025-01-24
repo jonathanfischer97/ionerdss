@@ -1,2 +1,11 @@
 furo
 nbsphinx
+numpy
+pandas
+matplotlib
+seaborn
+tqdm
+pyqt6
+pyqtgraph
+PyOpenGL
+biopython

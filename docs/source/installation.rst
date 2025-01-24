@@ -4,18 +4,25 @@ Installation Guide
 NERDSS
 ------
 
-1. **C++ Compiler**  
-   - macOS: Install XCode or Command Line Tools  
-   - Ubuntu: Install via apt, e.g. ``sudo apt-get install g++``
+NERDSS (NonEquilibrium Reaction-Diffusion Self-assembly Simulator) requires a C++ compiler and the GNU Scientific Library (GSL). Once these prerequisites are installed, you can compile NERDSS from source.
 
-2. **GNU Scientific Library (GSL)** (version 1.0+)  
-   - macOS: Install via Homebrew (``brew install gsl``)  
-   - Ubuntu: Install via apt (``sudo apt-get install libgsl-dev``)
+**1. Install a C++ Compiler**
+- macOS: Install XCode or Command Line Tools  
+- Ubuntu: Install via apt, for example:
+  ``sudo apt-get install g++``
 
-3. **Compile NERDSS**  
-   - Navigate to the main NERDSS directory  
-   - Run ``make serial``  
-   - The executable will appear in the ``./bin`` directory
+**2. Install GNU Scientific Library (GSL) (v2.5+)**
+- macOS: Use Homebrew:
+  ``brew install gsl``  
+- Ubuntu: Use apt:
+  ``sudo apt-get install libgsl-dev``
+
+**3. Compile NERDSS**
+- Navigate to the main NERDSS directory  
+- Run ``make serial``  
+- The executable will appear in the ``./bin`` directory
+
+For more details on using NERDSS, see its official documentation or README.
 
 ioNERDSS
 --------
@@ -26,11 +33,11 @@ ioNERDSS
 
    pip install ioNERDSS
 
-After installation, you can import ioNERDSS in Python:
+After installation, you can import ``ioNERDSS`` in Python:
 
 .. code-block:: python
 
    import ioNERDSS as ion
    ion.some_function()
 
-For more examples, see the :doc:`tutorials`.
+For tutorials on setting up models and analyzing simulator output, see the :doc:`tutorials`.

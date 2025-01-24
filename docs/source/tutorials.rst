@@ -1,34 +1,39 @@
 Tutorials
 =========
 
-The tutorials for **ioNERDSS** are provided as Jupyter notebooks. They demonstrate:
+The tutorials for **ioNERDSS** are provided as Jupyter notebooks, demonstrating how to:
 
-- Setting up models for NERDSS
-- Reading/processing simulation outputs
-- Generating plots and analyses
+- Set up models for NERDSS  
+- Read and process simulation outputs  
+- Generate plots and analyses  
 
 Accessing the Notebooks
 -----------------------
 
 1. **Local Clone & Jupyter**  
-   - Clone the repo (if not already):
+   - Clone the repo (if you haven’t already):
+
      .. code-block:: console
 
-        git clone https://github.com/YourUser/ioNERDSS.git
+        git clone https://github.com/JohnsonBiophysicsLab/ionerdss.git
 
    - Navigate to the ``tutorial`` folder and launch Jupyter:
+
      .. code-block:: console
 
-        cd ioNERDSS/tutorial
+        cd ionerdss/tutorial
+
         jupyter notebook
 
-   - Open each notebook (e.g., ``SingleSpeciesTutorial.ipynb``, ``MultiSpeciesTutorial.ipynb``) to follow along.
+   - Open each notebook and follow along.
 
 2. **Read the Docs**  
-   - You can read them here without manually opening Jupyter.
+   - You can view these tutorials here in the docs without manually opening Jupyter. Click on the links below to access each notebook directly.
 
 Notebook Index
 --------------
+
+Below is a quick reference for the available Jupyter notebooks:
 
 .. toctree::
    :maxdepth: 1
@@ -40,5 +45,6 @@ Notebook Index
 
 Additional Resources
 --------------------
-- For function-by-function usage, see the :doc:`api_reference`.
-- For installation details, see the :doc:`installation`.
+
+- For function-by-function details, see the :doc:`api_reference`.
+- For installation instructions, see the :doc:`installation`.

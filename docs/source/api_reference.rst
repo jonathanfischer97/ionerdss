@@ -1,9 +1,7 @@
 API Reference
 =============
 
-Below is the auto-generated documentation for the main `ioNERDSS` package.
-
-.. automodule:: ioNERDSS
+.. automodule:: ioNERDSS.functions.histograms.single_species.single_hist_obj
    :members:
    :undoc-members:
    :show-inheritance:
