@@ -1,7 +1,24 @@
 API Reference
 =============
+pdb_nerdss_converter
+--------------------
+Data Structures
+---------------
+.. automodule:: ionerdss.model_setup.data_structures
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-.. automodule:: ioNERDSS.functions.histograms.single_species.single_hist_obj
+Geometry Utilities
+------------------
+.. automodule:: ionerdss.model_setup.geometry_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Protein Model
+-------------
+.. automodule:: ionerdss.model_setup.protein_model
    :members:
    :undoc-members:
    :show-inheritance:

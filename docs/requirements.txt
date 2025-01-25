@@ -9,3 +9,6 @@ pyqt6
 pyqtgraph
 PyOpenGL
 biopython
+scipy
+scikit-learn
+requests

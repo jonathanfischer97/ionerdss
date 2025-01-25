@@ -26,7 +26,7 @@ python setup.py install
 ## Quick Start
 
 ```python
-import ioNERDSS as ion
+import ionerdss as ion
 
 # Example usage
 ion.nerdss()

@@ -39,6 +39,7 @@ Below is a quick reference for the available Jupyter notebooks:
    :maxdepth: 1
    :caption: Jupyter Notebooks
 
+   pdb_to_nerdss_tutorial
    ioNERDSSTutorialSingle
    ioNERDSSTutorialMulti
    ReadPDBTutorial
