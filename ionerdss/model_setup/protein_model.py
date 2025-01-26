@@ -1109,7 +1109,7 @@ class ProteinModel:
         for i, binding_energy in enumerate(self.binding_energies):
             print(f"Binding energy between {self.binding_chains_pairs[i][0]} and {self.binding_chains_pairs[i][1]}: {binding_energy} REU")
 
-    def calculate_binding_free_energy(self, chain1, chain2, fix_missing_atoms: bool = True):
+    def calculate_binding_free_energy(self, chain1, chain2, fix_missing_atoms: bool = False):
         """
         Calculates the binding free energy between two chains using PyRosetta,
         optionally fixing missing side chains or atoms.
