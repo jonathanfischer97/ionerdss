@@ -48,7 +48,6 @@ class ProteinModel:
 
     Attributes:
         fpath (str): The actual file name to read after verifying local or downloaded.
-        max_bound_length (float): Maximum distance (nm) between two binding atoms.
         all_atoms_structure (Bio.PDB.Structure.Structure): The full atomic structure read by Biopython.
         all_chains (list): A list of chain objects from the structure.
         all_COM_chains_coords (list): Coords objects for each chain’s center of mass (COM).
@@ -67,7 +66,7 @@ class ProteinModel:
         reaction_template_list (list): ReactionTemplate objects describing the reaction types.
         verbose (bool): Prints additional info when True.
     """
-    def __init__(self, fpath: str, max_bound_length: float = 0.35):
+    def __init__(self, fpath: str):
         """
         Initializes the Protein object by reading a PDB or CIF file. If the file
         is not found locally, attempts to download it from the RCSB PDB database.
@@ -75,16 +74,12 @@ class ProteinModel:
         Args:
             fpath (str): The path or PDB ID to read. If not found, will try
                 to download .cif or .pdb from RCSB.
-            max_bound_length (float, optional): Max distance (nm) between atoms
-                considered bound. Defaults to 0.35.
         """
         self.verbose = False
 
         self.fpath = fpath
         if not self._file_exists_locally(fpath):
             self.fpath = self._download_structure(fpath)
-
-        self.max_bound_length = max_bound_length
 
         self.all_atoms_structure = self._parse_structure()
 
