@@ -1177,3 +1177,171 @@ class ProteinModel:
 
         binding_free_energy = energy_complex - (energy_chain1 + energy_chain2)
         return binding_free_energy
+    
+    def _generate_mol_file(self):
+        """
+        Generates a .mol file for each molecule template in self.molecules_template_list.
+
+        The file format is the standard NERDSS .mol layout, for example:
+            Name = A
+            checkOverlap = true
+
+            D = [1.00, 1.00, 1.00]
+
+            Dr = [1.00, 1.00, 1.00]
+
+            COM    0.0000    0.0000    0.0000
+            X      5.4321    0.1234    3.2109
+            ...
+            
+            bonds = N
+            com X
+            com Y
+            ...
+
+        Each BindingInterfaceTemplate's coord is relative to COM = (0,0,0).
+        """
+        import os
+
+        for mol_template in self.molecules_template_list:
+            filename = f"{mol_template.name}.mol"
+            with open(filename, "w") as f:
+                f.write(f"Name = {mol_template.name}\n")
+                f.write("checkOverlap = true\n\n")
+
+                # Default translational/rotational diffusion (you can customize)
+                f.write("D = [10.00, 10.00, 10.00]\n\n")
+                f.write("Dr = [0.1, 0.1, 0.1]\n\n")
+
+                f.write("COM\t0.0000\t0.0000\t0.0000\n")
+
+                # Each interface: interface name + (x, y, z) from .coord
+                for intf_template in mol_template.interface_template_list:
+                    x = intf_template.coord.x
+                    y = intf_template.coord.y
+                    z = intf_template.coord.z
+                    f.write(f"{intf_template.name}\t{x:.4f}\t{y:.4f}\t{z:.4f}\n")
+
+                f.write("\n")
+                # 'bonds' lines: by convention in NERDSS, we typically connect COM -> each interface
+                num_interfaces = len(mol_template.interface_template_list)
+                f.write(f"bonds = {num_interfaces}\n")
+                for intf_template in mol_template.interface_template_list:
+                    f.write(f"com {intf_template.name}\n")
+
+            print(f"Generated .mol file: {filename}")
+
+    def _generate_inp_file(self, inp_filename = "parms.inp", isBox = True, isSphere = False):
+        """
+        Generates a .inp file (commonly named e.g. 'parms.inp') for the entire system,
+        including parameters, boundary conditions, molecules copy numbers, and the
+        reactions from self.reaction_template_list.
+
+        - The rates, iteration counts, and boundary conditions here are default. Adjust as needed.
+        - The 'start molecules' block uses a default copy number. Adjust as needed.
+        - Reaction lines come from ReactionTemplate objects and their .expression, .binding_radius, .binding_angles, etc.
+
+        Args:
+            inp_filename (str, optional): Output .inp filename. Defaults to "parms.inp".
+            isBox (bool, optional): If True, uses a box boundary condition. Defaults to True.
+            isSphere (bool, optional): If True, uses a spherical boundary condition. Defaults to False.
+        """
+        import os
+
+        nItr = 100000
+        timeStep = 0.1
+        timeWrite = 1000
+        trajWrite = 100000
+        pdbWrite = 10000
+        restartWrite = 10000
+
+        boxSize = [300.0, 300.0, 300.0]
+
+        sphereR = 100.0
+
+        default_copy_number = 10
+
+        default_on_rate = 0.1
+        default_off_rate = 10.0
+
+        with open(inp_filename, "w") as f:
+            # ------------------ start parameters --------------------
+            f.write("start parameters\n")
+            f.write(f"\tnItr = {nItr}\n")
+            f.write(f"\ttimeStep = {timeStep}\n")
+            f.write(f"\ttimeWrite = {timeWrite}\n")
+            f.write(f"\ttrajWrite = {trajWrite}\n")
+            f.write(f"\tpdbWrite = {pdbWrite}\n")
+            f.write(f"\trestartWrite = {restartWrite}\n")
+            f.write("\tscaleMaxDisplace = 100.0\n")
+            f.write("\toverlapSepLimit = 1.0\n")
+            f.write("end parameters\n\n")
+
+            # ------------------ start boundaries --------------------
+            f.write("start boundaries\n")
+            if isBox:
+                f.write(f"\tWaterBox = [{boxSize[0]}, {boxSize[1]}, {boxSize[2]}]\n")
+            elif isSphere:
+                f.write("\tisSphere = true\n")
+                f.write(f"\tsphereR = {sphereR}\n")
+            f.write("end boundaries\n\n")
+
+            # ------------------ start molecules ---------------------
+            f.write("start molecules\n")
+            for mol_template in self.molecules_template_list:
+                f.write(f"\t{mol_template.name} : {default_copy_number}\n")
+            f.write("end molecules\n\n")
+
+            # ------------------ start reactions ---------------------
+            f.write("start reactions\n")
+            for r_template in self.reaction_template_list:
+                # The reaction template already has an expression like:
+                #   A(x) + B(y) <-> A(x!1).B(y!1)
+                # We simply write it out, then specify rates, geometry, etc.
+                f.write(f"\t{r_template.expression}\n")
+
+                # For demonstration, use a default on/off or your own logic:
+                f.write(f"\t\tonRate3DMacro = {default_on_rate}\n")
+                f.write(f"\t\toffRateMacro = {default_off_rate}\n")
+
+                # The 'sigma' can be set to the binding radius from the template
+                brad = getattr(r_template, "binding_radius", 5.0)
+                f.write(f"\t\tsigma = {brad:.4f}\n")
+
+                # If we have angles, write them in the 'assocAngles' line
+                # Typically, one might store 5 angles for NERDSS. We'll just do them all:
+                angles = getattr(r_template, "binding_angles", [])
+                if angles:
+                    angle_str = ", ".join(f"{ang:.4f}" for ang in angles)
+                    f.write(f"\t\tassocAngles = [{angle_str}]\n")
+                else:
+                    # Fallback to nans if no angles are available
+                    f.write("\t\tassocAngles = [nan, nan, nan, nan, nan]\n")
+
+                f.write("\t\texcludeVolumeBound = False\n\n")
+
+            f.write("end reactions\n")
+
+        print(f"Generated .inp file: {inp_filename}")
+
+    
+    def generate_nerdss_ready_files(self, inp_filename = "parms.inp", isBox = True, isSphere = False):
+        """
+        Generates NERDSS-ready files for running the NERDSS simulation by:
+          1. Creating a .mol file for each MoleculeTemplate (via _generate_mol_file()).
+          2. Creating a single .inp file containing all parameters and reaction info
+             (via _generate_inp_file()).
+
+        After calling this, you should have:
+          - A set of *.mol files (one per distinct molecule template).
+          - A 'parms.inp' (or similar) file describing the simulation parameters/boundaries,
+            the molecules, and the reactions.
+
+        Args:
+            inp_filename (str, optional): Output .inp filename. Defaults to "parms.inp".
+            isBox (bool, optional): If True, uses a box boundary condition. Defaults to True.
+            isSphere (bool, optional): If True, uses a spherical boundary condition. Defaults to False.
+        """
+        self._generate_mol_file()
+        self._generate_inp_file(inp_filename, isBox, isSphere)
+        print("All NERDSS-ready files generated successfully!")
