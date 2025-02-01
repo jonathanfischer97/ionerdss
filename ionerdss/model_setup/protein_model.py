@@ -1231,7 +1231,7 @@ class ProteinModel:
 
             print(f"Generated .mol file: {filename}")
 
-    def _generate_inp_file(self, inp_filename = "parms.inp", isBox = True, isSphere = False):
+    def _generate_inp_file(self, inp_filename = "parms.inp", is_box = True, is_sphere = False):
         """
         Generates a .inp file (commonly named e.g. 'parms.inp') for the entire system,
         including parameters, boundary conditions, molecules copy numbers, and the
@@ -1243,8 +1243,8 @@ class ProteinModel:
 
         Args:
             inp_filename (str, optional): Output .inp filename. Defaults to "parms.inp".
-            isBox (bool, optional): If True, uses a box boundary condition. Defaults to True.
-            isSphere (bool, optional): If True, uses a spherical boundary condition. Defaults to False.
+            is_box (bool, optional): If True, uses a box boundary condition. Defaults to True.
+            is_sphere (bool, optional): If True, uses a spherical boundary condition. Defaults to False.
         """
         import os
 
@@ -1279,9 +1279,9 @@ class ProteinModel:
 
             # ------------------ start boundaries --------------------
             f.write("start boundaries\n")
-            if isBox:
+            if is_box:
                 f.write(f"\tWaterBox = [{boxSize[0]}, {boxSize[1]}, {boxSize[2]}]\n")
-            elif isSphere:
+            elif is_sphere:
                 f.write("\tisSphere = true\n")
                 f.write(f"\tsphereR = {sphereR}\n")
             f.write("end boundaries\n\n")
@@ -1325,7 +1325,7 @@ class ProteinModel:
         print(f"Generated .inp file: {inp_filename}")
 
     
-    def generate_nerdss_ready_files(self, inp_filename = "parms.inp", isBox = True, isSphere = False):
+    def generate_nerdss_ready_files(self, inp_filename = "parms.inp", is_box = True, is_sphere = False):
         """
         Generates NERDSS-ready files for running the NERDSS simulation by:
           1. Creating a .mol file for each MoleculeTemplate (via _generate_mol_file()).
@@ -1339,9 +1339,9 @@ class ProteinModel:
 
         Args:
             inp_filename (str, optional): Output .inp filename. Defaults to "parms.inp".
-            isBox (bool, optional): If True, uses a box boundary condition. Defaults to True.
-            isSphere (bool, optional): If True, uses a spherical boundary condition. Defaults to False.
+            is_box (bool, optional): If True, uses a box boundary condition. Defaults to True.
+            is_sphere (bool, optional): If True, uses a spherical boundary condition. Defaults to False.
         """
         self._generate_mol_file()
-        self._generate_inp_file(inp_filename, isBox, isSphere)
+        self._generate_inp_file(inp_filename, is_box, is_sphere)
         print("All NERDSS-ready files generated successfully!")
