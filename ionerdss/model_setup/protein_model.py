@@ -1217,9 +1217,9 @@ class ProteinModel:
 
                 # Each interface: interface name + (x, y, z) from .coord
                 for intf_template in mol_template.interface_template_list:
-                    x = intf_template.coord.x
-                    y = intf_template.coord.y
-                    z = intf_template.coord.z
+                    x = intf_template.coord.x / 10  # Convert to nm
+                    y = intf_template.coord.y / 10
+                    z = intf_template.coord.z / 10
                     f.write(f"{intf_template.name}\t{x:.4f}\t{y:.4f}\t{z:.4f}\n")
 
                 f.write("\n")
@@ -1259,10 +1259,10 @@ class ProteinModel:
 
         sphereR = 100.0
 
-        default_copy_number = 10
+        default_copy_number = 50
 
-        default_on_rate = 0.1
-        default_off_rate = 10.0
+        default_on_rate = 1.0
+        default_off_rate = 1.0
 
         with open(inp_filename, "w") as f:
             # ------------------ start parameters --------------------
@@ -1274,7 +1274,7 @@ class ProteinModel:
             f.write(f"\tpdbWrite = {pdbWrite}\n")
             f.write(f"\trestartWrite = {restartWrite}\n")
             f.write("\tscaleMaxDisplace = 100.0\n")
-            f.write("\toverlapSepLimit = 1.0\n")
+            f.write("\toverlapSepLimit = 0.1\n")
             f.write("end parameters\n\n")
 
             # ------------------ start boundaries --------------------
@@ -1306,7 +1306,18 @@ class ProteinModel:
 
                 # The 'sigma' can be set to the binding radius from the template
                 brad = getattr(r_template, "binding_radius", 5.0)
+                brad = brad / 10  # Convert to nm
                 f.write(f"\t\tsigma = {brad:.4f}\n")
+
+                # set norm1 and norm2 to [0,0,1]
+                f.write("\t\tnorm1 = [0.0, 0.0, 1.0]\n")
+                f.write("\t\tnorm2 = [0.0, 0.0, 1.0]\n")
+
+                # set bindRadSameCom to 1.1
+                f.write("\t\tbindRadSameCom = 1.1\n")
+
+                # set loopCoopFactor to 1.0
+                f.write("\t\tloopCoopFactor = 1.0\n")
 
                 # If we have angles, write them in the 'assocAngles' line
                 # Typically, one might store 5 angles for NERDSS. We'll just do them all:
