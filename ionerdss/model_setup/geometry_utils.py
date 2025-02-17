@@ -12,6 +12,7 @@ from Bio.PDB.Polypeptide import is_aa
 from Bio.SeqUtils import seq1
 from scipy.spatial import KDTree
 from sklearn.cluster import KMeans
+import math
 
 def rigid_transform_3d(points_a: np.ndarray, points_b: np.ndarray):
     """
@@ -155,7 +156,31 @@ def check_steric_clashes(points_1, points_2, cutoff: float = 3.5, number_thresho
     return any(len(clash) >= number_threshold for clash in clashes)
 
 
-def calculate_angles(c1, c2, p1, p2, n1, n2):
+def _unit_vector(x: np.ndarray, tol=1e-6) -> np.ndarray:
+    """
+    Safely return the unit vector (normalized) of x.
+    If the vector is near zero-length, return a zero vector to avoid NaNs.
+    """
+    norm_x = np.linalg.norm(x)
+    if norm_x < tol:
+        return np.zeros(3)
+    return x / norm_x
+
+
+def _triangle_correction(x: float, eps=1e-6) -> float:
+    """
+    Clamp floating-point x into the range [-1, 1], allowing for slight
+    numerical overshoot (e.g., -1.000000001 -> -1.0, etc.).
+    Raises ValueError if x is out of range beyond eps tolerance.
+    """
+    if x < -1 and (x + 1) < -eps:
+        raise ValueError(f"{x} is out of range for arccos/arcsin < -1.")
+    if x > 1 and (x - 1) > eps:
+        raise ValueError(f"{x} is out of range for arccos/arcsin > 1.")
+    return max(min(x, 1.0), -1.0)
+
+
+def calculate_angles(c1, c2, p1, p2, n1, n2, eps=1e-6):
     """
     Determines angles of the reaction (theta1, theta2, phi1, phi2, omega)
     given coordinates of two molecule COMs (c1, c2), two interface sites (p1, p2),
@@ -176,6 +201,16 @@ def calculate_angles(c1, c2, p1, p2, n1, n2):
     v2 = p2 - c2
     sigma1 = p1 - p2
     sigma2 = -sigma1
+    sigma_magnitute = np.linalg.norm(sigma1)
+    v1_uni = _unit_vector(v1)
+    v2_uni = _unit_vector(v2)
+    n1_proj = [n1[0] - v1_uni[0] * np.dot(v1_uni, n1), n1[1] - v1_uni[1] * np.dot(v1_uni, n1), n1[2] - v1_uni[2] * np.dot(v1_uni, n1)]
+    sigma1_proj = [sigma1[0] - v1_uni[0] * np.dot(v1_uni, sigma1), sigma1[1] - v1_uni[1] * np.dot(v1_uni, sigma1), sigma1[2] - v1_uni[2] * np.dot(v1_uni, sigma1)]
+    n2_proj = [n2[0] - v2_uni[0] * np.dot(v2_uni, n2), n2[1] - v2_uni[1] * np.dot(v2_uni, n2), n2[2] - v2_uni[2] * np.dot(v2_uni, n2)]
+    sigma2_proj = [sigma2[0] - v2_uni[0] * np.dot(v2_uni, sigma2), sigma2[1] - v2_uni[1] * np.dot(v2_uni, sigma2), sigma2[2] - v2_uni[2] * np.dot(v2_uni, sigma2)]
+    phi1_dir = _unit_vector(np.cross(sigma1_proj, n1_proj))
+    phi2_dir = _unit_vector(np.cross(sigma2_proj, n2_proj))
+    sigma1_uni = _unit_vector(sigma1)
 
     theta1 = np.arccos(
         np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1))
@@ -190,33 +225,54 @@ def calculate_angles(c1, c2, p1, p2, n1, n2):
     norm_t2 = t2 / np.linalg.norm(t2)
     phi1 = np.arccos(np.dot(norm_t1, norm_t2))
 
-    # the sign of phi1 is determined by the direction of t2 relative to the right-hand rule of cross product of v1 and t1
-    if np.dot(np.cross(v1, t1), t2) > 0:
-        phi1 = -phi1
-
     t1 = np.cross(v2, sigma2)
     t2 = np.cross(v2, n2)
     norm_t1 = t1 / np.linalg.norm(t1)
     norm_t2 = t2 / np.linalg.norm(t2)
     phi2 = np.arccos(np.dot(norm_t1, norm_t2))
 
-    # the sign of phi2 is determined by the direction of t2 relative to the right-hand rule of cross product of v2 and t1
-    if np.dot(np.cross(v2, t1), t2) > 0:
+    if abs(v1_uni[0] - phi1_dir[0]) < eps:
+        phi1 = -phi1
+    elif abs(v1_uni[0] + phi1_dir[0]) < eps:
+        phi1 = phi1
+    else:
+        print("Wrong phi1 angle.")
+        print(f"v1_uni[0] - phi1_dir[0]: {v1_uni[0] - phi1_dir[0]}")
+        print(f"v1_uni[0] + phi1_dir[0]: {v1_uni[0] + phi1_dir[0]}")
+
+    if abs(v2_uni[0] - phi2_dir[0]) < eps:
         phi2 = -phi2
+    elif abs(v2_uni[0] + phi2_dir[0]) < eps:
+        phi2 = phi2
+    else:
+        print("Wrong phi2 angle.")
+        print(f"v2_uni[0] - phi2_dir[0]: {v2_uni[0] - phi2_dir[0]}")
+        print(f"v2_uni[0] + phi2_dir[0]: {v2_uni[0] + phi2_dir[0]}")
 
     if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(
         np.linalg.norm(np.cross(v2, sigma2)), 0
     ):
         t1 = np.cross(sigma1, v1)
         t2 = np.cross(sigma1, v2)
+        v1_proj = [v1[0] - sigma1_uni[0] * np.dot(sigma1_uni, v1), v1[1] - sigma1_uni[1] * np.dot(sigma1_uni, v1), v1[2] - sigma1_uni[2] * np.dot(sigma1_uni, v1)]
+        v2_proj = [v2[0] - sigma1_uni[0] * np.dot(sigma1_uni, v2), v2[1] - sigma1_uni[1] * np.dot(sigma1_uni, v2), v2[2] - sigma1_uni[2] * np.dot(sigma1_uni, v2)]
+        omega_dir = _unit_vector(np.cross(v1_proj, v2_proj))
     else:
         t1 = np.cross(sigma1, n1)
         t2 = np.cross(sigma1, n2)
+        n1_proj = [n1[0] - sigma1_uni[0] * np.dot(sigma1_uni, n1), n1[1] - sigma1_uni[1] * np.dot(sigma1_uni, n1), n1[2] - sigma1_uni[2] * np.dot(sigma1_uni, n1)]
+        n2_proj = [n2[0] - sigma1_uni[0] * np.dot(sigma1_uni, n2), n2[1] - sigma1_uni[1] * np.dot(sigma1_uni, n2), n2[2] - sigma1_uni[2] * np.dot(sigma1_uni, n2)]
+        omega_dir = _unit_vector(np.cross(n1_proj, n2_proj))
 
     omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
 
-    # the sign of omega is determined by the direction of t2 relative to the right-hand rule of cross product of sigma1 and t1
-    if np.dot(np.cross(sigma1, t1), t2) > 0:
+    if abs(sigma1_uni[0] - omega_dir[0]) < eps:
         omega = -omega
+    elif abs(sigma1_uni[0] + omega_dir[0]) < eps:
+        omega = omega
+    else:
+        print("Wrong omega angle.")
+        print(f"sigma1_uni[0] - omega_dir[0]: {sigma1_uni[0] - omega_dir[0]}")
+        print(f"sigma1_uni[0] + omega_dir[0]: {sigma1_uni[0] + omega_dir[0]}")
 
     return theta1, theta2, phi1, phi2, omega

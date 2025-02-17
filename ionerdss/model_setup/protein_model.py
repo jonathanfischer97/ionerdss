@@ -1220,7 +1220,7 @@ class ProteinModel:
                     x = intf_template.coord.x / 10  # Convert to nm
                     y = intf_template.coord.y / 10
                     z = intf_template.coord.z / 10
-                    f.write(f"{intf_template.name}\t{x:.4f}\t{y:.4f}\t{z:.4f}\n")
+                    f.write(f"{intf_template.name}\t{x:.6f}\t{y:.6f}\t{z:.6f}\n")
 
                 f.write("\n")
                 # 'bonds' lines: by convention in NERDSS, we typically connect COM -> each interface
@@ -1248,12 +1248,12 @@ class ProteinModel:
         """
         import os
 
-        nItr = 100000
+        nItr = 10000000
         timeStep = 0.1
-        timeWrite = 1000
-        trajWrite = 100000
-        pdbWrite = 10000
-        restartWrite = 10000
+        timeWrite = 10000
+        trajWrite = 10000000
+        pdbWrite = 1000000
+        restartWrite = 1000000
 
         boxSize = [300.0, 300.0, 300.0]
 
@@ -1262,7 +1262,7 @@ class ProteinModel:
         default_copy_number = 50
 
         default_on_rate = 1.0
-        default_off_rate = 1.0
+        default_off_rate = 0.0
 
         with open(inp_filename, "w") as f:
             # ------------------ start parameters --------------------
@@ -1313,17 +1313,17 @@ class ProteinModel:
                 f.write("\t\tnorm1 = [0.0, 0.0, 1.0]\n")
                 f.write("\t\tnorm2 = [0.0, 0.0, 1.0]\n")
 
-                # set bindRadSameCom to 1.1
-                f.write("\t\tbindRadSameCom = 1.1\n")
+                # set bindRadSameCom
+                f.write("\t\tbindRadSameCom = 1.5\n")
 
-                # set loopCoopFactor to 1.0
+                # set loopCoopFactor
                 f.write("\t\tloopCoopFactor = 1.0\n")
 
                 # If we have angles, write them in the 'assocAngles' line
                 # Typically, one might store 5 angles for NERDSS. We'll just do them all:
                 angles = getattr(r_template, "binding_angles", [])
                 if angles:
-                    angle_str = ", ".join(f"{ang:.4f}" for ang in angles)
+                    angle_str = ", ".join(f"{ang:.6f}" for ang in angles)
                     f.write(f"\t\tassocAngles = [{angle_str}]\n")
                 else:
                     # Fallback to nans if no angles are available
