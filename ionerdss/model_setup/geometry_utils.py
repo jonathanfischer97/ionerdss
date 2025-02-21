@@ -180,7 +180,7 @@ def _triangle_correction(x: float, eps=1e-6) -> float:
     return max(min(x, 1.0), -1.0)
 
 
-def calculate_angles(c1, c2, p1, p2, n1, n2, eps=1e-6):
+def calculate_angles(c1, c2, p1, p2, n1, n2, eps=1e-4):
     """
     Determines angles of the reaction (theta1, theta2, phi1, phi2, omega)
     given coordinates of two molecule COMs (c1, c2), two interface sites (p1, p2),

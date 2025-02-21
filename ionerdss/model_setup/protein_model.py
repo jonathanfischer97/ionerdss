@@ -10,6 +10,7 @@ import gzip
 import requests
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 from Bio import pairwise2
 from Bio.PDB import (
@@ -102,6 +103,11 @@ class ProteinModel:
 
         print("homogolous chains groups:")
         print(self.chains_group)
+
+        # make sure that the chains_group list and each list in it has the same order each run time
+        for group in self.chains_group:
+            group.sort()
+        self.chains_group.sort()
 
         # used to store the information of the molecules and interfaces for NERDSS model
         self.molecule_list = []
@@ -222,6 +228,8 @@ class ProteinModel:
             self._parse_pdb_header()
         elif self.fpath.endswith('.cif'):
             self._parse_cif_header()
+        if not self.chains_map:
+            self._find_homologous_chains_by_alignment()
 
     def _parse_pdb_header(self):
         """
@@ -316,7 +324,7 @@ class ProteinModel:
         """
         try:
             similar_chains = []
-            chains = list(self.structure.get_chains())
+            chains = list(self.all_atoms_structure.get_chains())
             chain_sequences = {}
 
             for chain in chains:
@@ -471,8 +479,8 @@ class ProteinModel:
             # build the reaction template if it does not exist
             molecule_1_template_id = self.chains_map[molecule_1.name]
             molecule_2_template_id = self.chains_map[molecule_2.name]
-            interface_1_template_id = self.chains_map[interface_1.name]
-            interface_2_template_id = self.chains_map[interface_2.name]
+            interface_1_template_id = interface_1.my_template.name
+            interface_2_template_id = interface_2.my_template.name
             reactants = []
             if molecule_1_template_id < molecule_2_template_id:
                 reactants.append(f"{molecule_1_template_id}({interface_1_template_id})")
@@ -533,14 +541,14 @@ class ProteinModel:
                 for interface in molecule.interface_list:
                     # determine if this interface appears first time
                     interface_id = interface.name
-                    interface_template_id = self.chains_map[interface_id]
+                    interface_template_id = interface.my_template.name
                     first_appearance = True
                     for j in range(i):
                         chain_id_2 = group[j]
                         molecule_2 = [mol for mol in self.molecule_list if mol.name == chain_id_2][0]
                         for interface_2 in molecule_2.interface_list:
                             interface_id_2 = interface_2.name
-                            interface_template_id_2 = self.chains_map[interface_id_2]
+                            interface_template_id_2 = interface_2.my_template.name
                             if interface_template_id == interface_template_id_2:
                                 first_appearance = False
                                 break
@@ -554,7 +562,7 @@ class ProteinModel:
                             molecule_2 = [mol for mol in self.molecule_list if mol.name == chain_id_2][0]
                             for interface_2 in molecule_2.interface_list:
                                 interface_id_2 = interface_2.name
-                                interface_template_id_2 = self.chains_map[interface_id_2]
+                                interface_template_id_2 = interface_2.my_template.name
                                 if interface_template_id != interface_template_id_2:
                                     another_partner_chain_id = interface_id_2
                                     another_partner_chain = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == another_partner_chain_id][0])]
@@ -945,7 +953,98 @@ class ProteinModel:
             all_points.append(points)
         self._plot_points_3d(all_points, chain_ids)
 
-    def regularize_molecules(self):
+    def _calc_angle(self, P, Q, R):
+        """
+        Calculate the angle at Q formed by P->Q and R->Q.
+        """
+        v1 = [(Q - P).x, (Q - P).y, (Q - P).z]
+        v2 = [(R - Q).x, (R - Q).y, (R - Q).z]
+        theta = np.degrees(math.acos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))))
+        return theta
+    
+    def _sig_are_similar(self, sig1, sig2, dist_thresh_intra, dist_thresh_inter, angle_thresh):
+        """
+        Compare two group of interface interaction geometry.
+        """
+        for key in ("dA", "dB"):
+            if abs(sig1[key] - sig2[key]) > dist_thresh_intra:
+                return False
+        for key in ("dAB",):
+            if abs(sig1[key] - sig2[key]) > dist_thresh_inter:
+                return False
+        for key in ("thetaA", "thetaB"):
+            if abs(sig1[key] - sig2[key]) > angle_thresh:
+                return False
+        return True
+    
+    def _is_existing_mol_temp(self, mol_temp_name):
+        """
+        Checks if a molecule template with the given name already exists in the molecule template list.
+
+        Args:
+            mol_temp_name (str): The name of the molecule template to check.
+
+        Returns:
+            bool: True if the molecule template exists, False otherwise.
+            int: The index of the molecule template if it exists, None otherwise.
+        """
+        for i, mol_temp in enumerate(self.molecules_template_list):
+            if mol_temp.name == mol_temp_name:
+                return True, i
+        return False, None
+    
+    def _is_existing_mol(self, mol_name):
+        """
+        Checks if a molecule with the given name already exists in the molecule list.
+
+        Args:
+            mol_name (str): The name of the molecule to check.
+
+        Returns:
+            bool: True if the molecule exists, False otherwise.
+            int: The index of the molecule if it exists, None otherwise.
+        """
+        for i, mol in enumerate(self.molecule_list):
+            if mol.name == mol_name:
+                return True, i
+        return False, None
+    
+    def _is_existing_interface(self, interface_name, molecule):
+        """
+        Checks if an interface with the given name already exists in the molecule's interface list.
+
+        Args:
+            interface_name (str): The name of the interface to check.
+            molecule (CoarseGrainedMolecule): The molecule to check within.
+
+        Returns:
+            bool: True if the interface exists, False otherwise.
+            int: The index of the interface if it exists, None otherwise.
+        """
+        for i, interface in enumerate(molecule.interface_list):
+            if interface.name == interface_name:
+                return True, i
+        return False, None
+    
+    def _is_existing_sig(self, sig, dist_thresh_intra=2.5, dist_thresh_inter=2.5, angle_thresh=25.0):
+        """
+        Checks if a given interface signature already exists in the interface_signatures list.
+
+        Args:
+            sig (dict): The interface signature to check.
+            dist_thresh_intra (float, optional): Distance threshold for intra-molecular comparisons. Defaults to 2.5.
+            dist_thresh_inter (float, optional): Distance threshold for inter-molecular comparisons. Defaults to 2.5.
+            angle_thresh (float, optional): Angle threshold for comparisons. Defaults to 25.0.
+
+        Returns:
+            bool: True if the signature exists, False otherwise.
+        """
+        for existing_sig in self.interface_signatures:
+            if self._sig_are_similar(sig, existing_sig, dist_thresh_intra=dist_thresh_intra, dist_thresh_inter=dist_thresh_inter, angle_thresh=angle_thresh):
+                return True
+        return False
+
+    def regularize_molecules(self, dist_thresh_intra=2.5, dist_thresh_inter=2.5, angle_thresh=25.0):
         """
         Aligns and regularizes all molecules in self.chains_group so that
         homologous chains share the same relative geometry. Builds molecule
@@ -955,59 +1054,280 @@ class ProteinModel:
         self.molecules_template_list = []
         self.interface_list = []
         self.interface_template_list = []
+        self.interface_signatures = []
 
         for group in self.chains_group:
-            molecule_template = MoleculeTemplate(self.chains_map[group[0]])
-            self.molecules_template_list.append(molecule_template)
-            for j, chain_id in enumerate(group):
-                molecule = CoarseGrainedMolecule(chain_id)
-                molecule.my_template = molecule_template
-                # get the COM coord of this chain
-                molecule.coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
-                self.molecule_list.append(molecule)
-                # get the interface of this chain
-                for i, interface_id in enumerate(self.all_interfaces[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]):
-                    interface_template_id = self.chains_map[interface_id]
-                    # create the interface template if it does not exist
-                    if interface_template_id not in [interface.name for interface in molecule_template.interface_template_list]:
-                        interface_template = BindingInterfaceTemplate(interface_template_id)
-                        # interface coord is the relative position to the COM
-                        if j == 0:
-                            interface_template.coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])][i] - molecule.coord
-                        else:
-                            # align the current chain to the first chain in the group, then get the relative position of interface to COM
-                            chain1 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == group[0]][0])]
-                            chain2 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
-                            R, t = rigid_transform_chains(chain2, chain1)
-                            Q = []
-                            Q_COM_coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
-                            Q.append([Q_COM_coord.x, Q_COM_coord.y, Q_COM_coord.z])
-                            temp_coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])][i]
-                            Q.append([temp_coord.x, temp_coord.y, temp_coord.z])
-                            Q2 = []
-                            for point in Q:
-                                transformed_point = apply_rigid_transform(R, t, np.array(point))
-                                Q2.append(transformed_point)
-                            interface_template.coord = Coords(Q2[1][0] - Q2[0][0], Q2[1][1] - Q2[0][1], Q2[1][2] - Q2[0][2])
-                        molecule_template.interface_template_list.append(interface_template)
-                        self.interface_template_list.append(interface_template)
-                    else:
-                        interface_template = [interface for interface in molecule_template.interface_template_list if interface.name == interface_template_id][0]
-                    # create the interface
-                    interface = BindingInterface(interface_id)
-                    interface.my_template = interface_template
-                    interface.coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])][i]
-                    interface.my_residues = self.all_interfaces_residues[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])][i]
-                    self.interface_list.append(interface)
-                    molecule.interface_list.append(interface)
+            print(f"Start parsing chain group / molecule template {group}")
+            mol_temp_name = self.chains_map[group[0]]
+            is_existing_mol_temp, idx = self._is_existing_mol_temp(mol_temp_name)
+            if is_existing_mol_temp:
+                print(f"This is an existed mol template {mol_temp_name}")
+                molecule_template = self.molecules_template_list[idx]
+            else:
+                molecule_template = MoleculeTemplate(mol_temp_name)
+                print(f"New mol template {mol_temp_name} is created.")
+                self.molecules_template_list.append(molecule_template)
 
-                    # add the chains pair to self.binding_chains_pairs
-                    if chain_id < interface_id:
-                        binding_chains_pair = (chain_id, interface_id)
+            for j, chain_id in enumerate(group):
+                print(f"Start parsing chain / molecule {chain_id}")
+                mol_name = chain_id
+                is_existing_mol, mol_index = self._is_existing_mol(mol_name)
+                if is_existing_mol:
+                    print(f"This is an existing molecule {mol_name}")
+                    molecule = self.molecule_list[mol_index]
+                else:
+                    molecule = CoarseGrainedMolecule(mol_name)
+                    print(f"New molecule {mol_name} is created.")
+                    molecule.my_template = molecule_template
+                    molecule.coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == mol_name][0])]
+                    self.molecule_list.append(molecule)
+                
+                # loop the interface of this chain (molecule)
+                for i, interface_id in enumerate(self.all_interfaces[self.all_chains.index([chain for chain in self.all_chains if chain.id == mol_name][0])]):
+                    A = mol_name
+                    B = interface_id # this is the chain name of the partner
+                    partner_mol_template_name = self.chains_map[B]
+                    print(f"Parsing the interface {interface_id} for molecule {mol_name}; its binding partner is molecule {B} via its interface {A}")
+                    is_existing_mol_temp, idx = self._is_existing_mol_temp(partner_mol_template_name)
+                    if is_existing_mol_temp:
+                        print(f"molecule {B} already has its template created.")
+                        partner_molecule_template = self.molecules_template_list[idx]
                     else:
-                        binding_chains_pair = (interface_id, chain_id)
-                    if binding_chains_pair not in self.binding_chains_pairs:
-                        self.binding_chains_pairs.append(binding_chains_pair)
+                        partner_molecule_template = MoleculeTemplate(partner_mol_template_name)
+                        print(f"new mol template {partner_mol_template_name} created for molecule {B}.")
+                        self.molecules_template_list.append(partner_molecule_template)
+
+                    is_existing_mol, partner_mol_index = self._is_existing_mol(B)
+                    if is_existing_mol:
+                        print(f"molecule {B} is already created.")
+                        partner_molecule = self.molecule_list[partner_mol_index]
+                    else:
+                        partner_molecule = CoarseGrainedMolecule(B)
+                        print(f"New molecule {B} is created.")
+                        partner_molecule.my_template = partner_molecule_template
+                        partner_molecule.coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])]
+                        self.molecule_list.append(partner_molecule)
+
+                    COM_A = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == A][0])]
+                    I_A = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == A][0])][i]
+                    COM_B = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])]
+                    for k, partner_interface_id in enumerate(self.all_interfaces[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])]):
+                        if partner_interface_id == A:
+                            I_B = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][k]
+                            R_B = self.all_interfaces_residues[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][k]
+                            break
+
+                    signature = {
+                        "dA": np.linalg.norm([(COM_A - I_A).x, (COM_A - I_A).y, (COM_A - I_A).z]),
+                        "dB": np.linalg.norm([(COM_B - I_B).x, (COM_B - I_B).y, (COM_B - I_B).z]),
+                        "dAB": np.linalg.norm([(I_A - I_B).x, (I_A - I_B).y, (I_A - I_B).z]),
+                        "thetaA": self._calc_angle(COM_A, I_A, I_B),
+                        "thetaB": self._calc_angle(COM_B, I_B, I_A)
+                    }
+
+                    # print the signature
+                    print(f"Parsing signature: {signature}")
+
+                    is_existing_sig = False
+
+                    for existing_sig in self.interface_signatures:
+                        if self._sig_are_similar(signature, existing_sig, dist_thresh_intra, dist_thresh_inter, angle_thresh):
+                            is_existing_sig = True
+                            break
+
+                    if not is_existing_sig:
+                        print("this is a new signature. added to list.")
+                        self.interface_signatures.append(signature)
+                        signature_conjugated = {
+                            "dA": signature["dB"],
+                            "dB": signature["dA"],
+                            "dAB": signature["dAB"],
+                            "thetaA": signature["thetaB"],
+                            "thetaB": signature["thetaA"]
+                        }
+                        self.interface_signatures.append(signature_conjugated)
+                        print(f"the conjugated signature: {signature_conjugated} is also added to the list.")
+
+                        # build the interface template pairs for both molecule templates, need to check if this is homo dimerization or hetero
+                        is_homo = False
+                        if self.chains_map[A] != self.chains_map[B]:
+                            pass
+                        else:
+                            if abs(signature["dA"] - signature["dB"]) > dist_thresh_intra or abs(signature["thetaA"] - signature["thetaB"]) > angle_thresh:
+                                pass
+                            else:
+                                is_homo = True
+
+                        if is_homo:
+                            # only need to build the interface template once
+                            interface_template_id_prefix = self.chains_map[A]
+
+                            # determine the sufffix of this interface_template
+                            tmp_count = 1
+                            for interface_temp in molecule_template.interface_template_list:
+                                interface_temp_id = interface_temp.name
+                                if interface_temp_id.startswith(interface_template_id_prefix):
+                                    tmp_count += 1
+
+                            interface_template_id_suffix = str(tmp_count)
+                            interface_template_id = interface_template_id_prefix + interface_template_id_suffix
+                            interface_template = BindingInterfaceTemplate(interface_template_id)
+                            interface_template.signature = signature
+                            if j == 0:
+                                interface_template.coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])][i] - molecule.coord
+                            else:
+                                # align the current chain to the first chain in the group, then get the relative position of interface to COM
+                                chain1 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == group[0]][0])]
+                                chain2 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
+                                R, t = rigid_transform_chains(chain2, chain1)
+                                Q = []
+                                Q_COM_coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
+                                Q.append([Q_COM_coord.x, Q_COM_coord.y, Q_COM_coord.z])
+                                temp_coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])][i]
+                                Q.append([temp_coord.x, temp_coord.y, temp_coord.z])
+                                Q2 = []
+                                for point in Q:
+                                    transformed_point = apply_rigid_transform(R, t, np.array(point))
+                                    Q2.append(transformed_point)
+                                interface_template.coord = Coords(Q2[1][0] - Q2[0][0], Q2[1][1] - Q2[0][1], Q2[1][2] - Q2[0][2])
+                            molecule_template.interface_template_list.append(interface_template)
+                            self.interface_template_list.append(interface_template)
+                            partner_interface_template = interface_template
+                            partner_molecule_template = molecule_template
+                        else:
+                            # add interface template 1
+                            interface_template_id_prefix = self.chains_map[B]
+
+                            # determine the sufffix of this interface_template
+                            tmp_count = 1
+                            for interface_temp in molecule_template.interface_template_list:
+                                interface_temp_id = interface_temp.name
+                                if interface_temp_id.startswith(interface_template_id_prefix):
+                                    tmp_count += 1
+
+                            interface_template_id_suffix = str(tmp_count)
+                            interface_template_id = interface_template_id_prefix + interface_template_id_suffix
+                            interface_template = BindingInterfaceTemplate(interface_template_id)
+                            interface_template.signature = signature
+                            if j == 0:
+                                interface_template.coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])][i] - molecule.coord
+                            else:
+                                # align the current chain to the first chain in the group, then get the relative position of interface to COM
+                                chain1 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == group[0]][0])]
+                                chain2 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
+                                R, t = rigid_transform_chains(chain2, chain1)
+                                Q = []
+                                Q_COM_coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
+                                Q.append([Q_COM_coord.x, Q_COM_coord.y, Q_COM_coord.z])
+                                temp_coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])][i]
+                                Q.append([temp_coord.x, temp_coord.y, temp_coord.z])
+                                Q2 = []
+                                for point in Q:
+                                    transformed_point = apply_rigid_transform(R, t, np.array(point))
+                                    Q2.append(transformed_point)
+                                interface_template.coord = Coords(Q2[1][0] - Q2[0][0], Q2[1][1] - Q2[0][1], Q2[1][2] - Q2[0][2])
+                            molecule_template.interface_template_list.append(interface_template)
+                            self.interface_template_list.append(interface_template)
+
+                            # add interface template 2
+                            interface_template_id_prefix = self.chains_map[A]
+
+                            # determine the sufffix of this interface_template
+                            tmp_count = 1
+                            for interface_temp in molecule_template.interface_template_list:
+                                interface_temp_id = interface_temp.name
+                                if interface_temp_id.startswith(interface_template_id_prefix):
+                                    tmp_count += 1
+
+                            interface_template_id_suffix = str(tmp_count)
+                            interface_template_id = interface_template_id_prefix + interface_template_id_suffix
+                            partner_interface_template = BindingInterfaceTemplate(interface_template_id)
+                            partner_interface_template.signature = signature_conjugated
+                            B_group = None
+                            for g in self.chains_group:
+                                if B in g:
+                                    B_group = g
+
+                            if B == B_group[0]:
+                                partner_interface_template.coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][i] - molecule.coord
+                            else:
+                                # align the current chain to the first chain in the group, then get the relative position of interface to COM
+                                chain1 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == B_group[0]][0])]
+                                chain2 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])]
+                                R, t = rigid_transform_chains(chain2, chain1)
+                                Q = []
+                                Q_COM_coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])]
+                                Q.append([Q_COM_coord.x, Q_COM_coord.y, Q_COM_coord.z])
+                                temp_coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][i]
+                                Q.append([temp_coord.x, temp_coord.y, temp_coord.z])
+                                Q2 = []
+                                for point in Q:
+                                    transformed_point = apply_rigid_transform(R, t, np.array(point))
+                                    Q2.append(transformed_point)
+                                partner_interface_template.coord = Coords(Q2[1][0] - Q2[0][0], Q2[1][1] - Q2[0][1], Q2[1][2] - Q2[0][2])
+                            partner_molecule_template.interface_template_list.append(partner_interface_template)
+                            self.interface_template_list.append(partner_interface_template)
+
+                    else:
+                        print("this is an existing signature. using the existing interface template.")
+                        # find the interface_template and partner_interface_template
+                        interface_template = None
+                        partner_interface_template = None
+                        signature_conjugated = {
+                            "dA": signature["dB"],
+                            "dB": signature["dA"],
+                            "dAB": signature["dAB"],
+                            "thetaA": signature["thetaB"],
+                            "thetaB": signature["thetaA"]
+                        }
+                        for mol_temp in self.molecules_template_list:
+                            for interface_temp in mol_temp.interface_template_list:
+                                if self._sig_are_similar(signature, interface_temp.signature, dist_thresh_intra, dist_thresh_inter, angle_thresh):
+                                    interface_template = interface_temp
+                                    molecule_template = mol_temp
+                                    print(f"using {mol_temp.name} - {interface_temp.name}")
+                                    break
+                        for mol_temp in self.molecules_template_list:
+                            for interface_temp in mol_temp.interface_template_list:
+                                if self._sig_are_similar(signature_conjugated, interface_temp.signature, dist_thresh_intra, dist_thresh_inter, angle_thresh):
+                                    partner_interface_template = interface_temp
+                                    partner_molecule_template = mol_temp
+                                    print(f"using {mol_temp.name} - {interface_temp.name}")
+                                    break
+
+                    # build the interfaces for molecules, link the interface template to interface
+
+                    is_existing_interface, _ = self._is_existing_interface(interface_id, molecule)
+
+                    if not is_existing_interface:
+                        print(f"Creating new interface {interface_id} for molecule {mol_name}")
+                        # create the interface
+                        interface = BindingInterface(B)
+                        interface.my_template = interface_template
+                        interface.coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == A][0])][i]
+                        interface.my_residues = self.all_interfaces_residues[self.all_chains.index([chain for chain in self.all_chains if chain.id == A][0])][i]
+                        self.interface_list.append(interface)
+                        molecule.interface_list.append(interface)
+
+                        print(f"Creating new interface {A} for partner molecule {B}")
+                        # create the interface for the partner molecule
+                        partner_interface = BindingInterface(A)
+                        partner_interface.my_template = partner_interface_template
+                        partner_interface.coord = I_B
+                        partner_interface.my_residues = R_B
+                        self.interface_list.append(partner_interface)
+                        partner_molecule.interface_list.append(partner_interface)
+
+                        # add the chains pair to self.binding_chains_pairs
+                        if chain_id < interface_id:
+                            binding_chains_pair = (chain_id, interface_id)
+                        else:
+                            binding_chains_pair = (interface_id, chain_id)
+                        if binding_chains_pair not in self.binding_chains_pairs:
+                            self.binding_chains_pairs.append(binding_chains_pair)
+                    else:
+                        print(f"Interface {interface_id} already exists for molecule {mol_name}")
+                        print(f"Interface {A} already exists for molecule {B}")
 
         if self.verbose:
             # print the molecule template list and molecule list
@@ -1052,9 +1372,9 @@ class ProteinModel:
                     molecule.coord = Coords(com_coord_transformed[0], com_coord_transformed[1], com_coord_transformed[2])
                     for j, interface in enumerate(molecule.interface_list):
                         # find the corresponding interface template
-                        interface_template_id = self.chains_map[interface.name]
-                        for k, inteface_template in enumerate(interface_template_ids):
-                            if interface_template_id == inteface_template:
+                        interface_template_id = interface.my_template.name
+                        for k, intf_template in enumerate(interface_template_ids):
+                            if interface_template_id == intf_template:
                                 interface.coord = Coords(interface_coords_transformed[k][0], interface_coords_transformed[k][1], interface_coords_transformed[k][2])
                                 break
 

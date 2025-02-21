@@ -55,6 +55,7 @@ class BindingInterfaceTemplate:
         self.coord = None
         self.my_residues = []
         self.required_free_list = [] # The list of interface templates that need to be free to bind to this interface template
+        signature = {}
 
     def __str__(self):
         interface_template_info = f"Interface Template: {self.name}\n"
@@ -119,6 +120,7 @@ class BindingInterface:
         self.coord = None
         self.my_template = None
         self.my_residues = []
+        signature = {}
 
     def __str__(self):
         interface_info = f"BindingInterface: {self.name}\n"
