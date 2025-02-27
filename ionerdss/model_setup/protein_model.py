@@ -35,7 +35,7 @@ from .data_structures import (
 
 from .geometry_utils import (
     apply_rigid_transform,
-    calculate_angles,
+    angles,
     check_steric_clashes,
     rigid_transform_chains
 )
@@ -472,9 +472,36 @@ class ProteinModel:
             reaction.reactants.append(f"{molecule_2.name}({interface_2.name})")
             reaction.products.append(f"{molecule_1.name}({interface_1.name}!1).{molecule_2.name}({interface_2.name}!1)")
             reaction.expression = f"{molecule_1.name}({interface_1.name}) + {molecule_2.name}({interface_2.name}) <-> {molecule_1.name}({interface_1.name}!1).{molecule_2.name}({interface_2.name}!1)"
-            reaction.binding_angles = calculate_angles(np.array([molecule_1.coord.x, molecule_1.coord.y, molecule_1.coord.z]), np.array([molecule_2.coord.x, molecule_2.coord.y, molecule_2.coord.z]), np.array([interface_1.coord.x, interface_1.coord.y, interface_1.coord.z]), np.array([interface_2.coord.x, interface_2.coord.y, interface_2.coord.z]), np.array([0, 0, 1]), np.array([0, 0, 1]))
-            reaction.binding_radius = interface_1.coord.distance(interface_2.coord)
+            c1 = np.array([molecule_1.coord.x, molecule_1.coord.y, molecule_1.coord.z])
+            c2 = np.array([molecule_2.coord.x, molecule_2.coord.y, molecule_2.coord.z])
+            i1 = np.array([interface_1.coord.x, interface_1.coord.y, interface_1.coord.z])
+            i2 = np.array([interface_2.coord.x, interface_2.coord.y, interface_2.coord.z])
+            n1 = np.array([0,0,1])
+            n2 = np.array([0,0,1])
+            theta1, theta2, phi1, phi2, omega, sigma_magnitude = angles(c1, c2, i1, i2, c1+n1, c2+n2)
+            reaction.binding_angles = [theta1, theta2, phi1, phi2, omega]
+            reaction.norm1 = list(n1)
+            reaction.norm2 = list(n2)
+            reaction.binding_radius = sigma_magnitude
             self.reaction_list.append(reaction)
+            # print("Reaction:")
+            # print(reaction.expression)
+            # print("Angles:")
+            # print(reaction.binding_angles)
+            # print("Sigma:")
+            # print(reaction.binding_radius)
+            # print("c1:")
+            # print(np.array([molecule_1.coord.x, molecule_1.coord.y, molecule_1.coord.z]))
+            # print("p1:")
+            # print(np.array([interface_1.coord.x, interface_1.coord.y, interface_1.coord.z]))
+            # print("c2:")
+            # print(np.array([molecule_2.coord.x, molecule_2.coord.y, molecule_2.coord.z]))
+            # print("p2:")
+            # print(np.array([interface_2.coord.x, interface_2.coord.y, interface_2.coord.z]))
+            # print("n1:")
+            # print(np.array([0, 0, 1]))
+            # print("n2:")
+            # print(np.array([0, 0, 1]))
 
             # build the reaction template if it does not exist
             molecule_1_template_id = self.chains_map[molecule_1.name]
@@ -492,6 +519,12 @@ class ProteinModel:
             for reaction_template in self.reaction_template_list:
                 if reaction_template.reactants == reactants:
                     existed = True
+                    # print("My Reaction Template:")
+                    # print(reaction_template.expression)
+                    # print("Template Angles:")
+                    # print(reaction_template.binding_angles)
+                    # print("Template Sigma:")
+                    # print(reaction_template.binding_radius)
                     break
             if not existed:
                 reaction_template = ReactionTemplate()
@@ -521,8 +554,16 @@ class ProteinModel:
 
                 reaction_template.binding_angles = reaction.binding_angles
                 reaction_template.binding_radius = reaction.binding_radius
+                reaction_template.norm1 = reaction.norm1
+                reaction_template.norm2 = reaction.norm2
 
                 self.reaction_template_list.append(reaction_template)
+                # print("My Reaction Template:")
+                # print(reaction_template.expression)
+                # print("Template Angles:")
+                # print(reaction_template.binding_angles)
+                # print("Template Sigma:")
+                # print(reaction_template.binding_radius)
 
     def _update_interface_templates_free_required_list(self):
         """
@@ -1249,7 +1290,7 @@ class ProteinModel:
                                     B_group = g
 
                             if B == B_group[0]:
-                                partner_interface_template.coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][i] - molecule.coord
+                                partner_interface_template.coord = I_B - partner_molecule.coord
                             else:
                                 # align the current chain to the first chain in the group, then get the relative position of interface to COM
                                 chain1 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == B_group[0]][0])]
@@ -1258,7 +1299,7 @@ class ProteinModel:
                                 Q = []
                                 Q_COM_coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])]
                                 Q.append([Q_COM_coord.x, Q_COM_coord.y, Q_COM_coord.z])
-                                temp_coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][i]
+                                temp_coord = I_B
                                 Q.append([temp_coord.x, temp_coord.y, temp_coord.z])
                                 Q2 = []
                                 for point in Q:
@@ -1568,20 +1609,22 @@ class ProteinModel:
         """
         import os
 
-        nItr = 10000000
+        nItr = 1000000
         timeStep = 0.1
-        timeWrite = 10000
+        timeWrite = 100000
         trajWrite = 10000000
-        pdbWrite = 1000000
+        pdbWrite = 100000
         restartWrite = 1000000
+        scaleMaxDisplace = 100.0
+        overlapSepLimit = 1.7
 
-        boxSize = [300.0, 300.0, 300.0]
+        boxSize = [100.0, 100.0, 100.0]
 
         sphereR = 100.0
 
-        default_copy_number = 50
+        default_copy_number = 30
 
-        default_on_rate = 1.0
+        default_on_rate = 1000.0
         default_off_rate = 0.0
 
         with open(inp_filename, "w") as f:
@@ -1593,8 +1636,8 @@ class ProteinModel:
             f.write(f"\ttrajWrite = {trajWrite}\n")
             f.write(f"\tpdbWrite = {pdbWrite}\n")
             f.write(f"\trestartWrite = {restartWrite}\n")
-            f.write("\tscaleMaxDisplace = 100.0\n")
-            f.write("\toverlapSepLimit = 0.1\n")
+            f.write(f"\tscaleMaxDisplace = {scaleMaxDisplace}\n")
+            f.write(f"\toverlapSepLimit = {overlapSepLimit}\n")
             f.write("end parameters\n\n")
 
             # ------------------ start boundaries --------------------
@@ -1621,17 +1664,13 @@ class ProteinModel:
                 f.write(f"\t{r_template.expression}\n")
 
                 # For demonstration, use a default on/off or your own logic:
-                f.write(f"\t\tonRate3DMacro = {default_on_rate}\n")
-                f.write(f"\t\toffRateMacro = {default_off_rate}\n")
+                f.write(f"\t\tonRate3Dka = {default_on_rate}\n")
+                f.write(f"\t\toffRatekb = {default_off_rate}\n")
 
                 # The 'sigma' can be set to the binding radius from the template
                 brad = getattr(r_template, "binding_radius", 5.0)
                 brad = brad / 10  # Convert to nm
-                f.write(f"\t\tsigma = {brad:.4f}\n")
-
-                # set norm1 and norm2 to [0,0,1]
-                f.write("\t\tnorm1 = [0.0, 0.0, 1.0]\n")
-                f.write("\t\tnorm2 = [0.0, 0.0, 1.0]\n")
+                f.write(f"\t\tsigma = {brad:.7f}\n")
 
                 # set bindRadSameCom
                 f.write("\t\tbindRadSameCom = 1.5\n")
@@ -1639,15 +1678,18 @@ class ProteinModel:
                 # set loopCoopFactor
                 f.write("\t\tloopCoopFactor = 1.0\n")
 
-                # If we have angles, write them in the 'assocAngles' line
-                # Typically, one might store 5 angles for NERDSS. We'll just do them all:
                 angles = getattr(r_template, "binding_angles", [])
                 if angles:
-                    angle_str = ", ".join(f"{ang:.6f}" for ang in angles)
+                    angle_str = ", ".join(f"{ang}" for ang in angles)
                     f.write(f"\t\tassocAngles = [{angle_str}]\n")
                 else:
                     # Fallback to nans if no angles are available
                     f.write("\t\tassocAngles = [nan, nan, nan, nan, nan]\n")
+                # set norm1 and norm2
+                norm1 = getattr(r_template, "norm1", [])
+                norm2 = getattr(r_template, "norm2", [])
+                f.write(f"\t\tnorm1 = [{norm1[0]:.6f}, {norm1[1]:.6f}, {norm1[2]:.6f}]\n")
+                f.write(f"\t\tnorm2 = [{norm2[0]:.6f}, {norm2[1]:.6f}, {norm2[2]:.6f}]\n")
 
                 f.write("\t\texcludeVolumeBound = False\n\n")
 

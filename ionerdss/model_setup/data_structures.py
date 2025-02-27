@@ -152,6 +152,8 @@ class ReactionTemplate:
         self.products = None
         self.binding_angles = None
         self.binding_radius = None
+        self.norm1 = None
+        self.norm2 = None
 
     def __str__(self):
         reaction_template_info = f"Reaction Template: {self.expression}\n"
@@ -182,6 +184,8 @@ class Reaction:
         self.products = None
         self.binding_angles = None
         self.binding_radius = None
+        self.norm1 = None
+        self.norm2 = None
 
     def __str__(self):
         reaction_info = f"Reaction: {self.expression}\n"

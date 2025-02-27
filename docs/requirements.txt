@@ -12,3 +12,5 @@ biopython
 scipy
 scikit-learn
 requests
+nglview
+ipympl

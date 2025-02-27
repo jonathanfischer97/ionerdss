@@ -180,7 +180,90 @@ def _triangle_correction(x: float, eps=1e-6) -> float:
     return max(min(x, 1.0), -1.0)
 
 
-def calculate_angles(c1, c2, p1, p2, n1, n2, eps=1e-4):
+def calculate_angles(c1, c2, p1, p2, n1, n2):
+    """
+    Determines angles of the reaction (theta1, theta2, phi1, phi2, omega)
+    given coordinates of two molecule COMs (c1, c2), two interface sites (p1, p2),
+    and two normal vectors (n1, n2).
+
+    Args:
+        c1 (np.ndarray): COM of molecule 1.
+        c2 (np.ndarray): COM of molecule 2.
+        p1 (np.ndarray): Interface site of molecule 1.
+        p2 (np.ndarray): Interface site of molecule 2.
+        n1 (np.ndarray): Normal vector for molecule 1.
+        n2 (np.ndarray): Normal vector for molecule 2.
+
+    Returns:
+        tuple: (theta1, theta2, phi1, phi2, omega) in radians.
+    """
+    v1 = p1 - c1
+    v2 = p2 - c2
+    sigma1 = p1 - p2
+    sigma2 = -sigma1
+
+    if np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1)) <= 1:  # prevent float point arithematic rounding errors
+        theta1 = np.arccos(
+            np.dot(v1, sigma1) / (np.linalg.norm(v1) * np.linalg.norm(sigma1))
+        )
+    else:
+        theta1 = 0
+
+    if np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2)) <= 1:   # prevent float point arithematic rounding errors
+        theta2 = np.arccos(
+            np.dot(v2, sigma2) / (np.linalg.norm(v2) * np.linalg.norm(sigma2))
+        )
+    else:
+        theta2 = 0
+
+    t1 = np.cross(v1, sigma1)
+    t2 = np.cross(v1, n1)
+    norm_t1 = t1 / np.linalg.norm(t1)
+    norm_t2 = t2 / np.linalg.norm(t2)
+    if np.dot(norm_t1, norm_t2) <= 1:  # prevent float point arithematic rounding errors
+        phi1 = np.arccos(np.dot(norm_t1, norm_t2))
+    else:
+        phi1 = 0
+
+    # the sign of phi1 is determined by the direction of t2 relative to the right-hand rule of cross product of v1 and t1
+    if np.dot(np.cross(v1, t1), t2) < 0:
+        phi1 = -phi1
+
+    t1 = np.cross(v2, sigma2)
+    t2 = np.cross(v2, n2)
+    norm_t1 = t1 / np.linalg.norm(t1)
+    norm_t2 = t2 / np.linalg.norm(t2)
+    if np.dot(norm_t1, norm_t2) <= 1:   # prevent float point arithematic rounding errors
+        phi2 = np.arccos(np.dot(norm_t1, norm_t2))
+    else: 
+        phi2 = 0
+
+    # the sign of phi2 is determined by the direction of t2 relative to the right-hand rule of cross product of v2 and t1
+    if np.dot(np.cross(v2, t1), t2) < 0:
+        phi2 = -phi2
+
+    if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(
+        np.linalg.norm(np.cross(v2, sigma2)), 0
+    ):
+        t1 = np.cross(sigma1, v1)
+        t2 = np.cross(sigma1, v2)
+    else:
+        t1 = np.cross(sigma1, n1)
+        t2 = np.cross(sigma1, n2)
+    
+
+    if np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)) <= 1:  # prevent float point arithematic rounding errors
+        omega = np.arccos(np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2)))
+    else:
+        omega = 0
+
+    # the sign of omega is determined by the direction of t2 relative to the right-hand rule of cross product of sigma1 and t1
+    if np.dot(np.cross(sigma1, t1), t2) < 0:
+        omega = -omega
+
+    return theta1, theta2, phi1, phi2, omega, n1, n2
+
+def calculate_angles_back(c1, c2, p1, p2, n1, n2, eps=1e-4):
     """
     Determines angles of the reaction (theta1, theta2, phi1, phi2, omega)
     given coordinates of two molecule COMs (c1, c2), two interface sites (p1, p2),
@@ -275,4 +358,146 @@ def calculate_angles(c1, c2, p1, p2, n1, n2, eps=1e-4):
         print(f"sigma1_uni[0] - omega_dir[0]: {sigma1_uni[0] - omega_dir[0]}")
         print(f"sigma1_uni[0] + omega_dir[0]: {sigma1_uni[0] + omega_dir[0]}")
 
-    return theta1, theta2, phi1, phi2, omega
+    return theta1, theta2, phi1, phi2, omega, n1, n2
+
+
+eps = 10**-6
+norm = np.linalg.norm
+
+def unit(x:np.ndarray) -> np.ndarray:
+    '''Get the unit vector of x\n
+    Return 0 if ||x||=0\n
+    Return itself if ||x||=1'''
+    x_norm = norm(x)
+    if abs(x_norm-1) < eps:
+        return x
+    elif x_norm < eps:
+        return np.zeros(3)
+    else:
+        return x/x_norm
+
+
+def triangle_correction(x: float) -> float:
+    '''make x in range of [-1, 1], correct precision'''
+    if x < -1 and abs(x+1) < eps:
+        return -1
+    elif x > 1 and abs(x-1) < eps:
+        return 1
+    elif -1 <= x <= 1:
+        return x
+    else:
+        raise ValueError(f'{x} is out of the range of sin/cos')
+
+def calculate_phi(v:np.ndarray, n:np.ndarray, sigma:np.ndarray) -> float:
+
+    # calculate phi
+    t1 = unit(np.cross(v, sigma))
+    t2 = unit(np.cross(v, n))
+    phi = math.acos(triangle_correction(np.dot(t1, t2)))
+
+    # determine the sign of phi (+/-)
+    v_uni = unit(v)
+    n_proj = n - v_uni * np.dot(v_uni, n)
+    sigma_proj = sigma - v_uni * np.dot(v_uni, sigma)
+    phi_dir = unit(np.cross(sigma_proj, n_proj))
+
+    if np.dot(v_uni, phi_dir) > 0:
+        phi = -phi
+    else:
+        phi = phi
+    
+    return phi
+
+
+def angles(COM1, COM2, int_site1, int_site2, normal_point1, normal_point2):
+    '''Calculate the angles for binding'''
+
+    # Convert sequences into arrays for convinience
+    COM1 = np.array(COM1)
+    COM2 = np.array(COM2)
+    int_site1 = np.array(int_site1)
+    int_site2 = np.array(int_site2)
+    normal_point1 = np.array(normal_point1)
+    normal_point2 = np.array(normal_point2)
+
+    # Get Vectors
+    v1 = int_site1 - COM1 # from COM to interface (particle 1)
+    v2 = int_site2 - COM2  # from COM to interface (particle 2)
+    sigma1 = int_site1 - int_site2 # sigma, from p2 to p1
+    sigma2 = int_site2 - int_site1  # sigma, from p1 to p2
+    n1 = unit(normal_point1 - COM1) # normal vector for p1
+    n2 = unit(normal_point2 - COM2) # normal vector for p2
+
+    # Calculate the magnititude of sigma
+    sigma_magnitude = norm(sigma1)
+
+    # Calculate theta1 and theta2
+    costheta1 = np.dot(v1, sigma1) / norm(v1) / norm(sigma1)
+    costheta2 = np.dot(v2, sigma2) / norm(v2) / norm(sigma2)
+    theta1 = math.acos(triangle_correction(costheta1))
+    theta2 = math.acos(triangle_correction(costheta2))
+
+    # check geometry
+    errormsg = ''
+    iferror = False # determine if v // n
+    if norm(np.cross(n1, v1)) < eps:
+        iferror = True
+        errormsg += f'\n\tn1 ({n1}) and v1 ({v1}) parallel, phi1 not available'
+    if norm(np.cross(n2, v2)) < eps:
+        iferror = True
+        errormsg += f'\n\tn2 ({n2}) and v2 ({v2}) parallel, phi2 not available'
+    if iferror:
+        raise ValueError(errormsg)
+
+    # determine if phi1 exists (v1 // sigma1 ?)
+    if norm(np.cross(sigma1, v1)) < eps:
+        phi1 = float('nan')
+        # omega_parallel = True
+        omega_t1 = unit(np.cross(sigma1, n1))
+    else:
+        phi1 = calculate_phi(v1, n1, sigma1)
+        omega_t1 = unit(np.cross(sigma1, v1))
+
+    # determine if phi2 exists (v2 // sigma2 ?)
+    if norm(np.cross(sigma2, v2)) < eps:
+        phi2 = float('nan')
+        # omega_parallel = True
+        omega_t2 = unit(np.cross(sigma1, n2))
+    else:
+        phi2 = calculate_phi(v2, n2, sigma2)
+        omega_t2 = unit(np.cross(sigma1, v2))
+
+    # calculate omega (both cases are same)
+    omega = math.acos(triangle_correction(np.dot(omega_t1, omega_t2)))
+    # determine the sign of omega (+/-)
+    sigma1_uni = unit(sigma1)
+    sigma1xomega_t1 = np.cross(sigma1, omega_t1)
+    sigma1xomega_t2 = np.cross(sigma1, omega_t2)
+    omega_dir = unit(np.cross(sigma1xomega_t1, sigma1xomega_t2))
+    if np.dot(sigma1_uni, omega_dir) > 0:
+        omega = -omega
+    else:
+        omega = omega
+
+    if abs(theta1 - np.pi) < eps:
+        theta1 = 'M_PI'
+    else:
+        theta1 = "%.6f" % theta1
+    if abs(theta2 - np.pi) < eps:
+        theta2 = 'M_PI'
+    else:
+        theta2 = "%.6f" % theta2
+    if abs(phi1 - np.pi) < eps:
+        phi1 = 'M_PI'
+    else:
+        phi1 = "%.6f" % phi1
+    if abs(phi2 - np.pi) < eps:
+        phi2 = 'M_PI'
+    else:
+        phi2 = "%.6f" % phi2
+    if abs(omega - np.pi) < eps:
+        omega = 'M_PI'
+    else:
+        omega = "%.6f" % omega
+
+    return theta1, theta2, phi1, phi2, omega, sigma_magnitude
