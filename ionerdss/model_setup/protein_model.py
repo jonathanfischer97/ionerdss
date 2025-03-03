@@ -484,24 +484,24 @@ class ProteinModel:
             reaction.norm2 = list(n2)
             reaction.binding_radius = sigma_magnitude
             self.reaction_list.append(reaction)
-            # print("Reaction:")
-            # print(reaction.expression)
-            # print("Angles:")
-            # print(reaction.binding_angles)
-            # print("Sigma:")
-            # print(reaction.binding_radius)
-            # print("c1:")
-            # print(np.array([molecule_1.coord.x, molecule_1.coord.y, molecule_1.coord.z]))
-            # print("p1:")
-            # print(np.array([interface_1.coord.x, interface_1.coord.y, interface_1.coord.z]))
-            # print("c2:")
-            # print(np.array([molecule_2.coord.x, molecule_2.coord.y, molecule_2.coord.z]))
-            # print("p2:")
-            # print(np.array([interface_2.coord.x, interface_2.coord.y, interface_2.coord.z]))
-            # print("n1:")
-            # print(np.array([0, 0, 1]))
-            # print("n2:")
-            # print(np.array([0, 0, 1]))
+            print("Reaction:")
+            print(reaction.expression)
+            print("Angles:")
+            print(reaction.binding_angles)
+            print("Sigma:")
+            print(reaction.binding_radius)
+            print("c1:")
+            print(np.array([molecule_1.coord.x, molecule_1.coord.y, molecule_1.coord.z]))
+            print("p1:")
+            print(np.array([interface_1.coord.x, interface_1.coord.y, interface_1.coord.z]))
+            print("c2:")
+            print(np.array([molecule_2.coord.x, molecule_2.coord.y, molecule_2.coord.z]))
+            print("p2:")
+            print(np.array([interface_2.coord.x, interface_2.coord.y, interface_2.coord.z]))
+            print("n1:")
+            print(n1)
+            print("n2:")
+            print(n2)
 
             # build the reaction template if it does not exist
             molecule_1_template_id = self.chains_map[molecule_1.name]
@@ -519,12 +519,12 @@ class ProteinModel:
             for reaction_template in self.reaction_template_list:
                 if reaction_template.reactants == reactants:
                     existed = True
-                    # print("My Reaction Template:")
-                    # print(reaction_template.expression)
-                    # print("Template Angles:")
-                    # print(reaction_template.binding_angles)
-                    # print("Template Sigma:")
-                    # print(reaction_template.binding_radius)
+                    print("My Reaction Template:")
+                    print(reaction_template.expression)
+                    print("Template Angles:")
+                    print(reaction_template.binding_angles)
+                    print("Template Sigma:")
+                    print(reaction_template.binding_radius)
                     break
             if not existed:
                 reaction_template = ReactionTemplate()
@@ -558,12 +558,12 @@ class ProteinModel:
                 reaction_template.norm2 = reaction.norm2
 
                 self.reaction_template_list.append(reaction_template)
-                # print("My Reaction Template:")
-                # print(reaction_template.expression)
-                # print("Template Angles:")
-                # print(reaction_template.binding_angles)
-                # print("Template Sigma:")
-                # print(reaction_template.binding_radius)
+                print("My Reaction Template:")
+                print(reaction_template.expression)
+                print("Template Angles:")
+                print(reaction_template.binding_angles)
+                print("Template Sigma:")
+                print(reaction_template.binding_radius)
 
     def _update_interface_templates_free_required_list(self):
         """
