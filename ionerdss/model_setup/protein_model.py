@@ -476,12 +476,12 @@ class ProteinModel:
             c2 = np.array([molecule_2.coord.x, molecule_2.coord.y, molecule_2.coord.z])
             i1 = np.array([interface_1.coord.x, interface_1.coord.y, interface_1.coord.z])
             i2 = np.array([interface_2.coord.x, interface_2.coord.y, interface_2.coord.z])
-            n1 = np.array([0,0,1])
-            n2 = np.array([0,0,1])
-            theta1, theta2, phi1, phi2, omega, sigma_magnitude = angles(c1, c2, i1, i2, c1+n1, c2+n2)
+            n1 = np.array(molecule_1.normal_point)
+            n2 = np.array(molecule_2.normal_point)
+            theta1, theta2, phi1, phi2, omega, sigma_magnitude = angles(c1, c2, i1, i2, n1, n2)
             reaction.binding_angles = [theta1, theta2, phi1, phi2, omega]
-            reaction.norm1 = list(n1)
-            reaction.norm2 = list(n2)
+            reaction.norm1 = [0,0,1]
+            reaction.norm2 = [0,0,1]
             reaction.binding_radius = sigma_magnitude
             self.reaction_list.append(reaction)
             print("Reaction:")
@@ -498,10 +498,6 @@ class ProteinModel:
             print(np.array([molecule_2.coord.x, molecule_2.coord.y, molecule_2.coord.z]))
             print("p2:")
             print(np.array([interface_2.coord.x, interface_2.coord.y, interface_2.coord.z]))
-            print("n1:")
-            print(n1)
-            print("n2:")
-            print(n2)
 
             # build the reaction template if it does not exist
             molecule_1_template_id = self.chains_map[molecule_1.name]
@@ -1397,6 +1393,9 @@ class ProteinModel:
 
                 # calculate the R and t for the rigid transformation
                 if i == 0:
+                    # calculate the normal_point for this molecule
+                    molecule = [mol for mol in self.molecule_list if mol.name == chain_id][0]
+                    molecule.normal_point = [com_coord.x, com_coord.y, com_coord.z + 1] # normal_point - COM is [0,0,1]
                     # no need to transform the first chain
                     continue
                 else:
@@ -1408,6 +1407,7 @@ class ProteinModel:
                     for interface_coord in interface_coords:
                         interface_coord_transformed = apply_rigid_transform(R, t, np.array([interface_coord.x, interface_coord.y, interface_coord.z]))
                         interface_coords_transformed.append(interface_coord_transformed)
+                    normal_point_transformed = apply_rigid_transform(R, t, np.array([com_coord.x, com_coord.y, com_coord.z + 1]))
                     # update the COM and interfaces of the molecule
                     molecule = [mol for mol in self.molecule_list if mol.name == chain_id][0]
                     molecule.coord = Coords(com_coord_transformed[0], com_coord_transformed[1], com_coord_transformed[2])
@@ -1418,6 +1418,7 @@ class ProteinModel:
                             if interface_template_id == intf_template:
                                 interface.coord = Coords(interface_coords_transformed[k][0], interface_coords_transformed[k][1], interface_coords_transformed[k][2])
                                 break
+                    molecule.normal_point = [normal_point_transformed[0], normal_point_transformed[1], normal_point_transformed[2]]
 
         if self.verbose:
             # print the updated molecule list

@@ -186,6 +186,10 @@ def calculate_angles(c1, c2, p1, p2, n1, n2):
     given coordinates of two molecule COMs (c1, c2), two interface sites (p1, p2),
     and two normal vectors (n1, n2).
 
+    Note: The n1 and n2 in the NERDSS inp file’s reaction list is the internal 
+    direction regarding the molecule rotation in the template file. When calculating 
+    the binding angles, the n1 and n2 used in the input here should be adjusted to the current molecule rotation.
+
     Args:
         c1 (np.ndarray): COM of molecule 1.
         c2 (np.ndarray): COM of molecule 2.
@@ -226,7 +230,7 @@ def calculate_angles(c1, c2, p1, p2, n1, n2):
         phi1 = 0
 
     # the sign of phi1 is determined by the direction of t2 relative to the right-hand rule of cross product of v1 and t1
-    if np.dot(np.cross(v1, t1), t2) < 0:
+    if np.dot(np.cross(v1, t1), t2) > 0:
         phi1 = -phi1
 
     t1 = np.cross(v2, sigma2)
@@ -239,7 +243,7 @@ def calculate_angles(c1, c2, p1, p2, n1, n2):
         phi2 = 0
 
     # the sign of phi2 is determined by the direction of t2 relative to the right-hand rule of cross product of v2 and t1
-    if np.dot(np.cross(v2, t1), t2) < 0:
+    if np.dot(np.cross(v2, t1), t2) > 0:
         phi2 = -phi2
 
     if not np.isclose(np.linalg.norm(np.cross(v1, sigma1)), 0) and not np.isclose(
@@ -258,7 +262,7 @@ def calculate_angles(c1, c2, p1, p2, n1, n2):
         omega = 0
 
     # the sign of omega is determined by the direction of t2 relative to the right-hand rule of cross product of sigma1 and t1
-    if np.dot(np.cross(sigma1, t1), t2) < 0:
+    if np.dot(np.cross(sigma1, t1), t2) > 0:
         omega = -omega
 
     return theta1, theta2, phi1, phi2, omega, n1, n2
@@ -268,6 +272,10 @@ def calculate_angles_back(c1, c2, p1, p2, n1, n2, eps=1e-4):
     Determines angles of the reaction (theta1, theta2, phi1, phi2, omega)
     given coordinates of two molecule COMs (c1, c2), two interface sites (p1, p2),
     and two normal vectors (n1, n2).
+
+    Note: The n1 and n2 in the NERDSS inp file’s reaction list is the internal 
+    direction regarding the molecule rotation in the template file. When calculating 
+    the binding angles, the n1 and n2 used in the input hereshould be adjusted to the current molecule rotation.
 
     Args:
         c1 (np.ndarray): COM of molecule 1.
@@ -410,7 +418,12 @@ def calculate_phi(v:np.ndarray, n:np.ndarray, sigma:np.ndarray) -> float:
 
 
 def angles(COM1, COM2, int_site1, int_site2, normal_point1, normal_point2):
-    '''Calculate the angles for binding'''
+    '''Calculate the angles for binding
+    
+    Note: The n1 and n2 in the NERDSS inp file’s reaction list is the internal 
+    direction regarding the molecule rotation in the template file. When calculating 
+    the binding angles, the n1 and n2 used in the input here should be adjusted to the current molecule rotation.
+    '''
 
     # Convert sequences into arrays for convinience
     COM1 = np.array(COM1)

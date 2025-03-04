@@ -24,6 +24,7 @@ class MoleculeTemplate:
         """
         self.name = name
         self.interface_template_list = []
+        self.normal_point = [0,0,1]
 
     def __str__(self):
         molecule_template_info = f"Molecule Template: {self.name}\n"
@@ -89,6 +90,7 @@ class CoarseGrainedMolecule:
         self.my_template = None
         self.coord = None
         self.interface_list = []
+        self.normal_point = None
 
     def __str__(self):
         molecule_info = f"CoarseGrainedMolecule: {self.name}\n"
