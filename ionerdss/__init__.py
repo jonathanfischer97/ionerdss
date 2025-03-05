@@ -1,5 +1,6 @@
 from .functions import *
 from .model_setup import *
+from .analysis import *
 
 import seaborn as sns
 
