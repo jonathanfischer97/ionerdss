@@ -479,6 +479,10 @@ class ProteinModel:
             n1 = np.array(molecule_1.normal_point)
             n2 = np.array(molecule_2.normal_point)
             theta1, theta2, phi1, phi2, omega, sigma_magnitude = angles(c1, c2, i1, i2, n1, n2)
+            if len(molecule_1.my_template.interface_template_list) == 1:
+                phi1 = 'nan'
+            if len(molecule_2.my_template.interface_template_list) == 1:
+                phi2 = 'nan'
             reaction.binding_angles = [theta1, theta2, phi1, phi2, omega]
             reaction.norm1 = [0,0,1]
             reaction.norm2 = [0,0,1]
