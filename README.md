@@ -98,4 +98,4 @@ This project is licensed under the GPL‐3.0 License.
 
 Click the following link to make a copy of the iPython notebook in your Google Colab and following the instructions on the Notebook to run a quick trial of the NERDSS simulator with the usage of ionerdss to prepare the inputs from a PDB structure.
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)]([https://github.com/JohnsonBiophysicsLab/ionerdss/blob/main/docs/Run_NERDSS_colab.ipynb?copy=true)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnsonBiophysicsLab/ionerdss/blob/main/docs/Run_NERDSS_colab.ipynb?copy=true)
