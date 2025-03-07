@@ -1,5 +1,12 @@
 import os
 import importlib
+from .histogram import *
+from .transition_matrix import *
+from .locate_pos import *
+from .xyz import *
+from .acf import *
+from .pdb import *
+from .file_managment import *
 
 # Get the directory of the current __init__.py file
 current_directory = os.path.dirname(__file__)

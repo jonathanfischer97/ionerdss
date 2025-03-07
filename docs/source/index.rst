@@ -11,9 +11,17 @@ Welcome to ionerdss Documentation!
 
 Features of ionerdss:
 
-- **Creating NERDSS Inputs:** Automatically creates executable NERDSS inputs for you.
-   - **Protein Data Bank (PDB) files:** Generates NERDSS input files from PDB files.
-   - **Platonic solids:** Generates NERDSS input files from idealized geometries of Platonic solids, with 2 options for each of the 5 Platonic solids.
+- **Creating NERDSS Inputs:** Automatically generates executable NERDSS input files.
+   - **Protein Data Bank (PDB) files:** Converts PDB files into NERDSS input files. See the `PDB to NERDSS tutorial <pdb_to_nerdss_tutorial.html>`_ for more details.
+   - **Platonic solids:** Creates NERDSS input files from idealized geometries of Platonic solids, offering two options for each of the five Platonic solids. See the `Platonic solids tutorial <model_setup_for_platonic_solid.html>`_ for more details.
+   - **User designed molecules and reactions**: `JAVA GUI <java_gui_tutorial.html>`_ Allows users to define their own molecules and reactions.
+
+- **Analyzing NERDSS Outputs:** Produces graphs, spreadsheets, and analyzed datasets from NERDSS outputs.
+   - **Histogram Analysis:** Processes and outputs data from histogram.dat files.
+   - **Complex Location Analysis:** Determines the location of specific complex sizes using PDB, restart, or input files.
+   - **Transition Matrix Analysis:** Reads transition matrix files and generates various outputs.
+   - **XYZ File Analysis:** Processes .xyz files, which report coordinates for specific timestamps, and generates various outputs.
+
 
 This documentation includes:
 
@@ -29,7 +37,6 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-   :caption: Documentation
 
    installation
    downloads

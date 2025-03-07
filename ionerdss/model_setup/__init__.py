@@ -1,5 +1,9 @@
 import os
 import importlib
+from .database_pdb import *
+from .platonic_solids import *
+from .gag_reshape import *
+from .nerdss_gui import *
 
 # Get the directory of the current __init__.py file
 current_directory = os.path.dirname(__file__)

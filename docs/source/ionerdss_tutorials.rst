@@ -7,42 +7,26 @@ The tutorials for **ioNERDSS** are provided as Jupyter notebooks, demonstrating 
 - Read and process simulation outputs  
 - Generate plots and analyses  
 
-Accessing the Notebooks
------------------------
-
-1. **Local Clone & Jupyter**  
-   - Clone the repo (if you haven’t already):
-
-     .. code-block:: console
-
-        git clone https://github.com/JohnsonBiophysicsLab/ionerdss.git
-
-   - Navigate to the ``tutorial`` folder and launch Jupyter:
-
-     .. code-block:: console
-
-        cd ionerdss/tutorial
-
-        jupyter notebook
-
-   - Open each notebook and follow along.
-
-2. **Read the Docs**  
-   - You can view these tutorials here in the docs without manually opening Jupyter. Click on the links below to access each notebook directly.
-
 Notebook Index
 --------------
 
-Below is a quick reference for the available Jupyter notebooks:
+For detailed description of NERDSS inputs and outputs, please refer to the `NERDSS User Guide <nerdss_user_guide_input_output.html>`_.
+
+Below is a quick reference for the available Jupyter notebooks to prepare the input files and analyze the output files of NERDSS simulations:
 
 .. toctree::
    :maxdepth: 1
    :caption: Jupyter Notebooks
 
    pdb_to_nerdss_tutorial
+   model_setup_for_platonic_solid
+   read_pdb_tutorial
    ioNERDSSTutorialSingle
    ioNERDSSTutorialMulti
-   ReadPDBTutorial
+   GUITutorial
+   ClathrinTutorial
+   ioNERDSSTutorialGagSphere
+   
 
 Additional Resources
 --------------------

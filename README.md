@@ -41,6 +41,7 @@ For extended examples, see the [tutorials](./tutorial/) folder.
 
 - **API Reference:** Docstrings are integrated throughout the code (Google-style). You can build the docs locally using Sphinx:
 ```bash
+sphinx-apidoc -o docs/source ionerdss
 cd docs
 make html
 ```
@@ -56,17 +57,11 @@ ionerdss/
 │   ├── source/            # Sphinx source files
 │   ├── make.bat           # Windows build script
 │   └── Makefile           # Unix build script
-├── ioNERDSS/              # Main Python package
-│   ├── functions/         # Submodules (e.g., histograms, pdb, etc.)
+├── ionerdss/              # Main Python package
+│   ├── model_setup/       # Model building tools
+│   ├── analysis/          # Data analysis tools
 │   └── __init__.py 
-├── tests/                 # Unit tests
-├── tutorial/              # Example workflows & tutorials
-│   ├── DevelopersGuide/   # For contributors
-│   ├── GUITutorial/       # Tutorials for using GUI features
-│   ├── MultiSpeciesTutorial/
-│   ├── ReadPDBTutorial/   # Updated instructions on PDB usage
-│   ├── SingleSpeciesTutorial/
-│   └── ...                # Additional tutorials
+├── tests/                 # Unit tests, to be added
 └── setup.py               # Installation & packaging
 ```
 

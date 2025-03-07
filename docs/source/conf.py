@@ -8,6 +8,7 @@
 
 import os
 import sys
+import sphinx.ext.autodoc
 
 
 sys.path.insert(0, os.path.abspath('../../')) 
@@ -29,6 +30,13 @@ extensions = [
     'sphinx.ext.viewcode',
     'nbsphinx',
 ]
+
+autosummary_generate = True  # Enable automatic stub generation
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'show-inheritance': True,
+}
 
 templates_path = ['_templates']
 exclude_patterns = []
