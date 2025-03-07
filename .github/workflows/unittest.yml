@@ -29,7 +29,12 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Install dependencies
+      - name: Install system dependencies (Qt, OpenGL, EGL)
+        run: |
+          sudo apt update
+          sudo apt install -y libegl1 libopengl0 libgl1-mesa-dev libxkbcommon-x11-0 qt6-base-dev
+
+      - name: Install Python dependencies
         run: pip install -r requirements.txt
 
       - name: Set PYTHONPATH
