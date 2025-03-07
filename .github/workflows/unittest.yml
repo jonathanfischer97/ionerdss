@@ -29,12 +29,10 @@ jobs:
         with:
           python-version: "3.9"  # Change to match your project
 
-      - name: Install dependencies
+      - name: Change to ionerdss directory and install
         run: |
-          pip install -r requirements.txt  # Install dependencies
-          pip install pytest  # Ensure pytest is available
+          cd ionerdss
+          pip install -e .
 
       - name: Run unit tests
-        run: |
-          export PYTHONPATH=$(pwd)
-          pytest --junitxml=report.xml
+        run: pytest --junitxml=report.xml
