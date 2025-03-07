@@ -1,5 +1,6 @@
 # ionerdss
 [![Documentation Status](https://readthedocs.org/projects/ionerdss/badge/?version=latest)](https://ionerdss.readthedocs.io/en/latest/?badge=latest)
+![Tests](https://github.com/JohnsonBiophysicsLab/ionerdss/actions/workflows/unittest.yml/badge.svg)
 
 **ionerdss** is a Python library that provides user‐friendly tools for setting up and analyzing output from the [NERDSS](https://github.com/JohnsonBiophysicsLab/NERDSS) reaction‐diffusion simulator. Its goal is to streamline model building (from PDB files or from scratch), data analysis, and visualization for simulation workflows.
 
@@ -32,14 +33,14 @@ import ionerdss as ion
 ion.nerdss()
 ```
 
-For extended examples, see the [tutorials](./tutorial/) folder.
+For extended examples, see the [tutorials](https://ionerdss.readthedocs.io/en/latest/ionerdss_tutorials.html).
 
 ---
 
 ## Documentation
-- **User Guide:** The [.pdf file](./docs/ioNERDSSUserGuide.pdf) in the docs/ folder.
+- **User Guide:** [ionerdss user guide](https://ionerdss.readthedocs.io/en/latest/ionerdss_documentation.html).
 
-- **API Reference:** Docstrings are integrated throughout the code (Google-style). You can build the docs locally using Sphinx:
+- **API Reference:** [API](https://ionerdss.readthedocs.io/en/latest/ionerdss.html) .Docstrings are integrated throughout the code (Google-style). You can also build the docs locally using Sphinx:
 ```bash
 sphinx-apidoc -o docs/source ionerdss
 cd docs
@@ -62,6 +63,7 @@ ionerdss/
 │   ├── analysis/          # Data analysis tools
 │   └── __init__.py 
 ├── tests/                 # Unit tests, to be added
+├── data/                  # Test and tutorial data
 └── setup.py               # Installation & packaging
 ```
 
