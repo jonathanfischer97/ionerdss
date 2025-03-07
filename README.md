@@ -1,6 +1,9 @@
 # ionerdss
 [![Documentation Status](https://readthedocs.org/projects/ionerdss/badge/?version=latest)](https://ionerdss.readthedocs.io/en/latest/?badge=latest)
 [![Run Unit Tests](https://github.com/JohnsonBiophysicsLab/ionerdss/actions/workflows/unittest.yml/badge.svg?branch=main&event=push)](https://github.com/JohnsonBiophysicsLab/ionerdss/actions/workflows/unittest.yml)
+![PyPI](https://img.shields.io/pypi/v/ioNERDSS.svg)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/ioNERDSS.svg)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/ioNERDSS.svg)
 
 **ionerdss** is a Python library that provides user‐friendly tools for setting up and analyzing output from the [NERDSS](https://github.com/JohnsonBiophysicsLab/NERDSS) reaction‐diffusion simulator. Its goal is to streamline model building (from PDB files or from scratch), data analysis, and visualization for simulation workflows.
 
