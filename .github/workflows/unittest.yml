@@ -3,18 +3,18 @@ name: Run Unit Tests
 on:
   push:
     branches:
-      - main  # Change to your default branch if needed
+      - main
     paths:
-      - "ionerdss/**"      # Run tests only if files inside `mypackage/` change
-      - "tests/**"          # Run tests only if files inside `tests/` change
-      - ".github/workflows/unittest.yml"  # Run if workflow file is modified
+      - "ionerdss/**"
+      - "tests/**"
+      - ".github/workflows/unittest.yml"
   pull_request:
     branches:
       - main
     paths:
-      - "ionerdss/**"      # Run tests only if files inside `mypackage/` change
-      - "tests/**"          # Run tests only if files inside `tests/` change
-      - ".github/workflows/unittest.yml"  # Run if workflow file is modified
+      - "ionerdss/**"
+      - "tests/**"
+      - ".github/workflows/unittest.yml"
 
 jobs:
   test:
@@ -27,12 +27,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"  # Change to match your project
+          python-version: "3.9"
 
-      - name: Change to ionerdss directory and install
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      - name: Install package (if setup.py exists)
         run: |
-          cd ionerdss
-          pip install -e .
+          if [ -f "setup.py" ]; then
+            pip install -e .
+          fi
 
       - name: Run unit tests
-        run: pytest --junitxml=report.xml
+        run: pytest tests --junitxml=report.xml
