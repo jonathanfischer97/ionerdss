@@ -77,11 +77,20 @@ ionerdss/
 1. **Docstrings & Sphinx**  
    - Write clear docstrings in Google‐style to help auto‐generate documentation.
 
+   Prompt used for chatGPT to refactor one function: `improve this function, provide the detail google-style docstring for sphinx, standardize naming conventions:`
+
 2. **Code Organization**  
    - Keep related functionality grouped in submodules.
 
 3. **Tests**  
    - Add or update unit tests in `tests/` for any new function. We use [unittest](https://docs.python.org/3/library/unittest.html).
+
+   - To run the tests locally, in the project root folder, use the following command:
+     ```bash
+     pip install -r requirements.txt
+     export PYTHONPATH=$(pwd)
+     pytest
+     ```
 
 4. **Versioning & Releases**  
    - Update `setup.py` with a new version number. A GitHub release will auto‐update the PyPI package.

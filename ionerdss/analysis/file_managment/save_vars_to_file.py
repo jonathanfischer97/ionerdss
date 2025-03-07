@@ -2,123 +2,109 @@ import os
 import numpy as np
 
 
-def add_empty_lists(input_list: list):
-    """Will take in a list. If it has no value, it will add 'Empty List'. If it has sub lists, it will open them and do the same thing. (recursive)
+def add_empty_lists(data_list: list) -> list:
+    """Recursively adds 'Empty List' to empty lists within a given list.
+
+    This function checks if a list or its sublists (including NumPy arrays) are empty.
+    If a list is empty, it appends `"Empty List"`. Otherwise, it processes sublists recursively.
 
     Args:
-        input_list (list): list to be searched through
+        data_list (list): The input list to be processed.
+
+    Returns:
+        list: The modified list with 'Empty List' inserted where necessary.
+
+    Example:
+        >>> add_empty_lists([])
+        ['Empty List']
+
+        >>> add_empty_lists([[], [1, 2, 3], np.array([])])
+        [['Empty List'], [1, 2, 3], ['Empty List']]
+    """
+    if not isinstance(data_list, list):
+        raise TypeError("`data_list` must be a list.")
+
+    # If list is empty, insert "Empty List"
+    if len(data_list) == 0:
+        return ["Empty List"]
+
+    # Recursively process sublists
+    return [add_empty_lists(list(item)) if isinstance(item, (list, np.ndarray)) else item for item in data_list]
+
+
+def save_vars_to_file(variable_dict: dict, output_dir: str) -> None:
+    """Saves variables from a dictionary to text or CSV files.
+
+    This function iterates through a dictionary and saves each variable in an appropriate format:
+        - Integers and floats are stored as `.txt` files.
+        - Strings are stored as `.txt` files.
+        - Lists and NumPy arrays are stored as `.csv` files.
+        - Multi-dimensional lists (2D+) are stored with sublists written on separate lines.
+
+    Args:
+        variable_dict (dict): A dictionary where keys are variable names and values are the data to save.
+        output_dir (str, optional): Directory where the files will be saved. Defaults to `"vars"`.
+
+    Raises:
+        TypeError: If `variable_dict` is not a dictionary.
+        OSError: If unable to create the directory.
+
+    Example:
+        >>> save_vars_to_file({"temperature": 36.5, "names": ["Alice", "Bob"]}, "vars")
+        # Saves "vars/temperature_number.txt" and "vars/names_list.csv"
     """
 
-    #check if list is empty
-    if len(input_list) <= 0:
-        input_list.append("Empty List")
+    if not isinstance(variable_dict, dict):
+        raise TypeError("`variable_dict` must be a dictionary.")
 
-    #check through all indexes to see if there are any lists. If there are run this function on them, else do nothing.
-    input_list = [add_empty_lists(list(vars)) if (isinstance(vars,list) or isinstance(vars,np.ndarray)) else vars for vars in input_list]
+    # Ensure output directory exists
+    if not os.path.exists(output_dir):
+        try:
+            os.makedirs(output_dir)
+        except OSError as e:
+            raise OSError(f"Error creating directory '{output_dir}': {e}")
 
-    """ ^^^ equals what is below.
-    for index,vars in enumerate(input_list):
-        if isinstance(vars,list) or isinstance(vars,np.ndarray):
-            input_list[index] = add_empty_lists(list(vars))"""
+    for key, value in variable_dict.items():
+        file_extension = ""
+        file_type = ""
+        file_content = ""
 
-    return input_list
+        # Determine file type based on value type
+        if isinstance(value, (int, float)):  # Number
+            file_extension = f"{key}_number.txt"
+            file_type = "txt"
+            file_content = str(value)
 
+        elif isinstance(value, str):  # String
+            file_extension = f"{key}_string.txt"
+            file_type = "txt"
+            file_content = value
 
+        elif isinstance(value, (list, np.ndarray)):  # List or NumPy array
+            file_extension = f"{key}_list.csv"
+            processed_value = add_empty_lists(list(value))  # Handle empty lists
 
-def save_vars_to_file(var_dict: dict):
-    """This function takes a dictionary of variables and saves them to a file in the correct format.
+            if isinstance(processed_value[0], (list, np.ndarray)):  # 2D+ list
+                file_type = "2D_list"
+            else:  # 1D list
+                file_type = "1D_list"
 
-        Parameters
-            var_dict: A dictionary of variables to be saved.
-        
-        Explanation
-            If the variable is a number or a string, it saves it to a .txt file. If the variable is a list, 
-            it saves it to a .csv file. If the list is two-dimensional or deeper, it will save each sublist on a different line.
-    """
+        else:  # Unsupported type
+            file_extension = f"{key}_unknown.txt"
+            file_type = "txt"
+            file_content = str(value)
 
+        file_path = os.path.join(output_dir, file_extension)
 
-    #create folder if necessary 
-    file_start = "" #the starting part of the file
+        # Write data to file
+        with open(file_path, mode="w", encoding="utf-8") as file:
+            if file_type == "txt":
+                file.write(file_content)
 
-    #if there is a folder needed
-    if len(var_dict) > 1:
-        file_start = "vars/"
+            elif file_type == "1D_list":
+                file.write(",".join(map(str, processed_value)))
 
-        #if the folder needs to be made
-        if not os.path.exists("vars"):
-            os.mkdir(path="vars")
-
-
-    for key,value in var_dict.items():
-
-        type = "" # what kind of file is being made
-        file_end = "" # the ending part of the file
-    
-        #determine variable type
-        if isinstance(value,int) or isinstance(value,float): #number
-            file_end = f"{key}_number.txt"
-            type = "txt"
-        
-        elif isinstance(value,str): #string
-            file_end = f"{key}_string.txt"
-            type = "txt"    
-        
-        elif isinstance(value,list) or isinstance(value,np.ndarray): #list
-            file_end = f"{key}_list.csv"
-            value = add_empty_lists(list(value)) #adds 'empty list' to lists that are empty 
-            
-            if isinstance(value[0],list) or isinstance(value[0],np.ndarray): #2dim+ deep list
-                type = "2list"
-            else: #1dim list
-                type = "1list"
-  
-        else:
-            file_end = f"{key}_na.txt"
-            type = "txt"
-        
-        file_name = file_start + file_end
-
-
-
-        #Create file name and open file 
-        with open(file_name, mode = "w") as file:
-
-            #if it is just basic text
-            if type == "txt":
-                file.write(str(value))
-            
-            #if it is a 1dim list
-            elif type == "1list":
-                file.write(str(value[0]))
-                
-                if len(value) > 1:
-                    for var in value[1:]:
-                        file.write(f",{var}")
-            
-            #if it is a 2dem list
-            elif type == "2list":
-
-                #run through each sub list
-                for index,list1 in enumerate(value):
+            elif file_type == "2D_list":
+                for sublist in processed_value:
+                    file.write(",".join(map(str, sublist)) + "\n")
                     
-                    #add \n, unless it is the first sublist
-                    if index != 0:
-                        file.write("\n")
-                    
-                    #write in entire sublist
-                    file.write(f"{list1[0]}")
-                    
-                    if len(list1) > 1:
-                        for list2 in list1[1:]:
-                            file.write(f",{list2}")
-
-
-
-
-            
-
-        
-
-
-
-
