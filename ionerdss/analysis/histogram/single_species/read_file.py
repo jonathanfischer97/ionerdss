@@ -1,61 +1,91 @@
-def read_file(FileName: str, SpeciesName: str):
-    """Will take in a histogram.dat (single-species) and turn it into a list of lists
+import os
+
+def read_file(file_path: str, species_name: str):
+    """Reads a `histogram.dat` file and extracts time-series data for a specific species.
+
+    This function parses a `.dat` file containing histogram data, extracting information about 
+    the species of interest and returning a structured list representation.
 
     Args:
-        FileName (str): Path to the histogram.dat file
-        SpeciesName (str): The name of the specific species you want to examine. Should be in the .dat file.
+        file_path (str): 
+            Path to the `histogram.dat` file.
+        species_name (str): 
+            The name of the species to extract from the file. It must be present in the file.
 
     Returns:
-        list of lists: Has many lists, where each sub-list is a new time stamp that includes time at list[i][0]. You can find list 
-        of number of each complex type in list[i][1]. List of the number of species count in complex in list[i][2].
+        list[list]: 
+            A nested list structure where:
+            - `hist[i][0]`: Timestamp of the data entry.
+            - `hist[i][1]`: List of complex counts corresponding to each size.
+            - `hist[i][2]`: List of species counts in each complex.
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist.
+        ValueError: If the species name is not found in the file.
+
+    Example:
+        >>> read_file("histogram.dat", "SpeciesA")
+        [[0.0, [1, 2], [10, 20]], [50.0, [3, 1], [30, 5]], [100.0, [2, 4], [15, 25]]]
     """
-    
-    #general vars 
-    hist = [] # main list that holds each timestamp
-    hist_temp = [] # holds all info in 1 timestamp.
-    hist_conv = [] # number of species in this complex type at 1 timestamp
-    hist_count = [] # num of this complex type at 1 timestamp
-    
-    #eads through the file
-    with open(FileName, 'r') as file:
-        for line in file.readlines():
-            
-            #determining what the line holds
-            if line[0:4] == 'Time':
-                
-                #if this is NOT the first run, add the temp lists to the main list
-                if hist_count != [] and hist_conv != []:
-                    hist_temp.append(hist_count)
-                    hist_temp.append(hist_conv)
-                    hist.append(hist_temp)
-                
-                #reset the temp lists
-                hist_count = []
-                hist_conv = []
-                hist_temp = []
 
-                #set time to start of new temp list
-                hist_temp.append(float(line.strip('Time (s): ')))
-            
-            #if the line holds species information
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
+
+    histogram_data = []  # Main list that holds all timestamped entries
+    temp_data = []  # Temporary list to store current timestamp data
+    species_counts = []  # Stores species count at a given timestamp
+    complex_counts = []  # Stores complex size count at a given timestamp
+
+    # Read the file
+    species_found = False
+    with open(file_path, "r", encoding="utf-8") as file:
+        for line in file:
+            line = line.strip()
+
+            # Identify a new timestamp entry
+            if line.startswith("Time"):
+                # Store previous timestamp data if it exists
+                if temp_data:
+                    temp_data.append(species_counts)
+                    temp_data.append(complex_counts)
+                    histogram_data.append(temp_data)
+
+                # Reset temporary lists
+                species_counts = []
+                complex_counts = []
+                temp_data = []
+
+                # Extract timestamp
+                try:
+                    timestamp = float(line.replace("Time (s):", "").strip())
+                    temp_data.append(timestamp)
+                except ValueError:
+                    raise ValueError(f"Invalid time format in line: {line}")
+
+            # Extract species-related data
             else:
-
-                #split the line and determine if it has the right species name
-                string = '	' + str(SpeciesName) + ': '
-                line = line.strip('. \n').split(string)
-                if len(line) != 2:
-                    raise Exception('invalid species name')
+                species_prefix = f"\t{species_name}: "
+                if species_prefix not in line:
+                    continue  # Skip if species name does not match
                 
-                #adds values to the sub - temp list
-                else:
-                    hist_count.append(int(line[0]))
-                    hist_conv.append(int(line[1]))
-    
-    #if it is the last run, add it in (needs to be here b/c temps are added at start of new time, not end of previous time)
-    hist_temp.append(hist_count)
-    hist_temp.append(hist_conv)
-    hist.append(hist_temp)
-    
-    return hist
+                # Parse species data
+                try:
+                    count, size = map(float, line.split(species_prefix))
+                    species_counts.append(count)
+                    complex_counts.append(size)
+                    species_found = True
+                except ValueError:
+                    raise ValueError(f"Invalid species data format in line: {line}")
+                
+    # Check if species was found
+    if not species_found:
+        raise ValueError(f"Species '{species_name}' not found in the file.")
 
+    # Add last parsed entry if valid
+    if temp_data:
+        temp_data.append(species_counts)
+        temp_data.append(complex_counts)
+        histogram_data.append(temp_data)
 
+    return histogram_data
