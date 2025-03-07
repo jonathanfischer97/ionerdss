@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 project = 'ionerdss'
 copyright = '2025, Margaret Johnson Lab, Johns Hopkins University'
 author = 'Margaret Johnson Lab, Johns Hopkins University'
-release = '1.0.36'
+release = '1.0.37'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

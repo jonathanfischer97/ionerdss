@@ -10,8 +10,8 @@ classifiers = [
 
 setup(
     name="ioNERDSS",
-    version="1.0.36",
-    requires=["python (>=3.6)"],
+    version="1.0.37",
+    requires=["python (>=3.8)"],
     description="Package for analysing NERDSS inputs and outputs.",
     long_description="A python package for analysing inputs and outputs for NERDSS simulator, including generating input files for Platonic solids and output visualization, etc.",
     url="",
@@ -19,7 +19,7 @@ setup(
     author_email="zliu140@jhu.edu",
     license="GPL-3.0",
     classifiers=classifiers,
-    keywords="NERDSS Simulation, Analysis Tools",
+    keywords="NERDSS Simulation, Model Setup, Analysis Tools",
     packages=find_packages(),
     install_requires=[
         "numpy",
@@ -31,5 +31,10 @@ setup(
         "pyqtgraph",
         "PyOpenGL",
         "biopython",
+        "scipy",
+        "scikit-learn",
+        "requests",
+        "nglview",
+        "ipympl",
     ],
 )
