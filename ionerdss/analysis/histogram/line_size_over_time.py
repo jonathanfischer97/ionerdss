@@ -3,146 +3,156 @@ import matplotlib.pyplot as plt
 from ..file_managment.save_vars_to_file import save_vars_to_file
 
 
-def line_size_over_time(Data: int, full_hist: list, FileNum: int, InitialTime: float, FinalTime: float,
-                 SpeciesName: str = "tot", ExcludeSize: int = 0, SpeciesList: list = ["na"], ShowFig: bool = True, SaveFig: bool = False, SaveVars: bool = False):
-    """Creates a graph counting the number of protein species in a complex molecule over a time period.
-        Can either be average count or the max count of that protein species at that time stamp .
+def line_size_over_time(
+    data_type: int, 
+    full_hist: list, 
+    file_count: int, 
+    initial_time: float, 
+    final_time: float,
+    species_name: str = "tot", 
+    exclude_size: int = 0, 
+    species_list: list = None, 
+    show_fig: bool = True, 
+    save_fig: bool = False, 
+    save_vars: bool = False
+) -> tuple[list[float], list[float], list[float]]:
+    """Generates a graph showing the count of a specific protein species in a complex over time.
+
+    This function plots the mean or maximum number of a protein species in a complex molecule 
+    across a specified time period.
 
     Args:
-        Data (int): what will the graph show (1: mean, 2: max)
-        full_hist (list): holds all of that data in the histogram.dat file
-        FileNum (int): Number of the total input files (file names should be [fileName]_1,[fileName]_2,...)
-        InitialTime (float): The starting time. Must not be smaller / larger then times in file.
-        FinalTime (float): The ending time. Must not be smaller / larger then times in file.
-        SpeciesName (str): The name of the species you want to examine. Should be in the .dat file.
-        ExcludeSize (int): Monomers in the complex that are smaller or equal to this number will not be included. 
-        SpeciesList (lst, optional): lists all of the species in the doc. Only needed for multi species hists.
-        ShowFig (bool, optional): If the plot is shown. Defaults to True.
-        SaveFig (bool, optional): If the plot is saved. Defaults to False.
-        SaveVars (bool, optional): If the variables are saved to a file. Defaults to false.
+        data_type (int): 
+            Type of graph to generate:
+            - `1`: Mean number of species in a complex.
+            - `2`: Maximum number of species in a complex.
+        full_hist (list): 
+            List containing all time-series data from `histogram.dat`.
+        file_count (int): 
+            Number of input files used for data collection.
+        initial_time (float): 
+            The starting time for data analysis.
+        final_time (float): 
+            The ending time for data analysis.
+        species_name (str, optional): 
+            The target species to analyze. Defaults to `"tot"` (all species).
+        exclude_size (int, optional): 
+            Excludes complexes of size ≤ `exclude_size` from the analysis. Defaults to `0`.
+        species_list (list, optional): 
+            List of species in the dataset (for multi-species histograms). Defaults to `None`.
+        show_fig (bool, optional): 
+            Whether to display the generated plot. Defaults to `True`.
+        save_fig (bool, optional): 
+            Whether to save the generated plot as a file. Defaults to `False`.
+        save_vars (bool, optional): 
+            Whether to save computed data variables to a file. Defaults to `False`.
 
     Returns:
-        graph. X-axis = time. Y-axis = mean number of species in a single complex molecule.
+        tuple: 
+            - list[float]: Time points.
+            - list[float]: Mean or max species count at each time point.
+            - list[float]: Standard deviation of species count at each time point.
+
+    Raises:
+        ValueError: If `data_type` is not 1 or 2.
+        ValueError: If `exclude_size` is negative.
+
+    Example:
+        >>> line_size_over_time(1, full_hist, 3, 0.0, 100.0)
+        ([0.0, 50.0, 100.0], [5.2, 7.1, 4.9], [0.8, 1.2, 0.7])
     """
+
+    if data_type not in [1, 2]:
+        raise ValueError("Invalid `data_type`. Choose 1 (mean) or 2 (max).")
     
-    time_list = [] #list of every timestamp
-    size_list = [] #list of mean sizes (index of this = index of timestep)
-    max_size = 0 #the longest histogram
-    max_index = 0 #the index of the longest histogram
-    count = 0 #used to find number of species in a complex
+    if exclude_size < 0:
+        raise ValueError("`exclude_size` cannot be negative.")
 
-    #write name of the plot / y label (if applicable)
-    if Data == 1:
-        graphTitle = 'Average Number of ' + str(SpeciesName) + ' in Single Complex'
-        yLabel = 'Average Number of ' + str(SpeciesName)
-    elif Data == 2:
-        graphTitle = 'Maximum Number of ' + str(SpeciesName) + ' in Single Complex'
-        yLabel = 'Maximum Number of ' + str(SpeciesName)
-    else:
-        raise Exception("Invalid data type")
+    # Define graph title and y-axis label
+    graph_title = f"{'Average' if data_type == 1 else 'Maximum'} Number of {species_name} in a Single Complex"
+    y_label = f"{'Average' if data_type == 1 else 'Maximum'} Number of {species_name}"
 
+    time_list, size_list = [], []
+    max_size, max_index = 0, -1
 
-    for index,hist in enumerate(full_hist):
+    for index, hist in enumerate(full_hist):
+        time_steps, size_values = [], []
 
-        total_size_list = [] #list of every timestamp for this file
-        total_time_list = [] #list of mean sizes (index of this = index of timestep)
+        for timestamp in hist:
+            if initial_time <= timestamp[0] <= final_time:
+                time_steps.append(timestamp[0])
 
-        #create list of means / timesteps, based on what sizes are excluded/not
-        if ExcludeSize >= 0:
-            for timestep in hist:
-                if InitialTime <= timestep[0] <= FinalTime:
-                    total_time_list.append(timestep[0])
-                    
-                    #create a list of each complex size at this timestamp
-                    if SpeciesList != ['na']:
-                        timestep_edited = []
-                        
-                        #if all species are included or just 1 (for multi)
-                        if SpeciesName != "tot":
-                            ind = SpeciesList.index(SpeciesName)
-                            for complex in timestep[1:]:
-                                timestep_edited.append(complex[ind])
+                # Extract species data
+                if species_list:
+                    if species_name != "tot":
+                        if species_name in species_list:
+                            species_idx = species_list.index(species_name)
+                            species_data = [complex_[species_idx] for complex_ in timestamp[1:]]
+                            species_count = [complex_[-1] for complex_ in timestamp[1:]]  # Last column stores count
                         else:
-                            for complex in timestep[1:]:
-                                count = 0
-                                for species in complex[:-1]:
-                                    count += species
-                                timestep_edited.append(count)
+                            species_data = []
+                            species_count = []
                     else:
-                        timestep_edited = timestep[2]
-        
-                    if ExcludeSize > 0:
-                        timestep_edited = [ele for ele in timestep_edited if ele>ExcludeSize] #create new list that only includes elements greater then exclude size
-                        if timestep_edited == []: timestep_edited.append(0)
+                        species_data = [sum(complex_[:-1]) for complex_ in timestamp[1:]]
+                        species_count = [complex_[-1] for complex_ in timestamp[1:]]
+                else:
+                    species_data = timestamp[2]
+                    species_count = timestamp[1]
 
-                    if Data == 1: #if it is a mean / max line graph
-                        total_size_list.append(np.mean(timestep_edited))
-                    else:
-                        total_size_list.append(np.max(timestep_edited))
-        
-            #determine size of hist
-            if len(total_size_list) > max_size:
-                max_size = len(total_size_list)
-                max_index = index
+                # Compute mean or max species count
+                total_count = 0
+                total_size = 0
+                max_species_size = 0  # Track the largest complex size for max calculation
 
+                for i, species_size in enumerate(species_data):
+                    if species_size > exclude_size:
+                        total_count += species_count[i]
+                        total_size += species_size * species_count[i]
+                        max_species_size = max(max_species_size, species_size)
 
-        else:
-            print('ExcludeSize cannot smaller than 0!')
-            return 0
-        
-        #add time/size lists to main, cross function lists
-        time_list.append(total_time_list)
-        size_list.append(total_size_list)
+                # Store mean or max value
+                if total_count > 0:
+                    size_values.append(total_size / total_count if data_type == 1 else max_species_size)
+                else:
+                    size_values.append(0)
 
-    #ensure all lists are tranposible (have equal shape)
-    for index_file,file_size in enumerate(size_list):
-        if len(file_size) != max_size:
-            zero_list = np.zeros(max_size)
-            for index_size,size in enumerate(file_size):
-                zero_list[index_size] =+ size
-            size_list[index_file] = zero_list
+        # Update max size index for longest `size_values`
+        if len(size_values) > max_size:
+            max_size, max_index = len(size_values), index
 
+        time_list.append(time_steps)
+        size_list.append(size_values)
 
-    #transpose list (each sub-list = 1 timesteps across every file)
-    size_list_rev = []
-    size_list_rev = np.transpose(size_list)
+    # Normalize sizes for consistency across files
+    for i, size_data in enumerate(size_list):
+        if len(size_data) != max_size:
+            zero_padded = np.zeros(max_size)
+            zero_padded[:len(size_data)] = size_data
+            size_list[i] = zero_padded
 
-    #find mean and std dev
-    mean = []
-    std = []
+    # Compute mean and standard deviation
+    size_list_transposed = np.transpose(size_list)
+    mean_values = [np.nanmean(timestep) for timestep in size_list_transposed]
+    std_values = [np.nanstd(timestep) if file_count > 1 else 0 for timestep in size_list_transposed]
 
-    for index,timestamps in enumerate(size_list_rev):
-        
-        #if this timestamp is equal to previous, copy previous. 
-        if (timestamps == size_list_rev[index-1]).all():
-            mean.append(mean[index-1])
-            if FileNum > 1: std.append(std[index-1])
-        
-        #Else calculate new measns/stds
-        else:
-            mean.append(np.nanmean(timestamps))
-            if FileNum > 1: std.append(np.nanstd(timestamps))
-    
-    #output variables
-    if SaveVars:
-        if Data == 1:
-            save_vars_to_file({"time_stamp":time_list[0],"mean_cmplx_size":mean,"std":std})
-        if Data == 2:
-            save_vars_to_file({"time_stamp":time_list[0],"max_cmplx_size":mean,"std":std})
+    # Save variables if requested
+    if save_vars:
+        save_vars_to_file({
+            "time_stamp": time_list[max_index] if max_index >= 0 else [], 
+            "mean_cmplx_size" if data_type == 1 else "max_cmplx_size": mean_values, 
+            "std": std_values
+        })
 
-    #show figure
-    if ShowFig:
-        errorbar_color = '#c9e3f6'
-        plt.plot(time_list[max_index], mean, color='C0')
-        if FileNum > 1:
-            plt.errorbar(time_list[max_index], mean, color='C0',
-                         yerr=std, ecolor=errorbar_color)
-        plt.title(graphTitle)
-        plt.xlabel('Time (s)')
-        plt.ylabel(yLabel)
-        if SaveFig:
-            plt.savefig('mean_complex.png', dpi=500)
+    # Plot the figure if requested
+    if show_fig and max_index >= 0:
+        plt.plot(time_list[max_index], mean_values, color='C0')
+        if file_count > 1:
+            plt.errorbar(time_list[max_index], mean_values, yerr=std_values, ecolor='#c9e3f6', color='C0')
+        plt.title(graph_title)
+        plt.xlabel("Time (s)")
+        plt.ylabel(y_label)
+        if save_fig:
+            plt.savefig(f"{'mean' if data_type == 1 else 'max'}_complex.png", dpi=600)
         plt.show()
-    return time_list[0], mean, std
 
-
+    return time_list[max_index] if max_index >= 0 else [], mean_values, std_values
