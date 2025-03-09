@@ -77,7 +77,7 @@ ionerdss/
 1. **Docstrings & Sphinx**  
    - Write clear docstrings in Google‐style to help auto‐generate documentation.
 
-   Prompt used for chatGPT to refactor one function: `improve this function, provide the detail google-style docstring for sphinx, standardize naming conventions:`
+   Prompt used for chatGPT to refactor one function: `improve this python code, provide the detail google-style docstring for sphinx, standardize naming conventions:`
 
 2. **Code Organization**  
    - Keep related functionality grouped in submodules.
