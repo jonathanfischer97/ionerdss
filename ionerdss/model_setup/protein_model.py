@@ -648,7 +648,8 @@ class ProteinModel:
             residue_cutoff (int, optional): Minimum residue pair count to call it a valid interface.
                 Defaults to 3.
         """
-        self.all_chains = list(self.all_atoms_structure.get_chains())
+        # self.all_chains = list(self.all_atoms_structure.get_chains())
+        self.all_chains = sorted(self.all_atoms_structure.get_chains(), key=lambda chain: chain.id)
         self.all_COM_chains_coords = []
         self.all_interfaces = []
         self.all_interfaces_coords = []
@@ -751,17 +752,23 @@ class ProteinModel:
                 avg_coords1 = np.mean(interface1_coords, axis=0)
                 self.all_interfaces[i].append(self.all_chains[j].id)
                 self.all_interfaces_coords[i].append(Coords(*avg_coords1))
-                self.all_interfaces_residues[i].append(interface1)
+                self.all_interfaces_residues[i].append(sorted(interface1))
                 avg_coords2 = np.mean(interface2_coords, axis=0)
                 self.all_interfaces[j].append(self.all_chains[i].id)
                 self.all_interfaces_coords[j].append(Coords(*avg_coords2))
-                self.all_interfaces_residues[j].append(interface2)
+                self.all_interfaces_residues[j].append(sorted(interface2))
 
         # Parallelize chain pair processing
         with ThreadPoolExecutor() as executor:
             futures = [executor.submit(process_chain_pair, i, j) for i in range(num_chains - 1) for j in range(i + 1, num_chains)]
             for future in futures:
                 future.result()  # Wait for all tasks to complete
+
+        for i in range(num_chains):
+            sorted_indices = sorted(range(len(self.all_interfaces[i])), key=lambda k: self.all_interfaces[i][k])
+            self.all_interfaces[i] = [self.all_interfaces[i][k] for k in sorted_indices]
+            self.all_interfaces_coords[i] = [self.all_interfaces_coords[i][k] for k in sorted_indices]
+            self.all_interfaces_residues[i] = [self.all_interfaces_residues[i][k] for k in sorted_indices]
 
         # Print detected interfaces
         if self.verbose:
