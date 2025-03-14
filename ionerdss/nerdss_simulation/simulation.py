@@ -1,4 +1,7 @@
 import os
+import sys
+import subprocess
+import shutil
 import json
 from typing import Dict, Any, List
 from ..nerdss_model.model import Model
@@ -303,6 +306,58 @@ class Simulation:
         
         with open(inp_file, "r") as f:
             print(f.read())
+
+    def install_nerdss(self, nerdss_path: str = None) -> None:
+        """Installs the NERDSS package.
+
+        Args:
+            nerdss_path (str): The path to install NERDSS. If None, uses the current directory.
+        """
+        if nerdss_path is None:
+            nerdss_path = os.getcwd()
+
+        if nerdss_path.startswith("~"):
+            nerdss_path = os.path.expanduser(nerdss_path)
+        nerdss_path = os.path.abspath(nerdss_path)
+        
+        nerdss_repo_path = os.path.join(nerdss_path, "NERDSS")
+        
+        # Ensure target directory exists
+        os.makedirs(nerdss_path, exist_ok=True)
+        print(f"Installing NERDSS to {nerdss_path}...")
+
+        # Check if git and make are installed
+        for cmd in ["git", "make"]:
+            if shutil.which(cmd) is None:
+                print(f"Error: {cmd} is not installed. Please install it and try again.")
+                return
+
+        # Clone the repository if it doesn't exist
+        if not os.path.exists(nerdss_repo_path):
+            result = subprocess.run(["git", "clone", "https://github.com/mjohn218/NERDSS.git", nerdss_repo_path], check=False)
+            if result.returncode != 0:
+                print("Error: Failed to clone the NERDSS repository.")
+                return
+        else:
+            print("NERDSS repository already exists. Pulling latest updates...")
+            subprocess.run(["git", "-C", nerdss_repo_path, "pull"], check=False)
+
+        # Install dependencies based on the platform
+        if sys.platform.startswith("linux"):
+            result = subprocess.run(["sudo", "apt-get", "update"], check=False)
+            if result.returncode == 0:
+                subprocess.run(["sudo", "apt-get", "install", "-y", "build-essential", "libgsl-dev"], check=False)
+            else:
+                print("Skipping system package installation (no sudo privileges). Ensure GSL is installed manually.")
+        elif sys.platform == "darwin":
+            subprocess.run(["brew", "install", "gsl"], check=False)
+
+        # Compile NERDSS
+        make_result = subprocess.run(["make", "serial"], cwd=nerdss_repo_path, check=False)
+        if make_result.returncode == 0:
+            print("NERDSS installation complete.")
+        else:
+            print("Error: Compilation failed. Please check the logs and dependencies.")
 
     def run_simulation(self) -> None:
         # Placeholder for running the actual NERDSS simulation
