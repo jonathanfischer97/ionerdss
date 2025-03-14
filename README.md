@@ -72,6 +72,14 @@ ionerdss/
 
 ---
 
+## Develop using docker container:  
+```bash
+docker build --no-cache -t ionerdss_dev . 
+docker run -it --rm -v $(pwd):/app -p 8888:8888 ionerdss_dev
+```
+
+---
+
 ## Best Practices
 
 1. **Docstrings & Sphinx**  
