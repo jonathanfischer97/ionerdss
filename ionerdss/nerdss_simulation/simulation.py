@@ -4,6 +4,9 @@ import subprocess
 import shutil
 import json
 from typing import Dict, Any, List
+import time
+import glob
+from tqdm import tqdm
 from ..nerdss_model.model import Model
 
 class Simulation:
@@ -359,6 +362,165 @@ class Simulation:
         else:
             print("Error: Compilation failed. Please check the logs and dependencies.")
 
-    def run_simulation(self) -> None:
-        # Placeholder for running the actual NERDSS simulation
-        pass
+    def run_new_simulations(self, sim_indices: List[int] = None, sim_dir: str = None, nerdss_dir: str = None, parallel: bool = False) -> None:
+        """Runs NERDSS simulations based on the given parameters.
+        
+        Args:
+            sim_indices (List[int], optional): List of simulation indices to run. If None, runs one simulation with index = 1.
+            sim_dir (str, optional): Directory where simulation results should be stored. Defaults to `self.work_dir/nerdss_output`.
+            nerdss_dir (str, optional): Directory where NERDSS is installed. Defaults to `self.work_dir/NERDSS`.
+            parallel (bool, optional): Whether to run simulations in parallel. Defaults to False.
+        """
+        if sim_dir is None:
+            sim_dir = os.path.join(self.work_dir, "nerdss_output")
+        os.makedirs(sim_dir, exist_ok=True)
+
+        if nerdss_dir is None:
+            nerdss_dir = os.path.join(self.work_dir, "NERDSS")
+        
+        nerdss_exec = os.path.join(nerdss_dir, "bin", "nerdss")
+        if not os.path.exists(nerdss_exec):
+            raise FileNotFoundError(f"NERDSS executable not found at {nerdss_exec}. Make sure it is installed and compiled.")
+        
+        input_dir = os.path.join(self.work_dir, "nerdss_input")
+        parms_file = os.path.join(input_dir, "parms.inp")
+        
+        if not os.path.exists(parms_file):
+            raise FileNotFoundError(f"NERDSS input file not found: {parms_file}")
+        
+        if sim_indices is None:
+            sim_indices = [1]
+        
+        processes = []
+        progress_bars = {}
+        
+        for index in sim_indices:
+            sim_subdir = os.path.join(sim_dir, f"{index}")
+            os.makedirs(sim_subdir, exist_ok=True)
+            
+            for file in os.listdir(input_dir):
+                shutil.copy(os.path.join(input_dir, file), sim_subdir)
+            shutil.copy(nerdss_exec, sim_subdir)
+            
+            output_log = os.path.join(sim_subdir, "output.log")
+            with open(output_log, "w") as log_file:
+                cmd = ["./nerdss", "-f", "parms.inp"]
+                
+                if parallel:
+                    process = subprocess.Popen(cmd, cwd=sim_subdir, stdout=log_file, stderr=log_file)
+                    processes.append((index, process))
+                else:
+                    print(f"Running simulation {index}...")
+                    process = subprocess.Popen(cmd, cwd=sim_subdir, stdout=log_file, stderr=log_file)
+                    progress_bars[index] = tqdm(total=100, desc=f"Simulation {index}")
+                    
+                    while process.poll() is None:
+                        progress = self.calculate_progress_percentage(sim_subdir)
+                        progress_bars[index].n = progress
+                        progress_bars[index].refresh()
+                        time.sleep(2)
+                    
+                    progress_bars[index].close()
+        
+        if parallel:
+            for index, process in processes:
+                print(f"Waiting for simulation {index} to complete...")
+                process.wait()
+                print(f"Simulation {index} completed.")
+        
+        print("All simulations completed.")
+
+    def calculate_progress_percentage(self, sim_subdir: str) -> int:
+        """
+        Calculates the progress percentage of a running simulation.
+        
+        Args:
+            sim_subdir (str): The directory of the simulation.
+        """
+        current_time = 0.0
+        copy_numbers_file = os.path.join(sim_subdir, "copy_numbers_time.dat")
+        
+        try:
+            cmd = f"tail -n 2 {copy_numbers_file}"
+            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, error = process.communicate()
+            output = output.decode("utf-8").strip()
+            lines = output.split("\n")
+            last_line = lines[-1] if len(lines) > 1 else lines[0]
+            current_time = float(last_line.split(",")[0])
+        except Exception:
+            pass
+        
+        total_time = 0.0
+        try:
+            nItr = 0
+            timeStep = 0.0
+            inp_files = glob.glob(os.path.join(sim_subdir, "*.inp"))
+            with open(inp_files[0], "r") as inp_file:
+                for line in inp_file:
+                    line = line.strip()
+                    if line.startswith("nItr"):
+                        nItr = int(line.split("=")[1])
+                    if line.startswith("timeStep"):
+                        timeStep = float(line.split("=")[1]) * 1e-6
+            total_time = nItr * timeStep
+        except Exception as e:
+            raise e
+        
+        if total_time == 0.0:
+            return 0
+        else:
+            return int(current_time / total_time * 100)
+
+    def run_restart_simulations(self, sim_indices: List[int] = None, sim_dir: str = None, nerdss_dir: str = None, restart_from: str = "", restart_sim_name: str = "restart_sim", parallel: bool = False) -> None:
+        """Runs NERDSS simulations from a restart file.
+        
+        Args:
+            sim_indices (List[int], optional): List of simulation indices to restart. If None, restarts one simulation with index = 1.
+            sim_dir (str, optional): Directory where restarted simulation results should be stored. Defaults to `self.work_dir/nerdss_output`.
+            nerdss_dir (str, optional): Directory where NERDSS is installed. Defaults to `self.work_dir/NERDSS`.
+            restart_from (str): Path to the directory containing the restart file.
+            restart_sim_name (str): Name of the folder where restarted simulations will be stored.
+            parallel (bool, optional): Whether to run simulations in parallel. Defaults to False.
+        """
+        if sim_dir is None:
+            sim_dir = os.path.join(self.work_dir, "nerdss_output")
+        os.makedirs(sim_dir, exist_ok=True)
+
+        if nerdss_dir is None:
+            nerdss_dir = os.path.join(self.work_dir, "NERDSS")
+        
+        nerdss_exec = os.path.join(nerdss_dir, "bin", "nerdss")
+        if not os.path.exists(nerdss_exec):
+            raise FileNotFoundError(f"NERDSS executable not found at {nerdss_exec}. Make sure it is installed and compiled.")
+        
+        if sim_indices is None:
+            sim_indices = [1]
+        
+        for index in sim_indices:
+            restart_subdir = os.path.join(sim_dir, f"{index}", f"{restart_sim_name}")
+            os.makedirs(restart_subdir, exist_ok=True)
+            
+            if restart_from == "":
+                restart_file = os.path.join(sim_dir, f"{index}", "DATA", "restart.dat")
+            else:
+                restart_file = os.path.join(sim_dir, f"{index}", restart_from, "DATA", "restart.dat")
+            if not os.path.exists(restart_file):
+                raise FileNotFoundError(f"Restart file not found at {restart_file}.")
+            
+            shutil.copy(restart_file, restart_subdir)
+            shutil.copy(nerdss_exec, restart_subdir)
+            
+            output_log = os.path.join(restart_subdir, "output.log")
+            with open(output_log, "w") as log_file:
+                cmd = ["./nerdss", "-r", "restart.dat"]
+                
+                if parallel:
+                    subprocess.Popen(cmd, cwd=restart_subdir, stdout=log_file, stderr=log_file)
+                else:
+                    print(f"Restarting simulation {index}...")
+                    process = subprocess.Popen(cmd, cwd=restart_subdir, stdout=log_file, stderr=log_file)
+                    process.wait()
+                    print(f"Simulation {index} restarted successfully.")
+        
+        print("All restart simulations completed.")
