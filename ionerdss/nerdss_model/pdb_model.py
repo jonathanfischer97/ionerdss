@@ -458,6 +458,15 @@ class PDBModel(Model):
             pml_file.write("bg_color white\n")
             pml_file.write("zoom all\n")
 
+            pml_file.write(f"load {self.pdb_file}\n")
+            pml_file.write("spectrum chain\n")
+            pdb_file = os.path.basename(self.pdb_file).split('.')[0]
+            pml_file.write(f"hide everything, {pdb_file}\n")
+            pml_file.write(f"show cartoon, {pdb_file}\n")
+            pml_file.write(f"set cartoon_transparency, 0.7, {pdb_file}\n")
+            save_figure = os.path.join(self.save_dir, "comparison_initial.png")
+            pml_file.write(f"png {save_figure}, 800, 800, 150, 1\n")
+
         print(f"PyMOL script saved to {pymol_script}. Run 'pymol {pymol_script}' to visualize the coarse-grained structure.")
 
     def regularize_homologous_chains(self, dist_threshold_intra=3.5, dist_threshold_inter=3.5, angle_threshold=25.0, show_coarse_grained_structure=False, save_pymol_script=False, standard_output=False):
@@ -975,6 +984,15 @@ class PDBModel(Model):
             pml_file.write("set sphere_transparency, 0.2\n")
             pml_file.write("bg_color white\n")
             pml_file.write("zoom all\n")
+
+            pml_file.write(f"load {self.pdb_file}\n")
+            pml_file.write("spectrum chain\n")
+            pdb_file = os.path.basename(self.pdb_file).split('.')[0]
+            pml_file.write(f"hide everything, {pdb_file}\n")
+            pml_file.write(f"show cartoon, {pdb_file}\n")
+            pml_file.write(f"set cartoon_transparency, 0.7, {pdb_file}\n")
+            save_figure = os.path.join(self.save_dir, "comparison_regularized.png")
+            pml_file.write(f"png {save_figure}, 800, 800, 150, 1\n")
 
         print(f"PyMOL script saved to {pymol_script}.")
 
