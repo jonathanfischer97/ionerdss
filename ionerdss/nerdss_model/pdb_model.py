@@ -50,6 +50,8 @@ class PDBModel(Model):
         self.pdb_file = pdb_file
         self.pdb_id = pdb_id
         self.save_dir = os.path.abspath(save_dir) if save_dir else os.getcwd()
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
 
         if not self.pdb_file and not self.pdb_id:
             raise ValueError("Either 'pdb_file' or 'pdb_id' must be provided.")

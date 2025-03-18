@@ -2,6 +2,7 @@ from .model_setup import *
 from .analysis import *
 from .nerdss_model import *
 from .nerdss_simulation import *
+from .nerdss_analysis import *
 
 import seaborn as sns
 

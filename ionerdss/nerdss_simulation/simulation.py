@@ -55,7 +55,7 @@ class Simulation:
                 f.write(f"Name = {mol.name}\n")
                 f.write("isLipid = false\n")
                 f.write("isImplicitLipid = false\n")
-                f.write("checkOverlap = false\n")
+                f.write("checkOverlap = true\n")
                 f.write("countTransition = false\n")
                 f.write("transitionMatrixSize = 500\n")
                 f.write("insideCompartment = false\n")
@@ -345,13 +345,51 @@ class Simulation:
             print("NERDSS repository already exists. Pulling latest updates...")
             subprocess.run(["git", "-C", nerdss_repo_path, "pull"], check=False)
 
+        def detect_package_manager():
+            """Detects the package manager for the current Linux distribution."""
+            if os.path.exists("/etc/os-release"):
+                with open("/etc/os-release", "r") as f:
+                    os_release = f.read().lower()
+                    if "ubuntu" in os_release or "debian" in os_release:
+                        return "apt"
+                    elif "fedora" in os_release:
+                        return "dnf"
+                    elif "centos" in os_release or "rhel" in os_release:
+                        return "yum"
+                    elif "opensuse" in os_release:
+                        return "zypper"
+            return None
+
         # Install dependencies based on the platform
         if sys.platform.startswith("linux"):
-            result = subprocess.run(["sudo", "apt-get", "update"], check=False)
-            if result.returncode == 0:
-                subprocess.run(["sudo", "apt-get", "install", "-y", "build-essential", "libgsl-dev"], check=False)
+            package_manager = detect_package_manager()
+            install_command = None
+
+            if package_manager == "apt":
+                install_command = ["sudo", "apt-get", "install", "-y", "build-essential", "libgsl-dev"]
+            elif package_manager == "dnf":
+                install_command = ["sudo", "dnf", "install", "-y", "gcc", "gcc-c++", "make", "gsl-devel"]
+            elif package_manager == "yum":
+                install_command = ["sudo", "yum", "install", "-y", "gcc", "gcc-c++", "make", "gsl-devel"]
+            elif package_manager == "zypper":
+                install_command = ["sudo", "zypper", "install", "-y", "gcc", "gcc-c++", "make", "gsl-devel"]
             else:
-                print("Skipping system package installation (no sudo privileges). Ensure GSL is installed manually.")
+                print("Skipping system package installation. Ensure GSL is installed manually.")
+                print("sudo apt-get install build-essential libgsl-dev  # For Debian/Ubuntu")
+                print("sudo dnf install gcc gcc-c++ make gsl-devel     # For Fedora")
+                print("sudo yum install gcc gcc-c++ make gsl-devel     # For CentOS/RHEL")
+                print("sudo zypper install gcc gcc-c++ make gsl-devel  # For openSUSE")
+            
+            if install_command:
+                result = subprocess.run(["sudo", package_manager, "update", "-y"], check=False)
+                if result.returncode == 0:
+                    subprocess.run(install_command, check=False)
+                else:
+                    print("Skipping system package installation. Ensure GSL is installed manually.")
+                    print("sudo apt-get install build-essential libgsl-dev  # For Debian/Ubuntu")
+                    print("sudo dnf install gcc gcc-c++ make gsl-devel     # For Fedora")
+                    print("sudo yum install gcc gcc-c++ make gsl-devel     # For CentOS/RHEL")
+                    print("sudo zypper install gcc gcc-c++ make gsl-devel  # For openSUSE")
         elif sys.platform == "darwin":
             subprocess.run(["brew", "install", "gsl"], check=False)
 
@@ -370,7 +408,18 @@ class Simulation:
             sim_dir (str, optional): Directory where simulation results should be stored. Defaults to `self.work_dir/nerdss_output`.
             nerdss_dir (str, optional): Directory where NERDSS is installed. Defaults to `self.work_dir/NERDSS`.
             parallel (bool, optional): Whether to run simulations in parallel. Defaults to False.
+
+        Notes:
+            FIXME: Doesn't work on Fedora OS using Jupyter notebook. Doesn't test on other OS. Doesn't test using Python script.
         """
+        if sim_dir.startswith("~"):
+            sim_dir = os.path.expanduser(sim_dir)
+        sim_dir = os.path.abspath(sim_dir)
+
+        if nerdss_dir.startswith("~"):
+            nerdss_dir = os.path.expanduser(nerdss_dir)
+        nerdss_dir = os.path.abspath(nerdss_dir)
+
         if sim_dir is None:
             sim_dir = os.path.join(self.work_dir, "nerdss_output")
         os.makedirs(sim_dir, exist_ok=True)
