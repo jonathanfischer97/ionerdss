@@ -231,3 +231,189 @@ def plot_line_maximum_assembly_size_vs_time(
     plt.show()
 
     print(f"Plot saved to {plot_path}")
+
+def parse_complex_line(line):
+    """Parse a single complex line and return a dictionary with species and counts."""
+    match = re.match(r"(\d+)\s+([\w\.\s:]+)", line)
+    if not match:
+        return None, None
+
+    count = int(match.group(1))  # Number of such complexes
+    species_data = match.group(2).split()  # Split species and counts
+    species_dict = {}
+
+    for i in range(0, len(species_data), 2):
+        species_name = species_data[i].strip(":")
+        species_count = float(species_data[i + 1].strip("."))
+
+        species_dict[species_name] = species_dict.get(species_name, 0) + species_count
+
+    return count, species_dict
+
+def compute_average_assembly_size(complexes, conditions):
+    """
+    Compute the average assembly size for given conditions.
+
+    Parameters:
+        complexes (list): List of tuples (count, species_dict) representing each complex.
+        conditions (list): List of conditions, e.g., ["A>=2", "A+B>=4"].
+
+    Returns:
+        dict: Condition -> average assembly size mapping.
+    """
+    results = {}
+
+    for condition in conditions:
+        species_conditions = condition.split(", ")  # Handle multiple species constraints
+        numerator, denominator = 0, 0
+
+        for count, species_dict in complexes:
+            valid = True
+            total_size = 0
+
+            for cond in species_conditions:
+                species_match = re.match(r"(\w+)([>=<]=?|==)(\d+)", cond)
+                if not species_match:
+                    continue  # Skip invalid conditions
+
+                species, operator, threshold = species_match.groups()
+                threshold = int(threshold)
+                species_count = species_dict.get(species, 0)
+
+                if operator == ">=" and species_count < threshold:
+                    valid = False
+                elif operator == ">" and species_count <= threshold:
+                    valid = False
+                elif operator == "<=" and species_count > threshold:
+                    valid = False
+                elif operator == "<" and species_count >= threshold:
+                    valid = False
+                elif operator == "==" and species_count != threshold:
+                    valid = False
+
+                total_size += species_count  # Sum the species count
+
+            if valid:
+                numerator += count * total_size
+                denominator += count
+
+        results[condition] = numerator / denominator if denominator > 0 else 0
+
+    return results
+
+def plot_line_average_assembly_size_vs_time(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    show_type: str = "both",
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 6)
+):
+    """
+    Plot the average assembly size vs. time based on species composition in complexes.
+
+    Parameters:
+        save_dir (str): The base directory where simulations are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Conditions for computing average assembly size.
+        show_type (str): Display mode, "both", "individuals", or "average".
+        simulations_dir (list): List of simulation directories.
+        figure_size (tuple): Size of the figure.
+    """
+
+    plot_data_dir = os.path.join(save_dir, "figure_plot_data")
+    os.makedirs(plot_data_dir, exist_ok=True)
+
+    all_sim_data = []
+
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+
+        if not os.path.exists(data_file):
+            print(f"Warning: {data_file} not found, skipping simulation {idx}.")
+            continue
+
+        time_series = []
+        condition_results = {condition: [] for condition in legend}
+
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+
+        current_time = None
+        current_complexes = []
+
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                if current_time is not None:
+                    # Compute average size for the previous time step
+                    avg_sizes = compute_average_assembly_size(current_complexes, legend)
+                    for cond in legend:
+                        condition_results[cond].append(avg_sizes.get(cond, 0))
+
+                    time_series.append(current_time)
+                    current_complexes = []
+
+                current_time = float(time_match.group(1))
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    current_complexes.append((count, species_dict))
+
+        if current_time is not None:
+            avg_sizes = compute_average_assembly_size(current_complexes, legend)
+            for cond in legend:
+                condition_results[cond].append(avg_sizes.get(cond, 0))
+            time_series.append(current_time)
+
+        if time_series:
+            df = pd.DataFrame({"Time (s)": time_series, **condition_results})
+            all_sim_data.append(df)
+
+    if not all_sim_data:
+        print("No valid simulation data found.")
+        return
+
+    # Align data to the shortest time series
+    min_length = min(len(df) for df in all_sim_data)
+    all_sim_data = [df.iloc[:min_length] for df in all_sim_data]
+
+    time_values = all_sim_data[0]["Time (s)"].values
+    avg_data = {cond: np.array([df[cond].values for df in all_sim_data]) for cond in legend}
+
+    # Compute mean and standard deviation
+    mean_values = {cond: data.mean(axis=0) for cond, data in avg_data.items()}
+    std_values = {cond: data.std(axis=0) for cond, data in avg_data.items()}
+
+    # Save processed data
+    save_path = os.path.join(plot_data_dir, "average_assembly_size_vs_time.csv")
+    df_to_save = pd.DataFrame({"Time (s)": time_values, **{f"Mean {cond}": mean_values[cond] for cond in legend},
+                               **{f"Std {cond}": std_values[cond] for cond in legend}})
+    df_to_save.to_csv(save_path, index=False)
+    print(f"Processed data saved to {save_path}")
+
+    # Plot the data
+    plt.figure(figsize=figure_size)
+    sns.set_style("ticks")
+
+    for cond in legend:
+        if show_type in {"individuals", "both"}:
+            for i, sim_values in enumerate(avg_data[cond]):
+                plt.plot(time_values, sim_values, alpha=0.3, linestyle="dashed",
+                         label=f"Individual run {i} ({cond})" if show_type == "both" else None)
+
+        if show_type in {"average", "both"}:
+            plt.plot(time_values, mean_values[cond], label=f"Average ({cond})", linewidth=2)
+            plt.fill_between(time_values, mean_values[cond] - std_values[cond], mean_values[cond] + std_values[cond], alpha=0.2)
+
+    plt.xlabel("Time (s)")
+    plt.ylabel("Average Assembly Size")
+    plt.legend()
+    plt.tight_layout()
+
+    plot_path = os.path.join(plot_data_dir, "average_assembly_size_vs_time.svg")
+    plt.savefig(plot_path, format="svg")
+    plt.show()
+
+    print(f"Plot saved to {plot_path}")
