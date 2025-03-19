@@ -2,7 +2,8 @@ import os
 import seaborn as sns
 
 from .plot_figures import (
-    plot_line_speciescopy_vs_time,)
+    plot_line_speciescopy_vs_time,
+    plot_line_maximum_assembly_size_vs_time,)
 
 class Analysis:
     def __init__(self, save_dir: str = None):
@@ -114,6 +115,16 @@ class Analysis:
 
         if figure_type == "line" and x == "time" and y == "species":
             plot_line_speciescopy_vs_time(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "line" and x == "time" and y == "maximum_assembly":
+            plot_line_maximum_assembly_size_vs_time(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
                 legend=legend,
