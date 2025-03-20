@@ -574,3 +574,132 @@ def eval_condition(species_dict, condition):
     
     species_count = species_dict.get(species, 0)  # Get count for the species
     return eval(f"{species_count} {operator} {threshold}"), species
+
+def plot_hist_complex_species_size(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    bins: int = 10,
+    time_frame: tuple = None,
+    frequency: bool = False,
+    normalize: bool = False,
+    show_type: str = "both",
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 6)
+):
+    """
+    Plot a histogram of the average number or frequency of different complex species sizes over a time frame.
+    The X-axis represents complex species size (only considering species in the legend), and the Y-axis 
+    represents the average count or frequency, optionally normalized.
+
+    Parameters:
+        save_dir (str): The base directory where simulation results are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Species to be counted in determining complex sizes.
+        bins (int): Number of bins for the histogram.
+        time_frame (tuple, optional): Time range (start, end) to consider for averaging.
+        frequency (bool): Whether to plot frequency instead of absolute count.
+        normalize (bool): Whether to normalize the histogram (ensuring total area = 1).
+        show_type (str): Display mode - "both", "individuals", or "average".
+        simulations_dir (list): List of directories for each simulation.
+        figure_size (tuple): Size of the figure.
+    """
+    plot_data_dir = os.path.join(save_dir, "figure_plot_data")
+    os.makedirs(plot_data_dir, exist_ok=True)
+    
+    all_sizes_per_sim = []
+    all_sizes_combined = []
+
+    # Step 1: Collect all sizes across simulations
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+        
+        if not os.path.exists(data_file):
+            print(f"Warning: {data_file} not found, skipping simulation {idx}.")
+            continue
+        
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+        
+        current_time = None
+        sim_sizes = []
+
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                current_time = float(time_match.group(1))
+                if time_frame and (current_time <= time_frame[0] or current_time >= time_frame[1]):
+                    continue
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    complex_size = sum(species_dict[species] for species in legend if species in species_dict)
+                    sim_sizes.extend([complex_size] * count)
+
+        if sim_sizes:
+            all_sizes_per_sim.append(sim_sizes)
+            all_sizes_combined.extend(sim_sizes)  # Accumulate sizes for global binning
+
+    if not all_sizes_per_sim:
+        print("No valid simulation data found.")
+        return
+    
+    # Step 2: Determine global bin edges
+    global_hist, bin_edges = np.histogram(all_sizes_combined, bins=bins)  # Global bin edges
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+    bin_width = bin_edges[1] - bin_edges[0]
+
+    # print out bin edges and bin centers for debugging
+    print(f"Bin edges: {bin_edges}")
+    print(f"Bin centers: {bin_centers}")
+    
+    # Step 3: Compute histograms for each simulation using the same bin edges
+    hist_values_all = []
+
+    for sizes in all_sizes_per_sim:
+        hist_values, _ = np.histogram(sizes, bins=bin_edges)  # Use fixed bin_edges
+        hist_values_all.append(hist_values)
+
+    hist_values_all = np.array(hist_values_all)
+
+    # Step 4: Compute mean and standard deviation
+    mean_values = np.mean(hist_values_all, axis=0)
+    std_values = np.std(hist_values_all, axis=0)
+
+    total = np.sum(mean_values)
+    
+    if frequency and total > 0:
+        mean_values = mean_values / total
+        std_values = std_values / total
+    
+    if normalize and total > 0:
+        mean_values = mean_values / bin_width
+        std_values = std_values / bin_width
+
+    # Save data
+    df_to_save = pd.DataFrame({
+        "Bin Center": bin_centers,
+        "Mean Count": mean_values,
+        "Std Dev": std_values
+    })
+    save_path = os.path.join(plot_data_dir, "hist_average_number_vs_size.csv")
+    df_to_save.to_csv(save_path, index=False)
+    print(f"Processed data saved to {save_path}")
+
+    # Step 5: Plot with error bars
+    plt.figure(figsize=figure_size)
+    plt.bar(bin_centers, mean_values, width=bin_width * 0.9, alpha=0.7, label="Mean")
+    plt.errorbar(bin_centers, mean_values, yerr=std_values, fmt='o', color='black', capsize=5, label="Std Dev")
+
+    species_all = "+".join(legend)
+    plt.xlabel(f"Number of {species_all} in Complexes")
+    plt.ylabel("Normalized Frequency" if normalize else ("Frequency" if frequency else "Complex Count"))
+    plt.legend()
+    plt.tight_layout()
+
+    plot_path = os.path.join(plot_data_dir, "hist_average_number_vs_size.svg")
+    plt.savefig(plot_path, format="svg")
+    plt.show()
+    
+    print(f"Plot saved to {plot_path}")
