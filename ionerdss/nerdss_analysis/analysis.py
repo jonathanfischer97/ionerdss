@@ -9,7 +9,8 @@ from .plot_figures import (
     plot_line_maximum_assembly_size_vs_time,
     plot_line_average_assembly_size_vs_time,
     plot_line_fraction_of_monomers_assembled_vs_time,
-    plot_hist_complex_species_size,)
+    plot_hist_complex_species_size,
+    plot_hist_monomer_counts_vs_complex_size,)
 
 class Analysis:
     def __init__(self, save_dir: str = None):
@@ -165,6 +166,20 @@ class Analysis:
 
         if figure_type == "hist" and x == "size" and y == "complex_count":
             plot_hist_complex_species_size(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                bins=bins,
+                time_frame=time_frame,
+                frequency=frequency,
+                normalize=normalize,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "hist" and x == "size" and y == "monomer_count":
+            plot_hist_monomer_counts_vs_complex_size(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
                 legend=legend,
