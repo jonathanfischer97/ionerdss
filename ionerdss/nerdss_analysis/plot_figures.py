@@ -417,3 +417,160 @@ def plot_line_average_assembly_size_vs_time(
     plt.show()
 
     print(f"Plot saved to {plot_path}")
+
+def plot_line_fraction_of_monomers_assembled_vs_time(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    show_type: str = "both",
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 6)
+):
+    """
+    Plot the fraction of monomers assembled in complex vs. time based on species composition in complexes.
+    
+    Parameters:
+        save_dir (str): The base directory where simulations are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Conditions for computing assembly fractions (e.g., ["A>=2"]).
+        show_type (str): Display mode, "both", "individuals", or "average".
+        simulations_dir (list): List of simulation directories.
+        figure_size (tuple): Size of the figure.
+    """
+    plot_data_dir = os.path.join(save_dir, "figure_plot_data")
+    os.makedirs(plot_data_dir, exist_ok=True)
+    
+    all_sim_data = []
+    
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+        
+        if not os.path.exists(data_file):
+            print(f"Warning: {data_file} not found, skipping simulation {idx}.")
+            continue
+        
+        time_series = []
+        fraction_results = {condition: [] for condition in legend}
+        
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+        
+        current_time = None
+        current_complexes = []
+        
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                if current_time is not None:
+                    for cond in legend:
+                        selected_counts = 0
+                        total_counts = 0
+
+                        for count, complex_dict in current_complexes:
+                            matches, target_species = eval_condition(complex_dict, cond)
+
+                            if matches:
+                                selected_counts += count * complex_dict.get(target_species, 0)  # Sum only the target species count
+
+                            if target_species in complex_dict:
+                                total_counts += count * complex_dict[target_species]  # Sum only in complexes where species exists
+
+                        fraction = selected_counts / total_counts if total_counts > 0 else 0
+                        fraction_results[cond].append(fraction)
+
+                    time_series.append(current_time)
+                    current_complexes = []
+
+                current_time = float(time_match.group(1))
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    current_complexes.append((count, species_dict))
+
+        if current_time is not None:
+            for cond in legend:
+                selected_counts = 0
+                total_counts = 0
+
+                for count, complex_dict in current_complexes:
+                    matches, target_species = eval_condition(complex_dict, cond)
+
+                    if matches:
+                        selected_counts += count * complex_dict.get(target_species, 0)  # Sum only the target species count
+
+                    if target_species in complex_dict:
+                        total_counts += count * complex_dict[target_species]  # Sum only in complexes where species exists
+
+                fraction = selected_counts / total_counts if total_counts > 0 else 0
+                fraction_results[cond].append(fraction)
+
+            time_series.append(current_time)
+
+        if time_series:
+            df = pd.DataFrame({"Time (s)": time_series, **fraction_results})
+            all_sim_data.append(df)
+    
+    if not all_sim_data:
+        print("No valid simulation data found.")
+        return
+    
+    min_length = min(len(df) for df in all_sim_data)
+    all_sim_data = [df.iloc[:min_length] for df in all_sim_data]
+    
+    time_values = all_sim_data[0]["Time (s)"].values
+    fraction_data = {cond: np.array([df[cond].values for df in all_sim_data]) for cond in legend}
+    
+    mean_values = {cond: data.mean(axis=0) for cond, data in fraction_data.items()}
+    std_values = {cond: data.std(axis=0) for cond, data in fraction_data.items()}
+    
+    save_path = os.path.join(plot_data_dir, "fraction_of_monomers_assembled_vs_time.csv")
+    df_to_save = pd.DataFrame({"Time (s)": time_values, **{f"Mean {cond}": mean_values[cond] for cond in legend},
+                               **{f"Std {cond}": std_values[cond] for cond in legend}})
+    df_to_save.to_csv(save_path, index=False)
+    print(f"Processed data saved to {save_path}")
+    
+    plt.figure(figsize=figure_size)
+    sns.set_style("ticks")
+    
+    for cond in legend:
+        if show_type in {"individuals", "both"}:
+            for i, sim_values in enumerate(fraction_data[cond]):
+                plt.plot(time_values, sim_values, alpha=0.3, linestyle="dashed",
+                         label=f"Individual run {i} ({cond})" if show_type == "both" else None)
+        
+        if show_type in {"average", "both"}:
+            plt.plot(time_values, mean_values[cond], label=f"Average ({cond})", linewidth=2)
+            plt.fill_between(time_values, mean_values[cond] - std_values[cond], mean_values[cond] + std_values[cond], alpha=0.2)
+    
+    plt.xlabel("Time (s)")
+    plt.ylabel("Fraction of Monomers Assembled")
+    plt.legend()
+    plt.tight_layout()
+    
+    plot_path = os.path.join(plot_data_dir, "fraction_of_monomers_assembled_vs_time.svg")
+    plt.savefig(plot_path, format="svg")
+    plt.show()
+    
+    print(f"Plot saved to {plot_path}")
+
+def eval_condition(species_dict, condition):
+    """
+    Evaluates whether a complex meets a condition based on species count.
+    
+    Parameters:
+        species_dict (dict): Dictionary containing species counts in one complex.
+        condition (str): A condition string like "B>=3".
+    
+    Returns:
+        bool: True if the complex satisfies the condition, otherwise False.
+    """
+    species_match = re.match(r"(\w+)([>=<]=?|==)(\d+)", condition)
+    if not species_match:
+        return False
+
+    species, operator, threshold = species_match.groups()
+    threshold = int(threshold)
+    
+    species_count = species_dict.get(species, 0)  # Get count for the species
+    return eval(f"{species_count} {operator} {threshold}"), species

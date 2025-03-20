@@ -1,10 +1,14 @@
 import os
 import seaborn as sns
+import tempfile
+import numpy as np
+from IPython.display import display, Image
 
 from .plot_figures import (
     plot_line_speciescopy_vs_time,
     plot_line_maximum_assembly_size_vs_time,
-    plot_line_average_assembly_size_vs_time,)
+    plot_line_average_assembly_size_vs_time,
+    plot_line_fraction_of_monomers_assembled_vs_time,)
 
 class Analysis:
     def __init__(self, save_dir: str = None):
@@ -143,4 +147,57 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-            
+
+        if figure_type == "line" and x == "time" and y == "fraction_of_monomers_assembled":
+            plot_line_fraction_of_monomers_assembled_vs_time(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+    def visualize_trajectory(self, trajectory_path: str = None, save_gif: bool = False, gif_name: str = "trajectory.gif", fps: int = 10):
+        """
+        Visualizes a trajectory from an XYZ file and optionally saves it as a GIF.
+
+        Parameters:
+            trajectory_path (str): Path to the XYZ trajectory file.
+            save_gif (bool): If True, saves the trajectory animation as a GIF.
+            gif_name (str): Name of the output GIF file (if save_gif is True).
+            fps (int): Frames per second for the GIF animation.
+        """
+        import warnings
+        warnings.filterwarnings('ignore', message='.*OVITO.*PyPI')
+        import imageio
+        from ovito.io import import_file
+        from ovito.vis import Viewport
+
+        if trajectory_path is None:
+            trajectory_path = os.path.join(self.simulation_dirs[0], "DATA", "trajectory.xyz")
+        if not os.path.exists(trajectory_path):
+            raise FileNotFoundError(f"Trajectory file '{trajectory_path}' not found.")
+        
+        pipeline = import_file(trajectory_path)
+        pipeline.add_to_scene()
+        vp = Viewport(type=Viewport.Type.PERSPECTIVE)
+        vp.zoom_all()
+
+        temp_dir = tempfile.mkdtemp()
+        frame_paths = []
+
+        for frame in range(pipeline.source.num_frames):
+            output_path = os.path.join(temp_dir, f"frame_{frame:04d}.png")
+            vp.render_image(size=(800, 600), filename=output_path, frame=frame)
+            frame_paths.append(output_path)
+
+        gif_path = os.path.join(temp_dir, "trajectory.gif")
+        imageio.mimsave(gif_path, [imageio.imread(frame) for frame in frame_paths], fps=fps)
+
+        display(Image(filename=gif_path))
+
+        if save_gif:
+            gif_save_path = os.path.join(self.save_dir, gif_name)
+            os.rename(gif_path, gif_save_path)
+            print(f"Trajectory GIF saved at: {gif_save_path}")

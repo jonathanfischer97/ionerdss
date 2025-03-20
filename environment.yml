@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.9
-  - pyqt
+  - pyqt=6
   - numpy
   - pandas
   - matplotlib
@@ -24,3 +24,5 @@ dependencies:
   - pip
   - pip:
       - biopython
+      - ovito
+      - imageio
