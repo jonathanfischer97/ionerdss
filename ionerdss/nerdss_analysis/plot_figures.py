@@ -1053,3 +1053,389 @@ def plot_hist_monomer_counts_vs_complex_size_3d(
     hist_data = pd.DataFrame(hist2d, index=time_centers, columns=size_centers)
     hist_data.to_csv(os.path.join(save_dir, "figure_plot_data", "hist_monomer_count_vs_size_3d.csv"))
     print(f"Histogram data saved to {os.path.join(save_dir, 'figure_plot_data', 'hist_monomer_count_vs_size_3d.csv')}")
+
+def format_sig(x, sig=3):
+    return f"{x:.{sig}g}"
+
+def plot_heatmap_complex_species_size(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    bins: int = 10,
+    time_bins: int = 10,
+    frequency: bool = False,
+    normalize: bool = False,
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 8)
+):
+    """
+    Plot a 2D heatmap of the average number of different complex species sizes over time.
+    The X-axis represents complex species size (only considering species in the legend),
+    the Y-axis represents time intervals (in seconds),
+    and the color in each box indicates the average number of corresponding complexes at each time interval.
+
+    Parameters:
+        save_dir (str): The base directory where simulation results are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Species to be counted in determining complex sizes.
+        bins (int): Number of bins for the histogram.
+        time_bins (int): Number of time bins for the histogram.
+        frequency (bool): Whether to plot frequency instead of absolute count.
+        normalize (bool): Whether to normalize the histogram.
+        simulations_dir (list): List of directories for each simulation.
+        figure_size (tuple): Size of the figure.
+    """
+    os.makedirs(os.path.join(save_dir, "figure_plot_data"), exist_ok=True)
+    all_data = []
+
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+        if not os.path.exists(data_file):
+            continue
+
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+
+        current_time = None
+        sim_data = []
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                current_time = float(time_match.group(1))
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    size = sum(species_dict[s] for s in legend if s in species_dict)
+                    sim_data.extend([(current_time, size)] * count)
+        all_data.extend(sim_data)
+
+    if not all_data:
+        print("No valid data found.")
+        return
+
+    times, sizes = zip(*all_data)
+    time_edges = np.linspace(min(times), max(times), time_bins + 1)
+    size_edges = np.histogram_bin_edges(sizes, bins=bins)
+
+    hist2d, _, _ = np.histogram2d(times, sizes, bins=[time_edges, size_edges])
+    hist2d /= len(simulations_index)
+
+    if frequency:
+        hist2d = hist2d / hist2d.sum(axis=1, keepdims=True)
+    if normalize:
+        bin_width = size_edges[1] - size_edges[0]
+        hist2d = hist2d / bin_width
+
+    df = pd.DataFrame(hist2d, index=(time_edges[:-1] + time_edges[1:]) / 2,
+                      columns=(size_edges[:-1] + size_edges[1:]) / 2)
+
+    save_path = os.path.join(save_dir, "figure_plot_data", "heatmap_complex_species_size.csv")
+    df.to_csv(save_path)
+    print(f"Heatmap data saved to {save_path}")
+
+    plt.figure(figsize=figure_size)
+    heatmap = sns.heatmap(df, cmap="viridis", cbar_kws={"label": "Normalized Frequency" if normalize else ("Frequency" if frequency else "Complex Count")})
+    plt.xlabel("Complex Size")
+    plt.ylabel("Time (s)")
+    heatmap.set_xticklabels([format_sig(x, 3) for x in df.columns])
+    heatmap.set_yticklabels([format_sig(y, 3) for y in df.index])
+    plt.tight_layout()
+
+    plot_path = os.path.join(save_dir, "figure_plot_data", "heatmap_complex_species_size.svg")
+    plt.savefig(plot_path)
+    plt.show()
+    print(f"Heatmap plot saved to {plot_path}")
+
+def plot_heatmap_monomer_counts_vs_complex_size(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    bins: int = 10,
+    time_bins: int = 10,
+    frequency: bool = False,
+    normalize: bool = False,
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 8)
+):
+    """
+    Plot a 2D heatmap of the average number of monomers as a function of complex size over time.
+    The X-axis represents complex species size (only considering species in the legend),
+    the Y-axis represents time intervals (in seconds),
+    and the color in each box indicates the average number of monomers found in those complexes.
+
+    Parameters:
+        save_dir (str): The base directory where simulation results are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Species to be counted in determining complex sizes.
+        bins (int): Number of bins for the histogram.
+        time_bins (int): Number of time bins for the histogram.
+        frequency (bool): Whether to plot frequency instead of absolute count.
+        normalize (bool): Whether to normalize the histogram.
+        simulations_dir (list): List of directories for each simulation.
+        figure_size (tuple): Size of the figure.
+    """
+    os.makedirs(os.path.join(save_dir, "figure_plot_data"), exist_ok=True)
+    all_data = []
+
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+        if not os.path.exists(data_file):
+            continue
+
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+
+        current_time = None
+        sim_data = []
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                current_time = float(time_match.group(1))
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    size = sum(species_dict[s] for s in legend if s in species_dict)
+                    sim_data.append((current_time, size, count * size))
+        all_data.extend(sim_data)
+
+    if not all_data:
+        print("No valid data found.")
+        return
+
+    times, sizes, weights = zip(*all_data)
+    time_edges = np.linspace(min(times), max(times), time_bins + 1)
+    size_edges = np.histogram_bin_edges(sizes, bins=bins)
+
+    hist2d, _, _ = np.histogram2d(times, sizes, bins=[time_edges, size_edges], weights=weights)
+    hist2d /= len(simulations_index)
+
+    if frequency:
+        hist2d = hist2d / hist2d.sum(axis=1, keepdims=True)
+    if normalize:
+        bin_width = size_edges[1] - size_edges[0]
+        hist2d = hist2d / bin_width
+
+    df = pd.DataFrame(hist2d, index=(time_edges[:-1] + time_edges[1:]) / 2,
+                      columns=(size_edges[:-1] + size_edges[1:]) / 2)
+
+    save_path = os.path.join(save_dir, "figure_plot_data", "heatmap_monomer_counts_vs_complex_size.csv")
+    df.to_csv(save_path)
+    print(f"Heatmap data saved to {save_path}")
+
+    plt.figure(figsize=figure_size)
+    heatmap = sns.heatmap(df, cmap="viridis", cbar_kws={"label": "Normalized Frequency" if normalize else ("Frequency" if frequency else "Monomer Count")})
+    plt.xlabel("Complex Size")
+    plt.ylabel("Time (s)")
+    heatmap.set_xticklabels([format_sig(x, 3) for x in df.columns])
+    heatmap.set_yticklabels([format_sig(y, 3) for y in df.index])
+    plt.tight_layout()
+
+    plot_path = os.path.join(save_dir, "figure_plot_data", "heatmap_monomer_counts_vs_complex_size.svg")
+    plt.savefig(plot_path)
+    plt.show()
+    print(f"Heatmap plot saved to {plot_path}")
+
+def plot_heatmap_species_a_vs_species_b(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    bins: int = 10,
+    time_bins: int = 10,
+    frequency: bool = False,
+    normalize: bool = False,
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 8)
+):
+    """
+    Plot a 2D heatmap of the average number of two selected species (species_a and species_b) in complexes over time.
+    The X-axis represents the number of species_a, the Y-axis represents the number of species_b,
+    and the color in each box indicates the average number of complexes containing those species.
+
+    Parameters:
+        save_dir (str): The base directory where simulation results are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Species to be counted in determining complex sizes, e.g., ["A", "B"].
+        bins (int): Number of bins for the histogram.
+        time_bins (int): Number of time bins for the histogram.
+        frequency (bool): Whether to plot frequency instead of absolute count.
+        normalize (bool): Whether to normalize the histogram.
+        simulations_dir (list): List of directories for each simulation.
+        figure_size (tuple): Size of the figure.
+    """
+    os.makedirs(os.path.join(save_dir, "figure_plot_data"), exist_ok=True)
+    species_x, species_y = legend[0], legend[1]
+    all_data = []
+
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+        if not os.path.exists(data_file):
+            continue
+
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+
+        current_time = None
+        sim_data = []
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                current_time = float(time_match.group(1))
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    x = species_dict.get(species_x, 0)
+                    y = species_dict.get(species_y, 0)
+                    sim_data.extend([(x, y)] * count)
+        all_data.extend(sim_data)
+
+    if not all_data:
+        print("No valid data found.")
+        return
+
+    x_vals, y_vals = zip(*all_data)
+    heatmap, xedges, yedges = np.histogram2d(x_vals, y_vals, bins=bins)
+    heatmap /= len(simulations_index)
+
+    print(f"X edges: {xedges}")
+    print(f"Y edges: {yedges}")
+
+    if frequency:
+        heatmap = heatmap / heatmap.sum()
+    if normalize:
+        bin_area = (xedges[1] - xedges[0]) * (yedges[1] - yedges[0])
+        heatmap = heatmap / bin_area
+
+    df = pd.DataFrame(heatmap, index=(xedges[:-1] + xedges[1:]) / 2,
+                      columns=(yedges[:-1] + yedges[1:]) / 2)
+    save_path = os.path.join(save_dir, "figure_plot_data", "heatmap_species_a_vs_b.csv")
+    df.to_csv(save_path)
+    print(f"Heatmap data saved to {save_path}")
+
+    plt.figure(figsize=figure_size)
+    heatmap = sns.heatmap(df, cmap="viridis", cbar_kws={"label": "Normalized Frequency" if normalize else ("Frequency" if frequency else "Complex Count")})
+    plt.xlabel(species_y)
+    plt.ylabel(species_x)
+    heatmap.set_xticklabels([format_sig(x, 3) for x in df.columns])
+    heatmap.set_yticklabels([format_sig(y, 3) for y in df.index])
+    plt.tight_layout()
+
+    plot_path = os.path.join(save_dir, "figure_plot_data", "heatmap_species_a_vs_b.svg")
+    plt.savefig(plot_path)
+    plt.show()
+    print(f"Heatmap plot saved to {plot_path}")
+
+def plot_stackedhist_complex_species_size(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    bins: int = 10,
+    time_frame: tuple = None,
+    frequency: bool = False,
+    normalize: bool = False,
+    show_type: str = "both",
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 6)
+):
+    """
+    Plot a stacked histogram of complex species size over time.
+    The X-axis represents complex species size (only considering species in the legend),
+    and the Y-axis represents the number of complexes found with that size.
+    Each color in the stack represents a different condition (species) from the legend.
+
+    Parameters:
+        save_dir (str): The base directory where simulation results are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Species to be counted in determining complex sizes.
+        bins (int): Number of bins for the histogram.
+        time_frame (tuple, optional): Time range (start, end) to consider for averaging.
+        frequency (bool): Whether to plot frequency instead of absolute count.
+        normalize (bool): Whether to normalize the histogram.
+        show_type (str): Display mode - "both", "individuals", or "average".
+        simulations_dir (list): List of directories for each simulation.
+        figure_size (tuple): Size of the figure.
+    """
+    os.makedirs(os.path.join(save_dir, "figure_plot_data"), exist_ok=True)
+    x_species, y_conditions = legend[0].split(":")
+    y_conditions = y_conditions.strip().split(",")
+    y_var = re.findall(r"[A-Za-z_]+", y_conditions[0])[0]
+
+    all_histograms = []
+
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+        if not os.path.exists(data_file):
+            continue
+
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+
+        current_time = None
+        # strip any whitespace from y_conditions
+        y_conditions = [cond.strip() for cond in y_conditions]
+        histogram = {cond: [] for cond in y_conditions}
+
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                current_time = float(time_match.group(1))
+            elif time_frame and (current_time is None or current_time < time_frame[0] or current_time > time_frame[1]):
+                continue
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    x = species_dict.get(x_species, 0)
+                    y = species_dict.get(y_var, 0)
+                    for cond in y_conditions:
+                        cond = cond.strip()
+                        if any(op in cond for op in ['<', '>', '=', '<=', '>=']):
+                            op_index = min(cond.find(op) for op in ['<', '>', '=', '<=', '>='] if op in cond)
+                            cond_eval = cond[op_index:]
+                            # replace = with == for eval
+                            cond_eval = cond_eval.replace('=', '==')
+                        # Evaluate the condition
+                        if eval(f"{y}{cond_eval}"):
+                            histogram[cond].extend([x] * count)
+        all_histograms.append(histogram)
+
+    if not all_histograms:
+        print("No valid simulation data found.")
+        return
+
+    stacked_counts = {cond: np.zeros(bins) for cond in y_conditions}
+    all_data = sum((hist[cond] for hist in all_histograms for cond in hist), [])
+    bin_edges = np.histogram_bin_edges(all_data, bins=bins)
+
+    for histogram in all_histograms:
+        for cond, values in histogram.items():
+            hist, _ = np.histogram(values, bins=bin_edges)
+            stacked_counts[cond] += hist
+
+    for cond in y_conditions:
+        stacked_counts[cond] /= len(all_histograms)
+
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+    bottom = np.zeros_like(bin_centers)
+
+    plt.figure(figsize=figure_size)
+    for cond in y_conditions:
+        plt.bar(bin_centers, stacked_counts[cond], width=bin_edges[1]-bin_edges[0], bottom=bottom, label=cond)
+        bottom += stacked_counts[cond]
+
+    plt.xlabel(f"Number of {x_species} in Complexes")
+    plt.ylabel("Complex Count")
+    plt.legend()
+    plt.tight_layout()
+
+    plot_path = os.path.join(save_dir, "figure_plot_data", "stacked_hist_complex_species_size.svg")
+    plt.savefig(plot_path)
+    plt.show()
+    print(f"Stacked histogram saved to {plot_path}")
+
+    # Save the data for further analysis
+    stacked_df = pd.DataFrame(stacked_counts, index=bin_centers)
+    stacked_df.to_csv(os.path.join(save_dir, "figure_plot_data", "stacked_hist_complex_species_size.csv"))
+    print(f"Stacked histogram data saved to {os.path.join(save_dir, 'figure_plot_data', 'stacked_hist_complex_species_size.csv')}")

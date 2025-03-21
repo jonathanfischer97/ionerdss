@@ -12,7 +12,11 @@ from .plot_figures import (
     plot_hist_complex_species_size,
     plot_hist_monomer_counts_vs_complex_size,
     plot_hist_complex_species_size_3d,
-    plot_hist_monomer_counts_vs_complex_size_3d,)
+    plot_hist_monomer_counts_vs_complex_size_3d,
+    plot_heatmap_complex_species_size,
+    plot_heatmap_monomer_counts_vs_complex_size,
+    plot_heatmap_species_a_vs_species_b,
+    plot_stackedhist_complex_species_size,)
 
 class Analysis:
     def __init__(self, save_dir: str = None):
@@ -63,6 +67,7 @@ class Analysis:
                 - "hist" (histogram)
                 - "3dhist" (3D histogram)
                 - "heatmap" (heatmap)
+                - "stacked" (stacked histogram)
             
             simulations (list, optional): List of index of simulation directories to include in the plot.
                 If None, uses all available simulations.
@@ -106,7 +111,7 @@ class Analysis:
             "font.family": "serif"
         })
         
-        valid_figure_types = {"line", "hist", "3dhist", "heatmap"}
+        valid_figure_types = {"line", "hist", "3dhist", "heatmap", "stacked"}
         valid_show_types = {"both", "individuals", "average"}
 
         if figure_type not in valid_figure_types:
@@ -223,6 +228,59 @@ class Analysis:
                 time_bins=time_bins,
                 frequency=frequency,
                 normalize=normalize,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "heatmap" and x == "size" and y == "time" and z == "complex_count":
+            plot_heatmap_complex_species_size(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                bins=bins,
+                time_bins=time_bins,
+                frequency=frequency,
+                normalize=normalize,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "heatmap" and x == "size" and y == "time" and z == "monomer_count":
+            plot_heatmap_monomer_counts_vs_complex_size(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                bins=bins,
+                time_bins=time_bins,
+                frequency=frequency,
+                normalize=normalize,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "heatmap" and x == "size" and y == "size" and z == "complex_count":
+            plot_heatmap_species_a_vs_species_b(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                bins=bins,
+                time_bins=time_bins,
+                frequency=frequency,
+                normalize=normalize,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "stacked" and x == "size" and y == "complex_count":
+            plot_stackedhist_complex_species_size(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                bins=bins,
+                time_frame=time_frame,
+                frequency=frequency,
+                normalize=normalize,
+                show_type=show_type,
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
