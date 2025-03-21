@@ -10,7 +10,9 @@ from .plot_figures import (
     plot_line_average_assembly_size_vs_time,
     plot_line_fraction_of_monomers_assembled_vs_time,
     plot_hist_complex_species_size,
-    plot_hist_monomer_counts_vs_complex_size,)
+    plot_hist_monomer_counts_vs_complex_size,
+    plot_hist_complex_species_size_3d,
+    plot_hist_monomer_counts_vs_complex_size_3d,)
 
 class Analysis:
     def __init__(self, save_dir: str = None):
@@ -42,6 +44,7 @@ class Analysis:
         z: str = None,
         legend: list = None,
         bins: int = 10,
+        time_bins: int = 10,
         time_frame: tuple = None,
         frequency: bool = False,
         normalize: bool = False,
@@ -69,6 +72,12 @@ class Analysis:
             z (str, optional): Variable for the z-axis (only used in "3dhist" and "heatmap").
             
             legend (list, optional): Labels for the legend. If None, uses default labels.
+
+            bins (int): Number of bins for histograms. Default is 10.
+            time_bins (int): Number of time bins for time-based 3d histograms. Default is 10.
+            time_frame (tuple, optional): Time frame for the histogram. Default is None (uses full range).
+            frequency (bool): If True, normalizes the histogram to show frequency. Default is False.
+            normalize (bool): If True, normalizes the data for plotting. Default is False.
             
             show_type (str): Determines what data to display. Options are:
                 - "individuals" → Shows all individual simulation results.
@@ -188,6 +197,32 @@ class Analysis:
                 frequency=frequency,
                 normalize=normalize,
                 show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "3dhist" and x == "size" and y == "time" and z == "complex_count":
+            plot_hist_complex_species_size_3d(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                bins=bins,
+                time_bins=time_bins,
+                frequency=frequency,
+                normalize=normalize,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "3dhist" and x == "size" and y == "time" and z == "monomer_count":
+            plot_hist_monomer_counts_vs_complex_size_3d(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                bins=bins,
+                time_bins=time_bins,
+                frequency=frequency,
+                normalize=normalize,
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )

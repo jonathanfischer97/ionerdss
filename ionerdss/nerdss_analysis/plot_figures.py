@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import re
+from mpl_toolkits.mplot3d import Axes3D
 
 def plot_line_speciescopy_vs_time(
     save_dir: str,
@@ -829,3 +830,226 @@ def plot_hist_monomer_counts_vs_complex_size(
     plt.show()
     
     print(f"Plot saved to {plot_path}")
+
+def get_time_bins(all_times, time_bins):
+    min_t, max_t = min(all_times), max(all_times)
+    return np.linspace(min_t, max_t, time_bins + 1)
+
+def plot_hist_complex_species_size_3d(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    bins: int = 10,
+    time_bins: int = 10,
+    frequency: bool = False,
+    normalize: bool = False,
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 8)
+):
+    """
+    Plot a 3D histogram of complex species size over time.
+
+    Parameters:
+        save_dir (str): The base directory where simulation results are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Species to be counted in determining complex sizes.
+        bins (int): Number of bins for the histogram.
+        time_bins (int): Number of time bins for the histogram.
+        frequency (bool): Whether to plot frequency instead of absolute count.
+        normalize (bool): Whether to normalize the histogram.
+        simulations_dir (list): List of directories for each simulation.
+        figure_size (tuple): Size of the figure.
+    """
+    os.makedirs(os.path.join(save_dir, "figure_plot_data"), exist_ok=True)
+    all_data = []
+
+    # First pass to collect all sizes and times
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+        if not os.path.exists(data_file):
+            continue
+        
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+
+        current_time, sim_data = None, []
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                current_time = float(time_match.group(1))
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    size = sum(species_dict[s] for s in legend if s in species_dict)
+                    sim_data.extend([(current_time, size)] * count)
+        all_data.extend(sim_data)
+
+    if not all_data:
+        print("No valid data found.")
+        return
+
+    # Organize into time bins
+    times, sizes = zip(*all_data)
+    time_edges = np.linspace(min(times), max(times), time_bins + 1)
+    size_edges = np.histogram_bin_edges(sizes, bins=bins)
+    size_centers = (size_edges[:-1] + size_edges[1:]) / 2
+    time_centers = (time_edges[:-1] + time_edges[1:]) / 2
+
+    print(f"Time edges: {time_edges}")
+    print(f"Time centers: {time_centers}")
+    print(f"Size edges: {size_edges}")
+    print(f"Size centers: {size_centers}")
+
+    # Prepare 2D histogram: rows=time bins, cols=size bins
+    hist2d = np.zeros((time_bins, bins))
+    for t, s in all_data:
+        t_idx = min(np.searchsorted(time_edges, t, side='right') - 1, time_bins - 1)
+        s_idx = min(np.searchsorted(size_edges, s, side='right') - 1, bins - 1)
+        if 0 <= t_idx < time_bins and 0 <= s_idx < bins:
+            hist2d[t_idx, s_idx] += 1
+
+    hist2d /= len(simulations_index)
+
+    if frequency:
+        hist2d = hist2d / hist2d.sum(axis=1, keepdims=True)
+    if normalize:
+        bin_width = size_edges[1] - size_edges[0]
+        hist2d = hist2d / bin_width
+
+    # 3D bar plot
+    fig = plt.figure(figsize=figure_size)
+    ax = fig.add_subplot(111, projection='3d')
+
+    xpos, ypos = np.meshgrid(size_centers, time_centers)
+    xpos = xpos.flatten()
+    ypos = ypos.flatten()
+    zpos = np.zeros_like(xpos)
+    dx = (size_edges[1] - size_edges[0]) * 0.9
+    dy = (time_edges[1] - time_edges[0]) * 0.9
+    dz = hist2d.flatten()
+
+    ax.bar3d(xpos, ypos, zpos, dx, dy, dz, shade=True)
+    ax.set_xlabel("Complex Size")
+    ax.set_ylabel("Time (s)")
+    ax.set_zlabel("Normalized Frequency" if normalize else ("Frequency" if frequency else "Complex Count"))
+    plt.tight_layout()
+
+    plot_path = os.path.join(save_dir, "figure_plot_data", "3D_hist_complex_species.svg")
+    plt.savefig(plot_path)
+    plt.show()
+    print(f"3D plot saved to {plot_path}")
+    # save the data for further analysis
+    hist_data = pd.DataFrame(hist2d, index=time_centers, columns=size_centers)
+    hist_data.to_csv(os.path.join(save_dir, "figure_plot_data", "hist_complex_species_size_3d.csv"))
+    print(f"Histogram data saved to {os.path.join(save_dir, 'figure_plot_data', 'hist_complex_species_size_3d.csv')}")
+
+def plot_hist_monomer_counts_vs_complex_size_3d(
+    save_dir: str,
+    simulations_index: list,
+    legend: list,
+    bins: int = 10,
+    time_bins: int = 10,
+    frequency: bool = False,
+    normalize: bool = False,
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 8)
+):
+    """
+    Plot a 3D histogram of the total number of monomers as a function of complex size over time.
+    The X-axis represents complex species size (only considering species in the legend),
+    the Y-axis represents time intervals (in seconds),
+    and the Z-axis represents the total number of monomers found in those complexes.
+
+    Parameters:
+        save_dir (str): The base directory where simulation results are stored.
+        simulations_index (list): Indices of the simulations to include.
+        legend (list): Species to be counted in determining complex sizes.
+        bins (int): Number of bins for the histogram.
+        time_bins (int): Number of time bins for the histogram.
+        frequency (bool): Whether to plot frequency instead of absolute count.
+        normalize (bool): Whether to normalize the histogram.
+        simulations_dir (list): List of directories for each simulation.
+        figure_size (tuple): Size of the figure.
+    """
+    os.makedirs(os.path.join(save_dir, "figure_plot_data"), exist_ok=True)
+    all_data = []
+
+    for idx in simulations_index:
+        sim_dir = os.path.join(simulations_dir[idx], "DATA")
+        data_file = os.path.join(sim_dir, "histogram_complexes_time.dat")
+        if not os.path.exists(data_file):
+            continue
+
+        with open(data_file, "r") as f:
+            lines = f.readlines()
+
+        current_time, sim_data = None, []
+        for line in lines:
+            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+            if time_match:
+                current_time = float(time_match.group(1))
+            else:
+                count, species_dict = parse_complex_line(line)
+                if species_dict:
+                    size = sum(species_dict[s] for s in legend if s in species_dict)
+                    sim_data.append((current_time, size, count * size))  # weight = count × size
+        all_data.extend(sim_data)
+
+    if not all_data:
+        print("No valid data found.")
+        return
+
+    times, sizes, weights = zip(*all_data)
+    time_edges = np.linspace(min(times), max(times), time_bins + 1)
+    size_edges = np.histogram_bin_edges(sizes, bins=bins)
+    size_centers = (size_edges[:-1] + size_edges[1:]) / 2
+    time_centers = (time_edges[:-1] + time_edges[1:]) / 2
+
+    print(f"Time edges: {time_edges}")
+    print(f"Time centers: {time_centers}")
+    print(f"Size edges: {size_edges}")
+    print(f"Size centers: {size_centers}")
+
+    hist2d = np.zeros((time_bins, bins))
+    for t, s, w in all_data:
+        t_idx = min(np.searchsorted(time_edges, t, side='right') - 1, time_bins - 1)
+        s_idx = min(np.searchsorted(size_edges, s, side='right') - 1, bins - 1)
+        if 0 <= t_idx < time_bins and 0 <= s_idx < bins:
+            hist2d[t_idx, s_idx] += w
+
+    hist2d /= len(simulations_index)
+
+    if frequency:
+        hist2d = hist2d / hist2d.sum(axis=1, keepdims=True)
+    if normalize:
+        bin_width = size_edges[1] - size_edges[0]
+        hist2d = hist2d / bin_width
+
+    # 3D bar plot
+    fig = plt.figure(figsize=figure_size)
+    ax = fig.add_subplot(111, projection='3d')
+
+    xpos, ypos = np.meshgrid(size_centers, time_centers)
+    xpos = xpos.flatten()
+    ypos = ypos.flatten()
+    zpos = np.zeros_like(xpos)
+    dx = (size_edges[1] - size_edges[0]) * 0.9
+    dy = (time_edges[1] - time_edges[0]) * 0.9
+    dz = hist2d.flatten()
+
+    ax.bar3d(xpos, ypos, zpos, dx, dy, dz, shade=True)
+    ax.set_xlabel("Complex Size")
+    ax.set_ylabel("Time (s)")
+    ax.set_zlabel("Monomer Count" if not frequency else "Frequency")
+    plt.tight_layout()
+
+    plot_path = os.path.join(save_dir, "figure_plot_data", "3D_hist_monomer_species.svg")
+    plt.savefig(plot_path)
+    plt.show()
+    print(f"3D plot saved to {plot_path}")
+
+    # Save the data for further analysis
+    hist_data = pd.DataFrame(hist2d, index=time_centers, columns=size_centers)
+    hist_data.to_csv(os.path.join(save_dir, "figure_plot_data", "hist_monomer_count_vs_size_3d.csv"))
+    print(f"Histogram data saved to {os.path.join(save_dir, 'figure_plot_data', 'hist_monomer_count_vs_size_3d.csv')}")
