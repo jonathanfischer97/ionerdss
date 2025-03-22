@@ -16,7 +16,14 @@ from .plot_figures import (
     plot_heatmap_complex_species_size,
     plot_heatmap_monomer_counts_vs_complex_size,
     plot_heatmap_species_a_vs_species_b,
-    plot_stackedhist_complex_species_size,)
+    plot_stackedhist_complex_species_size,
+    plot_line_free_energy,
+    plot_line_symmetric_association_probability,
+    plot_line_asymmetric_association_probability,
+    plot_line_symmetric_dissociation_probability,
+    plot_line_asymmetric_dissociation_probability,
+    plot_line_growth_probability,
+    plot_line_liftime,)
 
 class Analysis:
     def __init__(self, save_dir: str = None):
@@ -280,6 +287,82 @@ class Analysis:
                 time_frame=time_frame,
                 frequency=frequency,
                 normalize=normalize,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "line" and x == "size" and y == "free_energy":
+            plot_line_free_energy(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "line" and x == "size" and y == "symmetric_association_probability":
+            plot_line_symmetric_association_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "line" and x == "size" and y == "asymmetric_association_probability":
+            plot_line_asymmetric_association_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "line" and x == "size" and y == "symmetric_dissociation_probability":
+            plot_line_symmetric_dissociation_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "line" and x == "size" and y == "asymmetric_dissociation_probability":
+            plot_line_asymmetric_dissociation_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "line" and x == "size" and y == "growth_probability":
+            plot_line_growth_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+
+        if figure_type == "line" and x == "size" and y == "lifetime":
+            plot_line_liftime(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
                 show_type=show_type,
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
