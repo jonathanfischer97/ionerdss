@@ -12,14 +12,6 @@ ionerdss.analysis.histogram.multi\_species.frac\_of\_assemble module
    :undoc-members:
    :show-inheritance:
 
-ionerdss.analysis.histogram.multi\_species.list\_index\_exists module
----------------------------------------------------------------------
-
-.. automodule:: ionerdss.analysis.histogram.multi_species.list_index_exists
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 ionerdss.analysis.histogram.multi\_species.multi\_heatmap\_complex\_dist module
 -------------------------------------------------------------------------------
 

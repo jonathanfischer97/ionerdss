@@ -21,14 +21,6 @@ ionerdss.analysis.histogram.hist\_to\_csv module
    :undoc-members:
    :show-inheritance:
 
-ionerdss.analysis.histogram.hist\_to\_csv\_old module
------------------------------------------------------
-
-.. automodule:: ionerdss.analysis.histogram.hist_to_csv_old
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 ionerdss.analysis.histogram.hist\_to\_df module
 -----------------------------------------------
 

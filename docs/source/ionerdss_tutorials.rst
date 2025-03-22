@@ -18,6 +18,7 @@ Below is a quick reference for the available Jupyter notebooks to prepare the in
    :maxdepth: 1
    :caption: Jupyter Notebooks
 
+   quick_start
    pdb_to_nerdss_tutorial
    model_setup_for_platonic_solid
    read_pdb_tutorial

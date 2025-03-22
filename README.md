@@ -11,18 +11,35 @@
 
 ## Installation
 
+1. From PyPI (recommended):
+   - **Python version:** 3.9 or later
+
+Create a conda environment (optional but recommended):
+
+Download and install Anaconda or Miniconda, then create a new conda environment for `ionerdss`:
+
+```bash
+conda create -n ionerdss python=3.9
+conda activate ionerdss
+```
+
 Install the latest release directly from PyPI:
 
 ```bash
 pip install ioNERDSS
 ```
 
+2. From GitHub (for the latest development version):
+   - If you want to use the latest features or contribute to the development, you can install directly from the GitHub repository:
+
 To install from source (e.g., if you’ve cloned this repo and want the most recent changes):
 
 ```bash
 git clone https://github.com/JohnsonBiophysicsLab/ionerdss.git
 cd ionerdss
-python setup.py install
+pip install -r requirements.txt
+pip install -e .  # Install in editable mode
+# Changes made to source code take effect immediately, without needing to reinstall
 ```
 
 ---
@@ -31,19 +48,27 @@ python setup.py install
 
 ```python
 import ionerdss as ion
-
-# Example usage
-ion.nerdss()
+ion.some_function()  # Replace with actual function calls to set up model and analyze results
 ```
 
 For extended examples, see the [tutorials](https://ionerdss.readthedocs.io/en/latest/ionerdss_tutorials.html).
 
+### Run a quick trial with Google Colab
+
+Click the following link to make a copy of the iPython notebook in your Google Colab and following the instructions on the Notebook to run a quick trial of the NERDSS simulator with the usage of ionerdss to prepare the inputs from a PDB structure.
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnsonBiophysicsLab/ionerdss/blob/main/docs/Run_NERDSS_colab.ipynb?copy=true)
+
+### Run a quick trial with our server
+
+Go to the [NERDSS server](http://18.188.233.206:5000/).
+
 ---
 
 ## Documentation
-- **User Guide:** [ionerdss user guide](https://ionerdss.readthedocs.io/en/latest/ionerdss_documentation.html).
+- **User Guide:** [ionerdss user guide](https://ionerdss.readthedocs.io/en/latest/ionerdss_documentation_v1_1.html).
 
-- **API Reference:** [API](https://ionerdss.readthedocs.io/en/latest/ionerdss.html) .Docstrings are integrated throughout the code (Google-style). You can also build the docs locally using Sphinx:
+- **API Reference:** [API](https://ionerdss.readthedocs.io/en/latest/ionerdss.html). You can also build the docs locally using Sphinx:
 ```bash
 sphinx-apidoc -o docs/source ionerdss
 cd docs
@@ -57,15 +82,18 @@ Then open docs/build/html/index.html in your browser.
 ```
 ionerdss/
 ├── .github/workflows/     # Continuous Integration workflows
-├── docs/                  # Documentation (Sphinx configs, user guides)
+├── docs/                  # Documentation
 │   ├── source/            # Sphinx source files
 │   ├── make.bat           # Windows build script
 │   └── Makefile           # Unix build script
 ├── ionerdss/              # Main Python package
-│   ├── model_setup/       # Model building tools
-│   ├── analysis/          # Data analysis tools
+│   ├── nerdss_model/      # Model building tools (v1.1)
+│   ├── nerdss_simulation/ # Simulation tools (v1.1)
+│   ├── nerdss_analysis/   # Data analysis tools (v1.1)
+│   ├── model_setup/       # Old model building tools (v1.0)
+│   ├── analysis/          # Old data analysis tools (v1.0)
 │   └── __init__.py 
-├── tests/                 # Unit tests, to be added
+├── tests/                 # Unit tests
 ├── data/                  # Test and tutorial data
 └── setup.py               # Installation & packaging
 ```
@@ -84,8 +112,6 @@ docker run -it --rm -v $(pwd):/app -p 8888:8888 ionerdss_dev
 
 1. **Docstrings & Sphinx**  
    - Write clear docstrings in Google‐style to help auto‐generate documentation.
-
-   Prompt used for chatGPT to refactor one function: `improve this python code, provide the detail google-style docstring for sphinx, standardize naming conventions:`
 
 2. **Code Organization**  
    - Keep related functionality grouped in submodules.
@@ -110,9 +136,3 @@ docker run -it --rm -v $(pwd):/app -p 8888:8888 ionerdss_dev
 
 ## License
 This project is licensed under the GPL‐3.0 License.
-
-## Run a quick trial with Google Colab
-
-Click the following link to make a copy of the iPython notebook in your Google Colab and following the instructions on the Notebook to run a quick trial of the NERDSS simulator with the usage of ionerdss to prepare the inputs from a PDB structure.
-
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnsonBiophysicsLab/ionerdss/blob/main/docs/Run_NERDSS_colab.ipynb?copy=true)

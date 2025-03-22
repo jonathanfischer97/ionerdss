@@ -11,7 +11,6 @@ Subpackages
    ionerdss.analysis.file_managment
    ionerdss.analysis.histogram
    ionerdss.analysis.locate_pos
-   ionerdss.analysis.pdb
    ionerdss.analysis.transition_matrix
    ionerdss.analysis.xyz
 

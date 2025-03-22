@@ -10,7 +10,7 @@ classifiers = [
 
 setup(
     name="ioNERDSS",
-    version="1.0.37",
+    version="1.1.0",
     requires=["python (>=3.8)"],
     description="Package for analysing NERDSS inputs and outputs.",
     long_description="A python package for analysing inputs and outputs for NERDSS simulator, including generating input files for Platonic solids and output visualization, etc.",
@@ -36,5 +36,10 @@ setup(
         "requests",
         "nglview",
         "ipympl",
+        "imageio",
+        "ovito",
+        "jupyter",
+        "jupyterlab",
+        "notebook",
     ],
 )

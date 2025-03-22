@@ -18,3 +18,8 @@ sns.set_context("paper", rc={
     "legend.fontsize": fontsize,
     "font.family": "serif"
 })
+
+# print the version of the package
+import pkg_resources
+__version__ = pkg_resources.get_distribution("ioNERDSS").version
+print(f"ioNERDSS version {__version__} loaded.")

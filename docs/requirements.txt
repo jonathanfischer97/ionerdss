@@ -15,3 +15,5 @@ requests
 nglview
 ipympl
 pytest
+imageio
+ovito
