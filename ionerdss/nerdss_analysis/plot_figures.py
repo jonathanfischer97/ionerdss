@@ -12,6 +12,7 @@ def plot_line_speciescopy_vs_time(
     save_dir: str,
     simulations_index: list,
     legend: list,
+    user_file_name: str = None,
     show_type: str = "both",
     simulations_dir: list = None,
     figure_size: tuple = (10, 6)
@@ -26,6 +27,8 @@ def plot_line_speciescopy_vs_time(
             - [['A(A1!1).A(A1!1)']] → plot 'A(A1!1).A(A1!1)'
             - [['A(A1!1).A(A1!1)'], ['A(A2!1).A(A2!1)']] → plot two species separately
             - [['A(A1!1).A(A1!1)', 'A(A2!1).A(A2!1)']] → plot their sum
+        user_file_name(str): user defined file name for csv output, anything greater than 100
+            will return an error(can be adjusted, line 83) 
         show_type (str): Display mode, "both", "individuals", or "average".
         simulations_dir (list, optional): List of directories for each simulation.
         figure_size (tuple): Size of the plot figure.
@@ -76,7 +79,16 @@ def plot_line_speciescopy_vs_time(
 
     # Save processed data
     for species, data in species_data.items():
-        save_path = os.path.join(plot_data_dir, f"{species.replace('+', '_')}.csv")
+        #checks whether file name is too long. will throw an OSerror if its too long
+        if len(f"{species.replace('+', '_')}") > 100:
+            print("Error: Generated File Name Too Long. Define a file name using the plot_figure optional argument user_file_name.")
+            return
+        #if file name is not too long and there is no user-defined name, autogenerates a file name
+        if user_file_name == None:
+            save_path = os.path.join(plot_data_dir, f"{species.replace('+', '_')}.csv")
+        #uses user_file_name to name the .csv output
+        else:
+            save_path = os.path.join(plot_data_dir,f"{user_file_name}.csv")
         df_to_save = pd.DataFrame({
             "Time (s)": time_values,
             "Mean": data["mean"],
