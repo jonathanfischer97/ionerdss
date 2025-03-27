@@ -80,7 +80,7 @@ def plot_line_speciescopy_vs_time(
     # Save processed data
     for species, data in species_data.items():
         #checks whether file name is too long. will throw an OSerror if its too long
-        if len(f"{species.replace('+', '_')}") > 100:
+        if len(f"{species.replace('+', '_')}") > 100 and user_file_name == None:
             print("Error: Generated File Name Too Long. Define a file name using the plot_figure optional argument user_file_name.")
             return
         #if file name is not too long and there is no user-defined name, autogenerates a file name
