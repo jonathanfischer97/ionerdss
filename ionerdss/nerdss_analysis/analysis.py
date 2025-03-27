@@ -54,6 +54,7 @@ class Analysis:
         y: str = "species",
         z: str = None,
         legend: list = None,
+        user_file_name: str = None,
         bins: int = 10,
         time_bins: int = 10,
         time_frame: tuple = None,
@@ -84,7 +85,8 @@ class Analysis:
             z (str, optional): Variable for the z-axis (only used in "3dhist" and "heatmap").
             
             legend (list, optional): Labels for the legend. If None, uses default labels.
-
+            user_file_name(str, optional): gives the option of saving .csv output with a specific name. 
+                Avoids save error for csvs plot_line_speciescopy_vs_time due to length. 
             bins (int): Number of bins for histograms. Default is 10.
             time_bins (int): Number of time bins for time-based 3d histograms. Default is 10.
             time_frame (tuple, optional): Time frame for the histogram. Default is None (uses full range).
@@ -150,6 +152,7 @@ class Analysis:
                 save_dir=self.save_dir,
                 simulations_index=simulations,
                 legend=legend,
+                user_file_name=user_file_name,
                 show_type=show_type,
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
