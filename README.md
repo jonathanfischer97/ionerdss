@@ -61,7 +61,7 @@ Click the following link to make a copy of the iPython notebook in your Google C
 
 ### Run a quick trial with our server
 
-Go to the [NERDSS server](http://18.188.233.206:5000/).
+Go to the [NERDSS server](http://52.15.142.149:5000/).
 
 ---
 
