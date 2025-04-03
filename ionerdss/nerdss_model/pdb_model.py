@@ -15,7 +15,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from Bio.PDB import PDBList, MMCIFParser, PDBParser
 from Bio.PDB.Polypeptide import is_aa
-from Bio import pairwise2
+from Bio.Align import PairwiseAligner
 from Bio.SeqUtils import seq1
 from scipy.spatial import KDTree
 from sklearn.cluster import KMeans
@@ -1423,6 +1423,14 @@ class PDBModel(Model):
                 sequence = "".join(seq1(residue.resname) for residue in chain.get_residues() if is_aa(residue))
                 chain_sequences[chain.id] = sequence
 
+            # Set up the aligner with the same settings as pairwise2.align.globalxx
+            aligner = PairwiseAligner()
+            aligner.mode = 'global'
+            aligner.match_score = 1.0
+            aligner.mismatch_score = 0.0
+            aligner.open_gap_score = -1.0
+            aligner.extend_gap_score = -0.5
+
             for i, chain1 in enumerate(chains):
                 for j, chain2 in enumerate(chains):
                     if i >= j:
@@ -1431,12 +1439,20 @@ class PDBModel(Model):
                     seq1_chain = chain_sequences[chain1.id]
                     seq2_chain = chain_sequences[chain2.id]
 
-                    alignments = pairwise2.align.globalxx(seq1_chain, seq2_chain)
-                    if len(alignments) == 0:
+                    # Calculate sequence length for identity calculation
+                    max_length = max(len(seq1_chain), len(seq2_chain))
+                    if max_length == 0:
                         continue
-                    identify = (sum(1 for a, b in zip(alignments[0][0], alignments[0][1]) if a == b) / max(len(seq1_chain), len(seq2_chain))) * 100
 
-                    if identify < seq_identity_threshold:
+                    # Get alignment
+                    alignment = aligner.align(seq1_chain, seq2_chain)[0]
+                    
+                    # Calculate identity percentage
+                    matches = sum(a == b for a, b in zip(alignment[0], alignment[1]) 
+                                if a != '-' and b != '-')
+                    identity = (matches / max_length) * 100
+
+                    if identity < seq_identity_threshold:
                         continue
                     similar_chains.append((chain1.id, chain2.id))
 
@@ -1759,12 +1775,19 @@ def rigid_transform_chains(chain1, chain2):
     sequence1 = extract_sequence(chain1)
     sequence2 = extract_sequence(chain2)
 
-    # Step 2: Find the best overlap between the two sequences using pairwise alignment
-    alignments = pairwise2.align.globalxx(sequence1, sequence2)
-    best_alignment = alignments[0]
+    # Step 2: Find the best overlap between the two sequences using PairwiseAligner
+    aligner = PairwiseAligner()
+    aligner.mode = 'global'
+    aligner.match_score = 1.0
+    aligner.mismatch_score = 0.0
+    aligner.open_gap_score = -1.0
+    aligner.extend_gap_score = -0.5
+    
+    alignments = aligner.align(sequence1, sequence2)
+    alignment = alignments[0]  # Get the best alignment
 
-    aligned_seq1 = best_alignment.seqA
-    aligned_seq2 = best_alignment.seqB
+    aligned_seq1 = alignment[0]
+    aligned_seq2 = alignment[1]
 
     # Step 3: Identify matching residue pairs in the aligned sequences
     residue_pairs = []
@@ -1782,6 +1805,9 @@ def rigid_transform_chains(chain1, chain2):
         residue_pairs.append((residues1[idx1]['CA'].coord, residues2[idx2]['CA'].coord))
         idx1 += 1
         idx2 += 1
+
+    # Rest of the function remains the same...
+    # (continue with the existing code for Steps 4, 5, and 6)
 
     # Step 4: Group residues into four spatially groups
     def group_residues(residues, n_groups=4):
