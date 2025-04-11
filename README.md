@@ -38,8 +38,7 @@ To install from source (e.g., if you’ve cloned this repo and want the most rec
 git clone https://github.com/JohnsonBiophysicsLab/ionerdss.git
 cd ionerdss
 pip install -r requirements.txt
-pip install -e .  # Install in editable mode
-# Changes made to source code take effect immediately, without needing to reinstall
+pip install -e .  # Editable mode: updates reflect immediately in the environment
 ```
 
 ---
@@ -52,12 +51,6 @@ ion.some_function()  # Replace with actual function calls to set up model and an
 ```
 
 For extended examples, see the [tutorials](https://ionerdss.readthedocs.io/en/latest/ionerdss_tutorials.html).
-
-### Run a quick trial with Google Colab
-
-Click the following link to make a copy of the iPython notebook in your Google Colab and following the instructions on the Notebook to run a quick trial of the NERDSS simulator with the usage of ionerdss to prepare the inputs from a PDB structure.
-
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnsonBiophysicsLab/ionerdss/blob/main/docs/Run_NERDSS_colab.ipynb?copy=true)
 
 ### Run a quick trial with our server
 
@@ -90,8 +83,6 @@ ionerdss/
 │   ├── nerdss_model/      # Model building tools (v1.1)
 │   ├── nerdss_simulation/ # Simulation tools (v1.1)
 │   ├── nerdss_analysis/   # Data analysis tools (v1.1)
-│   ├── model_setup/       # Old model building tools (v1.0)
-│   ├── analysis/          # Old data analysis tools (v1.0)
 │   └── __init__.py 
 ├── tests/                 # Unit tests
 ├── data/                  # Test and tutorial data

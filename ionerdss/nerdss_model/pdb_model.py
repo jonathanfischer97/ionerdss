@@ -813,6 +813,28 @@ class PDBModel(Model):
 
         self._update_interface_templates_free_required_list()
 
+        self.binding_chains_pairs.sort()
+        self.molecule_list.sort(key=lambda m: m.name)
+        self.molecules_template_list.sort(key=lambda mt: mt.name)
+        self.interface_list.sort(key=lambda i: i.name)
+        self.interface_template_list.sort(key=lambda it: it.name)
+
+        # print("binding chains pairs:")
+        # for pair in self.binding_chains_pairs:
+        #     print(pair)
+        # print("molecule list:")
+        # for molecule in self.molecule_list:
+        #     print(molecule)
+        # print("molecule template list:")
+        # for molecule_template in self.molecules_template_list:
+        #     print(molecule_template)
+        # print("interface list:")
+        # for interface in self.interface_list:
+        #     print(interface)
+        # print("interface template list:")
+        # for interface_template in self.interface_template_list:
+        #     print(interface_template)
+
         self._build_reactions()
 
         if standard_output:
@@ -1625,12 +1647,11 @@ class BindingInterface:
         self.signature = {}
 
     def __str__(self):
-        residues = ", ".join(str(self.my_residues))
         return (f"BindingInterface: {self.name}\n"
                 f"  Template: {self.my_template}\n"
                 f"  Coordinates: {self.coord}\n"
                 f"  Residue Count: {len(self.my_residues)}\n"
-                f"  Residues: {residues}")
+                f"  Residues: {self.my_residues}")
 
 class ReactionTemplate:
     """
@@ -1805,9 +1826,6 @@ def rigid_transform_chains(chain1, chain2):
         residue_pairs.append((residues1[idx1]['CA'].coord, residues2[idx2]['CA'].coord))
         idx1 += 1
         idx2 += 1
-
-    # Rest of the function remains the same...
-    # (continue with the existing code for Steps 4, 5, and 6)
 
     # Step 4: Group residues into four spatially groups
     def group_residues(residues, n_groups=4):
