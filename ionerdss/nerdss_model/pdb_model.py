@@ -9,8 +9,6 @@ import gzip
 import requests
 import numpy as np
 import math
-import json
-from typing import List, Tuple
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from Bio.PDB import PDBList, MMCIFParser, PDBParser
@@ -844,6 +842,12 @@ class PDBModel(Model):
             for reaction_template in self.reaction_template_list:
                 print(reaction_template)
 
+            print("Molecules and Reactions:")
+            for molecule in self.molecule_list:
+                print(molecule)
+            for reaction in self.reaction_list:
+                print(reaction)
+
         if show_coarse_grained_structure:
             self.plot_regularized_structure()
 
@@ -1119,8 +1123,8 @@ class PDBModel(Model):
             reaction.products = []
             reaction.binding_angles = []
             reaction.expression = ""
-            reaction.reactants.append(f"{molecule_1.name}({interface_1.name})")
-            reaction.reactants.append(f"{molecule_2.name}({interface_2.name})")
+            reaction.reactants.append((molecule_1, interface_1))
+            reaction.reactants.append((molecule_2, interface_2))
             reaction.products.append(f"{molecule_1.name}({interface_1.name}!1).{molecule_2.name}({interface_2.name}!1)")
             reaction.expression = f"{molecule_1.name}({interface_1.name}) + {molecule_2.name}({interface_2.name}) <-> {molecule_1.name}({interface_1.name}!1).{molecule_2.name}({interface_2.name}!1)"
             c1 = np.array([molecule_1.coord.x, molecule_1.coord.y, molecule_1.coord.z])
@@ -1163,6 +1167,13 @@ class PDBModel(Model):
             if molecule_1_template_id < molecule_2_template_id:
                 reactants.append(f"{molecule_1_template_id}({interface_1_template_id})")
                 reactants.append(f"{molecule_2_template_id}({interface_2_template_id})")
+            elif molecule_1_template_id == molecule_2_template_id:
+                if interface_1_template_id < interface_2_template_id:
+                    reactants.append(f"{molecule_1_template_id}({interface_1_template_id})")
+                    reactants.append(f"{molecule_2_template_id}({interface_2_template_id})")
+                else:
+                    reactants.append(f"{molecule_2_template_id}({interface_2_template_id})")
+                    reactants.append(f"{molecule_1_template_id}({interface_1_template_id})")
             else:
                 reactants.append(f"{molecule_2_template_id}({interface_2_template_id})")
                 reactants.append(f"{molecule_1_template_id}({interface_1_template_id})")
@@ -1170,6 +1181,7 @@ class PDBModel(Model):
             for reaction_template in self.reaction_template_list:
                 if reaction_template.reactants == reactants:
                     existed = True
+                    self.reaction_list[-1].my_template = reaction_template
                     # print("My Reaction Template:")
                     # print(reaction_template.expression)
                     # print("Template Angles:")
@@ -1209,6 +1221,7 @@ class PDBModel(Model):
                 reaction_template.norm2 = reaction.norm2
 
                 self.reaction_template_list.append(reaction_template)
+                self.reaction_list[-1].my_template = reaction_template
                 # print("My Reaction Template:")
                 # print(reaction_template.expression)
                 # print("Template Angles:")
@@ -1554,6 +1567,11 @@ class MoleculeTemplate:
     def __str__(self):
         interfaces = "\n  ".join(str(it) for it in self.interface_template_list)
         return f"Molecule Template: {self.name}\n  Interfaces:\n  {interfaces}"
+    
+    def __eq__(self, other):
+        if not isinstance(other, MoleculeTemplate):
+            return False
+        return self.name == other.name
 
 class BindingInterfaceTemplate:
     """
@@ -1588,6 +1606,12 @@ class BindingInterfaceTemplate:
                 f"  Coordinates: {self.coord}\n"
                 f"  Residues: {residues}\n"
                 f"  Required Free: {required_free}")
+    
+    def __eq__(self, other):
+        if not isinstance(other, BindingInterfaceTemplate):
+            return False
+        # TODO: check this
+        return self.name == other.name
 
 class CoarseGrainedMolecule:
     """
@@ -1620,6 +1644,14 @@ class CoarseGrainedMolecule:
                 f"  Template: {self.my_template}\n"
                 f"  Coordinates: {self.coord}\n"
                 f"  Interfaces:\n  {interfaces}")
+    
+    def __eq__(self, other):
+        if not isinstance(other, CoarseGrainedMolecule):
+            return False
+        return self.name == other.name
+    
+    def __hash__(self):
+        return hash(self.name)
 
 class BindingInterface:
     """
@@ -1652,6 +1684,11 @@ class BindingInterface:
                 f"  Coordinates: {self.coord}\n"
                 f"  Residue Count: {len(self.my_residues)}\n"
                 f"  Residues: {self.my_residues}")
+    
+    def __eq__(self, other):
+        if not isinstance(other, BindingInterface):
+            return False
+        return self.my_template == other.my_template
 
 class ReactionTemplate:
     """
@@ -1687,6 +1724,11 @@ class ReactionTemplate:
                 f"  Binding Radius: {self.binding_radius / 10:.6f} nm\n"
                 f"  norm1: {self.norm1}\n"
                 f"  norm2: {self.norm2}")
+    
+    def __eq__(self, other):
+        if not isinstance(other, ReactionTemplate):
+            return False
+        return self.expression == other.expression
 
 class Reaction:
     """
@@ -1713,6 +1755,7 @@ class Reaction:
         self.binding_radius = None
         self.norm1 = None
         self.norm2 = None
+        self.my_template = None
 
     def __str__(self):
         return (f"Reaction: {self.expression}\n"
@@ -1720,6 +1763,17 @@ class Reaction:
                 f"  Products: {self.products}\n"
                 f"  Binding Angles: {self.binding_angles}\n"
                 f"  Binding Radius: {self.binding_radius / 10:.6f} nm")
+
+    def __repr__(self):
+        return f"Reaction({self.expression})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Reaction):
+            return False
+        return self.expression == other.expression
+    
+    def __hash__(self):
+        return hash(self.expression)
 
 # -------------------------------------------------------------------------
 # helper functions - geometry transformation

@@ -4,7 +4,8 @@ import math
 import tempfile
 from pathlib import Path
 
-from ionerdss import PDBModel
+from ionerdss import PDBModel, ParseComplexes
+
 
 def is_number(val):
     try:
@@ -13,14 +14,13 @@ def is_number(val):
     except (TypeError, ValueError):
         return False
 
+
 def compare_values(val1, val2, tol=0.01, path="root"):
     if isinstance(val1, dict) and isinstance(val2, dict):
         if set(val1.keys()) != set(val2.keys()):
             print(f"Key mismatch at {path}: {val1.keys()} != {val2.keys()}")
             return False
-        return all(
-            compare_values(val1[k], val2[k], tol, f"{path}.{k}") for k in val1
-        )
+        return all(compare_values(val1[k], val2[k], tol, f"{path}.{k}") for k in val1)
 
     elif isinstance(val1, list) and isinstance(val2, list):
         if len(val1) != len(val2):
@@ -44,47 +44,83 @@ def compare_values(val1, val2, tol=0.01, path="root"):
             return False
         return True
 
+
 class TestPDBModelOutput(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.save_folder = Path(self.temp_dir.name)
-        self.pdb_id = '8y7s'
-        self.expected_path = Path("data/8y7s_model.json")
-        self.actual_path = self.save_folder / f"{self.pdb_id}_model.json"
 
     def tearDown(self):
         self.temp_dir.cleanup()
 
-    def test_model_output_against_expected(self):
-        pdb_model = PDBModel(pdb_id=self.pdb_id, save_dir=str(self.save_folder))
-
+    def build_pdb_model(self, pdb_id):
+        pdb_model = PDBModel(pdb_id=pdb_id, save_dir=str(self.save_folder))
         pdb_model.coarse_grain(
             distance_cutoff=0.35,
             residue_cutoff=3,
             show_coarse_grained_structure=False,
             save_pymol_script=False,
-            standard_output=False
+            standard_output=False,
         )
-
         pdb_model.regularize_homologous_chains(
             dist_threshold_intra=3.5,
             dist_threshold_inter=3.5,
             angle_threshold=25.0,
             show_coarse_grained_structure=False,
             save_pymol_script=False,
-            standard_output=False
+            standard_output=False,
         )
+        return pdb_model
 
-        with open(self.expected_path, "r") as f_expected:
+    def run_model_test(self, pdb_id, tol=0.01):
+        expected_path = Path(f"data/{pdb_id}_model.json")
+        actual_path = self.save_folder / f"{pdb_id}_model.json"
+
+        pdb_model = self.build_pdb_model(pdb_id)
+
+        with open(expected_path, "r") as f_expected:
             expected_data = json.load(f_expected)
 
-        with open(self.actual_path, "r") as f_actual:
+        with open(actual_path, "r") as f_actual:
             actual_data = json.load(f_actual)
 
         self.assertTrue(
-            compare_values(expected_data, actual_data, tol=0.01),
-            "The actual model output does not match the expected output within the tolerance."
+            compare_values(expected_data, actual_data, tol=tol),
+            f"The actual model output for {pdb_id} does not match the expected output within the tolerance.",
         )
+
+    def test_model_output_8y7s(self):
+        self.run_model_test("8y7s")
+
+    def test_model_output_8erq(self):
+        self.run_model_test("8erq")
+
+    def test_model_output_5va4(self):
+        self.run_model_test("5va4")
+
+    def test_parse_complexes_print_8erq(self):
+        pdb_model = self.build_pdb_model("8erq")
+        complex_list, _ = ParseComplexes(pdb_model)
+
+        complex_list_length = len(complex_list)
+        self.assertEqual(complex_list_length, 10, "Complex list length did not match expected.")
+
+    def test_parse_complexes_print_5va4(self):
+        pdb_model = self.build_pdb_model("5va4")
+        complex_list, _ = ParseComplexes(pdb_model)
+
+        complex_list_length = len(complex_list)
+        self.assertEqual(complex_list_length, 4, "Complex list length did not match expected.")
+
+    def test_parse_complexes_print_8y7s(self):
+        pdb_model = self.build_pdb_model("8y7s")
+        complex_list, _ = ParseComplexes(pdb_model)
+
+        complex_list_length = len(complex_list)
+        self.assertEqual(complex_list_length, 25, "Complex list length did not match expected.")
+
+    # def test_model_output_7uhy(self):
+    #     self.run_model_test("7uhy", tol=1)
 
 
 if __name__ == "__main__":
