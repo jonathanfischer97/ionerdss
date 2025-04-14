@@ -774,6 +774,7 @@ def generate_ode_model_from_pdb(pdb_model, max_complex_size=None):
         complex_obj.name = f"C{i+1}"
     
     # Build the reaction system
-    reaction_system = build_ode_model_from_complexes(all_complexes, pdb_model)
+    reaction_system = None
+    # reaction_system = build_ode_model_from_complexes(all_complexes, pdb_model)
     
     return all_complexes, reaction_system
