@@ -22,6 +22,7 @@ class Complex:
     """
     def __init__(self):
         self.structure_information_map = {}
+        self.name = None
 
     def add_interaction(self, molecule, partner_molecule, reaction):
         """
@@ -269,10 +270,10 @@ class ComplexReaction:
     Attributes:
         reactants (List[Complex]): List of reactant complexes.
         products (List[Complex]): List of product complexes.
-        reaction_type (str): Type of reaction (e.g., "association", "dissociation").
+        reaction_type (str): Type of reaction (e.g., "association", "dissociation", "transformations").
         reaction_string (str): String representation of the reaction.
     """
-    def __init__(self, reactants=None, products=None, reaction_type=None):
+    def __init__(self, reactants=None, products=None, reaction_type=None, rate=1.0):
         """
         Initialize a complex reaction.
         
@@ -284,17 +285,21 @@ class ComplexReaction:
         self.reactants = reactants or []
         self.products = products or []
         self.reaction_type = reaction_type
+        self.rate = rate
         self._generate_reaction_string()
     
     def _generate_reaction_string(self):
         """Generate the reaction string representation."""
-        reactant_strings = [r.to_reaction_string() for r in self.reactants]
-        product_strings = [p.to_reaction_string() for p in self.products]
+        # sort reactants and products for consistent representation
+        self.reactants.sort(key=lambda x: x.name)
+        self.products.sort(key=lambda x: x.name)
+        reactant_strings = [r.name for r in self.reactants]
+        product_strings = [p.name for p in self.products]
         
         reactant_part = " + ".join(reactant_strings)
         product_part = " + ".join(product_strings)
         
-        self.reaction_string = f"{reactant_part} -> {product_part}"
+        self.reaction_string = f"{reactant_part} -> {product_part}, {self.rate}"
     
     def is_association(self):
         """
@@ -303,7 +308,7 @@ class ComplexReaction:
         Returns:
             bool: True if this is an association reaction.
         """
-        return len(self.reactants) > 1 and len(self.products) == 1
+        return len(self.reactants) == 2 and len(self.products) == 1
     
     def is_dissociation(self):
         """
@@ -312,7 +317,16 @@ class ComplexReaction:
         Returns:
             bool: True if this is a dissociation reaction.
         """
-        return len(self.reactants) == 1 and len(self.products) > 1
+        return len(self.reactants) == 1 and len(self.products) == 2
+    
+    def is_transformation(self):
+        """
+        Check if this is a transformation reaction (A -> C).
+        
+        Returns:
+            bool: True if this is a transformation reaction.
+        """
+        return len(self.reactants) == 1 and len(self.products) == 1
     
     def __repr__(self):
         return f"ComplexReaction({self.reaction_string})"
@@ -342,7 +356,7 @@ class ComplexReactionSystem:
         self.reactions = []
         self.rates = {}
         self.complexes = []
-        self.complex_map = {}  # Maps complex signatures to Complex objects
+        self.complex_map = {}  # Maps complex name to Complex objects
 
     def add_complex(self, complex_obj):
         """
@@ -354,7 +368,7 @@ class ComplexReactionSystem:
         Returns:
             Complex: The added complex or the existing equivalent complex.
         """
-        signature = complex_obj.generate_signature()
+        signature = complex_obj.name
         
         if signature in self.complex_map:
             return self.complex_map[signature]
@@ -410,39 +424,10 @@ class ComplexReactionSystem:
         Returns:
             str: A string representing the system of ODEs.
         """
-        # This would generate actual ODE equations based on the reactions and rates
-        # For now, just return a placeholder
         equations = []
         
-        # Track term contributions for each complex
-        complex_terms = {complex_obj: [] for complex_obj in self.complexes}
-        
-        # For each reaction, add appropriate terms to the ODEs
         for reaction in self.reactions:
-            rate = self.rates[reaction]
-            rate_term = f"{rate}"
-            
-            # Mass action kinetics: rate * product of reactant concentrations
-            reactant_term = " * ".join(r.to_reaction_string() for r in reaction.reactants)
-            
-            for reactant in reaction.reactants:
-                # Negative term: reactant is consumed
-                complex_terms[reactant].append(f"-{rate_term} * {reactant_term}")
-                
-            for product in reaction.products:
-                # Positive term: product is produced
-                complex_terms[product].append(f"+{rate_term} * {reactant_term}")
-        
-        # Construct the ODEs
-        for complex_obj, terms in complex_terms.items():
-            if terms:
-                terms_str = " ".join(terms)
-                equation = f"d[{complex_obj.to_reaction_string()}]/dt = {terms_str}"
-                equations.append(equation)
-            else:
-                # No terms - either a basic species or isolated
-                equation = f"d[{complex_obj.to_reaction_string()}]/dt = 0"
-                equations.append(equation)
+            equations.append(reaction.reaction_string)
         
         return "\n".join(equations)
 
@@ -608,7 +593,7 @@ def parse_complexes_from_pdb_model(pdb_model, max_complex_size=None):
     return complex_list
 
 
-def build_ode_model_from_complexes(complex_list, pdb_model=None, default_association_rate=1.0, default_dissociation_rate=0.1):
+def build_ode_model_from_complexes(complex_list, pdb_model=None, default_association_rate=1.0, default_dissociation_rate=1.0):
     """
     Build an ODE model from a list of complexes.
     
@@ -629,79 +614,124 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
     for complex_obj in complex_list:
         reaction_system.add_complex(complex_obj)
     
-    # Generate all possible association reactions
-    for i, complex1 in enumerate(complex_list):
-        if complex1.size() == 1:  # Basic molecule
-            # Find all complexes that can form from this basic molecule
-            for complex2 in complex_list:
-                if complex2.size() > 1 and complex1.is_subset_of(complex2):
-                    # Find the complementary part
-                    complementary_keys = set(complex2.get_keys()) - set(complex1.get_keys())
-                    if not complementary_keys:
-                        continue
-                        
-                    # Find a complex matching the complementary part
-                    for complex3 in complex_list:
-                        if set(complex3.get_keys()) == complementary_keys:
-                            # A + B -> AB association reaction
-                            association = ComplexReaction(
-                                reactants=[complex1, complex3],
-                                products=[complex2],
-                                reaction_type="association"
-                            )
-                            reaction_system.add_reaction(association, default_association_rate)
-                            
-                            # AB -> A + B dissociation reaction
-                            dissociation = ComplexReaction(
-                                reactants=[complex2],
-                                products=[complex1, complex3],
-                                reaction_type="dissociation"
-                            )
-                            reaction_system.add_reaction(dissociation, default_dissociation_rate)
-        
-        # Larger complex association (e.g., A.B + C -> A.B.C)
-        elif complex1.size() > 1:
-            for complex2 in complex_list:
-                # Skip if same complex or if complex2 is very large
-                if complex1 == complex2 or complex2.size() > complex1.size():
+    # Generate all possible reactions
+    for complex_obj in complex_list:
+        if complex_obj.size() <= 1:
+            continue
+
+        bonds = []
+        for molecule  in complex_obj.get_keys():
+            for partner, reaction in complex_obj.get_interactions(molecule):
+                if partner is not None:
+                    bond = tuple(sorted([molecule.name, partner.name]))
+                    bonds.append(bond)
+
+        for bond in bonds:
+            molecule1, molecule2 = bond
+            reaction_obj = None
+            for partner, reaction in complex_obj.get_interactions(molecule1):
+                if partner.name == molecule2:
+                    reaction_obj = reaction
+                    break
+
+            if not reaction_obj:
+                raise ValueError(f"No reaction found for bond {bond} in complex {complex_obj}")
+            
+            graph = {}
+            for mol in complex_obj.get_keys():
+                graph[mol] = complex_obj.all_partners(mol)
+
+            graph[molecule1].remove(molecule2)
+            graph[molecule2].remove(molecule1)
+
+            # Check if breaking this bond splits the complex
+            # Use BFS to find connected components
+            visited = set()
+            components = []
+
+            for start_molecule in graph:
+                if start_molecule in visited:
                     continue
-                    
-                # Try to find a larger complex that contains both complex1 and complex2
-                for complex3 in complex_list:
-                    if (complex3.size() == complex1.size() + complex2.size() and
-                        set(complex3.get_keys()) == set(complex1.get_keys()) | set(complex2.get_keys())):
-                        
-                        # Check if the merger is valid based on binding interactions
-                        valid_merger = False
-                        for m1 in complex1.get_keys():
-                            for m2 in complex2.get_keys():
-                                # Check if there's a binding interaction in the target complex
-                                if m2 in complex3.all_partners(m1):
-                                    valid_merger = True
-                                    break
-                            if valid_merger:
-                                break
-                                
-                        if valid_merger:
-                            # Create association reaction
-                            association = ComplexReaction(
-                                reactants=[complex1, complex2],
-                                products=[complex3],
-                                reaction_type="association"
-                            )
-                            reaction_system.add_reaction(association, default_association_rate)
-                            
-                            # Create dissociation reaction
-                            dissociation = ComplexReaction(
-                                reactants=[complex3],
-                                products=[complex1, complex2],
-                                reaction_type="dissociation"
-                            )
-                            reaction_system.add_reaction(dissociation, default_dissociation_rate)
-    
+
+                component = set()
+                queue = [start_molecule]
+
+                while queue:
+                    current = queue.pop(0)
+                    if current in component:
+                        continue
+
+                    component.add(current)
+                    visited.add(current)
+
+                    for neighbor in graph.get(current, []):
+                        if neighbor not in component:
+                            queue.append(neighbor)
+
+                if component:
+                    components.append(component)
+
+            # Now we know if breaking this bond splits the complex into multiple components
+            if len(components) == 1:
+                # The complex remains connected, but with one bond less
+                # Search for a matching complex in the list
+                new_complex = Complex()
+                for mol in complex_obj.get_keys():
+                    for partner, reaction in complex_obj.get_interactions(mol):
+                        if tuple(sorted([molecule.name, partner.name])) != bond:
+                            new_complex.add_interaction(mol, partner, reaction)
+                
+                for existing_complex in complex_list:
+                    if new_complex == existing_complex:
+                        # Found a matching complex
+                        new_complex.name = existing_complex.name
+                        break
+
+                # Create a transformation reaction complex_obj -> new_complex
+                reaction = ComplexReaction(reactants=[complex_obj], products=[new_complex], reaction_type="transformation", rate=1.0)
+                reaction_system.add_reaction(reaction, rate=1.0)
+
+                # Create a transformation reaction new_complex -> complex_obj
+                reaction = ComplexReaction(reactants=[new_complex], products=[complex_obj], reaction_type="transformation", rate=1.0)
+                reaction_system.add_reaction(reaction, rate=1.0)
+                
+            else:
+                # The complex is split into two components
+                component1 = components[0]
+                component2 = components[1]
+                new_complex1 = Complex()
+                new_complex2 = Complex()
+
+                for mol in component1:
+                    for partner, reaction in complex_obj.get_interactions(mol):
+                        if partner in component1:
+                            new_complex1.add_interaction(mol, partner, reaction)
+
+                for mol in component2:
+                    for partner, reaction in complex_obj.get_interactions(mol):
+                        if partner in component2:
+                            new_complex2.add_interaction(mol, partner, reaction)
+
+                for existing_complex in complex_list:
+                    if new_complex1 == existing_complex:
+                        new_complex1.name = existing_complex.name
+                    if new_complex2 == existing_complex:
+                        new_complex2.name = existing_complex.name
+
+                # Create a dissociation reaction complex_obj -> new_complex1 + new_complex2
+                reaction = ComplexReaction(reactants=[complex_obj], products=[new_complex1, new_complex2], reaction_type="dissociation", rate=1.0)
+                reaction_system.add_reaction(reaction, rate=1.0)
+                # Create a association reaction new_complex1 + new_complex2 -> complex_obj
+                reaction = ComplexReaction(reactants=[new_complex1, new_complex2], products=[complex_obj], reaction_type="association", rate=1.0)
+                reaction_system.add_reaction(reaction, rate=1.0)
+
     # If we have a PDB model, we could refine rates based on reaction properties
     if pdb_model:
         _refine_rates_from_pdb_model(reaction_system, pdb_model)
+
+    # print the reaction system
+    print(reaction_system)
+    print(reaction_system.generate_ode_equations())
     
     return reaction_system
 
@@ -738,6 +768,10 @@ def generate_ode_model_from_pdb(pdb_model, max_complex_size=None):
     """
     # Parse all possible complexes
     all_complexes = parse_complexes_from_pdb_model(pdb_model, max_complex_size)
+
+    # assign names to the complexes: C1, C2, ...
+    for i, complex_obj in enumerate(all_complexes):
+        complex_obj.name = f"C{i+1}"
     
     # Build the reaction system
     reaction_system = build_ode_model_from_complexes(all_complexes, pdb_model)
