@@ -100,24 +100,33 @@ class TestPDBModelOutput(unittest.TestCase):
 
     def test_parse_complexes_print_8erq(self):
         pdb_model = self.build_pdb_model("8erq")
-        complex_list, _ = ParseComplexes(pdb_model)
+        complex_list, complex_reaction_system = ParseComplexes(pdb_model)
 
         complex_list_length = len(complex_list)
         self.assertEqual(complex_list_length, 10, "Complex list length did not match expected.")
 
+        complex_reaction_system_length = len(complex_reaction_system.reactions)
+        self.assertEqual(complex_reaction_system_length, 24, "Complex reaction system length did not match expected.")
+
     def test_parse_complexes_print_5va4(self):
         pdb_model = self.build_pdb_model("5va4")
-        complex_list, _ = ParseComplexes(pdb_model)
+        complex_list, complex_reaction_system = ParseComplexes(pdb_model)
 
         complex_list_length = len(complex_list)
         self.assertEqual(complex_list_length, 4, "Complex list length did not match expected.")
 
+        complex_reaction_system_length = len(complex_reaction_system.reactions)
+        self.assertEqual(complex_reaction_system_length, 6, "Complex reaction system length did not match expected.")
+
     def test_parse_complexes_print_8y7s(self):
         pdb_model = self.build_pdb_model("8y7s")
-        complex_list, _ = ParseComplexes(pdb_model)
+        complex_list, complex_reaction_system = ParseComplexes(pdb_model)
 
         complex_list_length = len(complex_list)
         self.assertEqual(complex_list_length, 25, "Complex list length did not match expected.")
+
+        complex_reaction_system_length = len(complex_reaction_system.reactions)
+        self.assertEqual(complex_reaction_system_length, 114, "Complex reaction system length did not match expected.")
 
     # def test_model_output_7uhy(self):
     #     self.run_model_test("7uhy", tol=1)

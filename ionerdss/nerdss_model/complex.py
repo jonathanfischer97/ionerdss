@@ -199,7 +199,7 @@ class Complex:
         molecules = self.get_keys()
         
         if len(molecules) == 1:
-            return f"Complex({molecules[0].my_template.name})"
+            return f"{self.name}, {molecules[0].my_template.name}"
         
         # Include binding topology in the representation
         topology = self.get_topology_type()
@@ -217,7 +217,7 @@ class Complex:
         reactions = reactions[::2]
         joined_reactions = ', '.join(reactions)
         
-        return f"Complex({joined_names}, {topology}, {joined_reactions})"
+        return f"{self.name}, {joined_names}, {topology}, {joined_reactions}"
 
     def __eq__(self, other):
         if not isinstance(other, Complex):
@@ -624,18 +624,26 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
             for partner, reaction in complex_obj.get_interactions(molecule):
                 if partner is not None:
                     bond = tuple(sorted([molecule.name, partner.name]))
-                    bonds.append(bond)
+                    if bond not in bonds:
+                        bonds.append(bond)
+
+        # print(f"Complex: {complex_obj}, Bonds: {bonds}")
 
         for bond in bonds:
             molecule1, molecule2 = bond
+            molecule1 = next((m for m in complex_obj.get_keys() if m.name == molecule1), None)
+            molecule2 = next((m for m in complex_obj.get_keys() if m.name == molecule2), None)
             reaction_obj = None
             for partner, reaction in complex_obj.get_interactions(molecule1):
-                if partner.name == molecule2:
+                if partner.name == molecule2.name:
                     reaction_obj = reaction
                     break
 
             if not reaction_obj:
-                raise ValueError(f"No reaction found for bond {bond} in complex {complex_obj}")
+                continue
+
+            # print(f"Processing bond: {bond}, Reaction: {reaction_obj.my_template.expression}")
+            # print(f"Mol1: {molecule1.name}, Mol2: {molecule2.name}")
             
             graph = {}
             for mol in complex_obj.get_keys():
@@ -671,6 +679,8 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
                 if component:
                     components.append(component)
 
+            # print(f"Components after breaking bond {bond}: {components}")
+
             # Now we know if breaking this bond splits the complex into multiple components
             if len(components) == 1:
                 # The complex remains connected, but with one bond less
@@ -678,8 +688,13 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
                 new_complex = Complex()
                 for mol in complex_obj.get_keys():
                     for partner, reaction in complex_obj.get_interactions(mol):
-                        if tuple(sorted([molecule.name, partner.name])) != bond:
-                            new_complex.add_interaction(mol, partner, reaction)
+                        if partner is not None:
+                            if tuple(sorted([mol.name, partner.name])) != bond:
+                                # print(tuple(sorted([mol.name, partner.name])), bond)
+                                new_complex.add_interaction(mol, partner, reaction)
+                            else:
+                                # print(f"Skipping bond: {bond}")
+                                pass
                 
                 for existing_complex in complex_list:
                     if new_complex == existing_complex:
@@ -690,10 +705,12 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
                 # Create a transformation reaction complex_obj -> new_complex
                 reaction = ComplexReaction(reactants=[complex_obj], products=[new_complex], reaction_type="transformation", rate=1.0)
                 reaction_system.add_reaction(reaction, rate=1.0)
+                # print(f"Created transformation reaction: {reaction}")
 
                 # Create a transformation reaction new_complex -> complex_obj
                 reaction = ComplexReaction(reactants=[new_complex], products=[complex_obj], reaction_type="transformation", rate=1.0)
                 reaction_system.add_reaction(reaction, rate=1.0)
+                # print(f"Created transformation reaction: {reaction}")
                 
             else:
                 # The complex is split into two components
@@ -703,11 +720,13 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
                 new_complex2 = Complex()
 
                 for mol in component1:
+                    new_complex1.structure_information_map[mol] = []
                     for partner, reaction in complex_obj.get_interactions(mol):
                         if partner in component1:
                             new_complex1.add_interaction(mol, partner, reaction)
 
                 for mol in component2:
+                    new_complex2.structure_information_map[mol] = []
                     for partner, reaction in complex_obj.get_interactions(mol):
                         if partner in component2:
                             new_complex2.add_interaction(mol, partner, reaction)
@@ -718,12 +737,16 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
                     if new_complex2 == existing_complex:
                         new_complex2.name = existing_complex.name
 
+                # print(f"New Complex 1: {new_complex1}, New Complex 2: {new_complex2}")
+
                 # Create a dissociation reaction complex_obj -> new_complex1 + new_complex2
                 reaction = ComplexReaction(reactants=[complex_obj], products=[new_complex1, new_complex2], reaction_type="dissociation", rate=1.0)
                 reaction_system.add_reaction(reaction, rate=1.0)
+                # print(f"Created dissociation reaction: {reaction}")
                 # Create a association reaction new_complex1 + new_complex2 -> complex_obj
                 reaction = ComplexReaction(reactants=[new_complex1, new_complex2], products=[complex_obj], reaction_type="association", rate=1.0)
                 reaction_system.add_reaction(reaction, rate=1.0)
+                # print(f"Created association reaction: {reaction}")
 
     # If we have a PDB model, we could refine rates based on reaction properties
     if pdb_model:
@@ -774,7 +797,6 @@ def generate_ode_model_from_pdb(pdb_model, max_complex_size=None):
         complex_obj.name = f"C{i+1}"
     
     # Build the reaction system
-    reaction_system = None
-    # reaction_system = build_ode_model_from_complexes(all_complexes, pdb_model)
+    reaction_system = build_ode_model_from_complexes(all_complexes, pdb_model)
     
     return all_complexes, reaction_system

@@ -1645,6 +1645,10 @@ class CoarseGrainedMolecule:
                 f"  Coordinates: {self.coord}\n"
                 f"  Interfaces:\n  {interfaces}")
     
+    def __repr__(self):
+        # Similar to __str__ but more formal for debugging
+        return self.name
+    
     def __eq__(self, other):
         if not isinstance(other, CoarseGrainedMolecule):
             return False
