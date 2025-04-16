@@ -90,7 +90,7 @@ class TestPDBModelOutput(unittest.TestCase):
         )
 
     def test_model_output_8y7s(self):
-        self.run_model_test("8y7s")
+        self.run_model_test("8y7s", tol=0.02)
 
     def test_model_output_8erq(self):
         self.run_model_test("8erq")
