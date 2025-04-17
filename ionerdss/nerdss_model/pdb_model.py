@@ -160,6 +160,11 @@ class PDBModel(Model):
         self.all_interfaces = []
         self.all_interfaces_coords = []
         self.all_interfaces_residues = []
+        self.all_chains_radius = []
+
+        energy_table = self._get_default_energy_table()
+        self.interface_energies = []
+        self.all_interface_energies = []
 
         # Initialize interface lists
         num_chains = len(self.all_chains)
@@ -167,6 +172,7 @@ class PDBModel(Model):
             self.all_interfaces.append([])
             self.all_interfaces_coords.append([])
             self.all_interfaces_residues.append([])
+            self.all_interface_energies.append([])
 
         # Calculate the center of mass (COM) for each chain
         for chain in self.all_chains:
@@ -178,6 +184,14 @@ class PDBModel(Model):
             # Calculate the COM
             avg_coords = np.mean(atom_coords, axis=0)
             self.all_COM_chains_coords.append(Coords(*avg_coords))
+
+            # Calculate the radius of gyration of each chain based on its COM
+            if len(atom_coords) > 1:
+                distances = np.linalg.norm(atom_coords - avg_coords, axis=1)
+                radius = np.sqrt(np.mean(distances ** 2))
+            else:
+                radius = 0.0
+            self.all_chains_radius.append(radius)
 
         # Helper function to compute bounding box for a chain
         def compute_bounding_box(chain):
@@ -209,25 +223,31 @@ class PDBModel(Model):
             atom_coords_chain1 = []
             ca_coords_chain1 = []
             residue_ids_chain1 = []
+            residue_types_chain1 = []
             atom_coords_chain2 = []
             ca_coords_chain2 = []
             residue_ids_chain2 = []
+            residue_types_chain2 = []
 
             for residue1 in chain1:
                 if not is_aa(residue1) or 'CA' not in residue1:
                     continue
+                res_type1 = residue1.get_resname().upper()
                 for atom1 in residue1:
                     atom_coords_chain1.append(atom1.coord)
                     ca_coords_chain1.append(residue1['CA'].coord)
                     residue_ids_chain1.append(residue1.id[1])
+                    residue_types_chain1.append(res_type1)
 
             for residue2 in chain2:
                 if not is_aa(residue2) or 'CA' not in residue2:
                     continue
+                res_type2 = residue2.get_resname().upper()
                 for atom2 in residue2:
                     atom_coords_chain2.append(atom2.coord)
                     ca_coords_chain2.append(residue2['CA'].coord)
                     residue_ids_chain2.append(residue2.id[1])
+                    residue_types_chain2.append(res_type2)
 
             if len(ca_coords_chain1) == 0 or len(ca_coords_chain2) == 0:
                 return
@@ -238,8 +258,12 @@ class PDBModel(Model):
 
             interface1 = []
             interface1_coords = []
+            interface1_types = []
             interface2 = []
             interface2_coords = []
+            interface2_types = []
+
+            residue_pairs = {}
 
             # Collect interface residues based on KDTree results
             for idx1, neighbors in enumerate(indices):
@@ -247,11 +271,21 @@ class PDBModel(Model):
                     if residue_ids_chain1[idx1] not in interface1:
                         interface1.append(residue_ids_chain1[idx1])
                         interface1_coords.append(ca_coords_chain1[idx1])
+                        interface1_types.append(residue_types_chain1[idx1])
 
                     for idx2 in neighbors:
                         if residue_ids_chain2[idx2] not in interface2:
                             interface2.append(residue_ids_chain2[idx2])
                             interface2_coords.append(ca_coords_chain2[idx2])
+                            interface2_types.append(residue_types_chain2[idx2])
+                    
+                        pair_key = (residue_ids_chain1[idx1], residue_ids_chain2[idx2])
+                        energy_key = (residue_types_chain1[idx1], residue_types_chain2[idx2])
+
+                        if pair_key not in residue_pairs:
+                            residue_pairs[pair_key] = energy_table.get(energy_key, 0.0)
+
+            total_energy = sum(residue_pairs.values())
 
             # Store results if any interfaces were found
             if len(interface1) >= residue_cutoff and len(interface2) >= residue_cutoff:
@@ -259,10 +293,12 @@ class PDBModel(Model):
                 self.all_interfaces[i].append(self.all_chains[j].id)
                 self.all_interfaces_coords[i].append(Coords(*avg_coords1))
                 self.all_interfaces_residues[i].append(sorted(interface1))
+                self.all_interface_energies[i].append(total_energy)
                 avg_coords2 = np.mean(interface2_coords, axis=0)
                 self.all_interfaces[j].append(self.all_chains[i].id)
                 self.all_interfaces_coords[j].append(Coords(*avg_coords2))
                 self.all_interfaces_residues[j].append(sorted(interface2))
+                self.all_interface_energies[j].append(total_energy)
 
         # Parallelize chain pair processing
         with ThreadPoolExecutor() as executor:
@@ -275,6 +311,7 @@ class PDBModel(Model):
             self.all_interfaces[i] = [self.all_interfaces[i][k] for k in sorted_indices]
             self.all_interfaces_coords[i] = [self.all_interfaces_coords[i][k] for k in sorted_indices]
             self.all_interfaces_residues[i] = [self.all_interfaces_residues[i][k] for k in sorted_indices]
+            self.all_interface_energies[i] = [self.all_interface_energies[i][k] for k in sorted_indices]
 
         # Print detected interfaces
         if standard_output:
@@ -284,8 +321,9 @@ class PDBModel(Model):
                 print(f"  Center of Mass (COM): {self.all_COM_chains_coords[i]}")
                 print(f"  Interfaces: {self.all_interfaces[i]}")
                 print("  Interface Coordinates: ")
-                for interface_coord in self.all_interfaces_coords[i]:
+                for j, interface_coord in enumerate(self.all_interfaces_coords[i]):
                     print(f"    {interface_coord}")
+                    print(f"    Interface Energy: {self.all_interface_energies[i][j]:.2f}")
 
         # Save PyMOL script
         if save_pymol_script:
@@ -520,7 +558,11 @@ class PDBModel(Model):
                     # print(f"New molecule {mol_name} is created.")
                     molecule.my_template = molecule_template
                     molecule.coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == mol_name][0])]
+                    molecule.radius = self.all_chains_radius[self.all_chains.index([chain for chain in self.all_chains if chain.id == mol_name][0])]
+                    molecule.diffusion_translation, molecule.diffusion_rotation = self._compute_diffusion_constants_nm_us(molecule.radius)
                     self.molecule_list.append(molecule)
+                    molecule_template.radius = molecule.radius
+                    molecule_template.diffusion_translation, molecule_template.diffusion_rotation = molecule.diffusion_translation, molecule.diffusion_rotation
                 
                 # loop the interface of this chain (molecule)
                 for i, interface_id in enumerate(self.all_interfaces[self.all_chains.index([chain for chain in self.all_chains if chain.id == mol_name][0])]):
@@ -555,6 +597,7 @@ class PDBModel(Model):
                         if partner_interface_id == A:
                             I_B = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][k]
                             R_B = self.all_interfaces_residues[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][k]
+                            E_B = self.all_interface_energies[self.all_chains.index([chain for chain in self.all_chains if chain.id == B][0])][k]
                             break
 
                     signature = {
@@ -746,6 +789,8 @@ class PDBModel(Model):
                         interface.my_template = interface_template
                         interface.coord = self.all_interfaces_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == A][0])][i]
                         interface.my_residues = self.all_interfaces_residues[self.all_chains.index([chain for chain in self.all_chains if chain.id == A][0])][i]
+                        interface.energy = self.all_interface_energies[self.all_chains.index([chain for chain in self.all_chains if chain.id == A][0])][i]
+                        interface.my_template.energy = interface.energy
                         self.interface_list.append(interface)
                         molecule.interface_list.append(interface)
 
@@ -755,6 +800,8 @@ class PDBModel(Model):
                         partner_interface.my_template = partner_interface_template
                         partner_interface.coord = I_B
                         partner_interface.my_residues = R_B
+                        partner_interface.energy = E_B
+                        partner_interface.my_template.energy = E_B
                         self.interface_list.append(partner_interface)
                         partner_molecule.interface_list.append(partner_interface)
 
@@ -1142,6 +1189,13 @@ class PDBModel(Model):
             reaction.norm1 = [0,0,1]
             reaction.norm2 = [0,0,1]
             reaction.binding_radius = sigma_magnitude
+
+            # calculate the rates
+            energy = interface_1.energy
+            reaction.kd = np.exp(energy) * 1e6 # unit uM
+            reaction.kb = 1 # unit s^-1
+            reaction.ka = reaction.kb / reaction.kd / 0.6022 # unit nm^3/us
+
             self.reaction_list.append(reaction)
             # print("Reaction:")
             # print(reaction.expression)
@@ -1219,6 +1273,10 @@ class PDBModel(Model):
                 reaction_template.binding_radius = reaction.binding_radius
                 reaction_template.norm1 = reaction.norm1
                 reaction_template.norm2 = reaction.norm2
+
+                reaction_template.kd = reaction.kd
+                reaction_template.kb = reaction.kb
+                reaction_template.ka = reaction.ka
 
                 self.reaction_template_list.append(reaction_template)
                 self.reaction_list[-1].my_template = reaction_template
@@ -1340,6 +1398,81 @@ class PDBModel(Model):
             if self._sig_are_similar(sig, existing_sig, dist_threshold_intra=dist_threshold_intra, dist_threshold_inter=dist_threshold_inter, angle_threshold=angle_threshold):
                 return True
         return False
+    
+    def _compute_diffusion_constants_nm_us(self, R_nm, T=298.0, eta=1e-3):
+        """
+        Compute translational and rotational diffusion constants.
+        
+        Args:
+            R_nm (float): radius in nanometers
+            T (float): temperature in Kelvin
+            eta (float): viscosity in Pa·s (default: water)
+        
+        Returns:
+            tuple: (D_t in nm^2/μs, D_r in rad^2/μs)
+        """
+        kB = 1.380649e-23  # J/K
+        R_m = R_nm * 1e-9  # convert nm to meters
+
+        # Diffusion constants in SI units
+        D_t_m2_per_s = kB * T / (6 * np.pi * eta * R_m)
+        D_r_rad2_per_s = kB * T / (8 * np.pi * eta * R_m**3)
+
+        # Convert units
+        D_t_nm2_per_us = D_t_m2_per_s * 1e12  # m²/s → nm²/μs
+        D_r_rad2_per_us = D_r_rad2_per_s * 1e-6  # rad²/s → rad²/μs
+
+        return D_t_nm2_per_us, D_r_rad2_per_us
+    
+    def _get_default_energy_table(self):
+        """Returns energy table for residue-residue interactions.
+
+        Reference:
+            Miyazawa, S., & Jernigan, R. L. (1996). Residue-residue potentials 
+            with a favorable contact pair term and an unfavorable high packing density term,
+            for simulation and threading. J Mol Biol, 256(3), 623–644.
+
+        Returns:
+            dict: A symmetric dictionary with residue pair tuples as keys and contact energies (in RT units) as values.
+        """
+        residues = [
+            'CYS', 'MET', 'PHE', 'ILE', 'LEU', 'VAL', 'TRP', 'TYR', 'ALA', 'GLY',
+            'THR', 'SER', 'ASN', 'GLN', 'ASP', 'GLU', 'HIS', 'ARG', 'LYS', 'PRO'
+        ]
+
+        # Extracted from the upper triangle of the table (manually transcribed)
+        energy_matrix = [
+            [-5.44],
+            [-4.99, -5.46],
+            [-5.80, -6.56, -7.26],
+            [-5.50, -6.02, -6.84, -6.54],
+            [-5.83, -6.41, -7.28, -7.04, -7.37],
+            [-4.96, -5.32, -6.29, -6.05, -6.48, -5.52],
+            [-4.95, -5.55, -6.16, -5.78, -6.14, -5.18, -5.06],
+            [-4.16, -4.91, -5.66, -5.25, -5.67, -4.62, -4.66, -4.17],
+            [-3.57, -3.94, -4.81, -4.58, -4.91, -4.04, -3.82, -3.36, -2.72],
+            [-3.16, -3.39, -4.13, -3.78, -4.16, -3.38, -3.42, -3.01, -2.31, -2.24],
+            [-3.11, -3.51, -4.28, -4.03, -4.34, -3.46, -3.22, -3.01, -2.32, -2.08, -2.12],
+            [-2.86, -3.03, -4.02, -3.52, -3.92, -3.05, -2.99, -2.78, -2.01, -1.82, -1.96, -1.67],
+            [-2.59, -2.95, -3.75, -3.24, -3.74, -2.83, -3.07, -2.76, -1.84, -1.74, -1.88, -1.58, -1.68],
+            [-2.85, -3.30, -4.10, -3.67, -4.04, -3.07, -3.11, -2.97, -1.89, -1.66, -1.90, -1.49, -1.71, -1.54],
+            [-2.41, -2.57, -3.48, -3.17, -3.40, -2.48, -2.84, -2.76, -1.70, -1.59, -1.80, -1.63, -1.68, -1.46, -1.21],
+            [-2.27, -2.89, -3.56, -3.27, -3.59, -2.67, -2.99, -2.79, -1.51, -1.22, -1.74, -1.48, -1.51, -1.42, -1.02, -0.91],
+            [-3.60, -3.98, -4.77, -4.14, -4.54, -3.58, -3.98, -3.52, -2.41, -2.15, -2.42, -2.11, -2.08, -1.98, -2.32, -2.15, -3.05],
+            [-2.57, -3.12, -3.98, -3.63, -4.03, -3.07, -3.41, -3.16, -1.83, -1.72, -1.90, -1.62, -1.64, -1.80, -2.29, -2.27, -2.16, -1.55],
+            [-1.95, -2.48, -3.36, -3.01, -3.37, -2.49, -2.69, -2.60, -1.31, -1.15, -1.31, -1.05, -1.21, -1.29, -1.68, -1.80, -1.35, -0.59, -0.12],
+            [-3.07, -3.45, -4.25, -3.76, -4.20, -3.32, -3.73, -3.19, -2.03, -1.87, -1.90, -1.57, -1.53, -1.73, -1.33, -1.26, -2.25, -1.70, -0.97, -1.75]
+        ]
+
+        energy_table = {}
+
+        for i, res_i in enumerate(residues):
+            for j, res_j in enumerate(residues[:i+1]):
+                energy = energy_matrix[i][j]
+                energy_table[(res_i, res_j)] = energy
+                energy_table[(res_j, res_i)] = energy  # symmetry
+
+        return energy_table
 
     def identify_homologous_chains(self):
         """
@@ -1563,6 +1696,9 @@ class MoleculeTemplate:
         self.name = name
         self.interface_template_list = []
         self.normal_point = [0,0,1]
+        self.diffusion_translation = None
+        self.diffusion_rotation = None
+        self.radius = None
 
     def __str__(self):
         interfaces = "\n  ".join(str(it) for it in self.interface_template_list)
@@ -1598,6 +1734,7 @@ class BindingInterfaceTemplate:
         self.my_residues = []
         self.required_free_list = [] # The list of interface templates that need to be free to bind to this interface template
         self.signature = {}
+        self.energy = None
 
     def __str__(self):
         residues = ", ".join(self.my_residues)
@@ -1637,6 +1774,9 @@ class CoarseGrainedMolecule:
         self.coord = None
         self.interface_list = []
         self.normal_point = None
+        self.diffusion_translation = None
+        self.diffusion_rotation = None
+        self.radius = None
 
     def __str__(self):
         interfaces = "\n  ".join(str(interface) for interface in self.interface_list)
@@ -1681,6 +1821,7 @@ class BindingInterface:
         self.my_template = None
         self.my_residues = []
         self.signature = {}
+        self.energy = None
 
     def __str__(self):
         return (f"BindingInterface: {self.name}\n"
@@ -1719,6 +1860,9 @@ class ReactionTemplate:
         self.binding_radius = None
         self.norm1 = None
         self.norm2 = None
+        self.kd = None
+        self.ka = None
+        self.kb = None
 
     def __str__(self):
         return (f"Reaction Template: {self.expression}\n"
@@ -1760,6 +1904,9 @@ class Reaction:
         self.norm1 = None
         self.norm2 = None
         self.my_template = None
+        self.kd = None
+        self.ka = None
+        self.kb = None
 
     def __str__(self):
         return (f"Reaction: {self.expression}\n"
