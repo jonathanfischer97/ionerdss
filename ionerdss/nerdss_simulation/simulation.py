@@ -51,6 +51,8 @@ class Simulation:
 
         for mol in self.model.molecule_types:
             mol_file = os.path.join(input_dir, f"{mol.name}.mol")
+            d = mol.diffusion_translation
+            dr = mol.diffusion_rotation
             with open(mol_file, "w") as f:
                 f.write(f"Name = {mol.name}\n")
                 f.write("isLipid = false\n")
@@ -62,8 +64,8 @@ class Simulation:
                 f.write("outsideCompartment = false\n")
                 f.write("mass = 1.0\n")
                 f.write("\n")
-                f.write("D = [10.00, 10.00, 10.00]\n\n")
-                f.write("Dr = [0.1, 0.1, 0.1]\n\n")
+                f.write(f"D = [{d}, {d}, {d}]\n\n")
+                f.write(f"Dr = [{dr}, {dr}, {dr}]\n\n")
 
                 f.write("COM\t0.0000\t0.0000\t0.0000\n")
                 
@@ -106,8 +108,8 @@ class Simulation:
             f.write("start reactions\n")
             for reaction in self.model.reactions:
                 f.write(f"\t{reaction.name}\n")
-                f.write("\t\tonRate3Dka = 1000.0\n")
-                f.write("\t\toffRatekb = 0.0\n")
+                f.write(f"\t\tonRate3Dka = {reaction.ka}\n")
+                f.write(f"\t\toffRatekb = {reaction.kb}\n")
                 f.write(f"\t\tsigma = {reaction.binding_radius}\n")
                 f.write(f"\t\tnorm1 = {list(reaction.norm1)}\n")
                 f.write(f"\t\tnorm2 = {list(reaction.norm2)}\n")

@@ -26,6 +26,8 @@ class MoleculeType:
     """
     name: str
     interfaces: List[MoleculeInterface]
+    diffusion_translation: float = 0.0
+    diffusion_rotation: float = 0.0
 
 @dataclass
 class ReactionType:
@@ -43,6 +45,8 @@ class ReactionType:
     binding_angles: Tuple[float, float, float, float, float]
     norm1: Tuple[float, float, float]
     norm2: Tuple[float, float, float]
+    ka: float = 0.0  # Forward rate constant
+    kb: float = 0.0  # Reverse rate constant
 
 @dataclass
 class Model:
@@ -71,6 +75,8 @@ class Model:
                     "interfaces": [
                         {"name": iface.name, "coord": iface.coord} for iface in mol.interfaces
                     ],
+                    "diffusion_translation": mol.diffusion_translation,
+                    "diffusion_rotation": mol.diffusion_rotation,
                 }
                 for mol in self.molecule_types
             ],
@@ -81,6 +87,8 @@ class Model:
                     "binding_angles": rxn.binding_angles,
                     "norm1": rxn.norm1,
                     "norm2": rxn.norm2,
+                    "ka": rxn.ka,
+                    "kb": rxn.kb,
                 }
                 for rxn in self.reactions
             ],
@@ -105,6 +113,8 @@ class Model:
             MoleculeType(
                 name=mol["name"],
                 interfaces=[MoleculeInterface(name=iface["name"], coord=Coords(**iface["coord"])) for iface in mol["interfaces"]],
+                diffusion_translation=mol["diffusion_translation"],
+                diffusion_rotation=mol["diffusion_rotation"],
             )
             for mol in data["molecule_types"]
         ]
@@ -116,6 +126,8 @@ class Model:
                 binding_angles=tuple(rxn["binding_angles"]),
                 norm1=tuple(rxn["norm1"]),
                 norm2=tuple(rxn["norm2"]),
+                ka=rxn["ka"],
+                kb=rxn["kb"],
             )
             for rxn in data["reactions"]
         ]

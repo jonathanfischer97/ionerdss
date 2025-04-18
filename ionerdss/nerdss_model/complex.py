@@ -7,6 +7,7 @@ into an ODE model that captures the assembly process of molecular complexes.
 
 from collections import defaultdict, deque
 import itertools
+import numpy as np
 
 class Complex:
     """
@@ -23,6 +24,7 @@ class Complex:
     def __init__(self):
         self.structure_information_map = {}
         self.name = None
+        self.diffusion_constant = None
 
     def add_interaction(self, molecule, partner_molecule, reaction):
         """
@@ -681,6 +683,9 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
 
             # print(f"Components after breaking bond {bond}: {components}")
 
+            ka = reaction_obj.my_template.ka # unit: nm^3/us
+            kb = reaction_obj.my_template.kb # unit: /s
+
             # Now we know if breaking this bond splits the complex into multiple components
             if len(components) == 1:
                 # The complex remains connected, but with one bond less
@@ -703,13 +708,14 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
                         break
 
                 # Create a transformation reaction complex_obj -> new_complex
-                reaction = ComplexReaction(reactants=[complex_obj], products=[new_complex], reaction_type="transformation", rate=1.0)
-                reaction_system.add_reaction(reaction, rate=1.0)
+                reaction = ComplexReaction(reactants=[complex_obj], products=[new_complex], reaction_type="transformation", rate=kb)
+                reaction_system.add_reaction(reaction, rate=kb)
                 # print(f"Created transformation reaction: {reaction}")
 
                 # Create a transformation reaction new_complex -> complex_obj
-                reaction = ComplexReaction(reactants=[new_complex], products=[complex_obj], reaction_type="transformation", rate=1.0)
-                reaction_system.add_reaction(reaction, rate=1.0)
+                ka = ka * 0.6022 * 1e6 # Convert to 1/M/s
+                reaction = ComplexReaction(reactants=[new_complex], products=[complex_obj], reaction_type="transformation", rate=ka)
+                reaction_system.add_reaction(reaction, rate=ka)
                 # print(f"Created transformation reaction: {reaction}")
                 
             else:
@@ -734,43 +740,29 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
                 for existing_complex in complex_list:
                     if new_complex1 == existing_complex:
                         new_complex1.name = existing_complex.name
+                        new_complex1.diffusion_constant = existing_complex.diffusion_constant
                     if new_complex2 == existing_complex:
                         new_complex2.name = existing_complex.name
+                        new_complex2.diffusion_constant = existing_complex.diffusion_constant
 
                 # print(f"New Complex 1: {new_complex1}, New Complex 2: {new_complex2}")
 
+                kon, koff = _micro2macro(ka, kb, reaction_obj.my_template.binding_radius / 10.0, new_complex1.diffusion_constant + new_complex2.diffusion_constant)
+
                 # Create a dissociation reaction complex_obj -> new_complex1 + new_complex2
-                reaction = ComplexReaction(reactants=[complex_obj], products=[new_complex1, new_complex2], reaction_type="dissociation", rate=1.0)
-                reaction_system.add_reaction(reaction, rate=1.0)
+                reaction = ComplexReaction(reactants=[complex_obj], products=[new_complex1, new_complex2], reaction_type="dissociation", rate=koff)
+                reaction_system.add_reaction(reaction, rate=koff)
                 # print(f"Created dissociation reaction: {reaction}")
                 # Create a association reaction new_complex1 + new_complex2 -> complex_obj
-                reaction = ComplexReaction(reactants=[new_complex1, new_complex2], products=[complex_obj], reaction_type="association", rate=1.0)
-                reaction_system.add_reaction(reaction, rate=1.0)
+                reaction = ComplexReaction(reactants=[new_complex1, new_complex2], products=[complex_obj], reaction_type="association", rate=kon)
+                reaction_system.add_reaction(reaction, rate=kon)
                 # print(f"Created association reaction: {reaction}")
-
-    # If we have a PDB model, we could refine rates based on reaction properties
-    if pdb_model:
-        _refine_rates_from_pdb_model(reaction_system, pdb_model)
 
     # print the reaction system
     print(reaction_system)
     print(reaction_system.generate_ode_equations())
     
     return reaction_system
-
-
-def _refine_rates_from_pdb_model(reaction_system, pdb_model):
-    """
-    Refine reaction rates based on PDB model information.
-    
-    Args:
-        reaction_system (ComplexReactionSystem): The reaction system.
-        pdb_model: The PDB model with reaction information.
-    """
-    # This would use binding energies or other factors from the PDB model
-    # to refine the default reaction rates
-    pass
-
 
 def generate_ode_model_from_pdb(pdb_model, max_complex_size=None):
     """
@@ -795,8 +787,47 @@ def generate_ode_model_from_pdb(pdb_model, max_complex_size=None):
     # assign names to the complexes: C1, C2, ...
     for i, complex_obj in enumerate(all_complexes):
         complex_obj.name = f"C{i+1}"
+
+    # calculate diffusion constants for each complex (Dtot = 1 / (1/D1 + 1/D2 + ...))
+    for complex_obj in all_complexes:
+        diffusion_constants = [molecule.diffusion_translation for molecule in complex_obj.get_keys()]
+        if diffusion_constants:
+            complex_obj.diffusion_constant = 1 / sum(1 / d for d in diffusion_constants)
+        else:
+            raise ValueError(f"Complex {complex_obj.name} has no diffusion constants defined for its molecules.")
     
     # Build the reaction system
     reaction_system = build_ode_model_from_complexes(all_complexes, pdb_model)
     
     return all_complexes, reaction_system
+
+def _micro2macro(ka, kb, s, D):
+    """
+    Convert microscopic rates to macroscopic rates.
+
+    Parameters:
+    ka : float
+        Association rate constant (nm^3/us)
+    kb : float
+        Dissociation rate (/s)
+    s : float
+        Binding radius (nm)
+    D : float
+        Total diffusion constant (um^2/s)
+
+    Returns:
+    kon : float
+        Macroscopic association rate (1/uM·s)
+    koff : float
+        Macroscopic dissociation rate (/s)
+    """
+    # Convert to microscopic kon (nm^3/us)
+    kon_micro = 1 / (1 / ka + 1 / (4 * np.pi * s * D))
+
+    # Calculate koff in /s
+    koff = kon_micro * kb / ka
+
+    # Convert kon to macroscopic units (1/uM·s)
+    kon = 0.6022 * kon_micro
+
+    return kon, koff

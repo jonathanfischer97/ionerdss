@@ -553,13 +553,16 @@ class PDBModel(Model):
                 if is_existing_mol:
                     # print(f"This is an existing molecule {mol_name}")
                     molecule = self.molecule_list[mol_index]
+                    molecule.radius = self.all_chains_radius[self.all_chains.index([chain for chain in self.all_chains if chain.id == mol_name][0])]
+                    molecule.diffusion_translation, molecule.diffusion_rotation = self._compute_diffusion_constants_nm_us(molecule.radius / 10.0)
+                    molecule.my_template.diffusion_translation, molecule.my_template.diffusion_rotation = molecule.diffusion_translation, molecule.diffusion_rotation
                 else:
                     molecule = CoarseGrainedMolecule(mol_name)
                     # print(f"New molecule {mol_name} is created.")
                     molecule.my_template = molecule_template
                     molecule.coord = self.all_COM_chains_coords[self.all_chains.index([chain for chain in self.all_chains if chain.id == mol_name][0])]
                     molecule.radius = self.all_chains_radius[self.all_chains.index([chain for chain in self.all_chains if chain.id == mol_name][0])]
-                    molecule.diffusion_translation, molecule.diffusion_rotation = self._compute_diffusion_constants_nm_us(molecule.radius)
+                    molecule.diffusion_translation, molecule.diffusion_rotation = self._compute_diffusion_constants_nm_us(molecule.radius / 10.0)
                     self.molecule_list.append(molecule)
                     molecule_template.radius = molecule.radius
                     molecule_template.diffusion_translation, molecule_template.diffusion_rotation = molecule.diffusion_translation, molecule.diffusion_rotation
@@ -914,7 +917,7 @@ class PDBModel(Model):
             for intf_template in mol_template.interface_template_list:
                 iface = MoleculeInterface(name=intf_template.name, coord=intf_template.coord)
                 mol_interfaces.append(iface)
-            molecule = MoleculeType(name=mol_name, interfaces=mol_interfaces)
+            molecule = MoleculeType(name=mol_name, interfaces=mol_interfaces, diffusion_translation=mol_template.diffusion_translation, diffusion_rotation=mol_template.diffusion_rotation)
             molecule_types.append(molecule)
 
         # Step 2: Generate reactions
@@ -929,7 +932,9 @@ class PDBModel(Model):
             norm2 = getattr(reaction_template, 'norm2', [])
             norm1 = tuple(n for n in norm1)
             norm2 = tuple(n for n in norm2)
-            reaction = ReactionType(name=reaction_template.expression, binding_radius=brad, binding_angles=bind_anlges, norm1=norm1, norm2=norm2)
+            ka = getattr(reaction_template, 'ka', 0.0)
+            kb = getattr(reaction_template, 'kb', 0.0)
+            reaction = ReactionType(name=reaction_template.expression, binding_radius=brad, binding_angles=bind_anlges, norm1=norm1, norm2=norm2, ka=ka, kb=kb)
             reactions.append(reaction)
 
         # Step 3: Save model data
@@ -1192,6 +1197,9 @@ class PDBModel(Model):
 
             # calculate the rates
             energy = interface_1.energy
+            # rescale the energy
+            energy = -20 * (1 - np.exp(energy/25))
+
             reaction.kd = np.exp(energy) * 1e6 # unit uM
             reaction.kb = 1 # unit s^-1
             reaction.ka = reaction.kb / reaction.kd / 0.6022 # unit nm^3/us
@@ -1414,7 +1422,7 @@ class PDBModel(Model):
         kB = 1.380649e-23  # J/K
         R_m = R_nm * 1e-9  # convert nm to meters
 
-        # Diffusion constants in SI units
+        # Diffusion constants
         D_t_m2_per_s = kB * T / (6 * np.pi * eta * R_m)
         D_r_rad2_per_s = kB * T / (8 * np.pi * eta * R_m**3)
 
