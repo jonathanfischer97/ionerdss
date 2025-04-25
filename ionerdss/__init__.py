@@ -48,6 +48,18 @@ solve_reaction_ode = LazyLoader('.ode_solver.reaction_ode_solver', 'solve_reacti
 reaction_dydt = LazyLoader('.ode_solver.reaction_ode_solver', 'dydt')
 calculate_macroscopic_reaction_rates = LazyLoader('.ode_solver.reaction_ode_solver', 'calculate_macroscopic_reaction_rates')
 SimpleGillespieSimulator = LazyLoader('.gillespie_simulation.simple_gillespie', 'SimpleGillespieSimulator')
+gui = LazyLoader('.nerdss_guis.gui', 'gui')
+pdb_gui = LazyLoader('.nerdss_guis.nerdss', 'nerdss')
+cube_face = LazyLoader('.nerdss_model.platonic_solids.cube.cube_face', 'cube_face')
+cube_vert = LazyLoader('.nerdss_model.platonic_solids.cube.cube_vert', 'cube_vert')
+dode_face = LazyLoader('.nerdss_model.platonic_solids.dode.dode_face', 'dode_face')
+dode_vert = LazyLoader('.nerdss_model.platonic_solids.dode.dode_vert', 'dode_vert')
+icos_face = LazyLoader('.nerdss_model.platonic_solids.icos.icos_face', 'icos_face')
+icos_vert = LazyLoader('.nerdss_model.platonic_solids.icos.icos_vert', 'icos_vert')
+octa_face = LazyLoader('.nerdss_model.platonic_solids.octa.octa_face', 'octa_face')
+octa_vert = LazyLoader('.nerdss_model.platonic_solids.octa.octa_vert', 'octa_vert')
+tetr_face = LazyLoader('.nerdss_model.platonic_solids.tetr.tetr_face', 'tetr_face')
+tetr_vert = LazyLoader('.nerdss_model.platonic_solids.tetr.tetr_vert', 'tetr_vert')
 
 
 # Lazily load simulation and analysis modules
