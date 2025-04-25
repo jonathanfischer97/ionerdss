@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from ionerdss.ode_solver import calculate_macroscopic_reaction_rates, dydt, solve_reaction_ode
+from ionerdss import calculate_macroscopic_reaction_rates, reaction_dydt, solve_reaction_ode
 
 class TestODESolver(unittest.TestCase):
 
@@ -13,7 +13,7 @@ class TestODESolver(unittest.TestCase):
         expected_result = np.array([0.1, 0.1])
         np.testing.assert_allclose(result, expected_result)
 
-    def test_dydt(self):
+    def test_reaction_dydt(self):
         # Model system:
         # E + S -> ES, k1
         # ES -> E + P, k2
@@ -25,7 +25,7 @@ class TestODESolver(unittest.TestCase):
         product_matrix = np.array([[0, 0, 1, 0], [1, 0, 0, 1]])
         k = [100.0, 1.0]
 
-        result = dydt(t, y, reactant_matrix, product_matrix, k)
+        result = reaction_dydt(t, y, reactant_matrix, product_matrix, k)
         print(result)
         expected_result = np.array([-499.9, -500.0, 499.9, 0.1])
         np.testing.assert_allclose(result, expected_result)
@@ -38,7 +38,7 @@ class TestODESolver(unittest.TestCase):
         k = [0.1, 0.2]
 
         with self.subTest(msg="Check if solve_reaction_ode runs without errors"):
-            solve_reaction_ode(dydt, t_span, y_initial, reactant_matrix, product_matrix, k, plotting=False)
+            solve_reaction_ode(reaction_dydt, t_span, y_initial, reactant_matrix, product_matrix, k, plotting=False)
 
 if __name__ == '__main__':
     unittest.main()
