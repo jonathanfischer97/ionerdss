@@ -74,7 +74,7 @@ def dydt(t, y, reactant_matrix, product_matrix, k):
     return dydt
 
 def solve_reaction_ode(dydt, t_span, y_initial, reactant_matrix, product_matrix, k,
-                    plotting=True, dense_output=True, method="RK45", atol = 1e-4, plotting_sample_points=1000, species_names = None):
+                    plotting=True, dense_output=True, method="BDF", atol = 1e-4, plotting_sample_points=1000, species_names = None):
     """
     Solve a system of ordinary differential equations (ODEs) for a chemical reaction and optionally plot the results.
 
