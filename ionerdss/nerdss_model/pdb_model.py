@@ -1197,12 +1197,10 @@ class PDBModel(Model):
 
             # calculate the rates
             energy = interface_1.energy
-            # rescale the energy
-            energy = -20 * (1 - np.exp(energy/25))
 
             reaction.kd = np.exp(energy) * 1e6 # unit uM
-            reaction.kb = 1 # unit s^-1
-            reaction.ka = reaction.kb / reaction.kd / 0.6022 # unit nm^3/us
+            reaction.ka = 10 # unit nm^3/us
+            reaction.kb = reaction.kd * reaction.ka * 0.6022 # unit /s
 
             self.reaction_list.append(reaction)
             # print("Reaction:")
