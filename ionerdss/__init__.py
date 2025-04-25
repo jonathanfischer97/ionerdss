@@ -46,6 +46,8 @@ ParseComplexes = LazyLoader('.nerdss_model.complex', 'generate_ode_model_from_pd
 ReactionStringParser = LazyLoader('.ode_solver.reaction_string_parser', 'ReactionStringParser')
 solve_reaction_ode = LazyLoader('.ode_solver.reaction_ode_solver', 'solve_reaction_ode')
 reaction_dydt = LazyLoader('.ode_solver.reaction_ode_solver', 'dydt')
+SimpleGillespieSimulator = LazyLoader('.gillespie_simulation.simple_gillespie', 'SimpleGillespieSimulator')
+
 
 # Lazily load simulation and analysis modules
 Simulation = LazyLoader('.nerdss_simulation.simulation', 'Simulation')
