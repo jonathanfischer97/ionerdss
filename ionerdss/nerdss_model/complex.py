@@ -275,7 +275,7 @@ class ComplexReaction:
         reaction_type (str): Type of reaction (e.g., "association", "dissociation", "transformations").
         reaction_string (str): String representation of the reaction.
     """
-    def __init__(self, reactants=None, products=None, reaction_type=None, rate=1.0):
+    def __init__(self, reactants=None, products=None, reaction_type=None, rate=1.0, rate_name=None):
         """
         Initialize a complex reaction.
         
@@ -288,6 +288,8 @@ class ComplexReaction:
         self.products = products or []
         self.reaction_type = reaction_type
         self.rate = rate
+        self.expression = ""
+        self.rate_name = rate_name
         self._generate_reaction_string()
     
     def _generate_reaction_string(self):
@@ -301,6 +303,10 @@ class ComplexReaction:
         reactant_part = " + ".join(reactant_strings)
         product_part = " + ".join(product_strings)
         
+        if self.rate_name is None:
+            self.expression = f"{reactant_part} -> {product_part}"
+        else:
+            self.expression = f"{reactant_part} -> {product_part}, {self.rate_name}"
         self.reaction_string = f"{reactant_part} -> {product_part}, {self.rate}"
     
     def is_association(self):

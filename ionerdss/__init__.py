@@ -43,6 +43,9 @@ PDBModel = LazyLoader('.nerdss_model.pdb_model', 'PDBModel')
 DesignModel = LazyLoader('.nerdss_model.design_model', 'DesignModel')
 PlantonicSolidsModel = LazyLoader('.nerdss_model.platonic_solids_model', 'PlantonicSolidsModel')
 ParseComplexes = LazyLoader('.nerdss_model.complex', 'generate_ode_model_from_pdb')
+ReactionStringParser = LazyLoader('.ode_solver.reaction_string_parser', 'ReactionStringParser')
+solve_reaction_ode = LazyLoader('.ode_solver.reaction_ode_solver', 'solve_reaction_ode')
+reaction_dydt = LazyLoader('.ode_solver.reaction_ode_solver', 'dydt')
 
 # Lazily load simulation and analysis modules
 Simulation = LazyLoader('.nerdss_simulation.simulation', 'Simulation')
