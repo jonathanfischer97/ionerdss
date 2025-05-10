@@ -8,11 +8,11 @@ from .model import ReactionType
 from .model import MoleculeType
 from .model import MoleculeInterface
 from .coords import Coords
-from ..model_setup.platonic_solids.dode.dode_face_write import dode_face_write
-from ..model_setup.platonic_solids.cube.cube_face_write import cube_face_write
-from ..model_setup.platonic_solids.icos.icos_face_write import icos_face_write
-from ..model_setup.platonic_solids.octa.octa_face_write import octa_face_write
-from ..model_setup.platonic_solids.tetr.tetr_face_write import tetr_face_write
+from .platonic_solids.dode.dode_face_write import dode_face_write
+from .platonic_solids.cube.cube_face_write import cube_face_write
+from .platonic_solids.icos.icos_face_write import icos_face_write
+from .platonic_solids.octa.octa_face_write import octa_face_write
+from .platonic_solids.tetr.tetr_face_write import tetr_face_write
 from dataclasses import dataclass, field
 from typing import List, Dict, Tuple
 
