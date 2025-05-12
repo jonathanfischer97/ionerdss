@@ -65,6 +65,7 @@ tetr_vert = LazyLoader('.nerdss_model.platonic_solids.tetr.tetr_vert', 'tetr_ver
 # Lazily load simulation and analysis modules
 Simulation = LazyLoader('.nerdss_simulation.simulation', 'Simulation')
 Analysis = LazyLoader('.nerdss_analysis.analysis', 'Analysis')
+DataIO = LazyLoader('.nerdss_analysis.data_readers', 'DataIO')
 
 def configure_plotting():
     """Configure plotting styles - only call this when you're ready to plot."""

@@ -1,9 +1,10 @@
+"""
+Refactored Analysis class for the ionerdss package.
+This version uses the centralized data readers and implements a more efficient design.
+"""
+
 import os
 import seaborn as sns
-import tempfile
-import numpy as np
-from IPython.display import display, Image
-
 from .plot_figures import (
     plot_line_speciescopy_vs_time,
     plot_line_maximum_assembly_size_vs_time,
@@ -23,10 +24,25 @@ from .plot_figures import (
     plot_line_symmetric_dissociation_probability,
     plot_line_asymmetric_dissociation_probability,
     plot_line_growth_probability,
-    plot_line_liftime,)
+    plot_line_liftime,
+)
 
 class Analysis:
+    """
+    A class for analyzing and visualizing NERDSS simulation results.
+    
+    This class provides methods to plot various types of figures and analyze
+    data from one or more NERDSS simulations.
+    """
+    
     def __init__(self, save_dir: str = None):
+        """
+        Initialize the Analysis object.
+        
+        Parameters:
+            save_dir (str, optional): Directory containing simulation results.
+                If None, uses the current working directory.
+        """
         # Resolve the directory path
         if save_dir is None:
             save_dir = os.getcwd()
@@ -34,6 +50,10 @@ class Analysis:
             save_dir = os.path.expanduser(save_dir)
 
         self.save_dir = os.path.abspath(save_dir)
+        
+        # Initialize data IO handler
+        # This function is not used now.
+        # self.data_io = DataIO()
 
         # Determine if it's a single simulation or a batch
         if os.path.exists(os.path.join(self.save_dir, "DATA")):
@@ -45,6 +65,10 @@ class Analysis:
                 root for root, dirs, _ in os.walk(self.save_dir) if "DATA" in dirs
             ]
             print(f"Detected a batch of {len(self.simulation_dirs)} simulation directories.")
+            
+        # Create the figure_plot_data directory if it doesn't exist
+        self.plot_data_dir = os.path.join(self.save_dir, "figure_plot_data")
+        os.makedirs(self.plot_data_dir, exist_ok=True)
 
     def plot_figure(
         self,
@@ -77,7 +101,7 @@ class Analysis:
                 - "heatmap" (heatmap)
                 - "stacked" (stacked histogram)
             
-            simulations (list, optional): List of index of simulation directories to include in the plot.
+            simulations (list, optional): List of indices of simulation directories to include in the plot.
                 If None, uses all available simulations.
             
             x (str): Variable for the x-axis.
@@ -108,7 +132,7 @@ class Analysis:
         Raises:
             ValueError: If `figure_type` or `show_type` is invalid.
         """
-
+        # Set seaborn styles
         sns.set_style(seaborn_style)
         sns.set_context(seaborn_context, rc={
             "font.size": font_size,
@@ -120,6 +144,7 @@ class Analysis:
             "font.family": "serif"
         })
         
+        # Validate inputs
         valid_figure_types = {"line", "hist", "3dhist", "heatmap", "stacked"}
         valid_show_types = {"both", "individuals", "average"}
 
@@ -129,25 +154,27 @@ class Analysis:
         if show_type not in valid_show_types:
             raise ValueError(f"Invalid show_type '{show_type}'. Must be one of {valid_show_types}.")
 
-        simulations = simulations or []
-        if not simulations:
-            print("No simulations specified. Using all available simulations.")
-            for i, sim_dir in enumerate(self.simulation_dirs):
-                simulations.append(i)
-        legend = legend or []
+        # Set default simulations if not provided
+        simulations = simulations or list(range(len(self.simulation_dirs)))
+        
+        # Validate legend
         if not legend:
             raise ValueError("Legend must be provided.")
 
-        # Placeholder for actual plotting logic
+        # Print plot configuration
         print(f"Plotting {figure_type} with:")
         print(f"- x-axis: {x}")
         print(f"- y-axis: {y}")
         print(f"- z-axis: {z if z else 'None'}")
         print(f"- Simulations: {len(simulations)} selected")
-        print(f"- Legend: {legend if legend else 'None'}")
+        print(f"- Legend: {legend}")
         print(f"- Display mode: {show_type}")
 
-        if figure_type == "line" and x == "time" and y == "species":
+        # Dispatch to the appropriate plotting function based on plot configuration
+        plot_config = (figure_type, x, y, z)
+        
+        # Line plots
+        if plot_config == ("line", "time", "species", None):
             plot_line_speciescopy_vs_time(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -157,8 +184,7 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "line" and x == "time" and y == "maximum_assembly":
+        elif plot_config == ("line", "time", "maximum_assembly", None):
             plot_line_maximum_assembly_size_vs_time(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -167,8 +193,7 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "line" and x == "time" and y == "average_assembly":
+        elif plot_config == ("line", "time", "average_assembly", None):
             plot_line_average_assembly_size_vs_time(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -177,8 +202,7 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "line" and x == "time" and y == "fraction_of_monomers_assembled":
+        elif plot_config == ("line", "time", "fraction_of_monomers_assembled", None):
             plot_line_fraction_of_monomers_assembled_vs_time(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -187,8 +211,78 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "hist" and x == "size" and y == "complex_count":
+        elif plot_config == ("line", "size", "free_energy", None):
+            plot_line_free_energy(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+        elif plot_config == ("line", "size", "symmetric_association_probability", None):
+            plot_line_symmetric_association_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+        elif plot_config == ("line", "size", "asymmetric_association_probability", None):
+            plot_line_asymmetric_association_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+        elif plot_config == ("line", "size", "symmetric_dissociation_probability", None):
+            plot_line_symmetric_dissociation_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+        elif plot_config == ("line", "size", "asymmetric_dissociation_probability", None):
+            plot_line_asymmetric_dissociation_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+        elif plot_config == ("line", "size", "growth_probability", None):
+            plot_line_growth_probability(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+        elif plot_config == ("line", "size", "lifetime", None):
+            plot_line_liftime(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                legend=legend,
+                time_frame=time_frame,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+            
+        # Histogram plots
+        elif plot_config == ("hist", "size", "complex_count", None):
             plot_hist_complex_species_size(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -201,8 +295,7 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "hist" and x == "size" and y == "monomer_count":
+        elif plot_config == ("hist", "size", "monomer_count", None):
             plot_hist_monomer_counts_vs_complex_size(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -215,8 +308,9 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "3dhist" and x == "size" and y == "time" and z == "complex_count":
+            
+        # 3D histogram plots
+        elif plot_config == ("3dhist", "size", "time", "complex_count"):
             plot_hist_complex_species_size_3d(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -228,8 +322,7 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "3dhist" and x == "size" and y == "time" and z == "monomer_count":
+        elif plot_config == ("3dhist", "size", "time", "monomer_count"):
             plot_hist_monomer_counts_vs_complex_size_3d(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -241,8 +334,9 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "heatmap" and x == "size" and y == "time" and z == "complex_count":
+            
+        # Heatmap plots
+        elif plot_config == ("heatmap", "size", "time", "complex_count"):
             plot_heatmap_complex_species_size(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -254,8 +348,7 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "heatmap" and x == "size" and y == "time" and z == "monomer_count":
+        elif plot_config == ("heatmap", "size", "time", "monomer_count"):
             plot_heatmap_monomer_counts_vs_complex_size(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -267,8 +360,7 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "heatmap" and x == "size" and y == "size" and z == "complex_count":
+        elif plot_config == ("heatmap", "size", "size", "complex_count"):
             plot_heatmap_species_a_vs_species_b(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -280,8 +372,9 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
-
-        if figure_type == "stacked" and x == "size" and y == "complex_count":
+            
+        # Stacked histogram plots
+        elif plot_config == ("stacked", "size", "complex_count", None):
             plot_stackedhist_complex_species_size(
                 save_dir=self.save_dir,
                 simulations_index=simulations,
@@ -294,84 +387,16 @@ class Analysis:
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size
             )
+        else:
+            raise ValueError(f"Unsupported plot configuration: {plot_config}")
 
-        if figure_type == "line" and x == "size" and y == "free_energy":
-            plot_line_free_energy(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-
-        if figure_type == "line" and x == "size" and y == "symmetric_association_probability":
-            plot_line_symmetric_association_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-
-        if figure_type == "line" and x == "size" and y == "asymmetric_association_probability":
-            plot_line_asymmetric_association_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-
-        if figure_type == "line" and x == "size" and y == "symmetric_dissociation_probability":
-            plot_line_symmetric_dissociation_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-
-        if figure_type == "line" and x == "size" and y == "asymmetric_dissociation_probability":
-            plot_line_asymmetric_dissociation_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-
-        if figure_type == "line" and x == "size" and y == "growth_probability":
-            plot_line_growth_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-
-        if figure_type == "line" and x == "size" and y == "lifetime":
-            plot_line_liftime(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-
-    def visualize_trajectory(self, trajectory_path: str = None, save_gif: bool = False, gif_name: str = "trajectory.gif", fps: int = 10):
+    def visualize_trajectory(
+        self, 
+        trajectory_path: str = None, 
+        save_gif: bool = False, 
+        gif_name: str = "trajectory.gif", 
+        fps: int = 10
+    ):
         """
         Visualizes a trajectory from an XYZ file and optionally saves it as a GIF.
 
@@ -382,34 +407,49 @@ class Analysis:
             fps (int): Frames per second for the GIF animation.
         """
         import warnings
-        warnings.filterwarnings('ignore', message='.*OVITO.*PyPI')
+        import tempfile
         import imageio
-        from ovito.io import import_file
-        from ovito.vis import Viewport
+        from PIL import Image
+        
+        # Ignore OVITO warning
+        warnings.filterwarnings('ignore', message='.*OVITO.*PyPI')
+        
+        try:
+            from ovito.io import import_file
+            from ovito.vis import Viewport
+        except ImportError:
+            raise ImportError("OVITO is required for trajectory visualization. Please install it using 'pip install ovito'.")
 
+        # Find trajectory file if not specified
         if trajectory_path is None:
             trajectory_path = os.path.join(self.simulation_dirs[0], "DATA", "trajectory.xyz")
         if not os.path.exists(trajectory_path):
             raise FileNotFoundError(f"Trajectory file '{trajectory_path}' not found.")
         
+        # Import trajectory
         pipeline = import_file(trajectory_path)
         pipeline.add_to_scene()
         vp = Viewport(type=Viewport.Type.PERSPECTIVE)
         vp.zoom_all()
 
+        # Create temporary directory for frames
         temp_dir = tempfile.mkdtemp()
         frame_paths = []
 
+        # Render frames
         for frame in range(pipeline.source.num_frames):
             output_path = os.path.join(temp_dir, f"frame_{frame:04d}.png")
             vp.render_image(size=(800, 600), filename=output_path, frame=frame)
             frame_paths.append(output_path)
 
+        # Create GIF
         gif_path = os.path.join(temp_dir, "trajectory.gif")
         imageio.mimsave(gif_path, [imageio.imread(frame) for frame in frame_paths], fps=fps)
 
-        display(Image(filename=gif_path))
+        # Display GIF
+        display(Image.open(gif_path))
 
+        # Save GIF if requested
         if save_gif:
             gif_save_path = os.path.join(self.save_dir, gif_name)
             os.rename(gif_path, gif_save_path)
