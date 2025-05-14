@@ -1474,7 +1474,7 @@ class PDBModel(Model):
 
         for i, res_i in enumerate(residues):
             for j, res_j in enumerate(residues[:i+1]):
-                energy = energy_matrix[i][j]
+                energy = energy_matrix[i][j] + 2.27  # Adjusted energy value
                 energy_table[(res_i, res_j)] = energy
                 energy_table[(res_j, res_i)] = energy  # symmetry
 
