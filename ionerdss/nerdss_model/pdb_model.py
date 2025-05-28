@@ -885,6 +885,8 @@ class PDBModel(Model):
 
         self._build_reactions()
 
+        self._rescale_energies()
+
         if standard_output:
             print("Molecules Template and Reactions Template After Regularization:")
             for molecule_template in self.molecules_template_list:
@@ -905,6 +907,22 @@ class PDBModel(Model):
             self.save_regularized_coarse_grained_structure()
 
         self._generate_model_data()
+
+    def _rescale_energies(self):
+        """
+        Rescales the energies of all reactions in the model by setting the most stable interaction KD=10nM.
+        """
+        most_stable_energy = 1E15
+        for reaction in self.reaction_template_list:
+            if reaction.energy < most_stable_energy:
+                most_stable_energy = reaction.energy
+        kd = 10E-3  # unit uM; 10 nM
+        c0 = kd / (np.exp(most_stable_energy)) # unit uM
+
+        for reaction in self.reaction_template_list:
+            reaction.kd = c0 * np.exp(reaction.energy)
+            reaction.ka = 10.0 # nm^3/us
+            reaction.kb = reaction.kd * reaction.ka * 0.6022 # /s
 
     def _generate_model_data(self) -> None:
         """Generates molecule types and reactions and saves the model."""
@@ -1201,6 +1219,7 @@ class PDBModel(Model):
             reaction.kd = np.exp(energy) * 1e6 # unit uM
             reaction.ka = 10 # unit nm^3/us
             reaction.kb = reaction.kd * reaction.ka * 0.6022 # unit /s
+            reaction.energy = energy
 
             self.reaction_list.append(reaction)
             # print("Reaction:")
@@ -1283,6 +1302,7 @@ class PDBModel(Model):
                 reaction_template.kd = reaction.kd
                 reaction_template.kb = reaction.kb
                 reaction_template.ka = reaction.ka
+                reaction_template.energy = reaction.energy
 
                 self.reaction_template_list.append(reaction_template)
                 self.reaction_list[-1].my_template = reaction_template
@@ -1869,6 +1889,7 @@ class ReactionTemplate:
         self.kd = None
         self.ka = None
         self.kb = None
+        self.energy = None
 
     def __str__(self):
         return (f"Reaction Template: {self.expression}\n"
@@ -1913,6 +1934,7 @@ class Reaction:
         self.kd = None
         self.ka = None
         self.kb = None
+        self.energy = None
 
     def __str__(self):
         return (f"Reaction: {self.expression}\n"

@@ -417,6 +417,139 @@ def plot_line_fraction_of_monomers_assembled_vs_time(
     print(f"Plot saved to {plot_path}")
 
 
+def plot_complex_count_vs_time(
+    save_dir: str,
+    simulations_index: list,
+    target_complexes: list,
+    show_type: str = "both",
+    simulations_dir: list = None,
+    figure_size: tuple = (10, 6),
+):
+    """
+    Plot the count of specific complexes vs. time.
+    
+    Parameters:
+        save_dir (str): The base directory where simulations are stored.
+        simulations_index (list): Indices of the simulations to include.
+        target_complexes (list): List of complex specifications to track (e.g., ["A: 1.", "A: 4.", "A: 2."]).
+        show_type (str): Display mode, "both", "individuals", or "average".
+        simulations_dir (list): List of simulation directories.
+        figure_size (tuple): Size of the figure.
+    """
+    
+    plot_data_dir = os.path.join(save_dir, "figure_plot_data")
+    os.makedirs(plot_data_dir, exist_ok=True)
+
+    all_sim_data = []
+    
+    # Get the simulation directories to process
+    selected_dirs = [simulations_dir[idx] for idx in simulations_index]
+    
+    # Read data for each simulation
+    for sim_dir in selected_dirs:
+        data = data_io.get_histogram_complexes(sim_dir)
+        if not data["time_series"]:
+            continue
+            
+        time_series = data["time_series"]
+        complex_counts = {complex_type: [] for complex_type in target_complexes}
+        
+        for complexes in data["complexes"]:
+            # Initialize counts for this time point
+            current_counts = {complex_type: 0 for complex_type in target_complexes}
+            
+            # Parse the complexes at this time point
+            for count, complex_dict in complexes:
+                # Convert complex_dict to string format like "A: 4."
+                complex_str = format_complex_dict(complex_dict)
+                
+                if complex_str in target_complexes:
+                    current_counts[complex_str] += count
+            
+            # Append counts for this time point
+            for complex_type in target_complexes:
+                complex_counts[complex_type].append(current_counts[complex_type])
+        
+        if time_series:
+            df = pd.DataFrame({"Time (s)": time_series, **complex_counts})
+            all_sim_data.append(df)
+    
+    if not all_sim_data:
+        print("No valid simulation data found.")
+        return
+    
+    # Align data to the shortest time series
+    min_length = min(len(df) for df in all_sim_data)
+    all_sim_data = [df.iloc[:min_length] for df in all_sim_data]
+    
+    time_values = all_sim_data[0]["Time (s)"].values
+    count_data = {complex_type: np.array([df[complex_type].values for df in all_sim_data]) 
+                  for complex_type in target_complexes}
+    
+    # Compute mean and standard deviation
+    mean_values = {complex_type: data.mean(axis=0) for complex_type, data in count_data.items()}
+    std_values = {complex_type: data.std(axis=0) for complex_type, data in count_data.items()}
+    
+    # Save processed data
+    save_path = os.path.join(plot_data_dir, "complex_count_vs_time.csv")
+    df_to_save = pd.DataFrame({"Time (s)": time_values,
+                               **{f"Mean {complex_type}": mean_values[complex_type] for complex_type in target_complexes},
+                               **{f"Std {complex_type}": std_values[complex_type] for complex_type in target_complexes}})
+    df_to_save.to_csv(save_path, index=False)
+    print(f"Processed data saved to {save_path}")
+    
+    # Plot the data
+    plt.figure(figsize=figure_size)
+    sns.set_style("ticks")
+    
+    # Define colors for different complex types
+    colors = plt.cm.tab10(np.linspace(0, 1, len(target_complexes)))
+    
+    for i, complex_type in enumerate(target_complexes):
+        color = colors[i]
+        
+        if show_type in {"individuals", "both"}:
+            for j, sim_values in enumerate(count_data[complex_type]):
+                plt.plot(time_values, sim_values, alpha=0.3, linestyle="dashed", color=color,
+                         label=f"Individual run {j} ({complex_type})" if show_type == "individuals" else None)
+        
+        if show_type in {"average", "both"}:
+            plt.plot(time_values, mean_values[complex_type], label=f"Average ({complex_type})", 
+                    linewidth=2, color=color)
+            plt.fill_between(time_values, mean_values[complex_type] - std_values[complex_type], 
+                            mean_values[complex_type] + std_values[complex_type], alpha=0.2, color=color)
+    
+    plt.xlabel("Time (s)")
+    plt.ylabel("Complex Count")
+    plt.legend()
+    plt.tight_layout()
+    
+    plot_path = os.path.join(plot_data_dir, "complex_count_vs_time.svg")
+    plt.savefig(plot_path, format="svg")
+    # plt.show()
+    print(f"Plot saved to {plot_path}")
+
+
+def format_complex_dict(complex_dict):
+    """
+    Convert a complex dictionary to string format like "A: 4."
+    
+    Parameters:
+        complex_dict (dict): Dictionary representing a complex (e.g., {'A': 4})
+        
+    Returns:
+        str: Formatted string representation (e.g., "A: 4.")
+    """
+    if len(complex_dict) == 1:
+        species, count = next(iter(complex_dict.items()))
+        return f"{species}: {count}."
+    else:
+        # For multi-species complexes, sort by species name for consistency
+        sorted_items = sorted(complex_dict.items())
+        parts = [f"{species}: {count}" for species, count in sorted_items]
+        return ", ".join(parts) + "."
+
+
 def plot_line_free_energy(
     save_dir: str,
     simulations_index: list,

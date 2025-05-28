@@ -54,7 +54,7 @@ def parse_complex_line(line: str) -> Tuple[Optional[int], Optional[Dict[str, flo
 
     for i in range(0, len(species_data), 2):
         species_name = species_data[i].strip(":")
-        species_count = float(species_data[i + 1].strip("."))
+        species_count = int(species_data[i + 1].strip("."))
         species_dict[species_name] = species_dict.get(species_name, 0) + species_count
 
     return count, species_dict

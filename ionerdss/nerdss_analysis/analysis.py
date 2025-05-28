@@ -10,6 +10,7 @@ from .plot_figures import (
     plot_line_maximum_assembly_size_vs_time,
     plot_line_average_assembly_size_vs_time,
     plot_line_fraction_of_monomers_assembled_vs_time,
+    plot_complex_count_vs_time,
     plot_hist_complex_species_size,
     plot_hist_monomer_counts_vs_complex_size,
     plot_hist_complex_species_size_3d,
@@ -180,6 +181,15 @@ class Analysis:
                 simulations_index=simulations,
                 legend=legend,
                 user_file_name=user_file_name,
+                show_type=show_type,
+                simulations_dir=self.simulation_dirs,
+                figure_size=figure_size
+            )
+        elif plot_config == ("line", "time", "count", None):
+            plot_complex_count_vs_time(
+                save_dir=self.save_dir,
+                simulations_index=simulations,
+                target_complexes=legend,  # legend contains the complex specifications
                 show_type=show_type,
                 simulations_dir=self.simulation_dirs,
                 figure_size=figure_size

@@ -765,8 +765,8 @@ def build_ode_model_from_complexes(complex_list, pdb_model=None, default_associa
                 # print(f"Created association reaction: {reaction}")
 
     # print the reaction system
-    print(reaction_system)
-    print(reaction_system.generate_ode_equations())
+    # print(reaction_system)
+    # print(reaction_system.generate_ode_equations())
     
     return reaction_system
 
