@@ -1,0 +1,72 @@
+name: Sync to Compact Branch
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  sync-compact:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for all branches
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Configure Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    
+    - name: Create or checkout compact branch
+      run: |
+        # Check if compact branch exists remotely
+        if git ls-remote --heads origin compact | grep -q compact; then
+          echo "Compact branch exists, checking it out"
+          git checkout compact
+          git reset --hard main
+        else
+          echo "Creating new compact branch from main"
+          git checkout -b compact
+        fi
+    
+    - name: Remove specified files and folders
+      run: |
+        # Remove all .ipynb files recursively
+        find . -name "*.ipynb" -type f -delete
+        
+        # Remove docs folder if it exists
+        if [ -d "docs" ]; then
+          rm -rf docs
+          echo "Removed docs folder"
+        fi
+        
+        # Remove data folder if it exists
+        if [ -d "data" ]; then
+          rm -rf data
+          echo "Removed data folder"
+        fi
+        
+        # Show what was removed
+        echo "Files and folders removed from compact branch"
+    
+    - name: Commit and push changes
+      run: |
+        # Add all changes (including deletions)
+        git add -A
+        
+        # Check if there are any changes to commit
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Auto-sync from main: Remove .ipynb files, docs and data folders"
+          git push origin compact
+          echo "Changes committed and pushed to compact branch"
+        fi
+    
+    - name: Force push compact branch
+      run: |
+        # Force push to ensure compact branch is exactly what we want
+        git push --force origin compact
