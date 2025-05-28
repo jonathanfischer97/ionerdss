@@ -80,9 +80,9 @@ ionerdss/
 │   ├── make.bat           # Windows build script
 │   └── Makefile           # Unix build script
 ├── ionerdss/              # Main Python package
-│   ├── nerdss_model/      # Model building tools (v1.1)
-│   ├── nerdss_simulation/ # Simulation tools (v1.1)
-│   ├── nerdss_analysis/   # Data analysis tools (v1.1)
+│   ├── nerdss_model/      # Model building tools (v1.2.0)
+│   ├── nerdss_simulation/ # Simulation tools (v1.2.0)
+│   ├── nerdss_analysis/   # Data analysis tools (v1.2.0)
 │   └── __init__.py 
 ├── tests/                 # Unit tests
 ├── data/                  # Test and tutorial data
