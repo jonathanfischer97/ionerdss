@@ -17,23 +17,63 @@ class Simulation:
         work_dir (str): The working directory for the simulation.
     """
     
-    def __init__(self, model: Model, work_dir: str) -> None:
+    def __init__(self, *args) -> None:
         """Initializes the Simulation class.
         
+        This constructor accepts either one or two arguments to provide flexibility
+        in initialization. 
+        
         Args:
-            model (Model): The model to be used in the simulation.
-            work_dir (str): The working directory for the simulation.
+            *args: Variable arguments that can be:
+                - Single argument: work_dir (str) - Working directory path only
+                - Two arguments: model (Model), work_dir (str) - Model and directory
+        
+        Raises:
+            ValueError: If number of arguments is not 1 or 2
+        
+        Examples:
+            # Initialize with work directory only
+            sim = Simulation("~/my_simulation")
+            
+            # Initialize with model and work directory
+            sim = Simulation(my_model, "/path/to/workdir")
         """
+        
+        # Parse arguments based on count
+        if len(args) == 1:
+            # Single argument: work_dir only, no model provided
+            model = None
+            work_dir:str = args[0]
+        elif len(args) == 2:
+            # Two arguments: model and work_dir
+            model:Model = args[0]
+            work_dir:str = args[1]
+        else:
+            # Invalid number of arguments
+            raise ValueError("Simulation() accepts 1 or 2 arguments only. "
+                            "Expected: (work_dir) or (model, work_dir)")
+
+        # Expand user home directory if path starts with ~
         if work_dir.startswith("~"):
             work_dir = os.path.expanduser(work_dir)
+        
+        # Convert to absolute path and store
         self.work_dir = os.path.abspath(work_dir)
+        
+        # Create working directory if it doesn't exist
         os.makedirs(self.work_dir, exist_ok=True)
-        print(f"Working directory set to: {work_dir}")
+        print(f"Working directory set to: {self.work_dir}")
 
+        # Store the model (could be None if not provided)
         self.model = model
-        self.work_dir = work_dir
 
-        self.generate_nerdss_input()
+        self.parmfile = 'parms.inp'
+        self.coordinatefile = 'fixCoordinates.pdb'
+        
+        # Generate default NERDSS input if no model was provided
+        if isinstance(self.model, Model):
+            # Model not provided, generate default configuration
+            self.generate_nerdss_input()
 
     def generate_nerdss_input(self) -> None:
         """Generates the NERDSS input files based on the model."""
@@ -76,7 +116,7 @@ class Simulation:
                 for iface in mol.interfaces:
                     f.write(f"com {iface.name}\n")
 
-        inp_file = os.path.join(self.work_dir, "nerdss_input", "parms.inp")
+        inp_file = os.path.join(self.work_dir, "nerdss_input", self.parmfile)
         with open(inp_file, "w") as f:
             f.write("start parameters\n")
             f.write("\tnItr = 1000000\n")
@@ -158,7 +198,9 @@ class Simulation:
             modifications (Dict[str, Any]): A dictionary containing parameter modifications.
             filename (str): The name of the input file to modify. Defaults to "parms.inp".
         """
-        inp_file = os.path.join(self.work_dir, "nerdss_input", filename)
+        if filename.strip() not in ["parms.inp", ""]:
+            self.parmfile = filename
+        inp_file = os.path.join(self.work_dir, "nerdss_input", self.parmfile)
         
         if not os.path.exists(inp_file):
             raise FileNotFoundError(f"{filename} file not found.")
@@ -303,10 +345,14 @@ class Simulation:
         Args:
             file_name (str): The name of the input file to print. Defaults to "parms.inp".
         """
-        inp_file = os.path.join(self.work_dir, "nerdss_input", file_name)
+
+        if file_name.strip() not in ["parms.inp", ""]:
+            self.parmfile = file_name
+
+        inp_file = os.path.join(self.work_dir, "nerdss_input", self.parmfile)
         
         if not os.path.exists(inp_file):
-            print("parms.inp file not found.")
+            print(f"{self.parmfile} file not found.")
             return
         
         with open(inp_file, "r") as f:
@@ -402,7 +448,10 @@ class Simulation:
         else:
             print("Error: Compilation failed. Please check the logs and dependencies.")
 
-    def run_new_simulations(self, sim_indices: List[int] = None, sim_dir: str = None, nerdss_dir: str = None, parallel: bool = False) -> None:
+    def run_new_simulations(
+            self, sim_indices: List[int] = None, sim_dir: str = None, nerdss_dir: str = None, parallel: bool = False,
+            coordinate: bool = False
+        ) -> None:
         """Runs NERDSS simulations based on the given parameters.
         
         Args:
@@ -434,7 +483,7 @@ class Simulation:
             raise FileNotFoundError(f"NERDSS executable not found at {nerdss_exec}. Make sure it is installed and compiled.")
         
         input_dir = os.path.join(self.work_dir, "nerdss_input")
-        parms_file = os.path.join(input_dir, "parms.inp")
+        parms_file = os.path.join(input_dir, self.parmfile)
         
         if not os.path.exists(parms_file):
             raise FileNotFoundError(f"NERDSS input file not found: {parms_file}")
@@ -455,7 +504,10 @@ class Simulation:
             
             output_log = os.path.join(sim_subdir, "output.log")
             with open(output_log, "w") as log_file:
-                cmd = ["./nerdss", "-f", "parms.inp"]
+                cmd = ["./nerdss", "-f", self.parmfile]
+                if coordinate:
+                    cmd.append("-c")
+                    cmd.append(self.coordinatefile)
                 
                 if parallel:
                     process = subprocess.Popen(cmd, cwd=sim_subdir, stdout=log_file, stderr=log_file)
