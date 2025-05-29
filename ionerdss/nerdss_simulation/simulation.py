@@ -6,7 +6,6 @@ import json
 from typing import Dict, Any, List
 import time
 import glob
-from tqdm import tqdm
 from ..nerdss_model.model import Model
 
 class Simulation:
@@ -450,7 +449,7 @@ class Simulation:
 
     def run_new_simulations(
             self, sim_indices: List[int] = None, sim_dir: str = None, nerdss_dir: str = None, parallel: bool = False,
-            coordinate: bool = False
+            coordinate: bool = False, progress: bool = True,
         ) -> None:
         """Runs NERDSS simulations based on the given parameters.
         
@@ -513,15 +512,17 @@ class Simulation:
                 else:
                     print(f"Running simulation {index}...")
                     process = subprocess.Popen(cmd, cwd=sim_subdir, stdout=log_file, stderr=log_file)
-                    progress_bars[index] = tqdm(total=100, desc=f"Simulation {index}")
-                    
-                    while process.poll() is None:
-                        progress = self.calculate_progress_percentage(sim_subdir)
-                        progress_bars[index].n = progress
-                        progress_bars[index].refresh()
-                        time.sleep(2)
-                    
-                    progress_bars[index].close()
+
+                    if progress:
+                        from tqdm import tqdm
+                        progress_bars[index] = tqdm(total=100, desc=f"Simulation {index}")
+                        while process.poll() is None:
+                            progress = self.calculate_progress_percentage(sim_subdir)
+                            progress_bars[index].n = progress
+                            progress_bars[index].refresh()
+                            time.sleep(2)
+                        
+                        progress_bars[index].close()
         
         if parallel:
             for index, process in processes:
