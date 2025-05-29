@@ -528,6 +528,14 @@ class PDBModel(Model):
         print("Homologous chain groups identified:")
         print(self.chains_group)
 
+        # check if the structure has homologous chains
+        # if any element in self.chains_group has more than one chain, then it has homologous chains
+        has_homologous_chains = any(len(group) > 1 for group in self.chains_group)
+        if not has_homologous_chains:
+            dist_threshold_intra = 0.0
+            dist_threshold_inter = 0.0
+            angle_threshold = 0.0
+
         self.molecule_list = []
         self.molecules_template_list = []
         self.interface_list = []
