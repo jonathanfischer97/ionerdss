@@ -463,21 +463,19 @@ class Simulation:
         Notes:
             FIXME: Doesn't work on Fedora OS using Jupyter notebook. Doesn't test on other OS. Doesn't test using Python script.
         """
-        if sim_dir.startswith("~"):
-            sim_dir = os.path.expanduser(sim_dir)
-        sim_dir = os.path.abspath(sim_dir)
-
-        if nerdss_dir.startswith("~"):
-            nerdss_dir = os.path.expanduser(nerdss_dir)
-        nerdss_dir = os.path.abspath(nerdss_dir)
-
         if sim_dir is None:
             sim_dir = os.path.join(self.work_dir, "nerdss_output")
+        elif sim_dir.startswith("~"):
+            sim_dir = os.path.expanduser(sim_dir)
+        sim_dir = os.path.abspath(sim_dir)
         os.makedirs(sim_dir, exist_ok=True)
 
         if nerdss_dir is None:
             nerdss_dir = os.path.join(self.work_dir, "NERDSS")
-        
+        elif nerdss_dir.startswith("~"):
+            nerdss_dir = os.path.expanduser(nerdss_dir)
+        nerdss_dir = os.path.abspath(nerdss_dir)
+        # check whether nerdss executable exists
         nerdss_exec = os.path.join(nerdss_dir, "bin", "nerdss")
         if not os.path.exists(nerdss_exec):
             raise FileNotFoundError(f"NERDSS executable not found at {nerdss_exec}. Make sure it is installed and compiled.")
