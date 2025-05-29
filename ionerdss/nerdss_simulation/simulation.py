@@ -556,10 +556,10 @@ class Simulation:
         try:
             nItr = 0
             timeStep = 0.0
-            inp_files = glob.glob(os.path.join(sim_subdir, "*.inp"))
-            with open(inp_files[0], "r") as inp_file:
+            parm_file = os.path.join(sim_subdir, self.parmfile)
+            with open(parm_file, "r") as inp_file:
                 for line in inp_file:
-                    line = line.strip()
+                    line = clean_line(line.strip())
                     if line.startswith("nItr"):
                         nItr = int(line.split("=")[1])
                     if line.startswith("timeStep"):
@@ -857,3 +857,25 @@ class Simulation:
         self._print_dict(mol)
         return mol
     
+
+
+def clean_line(line):
+    """Safely remove comments, ignoring # inside strings"""
+    in_string = False
+    quote_char = None
+    
+    for i, char in enumerate(line):
+        # Handle string boundaries
+        if char in ['"', "'"] and (i == 0 or line[i-1] != '\\'):
+            if not in_string:
+                in_string = True
+                quote_char = char
+            elif char == quote_char:
+                in_string = False
+                quote_char = None
+        
+        # Found comment outside of string
+        elif char == '#' and not in_string:
+            return line[:i].strip()
+    
+    return line.strip()
