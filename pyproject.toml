@@ -37,7 +37,6 @@ dependencies = [
     "requests",
     "nglview",
     "ipympl",
-    "imageio",
     "jupyter",
     "jupyterlab",
     "notebook"

@@ -418,7 +418,10 @@ class Analysis:
         """
         import warnings
         import tempfile
-        import imageio
+        try:
+            import imageio
+        except ImportError:
+            raise ImportError("imageio is required for trajectory visualization. Please install it using 'pip install imageio'.")
         from PIL import Image
         
         # Ignore OVITO warning
@@ -456,8 +459,12 @@ class Analysis:
         gif_path = os.path.join(temp_dir, "trajectory.gif")
         imageio.mimsave(gif_path, [imageio.imread(frame) for frame in frame_paths], fps=fps)
 
-        # Display GIF
-        display(Image.open(gif_path))
+        try:
+            from IPython.display import display, Image
+            # Display GIF
+            display(Image.open(gif_path))
+        except ImportError:
+            print("IPython is not available. GIF will not be displayed in this environment.")
 
         # Save GIF if requested
         if save_gif:
