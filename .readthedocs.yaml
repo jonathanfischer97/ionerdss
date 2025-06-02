@@ -6,10 +6,10 @@ build:
     python: "3.9"  # Adjust Python version if needed
 
 sphinx:
-  configuration: docs/source/conf.py  # Adjust if your config is in a different location
+  configuration: website/source/conf.py  # Adjust if your config is in a different location
 
 python:
   install:
     - method: pip
       path: .
-    - requirements: docs/requirements.txt  # List dependencies for building docs
+    - requirements: website/requirements.txt  # List dependencies for building docs

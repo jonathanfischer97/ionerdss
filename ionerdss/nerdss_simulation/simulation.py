@@ -7,6 +7,7 @@ from typing import Dict, Any, List
 import time
 import glob
 from ..nerdss_model.model import Model
+from ..util import strip_comment
 
 class Simulation:
     """Class for handling NERDSS simulation configurations and running simulations.
@@ -563,7 +564,7 @@ class Simulation:
             parm_file = os.path.join(sim_subdir, self.parmfile)
             with open(parm_file, "r") as inp_file:
                 for line in inp_file:
-                    line = clean_line(line.strip())
+                    line = strip_comment(line.strip())
                     if line.startswith("nItr"):
                         nItr = int(line.split("=")[1])
                     if line.startswith("timeStep"):
@@ -860,26 +861,3 @@ class Simulation:
         print(("The following lines can be used to access your mol information. Copy and paste this output into your code to modify the .mol file"))
         self._print_dict(mol)
         return mol
-    
-
-
-def clean_line(line):
-    """Safely remove comments, ignoring # inside strings"""
-    in_string = False
-    quote_char = None
-    
-    for i, char in enumerate(line):
-        # Handle string boundaries
-        if char in ['"', "'"] and (i == 0 or line[i-1] != '\\'):
-            if not in_string:
-                in_string = True
-                quote_char = char
-            elif char == quote_char:
-                in_string = False
-                quote_char = None
-        
-        # Found comment outside of string
-        elif char == '#' and not in_string:
-            return line[:i].strip()
-    
-    return line.strip()

@@ -17,7 +17,6 @@ from Bio.Align import PairwiseAligner
 from Bio.SeqUtils import seq1
 from scipy.spatial import KDTree
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 from .model import MoleculeType, MoleculeInterface, ReactionType, Model
 from .coords import Coords
 
@@ -356,6 +355,8 @@ class PDBModel(Model):
             points (list): A list of arrays, each of shape (N, 3), representing a chain’s COM + interface sites.
             chain_ids (list, optional): A list of labels for each chain. Defaults to None.
         """
+
+        import matplotlib.pyplot as plt
 
         # Prepare a 3D figure
         fig = plt.figure(figsize=(8, 6))
