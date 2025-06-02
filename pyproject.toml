@@ -35,7 +35,6 @@ dependencies = [
     "scipy",
     "scikit-learn",
     "requests",
-    "nglview",
     "ipympl",
     "jupyter",
     "jupyterlab",
