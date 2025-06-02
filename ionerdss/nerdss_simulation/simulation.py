@@ -449,7 +449,7 @@ class Simulation:
 
     def run_new_simulations(
             self, sim_indices: List[int] = None, sim_dir: str = None, nerdss_dir: str = None, parallel: bool = False,
-            coordinate: bool = False, progress: bool = True,
+            coordinate: bool = False, progress: bool = True, verbose=True,
         ) -> None:
         """Runs NERDSS simulations based on the given parameters.
         
@@ -510,27 +510,30 @@ class Simulation:
                     process = subprocess.Popen(cmd, cwd=sim_subdir, stdout=log_file, stderr=log_file)
                     processes.append((index, process))
                 else:
-                    print(f"Running simulation {index}...")
+                    if verbose: print(f"Running simulation {index}...")
                     process = subprocess.Popen(cmd, cwd=sim_subdir, stdout=log_file, stderr=log_file)
 
-                    if progress:
-                        from tqdm import tqdm
-                        progress_bars[index] = tqdm(total=100, desc=f"Simulation {index}")
-                        while process.poll() is None:
-                            progress = self.calculate_progress_percentage(sim_subdir)
-                            progress_bars[index].n = progress
-                            progress_bars[index].refresh()
-                            time.sleep(2)
-                        
-                        progress_bars[index].close()
+                    if verbose:
+                        if progress:
+                            from tqdm import tqdm
+                            progress_bars[index] = tqdm(total=100, desc=f"Simulation {index}")
+                            while process.poll() is None:
+                                progress = self.calculate_progress_percentage(sim_subdir)
+                                progress_bars[index].n = progress
+                                progress_bars[index].refresh()
+                                time.sleep(2)
+                            
+                            progress_bars[index].close()
         
-        if parallel:
+        if parallel and verbose:
             for index, process in processes:
                 print(f"Waiting for simulation {index} to complete...")
                 process.wait()
                 print(f"Simulation {index} completed.")
         
-        print("All simulations completed.")
+        if verbose:
+            if progress: 
+                print("All simulations completed.")
 
     def calculate_progress_percentage(self, sim_subdir: str) -> int:
         """
