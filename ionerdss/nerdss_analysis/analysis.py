@@ -83,6 +83,7 @@ class Analysis:
             time_frame=time_frame,
             cache_dir=self.plot_data_dir
         )
+        self.data = data
         return data
     
     def set_plot(self, **kwargs) -> PlotConfigure:
@@ -93,6 +94,7 @@ class Analysis:
         """
         plot_config = PlotConfigure(self.save_dir)
         plot_config.configure(**kwargs)
+        self.plot = plot_config
         return plot_config
     
     # Legacy compatibility methods
