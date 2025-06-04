@@ -135,6 +135,11 @@ class Data:
         return result
     
     # Enhanced methods using processors
+    def get_time_series_statistics(self, legends: List[List[str]], **kwargs):
+        """Get time series statistics for multiple legends."""
+        histogram_data = self.get_histogram_data(**kwargs)
+        return self.histogram.calculate_time_series_statistics(histogram_data, legends)
+
     def get_complex_sizes(self, legend: List[str], **kwargs) -> List[List[int]]:
         """Extract complex sizes using histogram processor."""
         histogram_data = self.get_histogram_data(**kwargs)
