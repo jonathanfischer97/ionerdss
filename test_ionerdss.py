@@ -67,7 +67,7 @@ def simulation(pdb_model, work_dir):
     sim_dir = os.path.join(work_dir, 'simulation')
     os.makedirs(sim_dir, exist_ok=True)
     
-    sim = Simulation(pdb_model, work_dir=sim_dir)
+    sim = Simulation(pdb_model, sim_dir)
     
     # Set minimal parameters for testing
     sim.modify_inp_file({
