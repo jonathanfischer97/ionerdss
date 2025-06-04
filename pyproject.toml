@@ -37,7 +37,6 @@ dependencies = [
     "requests",
     "ipympl",
     "jupyter",
-    "jupyterlab",
     "notebook"
 ]
 
