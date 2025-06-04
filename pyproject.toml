@@ -41,8 +41,15 @@ dependencies = [
     "notebook"
 ]
 
+[project.optional-dependencies]
+ovito_rendering = ["ovito", "imageio", "Pillow"]
+test = ["pytest"]
+
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
