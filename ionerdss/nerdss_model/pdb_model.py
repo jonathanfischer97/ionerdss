@@ -154,8 +154,9 @@ class PDBModel(Model):
             save_pymol_script (bool, optional): Whether to save a PyMOL script for visualization. Defaults to False.
             standard_output (bool, optional): Whether to print detected interfaces. Defaults to False.
         """
-        # self.all_chains = list(self.all_atoms_structure.get_chains())
-        self.all_chains = sorted(self.all_atoms_structure.get_chains(), key=lambda chain: chain.id)
+        self.all_chains = sorted([chain for chain in self.all_atoms_structure.get_chains() 
+            if any(is_aa(residue) for residue in chain.get_residues())], 
+            key=lambda chain: chain.id)
         self.all_COM_chains_coords = []
         self.all_interfaces = []
         self.all_interfaces_coords = []
@@ -527,7 +528,7 @@ class PDBModel(Model):
         for group in self.chains_group:
             group.sort()
         self.chains_group.sort()
-        print("Homologous chain groups identified:")
+        print(f"{len(self.chains_group)} homologous chain groups identified:")
         print(self.chains_group)
 
         # check if the structure has homologous chains
@@ -776,20 +777,100 @@ class PDBModel(Model):
                             "thetaA": signature["thetaB"],
                             "thetaB": signature["thetaA"]
                         }
+                        
+                        # Find all matching templates for signature
+                        matching_templates = []
                         for mol_temp in self.molecules_template_list:
                             for interface_temp in mol_temp.interface_template_list:
                                 if self._sig_are_similar(signature, interface_temp.signature, dist_threshold_intra, dist_threshold_inter, angle_threshold):
-                                    interface_template = interface_temp
-                                    molecule_template = mol_temp
-                                    # print(f"using {mol_temp.name} - {interface_temp.name}")
-                                    break
+                                    matching_templates.append((interface_temp, mol_temp))
+
+                        # Check for errors in template matching
+                        if len(matching_templates) == 0:
+                            # Print all available signatures for debugging
+                            available_sigs = []
+                            for mol_temp in self.molecules_template_list:
+                                for interface_temp in mol_temp.interface_template_list:
+                                    available_sigs.append({
+                                        'template': f"{interface_temp.name} ({mol_temp.name})",
+                                        'signature': interface_temp.signature
+                                    })
+                            
+                            print(f"Target signature: {signature}")
+                            print("Available signatures:")
+                            for sig_info in available_sigs:
+                                print(f"  {sig_info['template']}: {sig_info['signature']}")
+                            
+                            raise ValueError(
+                                f"No matching interface template found for signature: {signature}\n"
+                                f"Available templates: {[(mt.name, len(mt.interface_template_list)) for mt in self.molecules_template_list]}\n"
+                                f"Current thresholds: dist_intra={dist_threshold_intra}, dist_inter={dist_threshold_inter}, angle={angle_threshold}\n"
+                                f"Please increase the thresholds to find a match."
+                            )
+                        elif len(matching_templates) > 1:
+                            # Print all found signatures for debugging
+                            print(f"Target signature: {signature}")
+                            print("Found matching signatures:")
+                            for interface_temp, mol_temp in matching_templates:
+                                print(f"  {interface_temp.name} ({mol_temp.name}): {interface_temp.signature}")
+                            
+                            template_info = [(temp.name, mol.name) for temp, mol in matching_templates]
+                            raise ValueError(
+                                f"Multiple matching interface templates found for signature: {signature}\n"
+                                f"Matching templates: {template_info}\n"
+                                f"Current thresholds: dist_intra={dist_threshold_intra}, dist_inter={dist_threshold_inter}, angle={angle_threshold}\n"
+                                f"Please reduce the thresholds to ensure unique matching."
+                            )
+                        else:
+                            interface_template, molecule_template = matching_templates[0]
+                            # print(f"Found matching interface template: {interface_template.name} from molecule template {molecule_template.name}")
+
+                        # Find all matching templates for conjugated signature
+                        matching_partner_templates = []
                         for mol_temp in self.molecules_template_list:
                             for interface_temp in mol_temp.interface_template_list:
                                 if self._sig_are_similar(signature_conjugated, interface_temp.signature, dist_threshold_intra, dist_threshold_inter, angle_threshold):
-                                    partner_interface_template = interface_temp
-                                    partner_molecule_template = mol_temp
-                                    # print(f"using {mol_temp.name} - {interface_temp.name}")
-                                    break
+                                    matching_partner_templates.append((interface_temp, mol_temp))
+
+                        # Check for errors in partner template matching
+                        if len(matching_partner_templates) == 0:
+                            # Print all available signatures for debugging
+                            available_sigs = []
+                            for mol_temp in self.molecules_template_list:
+                                for interface_temp in mol_temp.interface_template_list:
+                                    available_sigs.append({
+                                        'template': f"{interface_temp.name} ({mol_temp.name})",
+                                        'signature': interface_temp.signature
+                                    })
+                            
+                            print(f"Target conjugated signature: {signature_conjugated}")
+                            print("Available signatures:")
+                            for sig_info in available_sigs:
+                                print(f"  {sig_info['template']}: {sig_info['signature']}")
+                            
+                            raise ValueError(
+                                f"No matching partner interface template found for conjugated signature: {signature_conjugated}\n"
+                                f"Available templates: {[(mt.name, len(mt.interface_template_list)) for mt in self.molecules_template_list]}\n"
+                                f"Current thresholds: dist_intra={dist_threshold_intra}, dist_inter={dist_threshold_inter}, angle={angle_threshold}\n"
+                                f"Please adjust the thresholds to find a match."
+                            )
+                        elif len(matching_partner_templates) > 1:
+                            # Print all found signatures for debugging
+                            print(f"Target conjugated signature: {signature_conjugated}")
+                            print("Found matching signatures:")
+                            for interface_temp, mol_temp in matching_partner_templates:
+                                print(f"  {interface_temp.name} ({mol_temp.name}): {interface_temp.signature}")
+                            
+                            template_info = [(temp.name, mol.name) for temp, mol in matching_partner_templates]
+                            raise ValueError(
+                                f"Multiple matching partner interface templates found for conjugated signature: {signature_conjugated}\n"
+                                f"Matching templates: {template_info}\n"
+                                f"Current thresholds: dist_intra={dist_threshold_intra}, dist_inter={dist_threshold_inter}, angle={angle_threshold}\n"
+                                f"Please reduce the thresholds to ensure unique matching."
+                            )
+                        else:
+                            partner_interface_template, partner_molecule_template = matching_partner_templates[0]
+                            # print(f"Found matching partner interface template: {partner_interface_template.name} from molecule template {partner_molecule_template.name}")
 
                     # build the interfaces for molecules, link the interface template to interface
 
@@ -1664,7 +1745,8 @@ class PDBModel(Model):
         """
         try:
             similar_chains = []
-            chains = list(self.all_atoms_structure.get_chains())
+            chains = [chain for chain in self.all_atoms_structure.get_chains() 
+                if any(is_aa(residue) for residue in chain.get_residues())]
             chain_sequences = {}
 
             for chain in chains:
