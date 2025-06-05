@@ -185,7 +185,7 @@ def build_display_data(input_dir):
     return display_dict
 
 
-def convert_simularium(input_dir: str, output_name: str) -> None:
+def convert_simularium(input_dir: str, output_name: str, pdb_folder: str = '') -> None:
     """
     Given a directory `input_dir` containing:
       - parms.inp
@@ -201,7 +201,8 @@ def convert_simularium(input_dir: str, output_name: str) -> None:
         raise FileNotFoundError(f"Input folder '{input_dir}' does not exist.")
 
     # 2) Check for PDB subfolder
-    pdb_folder = os.path.join(input_dir, "PDB")
+    if pdb_folder == '':
+        pdb_folder = os.path.join(input_dir, "PDB")
     if not os.path.isdir(pdb_folder):
         raise FileNotFoundError(f"Expected subfolder 'PDB' in '{input_dir}', but not found.")
 
