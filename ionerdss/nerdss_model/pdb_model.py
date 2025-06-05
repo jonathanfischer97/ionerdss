@@ -9,6 +9,7 @@ import gzip
 import requests
 import numpy as np
 import math
+import re
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from Bio.PDB import PDBList, MMCIFParser, PDBParser
@@ -1512,15 +1513,59 @@ class PDBModel(Model):
     def identify_homologous_chains(self):
         """
         Identifies homologous chains in the molecular structure and populates `self.chain_map` 
-        and `self.chain_groups`. Attempts to parse the header from PDB/CIF files first; 
-        if unsuccessful, falls back to sequence alignment.
+        and `self.chain_groups`. Attempts to parse the header from PDB/CIF files first;
+        if unsuccessful or results are invalid, falls back to sequence alignment.
         """
         if self.pdb_file.endswith('.pdb'):
             self._parse_pdb_header()
         elif self.pdb_file.endswith('.cif'):
             self._parse_cif_header()
-        if not self.chains_map:
+        
+        # Validate the results from header parsing
+        if not self._validate_chain_mapping():
+            print("Header parsing results appear invalid, falling back to sequence alignment...")
+            # Clear invalid results
+            self.chains_map = {}
+            self.chains_group = []
             self._find_homologous_chains_by_alignment()
+
+    def _validate_chain_mapping(self):
+        """
+        Validates the chain mapping results to ensure they make sense.
+        Chain IDs must be letters (A, AB) or letters followed by -number (A-2).
+        
+        Returns:
+            bool: True if the mapping is valid, False otherwise
+        """
+        if not self.chains_map:
+            return False
+        
+        # Pattern for valid chain IDs: letters only OR letters followed by -number
+        valid_chain_pattern = re.compile(r'^[A-Za-z]+(-\d+)?$')
+        
+        # Check for malformed chain identifiers
+        for chain_id in self.chains_map.keys():
+            if not valid_chain_pattern.match(chain_id):
+                print(f"Invalid chain identifier found: '{chain_id}' (must be letters or letters-number format)")
+                return False
+        
+        # Check if we have actual chains from the structure to compare against
+        if hasattr(self, 'all_atoms_structure') and self.all_atoms_structure:
+            try:
+                actual_chain_ids = set(chain.id for chain in self.all_atoms_structure.get_chains())
+                mapped_chain_ids = set(self.chains_map.keys())
+                
+                # Check if mapped chains actually exist in the structure
+                invalid_chains = mapped_chain_ids - actual_chain_ids
+                if invalid_chains:
+                    print(f"Mapped chains not found in structure: {invalid_chains}")
+                    return False
+                    
+            except Exception as e:
+                print(f"Could not validate against structure: {str(e)}")
+        
+        print(f"Chain mapping validation passed: {len(self.chains_map)} chains mapped")
+        return True
 
     def _parse_pdb_header(self):
         """
