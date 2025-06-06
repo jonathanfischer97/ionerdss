@@ -419,6 +419,7 @@ class Analysis:
         import warnings
         import tempfile
         import os
+        import sys
 
         # Ignore OVITO warning
         warnings.filterwarnings('ignore', message='.*OVITO.*PyPI')
