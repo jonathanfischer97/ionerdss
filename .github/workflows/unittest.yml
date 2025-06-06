@@ -74,7 +74,7 @@ jobs:
 
       - name: Summarise failing tests
         if: always()                    # still runs on failures
-        uses: pmeier/pytest-results-action@v0.7.1   # latest tag :contentReference[oaicite:5]{index=5}
+        uses: pmeier/pytest-results-action@v0.7.1   # latest tag 
         with:
           path: report.xml              # JUnit file(s) or glob
           summary: true                 # add high‑level counts
