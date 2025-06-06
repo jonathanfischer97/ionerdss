@@ -41,13 +41,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-tests = [
-  "pytest",
-  "pytest-cov",
-]
+ovito_rendering = ["ovito", "imageio", "Pillow"]
+tests = ["pytest", "pytest-cov"]
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

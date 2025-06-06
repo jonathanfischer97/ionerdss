@@ -418,24 +418,32 @@ class Analysis:
         """
         import warnings
         import tempfile
-        try:
-            import imageio
-        except ImportError:
-            raise ImportError("imageio is required for trajectory visualization. Please install it using 'pip install imageio'.")
-        from PIL import Image
-        
+        import os
+
         # Ignore OVITO warning
         warnings.filterwarnings('ignore', message='.*OVITO.*PyPI')
         
         try:
             from ovito.io import import_file
             from ovito.vis import Viewport
+            import imageio 
+            from PIL import Image
         except ImportError:
-            raise ImportError("OVITO is required for trajectory visualization. Please install it using 'pip install ovito'.")
+            msg = (
+                "OVITO, imageio, and/or Pillow are required for trajectory visualization but not found."
+                "These are optional dependencies. Please install them to enable this feature."
+                "If using pip, you can install them with: pip install ionerdss[ovito_rendering]"
+                "If using Conda, ensure ovito, imageio, and pillow are installed, for example from conda-forge and conda.ovito.org:"
+                "  conda install -c conda.ovito.org -c conda-forge ovito imageio pillow"
+            )
+            raise ImportError(msg)
 
         # Find trajectory file if not specified
         if trajectory_path is None:
+            if not self.simulation_dirs:
+                raise ValueError("No simulation directories found to infer trajectory_path.")
             trajectory_path = os.path.join(self.simulation_dirs[0], "DATA", "trajectory.xyz")
+        
         if not os.path.exists(trajectory_path):
             raise FileNotFoundError(f"Trajectory file '{trajectory_path}' not found.")
         
@@ -446,28 +454,41 @@ class Analysis:
         vp.zoom_all()
 
         # Create temporary directory for frames
-        temp_dir = tempfile.mkdtemp()
-        frame_paths = []
+        with tempfile.TemporaryDirectory() as temp_dir_path:
+            frame_paths = []
 
-        # Render frames
-        for frame in range(pipeline.source.num_frames):
-            output_path = os.path.join(temp_dir, f"frame_{frame:04d}.png")
-            vp.render_image(size=(800, 600), filename=output_path, frame=frame)
-            frame_paths.append(output_path)
+            # Render frames
+            for frame in range(pipeline.source.num_frames):
+                output_path = os.path.join(temp_dir_path, f"frame_{frame:04d}.png")
+                vp.render_image(size=(800, 600), filename=output_path, frame=frame)
+                frame_paths.append(output_path)
 
-        # Create GIF
-        gif_path = os.path.join(temp_dir, "trajectory.gif")
-        imageio.mimsave(gif_path, [imageio.imread(frame) for frame in frame_paths], fps=fps)
+            # Create GIF
+            gif_path = os.path.join(temp_dir_path, "trajectory.gif")
+            imageio.mimsave(gif_path, [imageio.imread(frame) for frame in frame_paths], fps=fps)
 
-        try:
-            from IPython.display import display, Image
-            # Display GIF
-            display(Image.open(gif_path))
-        except ImportError:
-            print("IPython is not available. GIF will not be displayed in this environment.")
+            try:
+                from IPython.display import display, Image as IPImage
+                # Display GIF
+                display(IPImage(filename=gif_path))
+            except ImportError:
+                print("IPython is not available. GIF will not be displayed in this environment.")
+                print(f"GIF is available at: {gif_path}")
 
-        # Save GIF if requested
-        if save_gif:
-            gif_save_path = os.path.join(self.save_dir, gif_name)
-            os.rename(gif_path, gif_save_path)
-            print(f"Trajectory GIF saved at: {gif_save_path}")
+            # Save GIF if requested
+            if save_gif:
+                if not hasattr(self, 'save_dir') or not self.save_dir:
+                    gif_save_destination_dir = os.getcwd() 
+                    print(f"Warning: self.save_dir not set. Saving GIF to current directory: {gif_save_destination_dir}")
+                else:
+                    gif_save_destination_dir = self.save_dir
+                
+                if os.path.exists(gif_path):
+                    import shutil
+                    shutil.move(gif_path, gif_save_path)
+                    print(f"Trajectory GIF saved at: {gif_save_path}")
+                else:
+                    print(f"Error: Temporary GIF file {gif_path} not found. Cannot save.")
+            elif not save_gif:
+                if 'IPython.display' not in sys.modules:
+                    print(f"Note: GIF was created at {gif_path} but not saved and IPython is not available for display. It will be deleted.")
