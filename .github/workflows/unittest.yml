@@ -60,7 +60,7 @@ jobs:
         run: pip install -r env/requirements.txt
 
       - name: Install package in editable mode
-        run: pip install -e .
+        run: pip install -e .[tests] # optional pytest/pytest-cov deps as defined in toml file
 
       - name: Configure headless Qt
         run: echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV   #avoids xcb/display errors, according to the web
