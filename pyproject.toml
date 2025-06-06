@@ -42,7 +42,7 @@ dependencies = [
 
 [project.optional-dependencies]
 ovito_rendering = ["ovito", "imageio", "Pillow"]
-test = ["pytest"]
+tests = ["pytest", "pytest-cov"]
 
 [tool.setuptools]
 include-package-data = true
