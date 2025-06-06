@@ -37,8 +37,13 @@ dependencies = [
     "requests",
     "ipympl",
     "jupyter",
-    "jupyterlab",
     "notebook"
+]
+
+[project.optional-dependencies]
+tests = [
+  "pytest",
+  "pytest-cov",
 ]
 
 [tool.setuptools]
