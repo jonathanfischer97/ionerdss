@@ -808,22 +808,11 @@ class PDBModel(Model):
                                 f"Please increase the thresholds to find a match."
                             )
                         elif len(matching_templates) > 1:
-                            # Print all found signatures for debugging
-                            print(f"Target signature: {signature}")
-                            print("Found matching signatures:")
-                            for interface_temp, mol_temp in matching_templates:
-                                print(f"  {interface_temp.name} ({mol_temp.name}): {interface_temp.signature}")
-                            
-                            template_info = [(temp.name, mol.name) for temp, mol in matching_templates]
-                            raise ValueError(
-                                f"Multiple matching interface templates found for signature: {signature}\n"
-                                f"Matching templates: {template_info}\n"
-                                f"Current thresholds: dist_intra={dist_threshold_intra}, dist_inter={dist_threshold_inter}, angle={angle_threshold}\n"
-                                f"Please reduce the thresholds to ensure unique matching."
-                            )
+                            matching_templates.sort(key=lambda pair: self._sig_difference(signature, pair[0].signature))
+                            interface_template, molecule_template = matching_templates[0]
+                            print(f"Multiple matches found. Using closest match: {interface_template.name} ({molecule_template.name})")
                         else:
                             interface_template, molecule_template = matching_templates[0]
-                            # print(f"Found matching interface template: {interface_template.name} from molecule template {molecule_template.name}")
 
                         # Find all matching templates for conjugated signature
                         matching_partner_templates = []
@@ -855,22 +844,11 @@ class PDBModel(Model):
                                 f"Please adjust the thresholds to find a match."
                             )
                         elif len(matching_partner_templates) > 1:
-                            # Print all found signatures for debugging
-                            print(f"Target conjugated signature: {signature_conjugated}")
-                            print("Found matching signatures:")
-                            for interface_temp, mol_temp in matching_partner_templates:
-                                print(f"  {interface_temp.name} ({mol_temp.name}): {interface_temp.signature}")
-                            
-                            template_info = [(temp.name, mol.name) for temp, mol in matching_partner_templates]
-                            raise ValueError(
-                                f"Multiple matching partner interface templates found for conjugated signature: {signature_conjugated}\n"
-                                f"Matching templates: {template_info}\n"
-                                f"Current thresholds: dist_intra={dist_threshold_intra}, dist_inter={dist_threshold_inter}, angle={angle_threshold}\n"
-                                f"Please reduce the thresholds to ensure unique matching."
-                            )
+                            matching_partner_templates.sort(key=lambda pair: self._sig_difference(signature_conjugated, pair[0].signature))
+                            partner_interface_template, partner_molecule_template = matching_partner_templates[0]
+                            print(f"Multiple conjugated matches found. Using closest match: {partner_interface_template.name} ({partner_molecule_template.name})")
                         else:
                             partner_interface_template, partner_molecule_template = matching_partner_templates[0]
-                            # print(f"Found matching partner interface template: {partner_interface_template.name} from molecule template {partner_molecule_template.name}")
 
                     # build the interfaces for molecules, link the interface template to interface
 
@@ -1445,6 +1423,16 @@ class PDBModel(Model):
             if abs(sig1[key] - sig2[key]) > angle_threshold:
                 return False
         return True
+    
+    def _sig_difference(self, sig1, sig2):
+        """
+        Compute the sum of relative differences between two signatures.
+        """
+        total_diff = 0.0
+        for key in ("dA", "dB", "dAB", "thetaA", "thetaB"):
+            denom = abs(sig1[key]) if abs(sig1[key]) > 1e-6 else 1.0  # avoid divide-by-zero
+            total_diff += abs(sig1[key] - sig2[key]) / denom
+        return total_diff
     
     def _is_existing_mol_temp(self, mol_temp_name):
         """
