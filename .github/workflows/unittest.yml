@@ -1,50 +1,88 @@
-name: Run Unit Tests
+name: Unit Tests & Coverage
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "ionerdss/**"
       - "tests/**"
       - ".github/workflows/unittest.yml"
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "ionerdss/**"
       - "tests/**"
       - ".github/workflows/unittest.yml"
 
+#Stop redundant CI runs for superseded commits
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read            # needed by checkout
+  id-token: write           # required for Codecov OIDC uploads
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }} • Py ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-20.04, macos-latest]
+        python-version: ['3.9', '3.11', '3.13']  
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4       
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5    
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.python-version }}
+          cache: pip                       # built‑in dependency+wheel cache
+          cache-dependency-path: env/requirements.txt
 
-      - name: Install system dependencies (Qt, OpenGL, EGL)
-        run: |
-          sudo apt update
-          sudo apt install -y libegl1 libopengl0 libgl1-mesa-dev libxkbcommon-x11-0 qt6-base-dev
+      #Extra cache layer: pre‑built wheels in ~/.cache/pip so can work between OS/versions
+      - name: Cache compiled pip wheels
+        uses: actions/cache@v4             
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('env/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}
+            ${{ runner.os }}-pip-
 
-      - name: Install Python dependencies
+      # Qt/OpenGL runtime (Linux only; no‑op elsewhere as stated in the action repo, mac shouldn't need it)
+      - uses: tlambert03/setup-qt-libs@v1
+
+      - name: Install project dependencies
         run: pip install -r env/requirements.txt
 
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+      - name: Install package in editable mode
+        run: pip install -e .
 
-      - name: Install package (if setup.py exists)
+      - name: Configure headless Qt
+        run: echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV   #avoids xcb/display errors, according to the web
+
+      - name: Run tests
         run: |
-          if [ -f "setup.py" ]; then
-            pip install -e .
-          fi
+          pytest tests \
+                 --cov=ionerdss --cov-branch \
+                 --cov-report=xml \
+                 --junitxml=report.xml
 
-      - name: Run unit tests
-        run: pytest tests --junitxml=report.xml
+      #Junit is standard machine readable test output that can then be analyzed by various tools later, we upload as artifact to allow inspection
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4    
+        with:
+          name: junit-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: report.xml
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5      
+        with:
+          use_oidc: true #required for tokenless apparently
+          fail_ci_if_error: true
