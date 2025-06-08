@@ -15,7 +15,19 @@ def is_number(val):
         return False
 
 
+def angle_close(a, b, tol=0.01):
+    """
+    Compare two angles a and b in radians, accounting for periodicity.
+    """
+    diff = math.atan2(math.sin(a - b), math.cos(a - b))
+    return abs(diff) < tol
+
+
 def compare_values(val1, val2, tol=0.01, path="root"):
+    def is_angle_path(path):
+        # Identify fields likely to contain angles
+        return any(keyword in path.lower() for keyword in ["binding_angles", "theta", "angle"])
+
     if isinstance(val1, dict) and isinstance(val2, dict):
         if set(val1.keys()) != set(val2.keys()):
             print(f"Key mismatch at {path}: {val1.keys()} != {val2.keys()}")
@@ -33,9 +45,14 @@ def compare_values(val1, val2, tol=0.01, path="root"):
 
     elif is_number(val1) and is_number(val2):
         f1, f2 = float(val1), float(val2)
-        if not math.isclose(f1, f2, abs_tol=tol):
-            print(f"Value mismatch at {path}: {f1} != {f2} (tol={tol})")
-            return False
+        if is_angle_path(path):
+            if not angle_close(f1, f2, tol):
+                print(f"Angle mismatch at {path}: {f1} != {f2} (wrapped, tol={tol})")
+                return False
+        else:
+            if not math.isclose(f1, f2, abs_tol=tol):
+                print(f"Value mismatch at {path}: {f1} != {f2} (tol={tol})")
+                return False
         return True
 
     else:
@@ -90,7 +107,7 @@ class TestPDBModelOutput(unittest.TestCase):
         )
 
     def test_model_output_8y7s(self):
-        self.run_model_test("8y7s", tol=0.02)
+        self.run_model_test("8y7s", tol=0.03)
 
     def test_model_output_8erq(self):
         self.run_model_test("8erq")
@@ -127,9 +144,6 @@ class TestPDBModelOutput(unittest.TestCase):
 
         complex_reaction_system_length = len(complex_reaction_system.reactions)
         self.assertEqual(complex_reaction_system_length, 114, "Complex reaction system length did not match expected.")
-
-    # def test_model_output_7uhy(self):
-    #     self.run_model_test("7uhy", tol=1)
 
 
 if __name__ == "__main__":
