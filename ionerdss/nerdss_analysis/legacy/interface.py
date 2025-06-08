@@ -7,24 +7,6 @@ import os
 import warnings
 from typing import Dict, Any, List, Optional, Tuple
 
-# Trajectory visualization imports
-try:
-    import imageio
-    import tempfile
-    from PIL import Image
-    TRAJECTORY_AVAILABLE = True
-except ImportError:
-    TRAJECTORY_AVAILABLE = False
-
-try:
-    import warnings
-    warnings.filterwarnings('ignore', message='.*OVITO.*PyPI')
-    from ovito.io import import_file
-    from ovito.vis import Viewport
-    OVITO_AVAILABLE = True
-except ImportError:
-    OVITO_AVAILABLE = False
-
 
 class LegacyPlotInterface:
     """
@@ -355,18 +337,28 @@ class LegacyPlotInterface:
             fps (int): Frames per second
             **kwargs: Additional visualization parameters
         """
-        # Check for required dependencies
-        if not TRAJECTORY_AVAILABLE:
-            raise ImportError(
-                "Trajectory visualization requires additional packages. "
-                "Install with: pip install imageio pillow"
-            )
+        import warnings
+        import tempfile
+        import os
+        import sys
+
+        # Ignore OVITO warning
+        warnings.filterwarnings('ignore', message='.*OVITO.*PyPI')
         
-        if not OVITO_AVAILABLE:
-            raise ImportError(
-                "Trajectory visualization requires OVITO. "
-                "Install with: pip install ovito"
+        try:
+            from ovito.io import import_file
+            from ovito.vis import Viewport
+            import imageio 
+            from PIL import Image
+        except ImportError:
+            msg = (
+                "OVITO, imageio, and/or Pillow are required for trajectory visualization but not found."
+                "These are optional dependencies. Please install them to enable this feature."
+                "If using pip, you can install them with: pip install ionerdss[ovito_rendering]"
+                "If using Conda, ensure ovito, imageio, and pillow are installed, for example from conda-forge and conda.ovito.org:"
+                "  conda install -c conda.ovito.org -c conda-forge ovito imageio pillow"
             )
+            raise ImportError(msg)
         
         # Extract parameters
         trajectory_path = kwargs.get('trajectory_path', None)
@@ -389,58 +381,53 @@ class LegacyPlotInterface:
             raise FileNotFoundError(f"Trajectory file '{trajectory_path}' not found.")
         
         try:
-            # Import and process trajectory
+            # Import trajectory
             pipeline = import_file(trajectory_path)
             pipeline.add_to_scene()
             vp = Viewport(type=Viewport.Type.PERSPECTIVE)
             vp.zoom_all()
-            
+
             # Create temporary directory for frames
-            temp_dir = tempfile.mkdtemp()
-            frame_paths = []
+            with tempfile.TemporaryDirectory() as temp_dir_path:
+                frame_paths = []
+
+                # Render frames
+                for frame in range(pipeline.source.num_frames):
+                    output_path = os.path.join(temp_dir_path, f"frame_{frame:04d}.png")
+                    vp.render_image(size=(800, 600), filename=output_path, frame=frame)
+                    frame_paths.append(output_path)
+
+                # Create GIF
+                gif_path = os.path.join(temp_dir_path, "trajectory.gif")
+                imageio.mimsave(gif_path, [imageio.imread(frame) for frame in frame_paths], fps=fps)
+
+                try:
+                    from IPython.display import display, Image as IPImage
+                    # Display GIF
+                    display(IPImage(filename=gif_path))
+                except ImportError:
+                    print("IPython is not available. GIF will not be displayed in this environment.")
+                    print(f"GIF is available at: {gif_path}")
+
+                # Save GIF if requested
+                if save_gif:
+                    if not hasattr(self, 'save_dir') or not self.save_dir:
+                        gif_save_destination_dir = os.getcwd() 
+                        print(f"Warning: self.save_dir not set. Saving GIF to current directory: {gif_save_destination_dir}")
+                    else:
+                        gif_save_destination_dir = self.save_dir
+                    
+                    if os.path.exists(gif_path):
+                        import shutil
+                        shutil.move(gif_path, gif_save_destination_dir)
+                        print(f"Trajectory GIF saved at: {gif_save_destination_dir}")
+                    else:
+                        print(f"Error: Temporary GIF file {gif_path} not found. Cannot save.")
+                elif not save_gif:
+                    if 'IPython.display' not in sys.modules:
+                        print(f"Note: GIF was created at {gif_path} but not saved and IPython is not available for display. It will be deleted.")
             
-            print(f"Rendering {pipeline.source.num_frames} frames...")
-            
-            # Render frames
-            for frame in range(pipeline.source.num_frames):
-                output_path = os.path.join(temp_dir, f"frame_{frame:04d}.png")
-                vp.render_image(size=(800, 600), filename=output_path, frame=frame)
-                frame_paths.append(output_path)
-                
-                # Progress indicator
-                if frame % max(1, pipeline.source.num_frames // 10) == 0:
-                    progress = (frame + 1) / pipeline.source.num_frames * 100
-                    print(f"Progress: {progress:.1f}%")
-            
-            # Create GIF
-            gif_path = os.path.join(temp_dir, "trajectory.gif")
-            images = [imageio.imread(frame) for frame in frame_paths]
-            imageio.mimsave(gif_path, images, fps=fps)
-            
-            # Display GIF if possible
-            try:
-                from IPython.display import display, Image as IPImage
-                display(IPImage.open(gif_path))
-                print("Trajectory animation displayed above.")
-            except ImportError:
-                print("IPython not available. GIF created but not displayed.")
-            
-            # Save GIF if requested
-            if save_gif:
-                output_dir = os.path.join(self.analysis.save_dir, "figure_plot_data")
-                os.makedirs(output_dir, exist_ok=True)
-                gif_save_path = os.path.join(output_dir, gif_name)
-                
-                # Copy GIF to output directory
-                import shutil
-                shutil.copy2(gif_path, gif_save_path)
-                print(f"Trajectory GIF saved to: {gif_save_path}")
-            
-            # Cleanup temporary directory
-            import shutil
-            shutil.rmtree(temp_dir, ignore_errors=True)
-            
-            return gif_path if not save_gif else gif_save_path
+            return gif_path if not save_gif else gif_save_destination_dir
             
         except Exception as e:
             print(f"Error during trajectory visualization: {e}")
