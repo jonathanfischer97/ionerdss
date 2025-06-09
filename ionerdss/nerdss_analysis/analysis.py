@@ -1,495 +1,157 @@
 """
 Refactored Analysis class for the ionerdss package.
-This version uses the centralized data readers and implements a more efficient design.
+Main interface with improved separation of concerns.
 """
 
 import os
-import seaborn as sns
-from .plot_figures import (
-    plot_line_speciescopy_vs_time,
-    plot_line_maximum_assembly_size_vs_time,
-    plot_line_average_assembly_size_vs_time,
-    plot_line_fraction_of_monomers_assembled_vs_time,
-    plot_complex_count_vs_time,
-    plot_hist_complex_species_size,
-    plot_hist_monomer_counts_vs_complex_size,
-    plot_hist_complex_species_size_3d,
-    plot_hist_monomer_counts_vs_complex_size_3d,
-    plot_heatmap_complex_species_size,
-    plot_heatmap_monomer_counts_vs_complex_size,
-    plot_heatmap_species_a_vs_species_b,
-    plot_stackedhist_complex_species_size,
-    plot_line_free_energy,
-    plot_line_symmetric_association_probability,
-    plot_line_asymmetric_association_probability,
-    plot_line_symmetric_dissociation_probability,
-    plot_line_asymmetric_dissociation_probability,
-    plot_line_growth_probability,
-    plot_line_liftime,
-)
+from typing import List, Optional, Tuple, Dict, Any
+
+from .data import Data
+from .plotting import PlotConfigure
+from .legacy import LegacyPlotInterface
+
 
 class Analysis:
     """
-    A class for analyzing and visualizing NERDSS simulation results.
+    Main interface for analyzing and visualizing NERDSS simulation results.
     
-    This class provides methods to plot various types of figures and analyze
-    data from one or more NERDSS simulations.
+    Provides both new modular API and legacy compatibility.
     """
     
     def __init__(self, save_dir: str = None):
-        """
-        Initialize the Analysis object.
-        
-        Parameters:
-            save_dir (str, optional): Directory containing simulation results.
-                If None, uses the current working directory.
-        """
-        # Resolve the directory path
         if save_dir is None:
             save_dir = os.getcwd()
         elif save_dir.startswith("~"):
             save_dir = os.path.expanduser(save_dir)
-
-        self.save_dir = os.path.abspath(save_dir)
         
-        # Initialize data IO handler
-        # This function is not used now.
-        # self.data_io = DataIO()
-
-        # Determine if it's a single simulation or a batch
+        self.save_dir = os.path.abspath(save_dir)
+        self._discover_simulations()
+        self._setup_directories()
+        
+        # Initialize subsystems
+        self.data = Data()
+        self.plot = PlotConfigure(self.save_dir)
+        self._legacy = LegacyPlotInterface(self)
+    
+    def _discover_simulations(self):
+        """Discover simulation directories containing DATA folders."""
         if os.path.exists(os.path.join(self.save_dir, "DATA")):
             self.simulation_dirs = [self.save_dir]
             print("Detected a single simulation directory.")
         else:
-            # Find parent directories containing a "DATA" folder
-            self.simulation_dirs = [
-                root for root, dirs, _ in os.walk(self.save_dir) if "DATA" in dirs
-            ]
-            print(f"Detected a batch of {len(self.simulation_dirs)} simulation directories.")
-            
-        # Create the figure_plot_data directory if it doesn't exist
+            self.simulation_dirs = []
+            for root, dirs, _ in os.walk(self.save_dir):
+                if "DATA" in dirs:
+                    self.simulation_dirs.append(root)
+                    # Don't recurse into directories that contain DATA
+                    dirs[:] = [d for d in dirs if d != "DATA"]
+            print(f"Detected {len(self.simulation_dirs)} simulation directories.")
+        
+        if not self.simulation_dirs:
+            raise ValueError(f"No simulation directories found in {self.save_dir}")
+    
+    def _setup_directories(self):
+        """Create necessary output directories."""
         self.plot_data_dir = os.path.join(self.save_dir, "figure_plot_data")
         os.makedirs(self.plot_data_dir, exist_ok=True)
-
-    def plot_figure(
-        self,
-        figure_type: str = "line",
-        simulations: list = None,
-        x: str = "time",
-        y: str = "species",
-        z: str = None,
-        legend: list = None,
-        user_file_name: str = None,
-        bins: int = 10,
-        time_bins: int = 10,
-        time_frame: tuple = None,
-        frequency: bool = False,
-        normalize: bool = False,
-        show_type: str = "both",
-        font_size: int = 12,
-        figure_size: tuple = (10, 6),
-        seaborn_style: str = "ticks",
-        seaborn_context: str = "paper",
-    ):
+    
+    def get_data(self, 
+                 simulations: Optional[List[int]] = None,
+                 species: Optional[List[str]] = None,
+                 time_frame: Optional[Tuple[float, float]] = None) -> Data:
         """
-        Plot a figure based on the specified type and data.
-
-        Parameters:
-            figure_type (str): Type of figure to plot. Options are:
-                - "line" (line plot)
-                - "hist" (histogram)
-                - "3dhist" (3D histogram)
-                - "heatmap" (heatmap)
-                - "stacked" (stacked histogram)
-            
-            simulations (list, optional): List of indices of simulation directories to include in the plot.
-                If None, uses all available simulations.
-            
-            x (str): Variable for the x-axis.
-            y (str): Variable for the y-axis.
-            z (str, optional): Variable for the z-axis (only used in "3dhist" and "heatmap").
-            
-            legend (list, optional): Labels for the legend. If None, uses default labels.
-            user_file_name(str, optional): gives the option of saving .csv output with a specific name. 
-                Avoids save error for csvs plot_line_speciescopy_vs_time due to length. 
-            bins (int): Number of bins for histograms. Default is 10.
-            time_bins (int): Number of time bins for time-based 3d histograms. Default is 10.
-            time_frame (tuple, optional): Time frame for the histogram. Default is None (uses full range).
-            frequency (bool): If True, normalizes the histogram to show frequency. Default is False.
-            normalize (bool): If True, normalizes the data for plotting. Default is False.
-            
-            show_type (str): Determines what data to display. Options are:
-                - "individuals" → Shows all individual simulation results.
-                - "average" → Shows only the averaged result.
-                - "both" → Shows both individual and average results.
-
-            font_size (int): Font size for the plot.
-            figure_size (tuple): Size of the figure in inches.
-            seaborn_style (str): Seaborn style for the plot. Default is "ticks".
-                Options include "white", "dark", "whitegrid", "darkgrid", and "ticks".
-            seaborn_context (str): Seaborn context for the plot. Default is "paper".
-                Options include "paper", "notebook", "talk", and "poster".
-
-        Raises:
-            ValueError: If `figure_type` or `show_type` is invalid.
+        Get a configured Data object for processing specific simulations.
+        
+        Returns a Data object pre-configured with simulation subset and filters.
+        The returned object can process different data types independently.
         """
-        # Set seaborn styles
-        sns.set_style(seaborn_style)
-        sns.set_context(seaborn_context, rc={
-            "font.size": font_size,
-            "axes.titlesize": font_size,
-            "axes.labelsize": font_size,
-            "xtick.labelsize": font_size,
-            "ytick.labelsize": font_size,
-            "legend.fontsize": font_size,
-            "font.family": "serif"
-        })
+        if simulations is None:
+            simulations = list(range(len(self.simulation_dirs)))
         
-        # Validate inputs
-        valid_figure_types = {"line", "hist", "3dhist", "heatmap", "stacked"}
-        valid_show_types = {"both", "individuals", "average"}
-
-        if figure_type not in valid_figure_types:
-            raise ValueError(f"Invalid figure_type '{figure_type}'. Must be one of {valid_figure_types}.")
-
-        if show_type not in valid_show_types:
-            raise ValueError(f"Invalid show_type '{show_type}'. Must be one of {valid_show_types}.")
-
-        # Set default simulations if not provided
-        simulations = simulations or list(range(len(self.simulation_dirs)))
+        # Validate simulation indices
+        max_idx = len(self.simulation_dirs) - 1
+        invalid = [s for s in simulations if s < 0 or s > max_idx]
+        if invalid:
+            raise ValueError(f"Invalid simulation indices: {invalid}. Valid range: 0-{max_idx}")
         
-        # Validate legend
-        if not legend:
-            raise ValueError("Legend must be provided.")
-
-        # Print plot configuration
-        print(f"Plotting {figure_type} with:")
-        print(f"- x-axis: {x}")
-        print(f"- y-axis: {y}")
-        print(f"- z-axis: {z if z else 'None'}")
-        print(f"- Simulations: {len(simulations)} selected")
-        print(f"- Legend: {legend}")
-        print(f"- Display mode: {show_type}")
-
-        # Dispatch to the appropriate plotting function based on plot configuration
-        plot_config = (figure_type, x, y, z)
-        
-        # Line plots
-        if plot_config == ("line", "time", "species", None):
-            plot_line_speciescopy_vs_time(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                user_file_name=user_file_name,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "time", "count", None):
-            plot_complex_count_vs_time(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                target_complexes=legend,  # legend contains the complex specifications
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "time", "maximum_assembly", None):
-            plot_line_maximum_assembly_size_vs_time(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "time", "average_assembly", None):
-            plot_line_average_assembly_size_vs_time(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "time", "fraction_of_monomers_assembled", None):
-            plot_line_fraction_of_monomers_assembled_vs_time(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "size", "free_energy", None):
-            plot_line_free_energy(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "size", "symmetric_association_probability", None):
-            plot_line_symmetric_association_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "size", "asymmetric_association_probability", None):
-            plot_line_asymmetric_association_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "size", "symmetric_dissociation_probability", None):
-            plot_line_symmetric_dissociation_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "size", "asymmetric_dissociation_probability", None):
-            plot_line_asymmetric_dissociation_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "size", "growth_probability", None):
-            plot_line_growth_probability(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("line", "size", "lifetime", None):
-            plot_line_liftime(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                time_frame=time_frame,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-            
-        # Histogram plots
-        elif plot_config == ("hist", "size", "complex_count", None):
-            plot_hist_complex_species_size(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                bins=bins,
-                time_frame=time_frame,
-                frequency=frequency,
-                normalize=normalize,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("hist", "size", "monomer_count", None):
-            plot_hist_monomer_counts_vs_complex_size(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                bins=bins,
-                time_frame=time_frame,
-                frequency=frequency,
-                normalize=normalize,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-            
-        # 3D histogram plots
-        elif plot_config == ("3dhist", "size", "time", "complex_count"):
-            plot_hist_complex_species_size_3d(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                bins=bins,
-                time_bins=time_bins,
-                frequency=frequency,
-                normalize=normalize,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("3dhist", "size", "time", "monomer_count"):
-            plot_hist_monomer_counts_vs_complex_size_3d(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                bins=bins,
-                time_bins=time_bins,
-                frequency=frequency,
-                normalize=normalize,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-            
-        # Heatmap plots
-        elif plot_config == ("heatmap", "size", "time", "complex_count"):
-            plot_heatmap_complex_species_size(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                bins=bins,
-                time_bins=time_bins,
-                frequency=frequency,
-                normalize=normalize,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("heatmap", "size", "time", "monomer_count"):
-            plot_heatmap_monomer_counts_vs_complex_size(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                bins=bins,
-                time_bins=time_bins,
-                frequency=frequency,
-                normalize=normalize,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        elif plot_config == ("heatmap", "size", "size", "complex_count"):
-            plot_heatmap_species_a_vs_species_b(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                bins=bins,
-                time_bins=time_bins,
-                frequency=frequency,
-                normalize=normalize,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-            
-        # Stacked histogram plots
-        elif plot_config == ("stacked", "size", "complex_count", None):
-            plot_stackedhist_complex_species_size(
-                save_dir=self.save_dir,
-                simulations_index=simulations,
-                legend=legend,
-                bins=bins,
-                time_frame=time_frame,
-                frequency=frequency,
-                normalize=normalize,
-                show_type=show_type,
-                simulations_dir=self.simulation_dirs,
-                figure_size=figure_size
-            )
-        else:
-            raise ValueError(f"Unsupported plot configuration: {plot_config}")
-
-    def visualize_trajectory(
-        self, 
-        trajectory_path: str = None, 
-        save_gif: bool = False, 
-        gif_name: str = "trajectory.gif", 
-        fps: int = 10
-    ):
+        # Create and configure data object
+        data = Data()
+        data.configure(
+            simulation_dirs=self.simulation_dirs,
+            simulations=simulations,
+            species=species,
+            time_frame=time_frame,
+            cache_dir=self.plot_data_dir
+        )
+        self.data = data
+        return data
+    
+    def set_plot(self, **kwargs) -> PlotConfigure:
         """
-        Visualizes a trajectory from an XYZ file and optionally saves it as a GIF.
-
-        Parameters:
-            trajectory_path (str): Path to the XYZ trajectory file.
-            save_gif (bool): If True, saves the trajectory animation as a GIF.
-            gif_name (str): Name of the output GIF file (if save_gif is True).
-            fps (int): Frames per second for the GIF animation.
+        Get a configured PlotConfigure object with custom settings.
+        
+        Returns a PlotConfigure object pre-configured with plotting parameters.
         """
-        import warnings
-        import tempfile
-        import os
-        import sys
-
-        # Ignore OVITO warning
-        warnings.filterwarnings('ignore', message='.*OVITO.*PyPI')
+        plot_config = PlotConfigure(self.save_dir)
+        plot_config.configure(**kwargs)
+        self.plot = plot_config
+        return plot_config
+    
+    # Legacy compatibility methods
+    def plot_figure(self, figure_type: str, **kwargs):
+        """Legacy interface for backward compatibility."""
+        return self._legacy.plot_figure(figure_type, **kwargs)
+    
+    def visualize_trajectory(self, **kwargs):
+        """Legacy interface for trajectory visualization."""
+        return self._legacy.visualize_trajectory(**kwargs)
+    
+    # Quick access methods for common operations
+    def quick_plot(self, plot_type: str, **kwargs):
+        """
+        Quick plotting method that handles data processing and plotting in one call.
         
-        try:
-            from ovito.io import import_file
-            from ovito.vis import Viewport
-            import imageio 
-            from PIL import Image
-        except ImportError:
-            msg = (
-                "OVITO, imageio, and/or Pillow are required for trajectory visualization but not found."
-                "These are optional dependencies. Please install them to enable this feature."
-                "If using pip, you can install them with: pip install ionerdss[ovito_rendering]"
-                "If using Conda, ensure ovito, imageio, and pillow are installed, for example from conda-forge and conda.ovito.org:"
-                "  conda install -c conda.ovito.org -c conda-forge ovito imageio pillow"
-            )
-            raise ImportError(msg)
-
-        # Find trajectory file if not specified
-        if trajectory_path is None:
-            if not self.simulation_dirs:
-                raise ValueError("No simulation directories found to infer trajectory_path.")
-            trajectory_path = os.path.join(self.simulation_dirs[0], "DATA", "trajectory.xyz")
+        Combines get_data() and plotting for simple use cases.
+        """
+        # Extract data parameters
+        data_params = {
+            'simulations': kwargs.pop('simulations', None),
+            'species': kwargs.pop('species', None),
+            'time_frame': kwargs.pop('time_frame', None)
+        }
         
-        if not os.path.exists(trajectory_path):
-            raise FileNotFoundError(f"Trajectory file '{trajectory_path}' not found.")
+        # Extract plot parameters
+        plot_params = {k: v for k, v in kwargs.items() 
+                      if k in ['figure_size', 'style', 'font_size', 'save_format']}
         
-        # Import trajectory
-        pipeline = import_file(trajectory_path)
-        pipeline.add_to_scene()
-        vp = Viewport(type=Viewport.Type.PERSPECTIVE)
-        vp.zoom_all()
-
-        # Create temporary directory for frames
-        with tempfile.TemporaryDirectory() as temp_dir_path:
-            frame_paths = []
-
-            # Render frames
-            for frame in range(pipeline.source.num_frames):
-                output_path = os.path.join(temp_dir_path, f"frame_{frame:04d}.png")
-                vp.render_image(size=(800, 600), filename=output_path, frame=frame)
-                frame_paths.append(output_path)
-
-            # Create GIF
-            gif_path = os.path.join(temp_dir_path, "trajectory.gif")
-            imageio.mimsave(gif_path, [imageio.imread(frame) for frame in frame_paths], fps=fps)
-
-            try:
-                from IPython.display import display, Image as IPImage
-                # Display GIF
-                display(IPImage(filename=gif_path))
-            except ImportError:
-                print("IPython is not available. GIF will not be displayed in this environment.")
-                print(f"GIF is available at: {gif_path}")
-
-            # Save GIF if requested
-            if save_gif:
-                if not hasattr(self, 'save_dir') or not self.save_dir:
-                    gif_save_destination_dir = os.getcwd() 
-                    print(f"Warning: self.save_dir not set. Saving GIF to current directory: {gif_save_destination_dir}")
-                else:
-                    gif_save_destination_dir = self.save_dir
-                
-                if os.path.exists(gif_path):
-                    import shutil
-                    shutil.move(gif_path, gif_save_path)
-                    print(f"Trajectory GIF saved at: {gif_save_path}")
-                else:
-                    print(f"Error: Temporary GIF file {gif_path} not found. Cannot save.")
-            elif not save_gif:
-                if 'IPython.display' not in sys.modules:
-                    print(f"Note: GIF was created at {gif_path} but not saved and IPython is not available for display. It will be deleted.")
+        # Get configured objects
+        data = self.get_data(**data_params)
+        plot_config = self.set_plot(**plot_params)
+        
+        # Dispatch to appropriate plotting method
+        plot_method = getattr(plot_config, plot_type, None)
+        if plot_method is None:
+            raise ValueError(f"Unknown plot type: {plot_type}")
+        
+        return plot_method(data=data, **kwargs)
+    
+    def get_simulation_info(self) -> Dict[str, Any]:
+        """Get information about discovered simulations."""
+        return {
+            'save_dir': self.save_dir,
+            'num_simulations': len(self.simulation_dirs),
+            'simulation_dirs': self.simulation_dirs,
+            'plot_data_dir': self.plot_data_dir
+        }
+    
+    def clear_cache(self):
+        """Clear all cached data."""
+        self.data.clear_cache()
+        print("All cached data cleared.")
+    
+    # Context manager support for batch operations
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.clear_cache()
