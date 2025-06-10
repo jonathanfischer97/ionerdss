@@ -7,7 +7,6 @@ import os
 import pickle
 import hashlib
 from typing import List, Optional, Dict, Any, Tuple
-from ..data_readers import DataIO
 from .processors import HistogramProcessor, CopyNumberProcessor, TransitionProcessor
 
 
@@ -22,7 +21,6 @@ class Data:
     def __init__(self):
         self._config = {}
         self._cache = {}
-        self._data_io = DataIO()
         
         # Initialize specialized processors
         self.histogram = HistogramProcessor()
@@ -44,22 +42,37 @@ class Data:
             'cache_dir': cache_dir
         }
         self._selected_dirs = [simulation_dirs[i] for i in self._config['simulations']]
+        self.histogram.configure(self._selected_dirs)
+        self.copy_numbers.configure(self._selected_dirs)
+        self.transitions.configure(self._selected_dirs)
     
     def get_histogram_data(self, **kwargs) -> Dict[str, Any]:
-        """Get processed histogram complex data with enhanced processing."""
+        """
+        Get histogram complex data from multiple simulation directories.
+        
+        Parameters:
+            sim_dirs (List[str]): List of simulation directories
+            
+        Returns:
+            Dict[str, Any]:
+                {
+                    'raw_data': all data read,
+                    'time_series': time series,
+                    'species_filter': selected species,
+                    'metadata': {
+                        'num_simulations': number of simulations,
+                        'time_frame': selected time frame,
+                        'cache_key': cache_key
+                }
+        }
+        """
         cache_key = self._generate_cache_key('histogram', **kwargs)
         
         if cache_key in self._cache:
             return self._cache[cache_key]
         
         # Load raw data
-        all_data = []
-        for sim_dir in self._selected_dirs:
-            data = self._data_io.get_histogram_complexes(sim_dir)
-            if data["time_series"]:
-                if self._config['time_frame']:
-                    data = self._filter_by_time_frame(data, self._config['time_frame'])
-                all_data.append(data)
+        all_data = self.histogram.read_multiple(self._selected_dirs)
         
         # Process and structure data
         result = {
@@ -204,24 +217,8 @@ class Data:
         key_str = str(sorted(key_data.items()))
         return hashlib.md5(key_str.encode()).hexdigest()[:12]
     
-    def _filter_by_time_frame(self, data: Dict[str, Any], time_frame: Tuple[float, float]) -> Dict[str, Any]:
-        """Filter data by time frame."""
-        start, end = time_frame
-        filtered_indices = [
-            i for i, t in enumerate(data["time_series"]) 
-            if start <= t <= end
-        ]
-        
-        return {
-            "time_series": [data["time_series"][i] for i in filtered_indices],
-            "complexes": [data["complexes"][i] for i in filtered_indices]
-        }
     
-    def _align_time_series(self, all_data: List[Dict[str, Any]]) -> List[float]:
-        """Find common time points across simulations."""
-        if not all_data:
-            return []
-        return all_data[0]["time_series"]
+    
     
     def clear_cache(self):
         """Clear all cached data and processor caches."""

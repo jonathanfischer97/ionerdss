@@ -44,98 +44,7 @@ def read_copy_numbers(sim_dir: str) -> Optional[pd.DataFrame]:
         return None
 
 
-def parse_complex_line(line: str) -> Tuple[Optional[int], Optional[Dict[str, float]]]:
-    """
-    Parse a single complex line and return a dictionary with species and counts.
-    
-    Parameters:
-        line (str): A line of text containing complex data
-        
-    Returns:
-        Tuple[Optional[int], Optional[Dict[str, float]]]: 
-            A tuple containing the count of complexes and a dictionary mapping species to counts
-    """
-    match = re.match(r"(\d+)\s+([\w\.\s:]+)", line)
-    if not match:
-        return None, None
 
-    count = int(match.group(1))
-    species_data = match.group(2).split()
-    species_dict = {}
-
-    try:
-        for i in range(0, len(species_data), 2):
-            species_name = species_data[i].strip(":")
-            species_count = int(species_data[i + 1].strip("."))
-            species_dict[species_name] = species_dict.get(species_name, 0) + species_count
-    except (IndexError, ValueError) as e:
-        logger.warning(f"Error parsing complex line '{line}': {e}")
-        return None, None
-
-    return count, species_dict
-
-
-def read_histogram_complexes(sim_dir: str) -> Dict[str, Any]:
-    """
-    Read histogram complex data from a simulation directory.
-    
-    Parameters:
-        sim_dir (str): Path to the simulation directory
-        
-    Returns:
-        Dict[str, Any]: Dictionary containing time series and complex data
-    """
-    data_file = os.path.join(sim_dir, "DATA", "histogram_complexes_time.dat")
-    
-    if not os.path.exists(data_file):
-        logger.warning(f"Histogram complexes file not found: {data_file}")
-        return {"time_series": [], "complexes": []}
-    
-    time_series = []
-    all_complexes = []
-    
-    try:
-        with open(data_file, "r") as f:
-            lines = f.readlines()
-        
-        current_time = None
-        current_complexes = []
-        
-        for line_num, line in enumerate(lines, 1):
-            line = line.strip()
-            if not line:
-                continue
-                
-            time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
-            if time_match:
-                if current_time is not None:
-                    time_series.append(current_time)
-                    all_complexes.append(current_complexes)
-                    current_complexes = []
-                
-                current_time = float(time_match.group(1))
-            else:
-                count, species_dict = parse_complex_line(line)
-                if species_dict:
-                    current_complexes.append((count, species_dict))
-                elif line.strip() and not line.startswith('#'):
-                    logger.debug(f"Could not parse line {line_num}: {line}")
-        
-        # Add the last time point
-        if current_time is not None and current_complexes:
-            time_series.append(current_time)
-            all_complexes.append(current_complexes)
-        
-        logger.debug(f"Successfully read histogram complexes from {data_file}")
-        
-    except Exception as e:
-        logger.error(f"Error reading histogram complexes from {data_file}: {e}")
-        return {"time_series": [], "complexes": []}
-    
-    return {
-        "time_series": time_series,
-        "complexes": all_complexes
-    }
 
 
 def filter_by_time_frame(data: Dict[str, Any], time_frame: Optional[Tuple[float, float]] = None) -> Dict[str, Any]:
@@ -465,28 +374,6 @@ class DataIO:
         if result is not None and self._cache_enabled:
             self._cache[cache_key] = result
             logger.debug(f"Cached copy numbers for: {sim_dir}")
-        
-        return result
-    
-    def get_histogram_complexes(self, sim_dir: str) -> Dict[str, Any]:
-        """
-        Get histogram complex data from a simulation directory, using cache if available.
-        
-        Parameters:
-            sim_dir (str): Path to the simulation directory
-            
-        Returns:
-            Dict[str, Any]: Dictionary containing time series and complex data
-        """
-        cache_key = (sim_dir, "histogram_complexes")
-        if self._cache_enabled and cache_key in self._cache:
-            logger.debug(f"Cache hit for histogram complexes: {sim_dir}")
-            return self._cache[cache_key]
-        
-        result = read_histogram_complexes(sim_dir)
-        if self._cache_enabled:
-            self._cache[cache_key] = result
-            logger.debug(f"Cached histogram complexes for: {sim_dir}")
         
         return result
     

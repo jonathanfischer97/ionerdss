@@ -17,6 +17,10 @@ class CopyNumberProcessor:
     
     def __init__(self):
         self._cache = {}
+        self._selected_dirs = []
+
+    def configure(self, selected_dirs: List[str]):
+        self._selected_dirs = selected_dirs
     
     def align_time_series(self, copy_data: Dict[str, Any]) -> Dict[str, Any]:
         """Align time series across multiple simulations to common time points."""
