@@ -8,7 +8,7 @@ import pandas as pd
 from typing import List, Dict, Any, Tuple, Optional
 
 # Helper functions
-from utils import parse_histogram_complex, parse_histogram_line, filter_by_time_frame, align_time_series
+from .utils import parse_histogram_complex, parse_histogram_line, filter_by_time_frame, align_time_series
 
 
 # Configure logging, 
@@ -37,7 +37,7 @@ class HistogramProcessor:
         """Nick name for read_multiple"""
         return self.read_multiple(self, selected_dirs)
     
-    def read_single(sim_dir: str) -> Dict[str, Any]:
+    def read_single(self, sim_dir: str) -> Dict[str, Any]:
         """
         Read histogram complex data from a simulation directory.
         
@@ -68,7 +68,7 @@ class HistogramProcessor:
                 if not line:
                     continue
                     
-                time_match = re.match(r"Time \(s\): (\d*\.?\d+)", line)
+                time_match = re.match(r"Time \(s\):\s+([\d.]+(?:[eE][+-]?\d+)?)", line)
                 if time_match:
                     if current_time is not None:
                         time_series.append(current_time)
@@ -95,15 +95,19 @@ class HistogramProcessor:
             return {"time_series": [], "complexes": []}
         
         return {
-            "time_series": time_series,
+            "Time (s)": time_series,
             "complexes": all_complexes
         }
 
-    def read_multiple(self, selected_dirs: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+    def read_multiple(
+            self, 
+            selected_dirs: Optional[List[str]] = None, 
+            config:Dict[str,Any] = {"time_frame":None}
+        ) -> List[Dict[str, Any]]:
         """read multiple files"""
 
         # check cache
-        cache_key = "raw_data"
+        cache_key = "all_data"
         if cache_key in self._cache:
             return self._cache[cache_key]
         
@@ -115,10 +119,10 @@ class HistogramProcessor:
         # Load raw data
         all_data = []
         for sim_dir in selected_dirs:
-            data = self.read(sim_dir)
-            if data["time_series"]:
-                if self._config['time_frame']:
-                    data = filter_by_time_frame(data, self._config['time_frame'])
+            data = self.read_single(sim_dir)
+            if data["Time (s)"]:
+                if config['time_frame']:
+                    data = filter_by_time_frame(data, config['time_frame'])
                 all_data.append(data)
 
         self._cache[cache_key] = all_data
@@ -195,19 +199,21 @@ class HistogramProcessor:
             legend_names = ["A1", "B2", "A3B4"]
             stats_df = processor.get_time_series(data, legends, legend_names)
         """
-        cache_key = f"time_series_{hash(tuple(tuple(leg) for leg in legends))}"
-        if cache_key in self._cache:
-            return self._cache[cache_key]
         
-        cache_key = f"raw_data"
+        cache_key = f"all_data"
         if cache_key in self._cache:
-            raw_data = self._cache[cache_key]
+            all_data = self._cache[cache_key]
         else:
             logger.warning("No data read. Start reading...")
             try:
-                raw_data = self.read_multiple()
+                all_data = self.read_multiple()
             except Exception as e:
                 logger.error(f"No data provided: {e}")
+
+
+        cache_key = f"time_series_{hash(tuple(sorted(legends)))}"
+        if cache_key in self._cache:
+            return self._cache[cache_key]
         
         # Generate legend names if not provided
         if legend_names is None:
@@ -216,47 +222,58 @@ class HistogramProcessor:
         if len(legend_names) != len(legends):
             raise ValueError("Number of legend_names must match number of legends")
         
-        legend_dicts = [parse_histogram_complex(l) for l in legends]
+        legend_dicts = {}
+        for lname, l in zip(legend_names, legends):
+            legend_dicts[lname] = parse_histogram_complex(l)
+
+        logger.debug('Dictionary of legends: ' + str(legend_dicts))
         
-        common_time_points = align_time_series(raw_data)
+        common_time_points = align_time_series(all_data)
         min_length = len(common_time_points)
         
         # Initialize result dictionary
         result_data = {'Time (s)': common_time_points}
-        for ldict in legend_dicts:
-            result_data[ldict] = [] # all data points
+        for lname in legend_dicts:
+            result_data[lname] = [] # all data points
         
         # Process over all data
             
-        for data in raw_data:
-            if not data['time_series'] or len(data['time_series']) < min_length:
+        for data in all_data:
+            if not data['Time (s)'] or len(data['Time (s)']) < min_length:
                 logger.critical(f"Illegal time_series. This should not happen. Min length calculated is {min_length}. \n" +
                                 f"This time series has length {len(data['time_series'])}")
                 continue
                 
+            # initialize
             time_series = {}
-            for ldict in legend_dicts:
-                time_series[ldict] = []
+            for lname in legend_dicts:
+                time_series[lname] = [0 for i in range(min_length)]
+            
+            logger.debug('Time series initialized with all 0: ' + str(time_series))
 
             for time_idx in range(min_length):
                 complexes = data['complexes'][time_idx]
-                
-                # Calculate sizes for all complexes at this time point
-                sizes_at_time = []
                 for count, species_dict in complexes:
-                    if species_dict in legend_dicts:
-                        time_series[ldict].append(count)
+                    # find the corresponding legend name
+                    for lname in legend_dicts:
+                        if legend_dicts[lname] == species_dict:
+                            time_series[lname][time_idx] = count
+
+            logger.debug('Time series after reading: ' + str(time_series))
             
-            result_data[ldict].append(time_series[ldict])
+            for lname in legend_dicts:
+                result_data[lname].append(time_series[lname])
 
         self._cache[cache_key] = result_data
 
         return result_data
         
 
-    def calculate_time_series_statistics(self, 
-                                       legends: List[List[str]],
-                                       legend_names: Optional[List[str]] = None) -> Dict[Dict,Any]:
+    def calculate_time_series_statistics(
+            self, 
+            legends: List[List[str]],
+            legend_names: Optional[List[str]] = None
+        ) -> Dict[Dict,Any]:
         """
         Calculate time series statistics (mean, std, median) for different legends.
         
@@ -286,19 +303,16 @@ class HistogramProcessor:
             # Species_B_Mean, Species_B_Std, Species_B_Median,
             # Combined_AB_Mean, Combined_AB_Std, Combined_AB_Median
         """
-        cache_key = f"time_series_stats_{hash(tuple(tuple(leg) for leg in legends))}"
+        cache_key = f"time_series_stats_{hash(tuple(sorted(legends)))}"
         if cache_key in self._cache:
             return self._cache[cache_key]
         
-        try: # to get the time series
-            result_data = self.get_time_series(legends, legend_names)
-        except Exception as e:
-            logger.error("Error getting time series: {e}")
+        result_data = self.get_time_series(legends=legends, legend_names=legend_names)
             
         
         # Calculate statistics across simulations for each time point
         result_stat = {'Time (s)': result_data['Time (s)']}
-        legend_names = [key for key in result_stat if key != 'Time (s)']
+        legend_names = [key for key in result_data if key != 'Time (s)']
         try:
             for species in legend_names:
                 result_stat[species] = {
@@ -307,7 +321,7 @@ class HistogramProcessor:
                     'median':np.median(result_data[species], axis=0),
                 }
         except Exception as e:
-            logger.error("Failed calculating stats: {e}")
+            logger.error(f"Failed calculating stats: {e}")
         
         # Cache the result
         self._cache[cache_key] = result_stat

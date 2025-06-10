@@ -76,7 +76,7 @@ def filter_by_time_frame(data: Dict[str, Any], time_frame: Tuple[float, float]) 
         """Filter data by time frame."""
         start, end = time_frame
         filtered_indices = [
-            i for i, t in enumerate(data["time_series"]) 
+            i for i, t in enumerate(data["Time (s)"]) 
             if start <= t <= end
         ]
         
@@ -91,7 +91,7 @@ def align_time_series(all_data: List[Dict[str, Any]]) -> List[float]:
         TODO: Should return the aligned time series and indices for each trajectory.
         """
 
-        time_series_list = [data['time_series'] for data in all_data if data['time_series']]
+        time_series_list = [data['Time (s)'] for data in all_data if data['Time (s)']]
         if not time_series_list:
             return []
         
