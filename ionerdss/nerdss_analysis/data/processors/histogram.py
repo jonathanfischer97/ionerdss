@@ -1,11 +1,21 @@
 """
 Histogram data processor for complex analysis.
 """
-
+import os
 import numpy as np
+import re
 import pandas as pd
 from typing import List, Dict, Any, Tuple, Optional
-from collections import defaultdict
+
+# Helper functions
+from .utils import parse_histogram_complex, parse_histogram_line, filter_by_time_frame, align_time_series
+
+
+# Configure logging, 
+import logging
+# inherit from the global level (should be setup in main)
+logger = logging.getLogger(__name__)
+
 
 
 class HistogramProcessor:
@@ -18,7 +28,117 @@ class HistogramProcessor:
     
     def __init__(self):
         self._cache = {}
+        self._selected_dirs = []
+
+    def configure(self, selected_dirs: List[str]):
+        self._selected_dirs = selected_dirs
+
+    def read(self, selected_dirs, config = {"time_frame":None}) -> List[Dict[str, Any]]:
+        """Decide to read multiple or read single"""
+
+        # parse selected directories
+        if not selected_dirs:
+            if not self._selected_dirs:
+                raise FileNotFoundError("No directory selected for reading.")
+            selected_dirs = self._selected_dirs
+
+        if isinstance(selected_dirs, list):
+            return self.read_multiple(selected_dirs, config), 'Multiple'
+        elif isinstance(selected_dirs, str):
+            return self.read_single(selected_dirs), 'Single'
     
+    def read_single(self, sim_dir: str) -> Dict[str, Any]:
+        """
+        Read histogram complex data from a simulation directory.
+        
+        Parameters:
+            sim_dir (str): Path to the simulation directory
+            
+        Returns:
+            Dict[str, Any]: Dictionary containing time series and complex data
+        """
+        data_file = os.path.join(sim_dir, "DATA", "histogram_complexes_time.dat")
+        
+        if not os.path.exists(data_file):
+            logger.warning(f"Histogram complexes file not found: {data_file}")
+            return {"time_series": [], "complexes": []}
+        
+        time_series = []
+        all_complexes = []
+        
+        try:
+            with open(data_file, "r") as f:
+                lines = f.readlines()
+            
+            current_time = None
+            current_complexes = []
+            
+            for line_num, line in enumerate(lines, 1):
+                line = line.strip()
+                if not line:
+                    continue
+                    
+                time_match = re.match(r"Time \(s\):\s+([\d.]+(?:[eE][+-]?\d+)?)", line)
+                if time_match:
+                    if current_time is not None:
+                        time_series.append(current_time)
+                        all_complexes.append(current_complexes)
+                        current_complexes = []
+                    
+                    current_time = float(time_match.group(1))
+                else:
+                    count, species_dict = parse_histogram_line(line)
+                    if species_dict:
+                        current_complexes.append((count, species_dict))
+                    elif line.strip() and not line.startswith('#'):
+                        logger.debug(f"Could not parse line {line_num}: {line}")
+            
+            # Add the last time point
+            if current_time is not None and current_complexes:
+                time_series.append(current_time)
+                all_complexes.append(current_complexes)
+            
+            logger.debug(f"Successfully read histogram complexes from {data_file}")
+            
+        except Exception as e:
+            logger.error(f"Error reading histogram complexes from {data_file}: {e}")
+            return {"time_series": [], "complexes": []}
+        
+        return {
+            "Time (s)": time_series,
+            "complexes": all_complexes
+        }
+
+    def read_multiple(
+            self, 
+            selected_dirs: Optional[List[str]] = None, 
+            config:Dict[str,Any] = {"time_frame":None}
+        ) -> List[Dict[str, Any]]:
+        """read multiple files"""
+
+        # check cache
+        cache_key = "all_data"
+        if cache_key in self._cache:
+            return self._cache[cache_key]
+        
+        if not selected_dirs:
+            if not self._selected_dirs:
+                raise FileNotFoundError("No directory selected for reading.")
+            selected_dirs = self._selected_dirs
+
+        # Load raw data
+        all_data = []
+        for sim_dir in selected_dirs:
+            data = self.read_single(sim_dir)
+            if data["Time (s)"]:
+                if config['time_frame']:
+                    data = filter_by_time_frame(data, config['time_frame'])
+                all_data.append(data)
+
+        self._cache[cache_key] = all_data
+
+        return all_data
+
     def calculate_complex_sizes(self, 
                               histogram_data: Dict[str, Any], 
                               legend: List[str]) -> List[List[int]]:
@@ -30,10 +150,10 @@ class HistogramProcessor:
         all_sizes = []
         for data in histogram_data['raw_data']:
             sim_sizes = []
-            for complexes in data['complexes']:
-                for count, species_dict in complexes:
-                    size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
-                    sim_sizes.extend([size] * count)
+        for complexes in data["complexes"]:
+            for count, species_dict in complexes:
+                complex_size = sum(species_dict[species] for species in legend if species in species_dict)
+                sim_sizes.extend([complex_size] * count)
             all_sizes.append(sim_sizes)
         
         self._cache[cache_key] = all_sizes
@@ -59,11 +179,12 @@ class HistogramProcessor:
             'min': int(np.min(sizes_array)),
             'total_complexes': len(combined_sizes)
         }
+    
+    def get_time_series(self, 
+                        legends: List[List[str]],
+                        legend_names: Optional[List[str]] = None
+        ) -> pd.DataFrame:
 
-    def calculate_time_series_statistics(self, 
-                                       histogram_data: Dict[str, Any], 
-                                       legends: List[List[str]],
-                                       legend_names: Optional[List[str]] = None) -> pd.DataFrame:
         """
         Calculate time series statistics (mean, std, median) for different legends.
         
@@ -73,9 +194,108 @@ class HistogramProcessor:
         Parameters:
             histogram_data (Dict[str, Any]): Processed histogram data from get_histogram_data()
             legends (List[List[str]]): List of legend definitions, where each legend is a list of species.
-                Example: [["A"], ["B"], ["A", "B"]] for separate A, B, and combined A+B analysis
-            legend_names (Optional[List[str]]): Custom names for each legend. If None, auto-generated.
-                Example: ["Species_A", "Species_B", "Combined_AB"]
+                Example: ["A: 1.", "B: 2.", "A: 3. B: 4."] for separate A, B, and combined A+B analysis
+            legend_names (Optional[List[str]]): Custom names for each legend. If None, use legends.
+                Example: ["A1", "B2", "A3B4"]
+        
+        Returns:
+            pd.DataFrame: DataFrame with columns:
+                - Time (s): Time points
+                - For each legend: Each trajectory's data for aligned time points
+                
+        Example:
+            # Get time series statistics for individual and combined species
+            legends = ["A: 1.", "B: 2.", "A: 3. B: 4."]
+            legend_names = ["A1", "B2", "A3B4"]
+            stats_df = processor.get_time_series(data, legends, legend_names)
+        """
+        
+        cache_key = f"all_data"
+        if cache_key in self._cache:
+            all_data = self._cache[cache_key]
+        else:
+            logger.warning("No data read. Start reading...")
+            try:
+                all_data = self.read_multiple()
+            except Exception as e:
+                logger.error(f"No data provided: {e}")
+
+
+        cache_key = f"time_series_{hash(tuple(sorted(legends)))}"
+        if cache_key in self._cache:
+            return self._cache[cache_key]
+        
+        # Generate legend names if not provided
+        if legend_names is None:
+            legend_names = legends
+        
+        if len(legend_names) != len(legends):
+            raise ValueError("Number of legend_names must match number of legends")
+        
+        legend_dicts = {}
+        for lname, l in zip(legend_names, legends):
+            legend_dicts[lname] = parse_histogram_complex(l)
+
+        logger.debug('Dictionary of legends: ' + str(legend_dicts))
+        
+        common_time_points = align_time_series(all_data)
+        min_length = len(common_time_points)
+        
+        # Initialize result dictionary
+        result_data = {'Time (s)': common_time_points}
+        for lname in legend_dicts:
+            result_data[lname] = [] # all data points
+        
+        # Process over all data
+            
+        for data in all_data:
+            if not data['Time (s)'] or len(data['Time (s)']) < min_length:
+                logger.critical(f"Illegal time_series. This should not happen. Min length calculated is {min_length}. \n" +
+                                f"This time series has length {len(data['time_series'])}")
+                continue
+                
+            # initialize
+            time_series = {}
+            for lname in legend_dicts:
+                time_series[lname] = [0 for i in range(min_length)]
+            
+            logger.debug('Time series initialized with all 0: ' + str(time_series))
+
+            for time_idx in range(min_length):
+                complexes = data['complexes'][time_idx]
+                for count, species_dict in complexes:
+                    # find the corresponding legend name
+                    for lname in legend_dicts:
+                        if legend_dicts[lname] == species_dict:
+                            time_series[lname][time_idx] = count
+
+            logger.debug('Time series after reading: ' + str(time_series))
+            
+            for lname in legend_dicts:
+                result_data[lname].append(time_series[lname])
+
+        self._cache[cache_key] = result_data
+
+        return result_data
+        
+
+    def calculate_time_series_statistics(
+            self, 
+            legends: List[List[str]],
+            legend_names: Optional[List[str]] = None
+        ) -> Dict[Dict,Any]:
+        """
+        Calculate time series statistics (mean, std, median) for different legends.
+        
+        This method processes histogram data across multiple simulations and time points
+        to generate statistical measures for each legend over time.
+        
+        Parameters:
+            histogram_data (Dict[str, Any]): Processed histogram data from get_histogram_data()
+            legends (List[List[str]]): List of legend definitions, where each legend is a list of species.
+                Example: ["A: 1.", "B: 2.", "A: 3. B: 4."] for separate A, B, and combined A+B analysis
+            legend_names (Optional[List[str]]): Custom names for each legend. If None, use legends.
+                Example: ["A1", "B2", "A3B4"]
         
         Returns:
             pd.DataFrame: DataFrame with columns:
@@ -84,8 +304,8 @@ class HistogramProcessor:
                 
         Example:
             # Get time series statistics for individual and combined species
-            legends = [["A"], ["B"], ["A", "B"]]
-            legend_names = ["Species_A", "Species_B", "Combined_AB"]
+            legends = ["A: 1.", "B: 2.", "A: 3. B: 4."]
+            legend_names = ["A1", "B2", "A3B4"]
             stats_df = processor.calculate_time_series_statistics(data, legends, legend_names)
             
             # Results in DataFrame with columns:
@@ -93,272 +313,32 @@ class HistogramProcessor:
             # Species_B_Mean, Species_B_Std, Species_B_Median,
             # Combined_AB_Mean, Combined_AB_Std, Combined_AB_Median
         """
-        cache_key = f"time_series_stats_{hash(tuple(tuple(leg) for leg in legends))}"
+        cache_key = f"time_series_stats_{hash(tuple(sorted(legends)))}"
         if cache_key in self._cache:
             return self._cache[cache_key]
         
-        raw_data = histogram_data['raw_data']
-        if not raw_data:
-            return pd.DataFrame()
-        
-        # Generate legend names if not provided
-        if legend_names is None:
-            legend_names = []
-            for i, legend in enumerate(legends):
-                if len(legend) == 1:
-                    legend_names.append(f"Species_{legend[0]}")
-                else:
-                    legend_names.append(f"Combined_{'_'.join(legend)}")
-        
-        if len(legend_names) != len(legends):
-            raise ValueError("Number of legend_names must match number of legends")
-        
-        # Find common time points across all simulations
-        time_series_list = [data['time_series'] for data in raw_data if data['time_series']]
-        if not time_series_list:
-            return pd.DataFrame()
-        
-        # Use the shortest time series to ensure alignment
-        min_length = min(len(ts) for ts in time_series_list)
-        common_time_points = time_series_list[0][:min_length]
-        
-        # Initialize result dictionary
-        result_data = {'Time (s)': common_time_points}
-        
-        # Process each legend
-        for legend_idx, (legend, legend_name) in enumerate(zip(legends, legend_names)):
-            # Calculate complex sizes for each simulation at each time point
-            sim_time_series = []
+        result_data = self.get_time_series(legends=legends, legend_names=legend_names)
             
-            for data in raw_data:
-                if not data['time_series'] or len(data['time_series']) < min_length:
-                    continue
-                    
-                time_series = []
-                for time_idx in range(min_length):
-                    complexes = data['complexes'][time_idx]
-                    
-                    # Calculate sizes for all complexes at this time point
-                    sizes_at_time = []
-                    for count, species_dict in complexes:
-                        size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
-                        if size > 0:  # Only include non-zero sizes
-                            sizes_at_time.extend([size] * count)
-                    
-                    time_series.append(sizes_at_time)
-                
-                sim_time_series.append(time_series)
-            
-            if not sim_time_series:
-                # No valid data for this legend
-                result_data[f"{legend_name}_Mean"] = [0.0] * len(common_time_points)
-                result_data[f"{legend_name}_Std"] = [0.0] * len(common_time_points)
-                result_data[f"{legend_name}_Median"] = [0.0] * len(common_time_points)
-                continue
-            
-            # Calculate statistics across simulations for each time point
-            mean_series = []
-            std_series = []
-            median_series = []
-            
-            for time_idx in range(min_length):
-                # Collect all sizes from all simulations at this time point
-                all_sizes_at_time = []
-                
-                for sim_series in sim_time_series:
-                    if time_idx < len(sim_series):
-                        all_sizes_at_time.extend(sim_series[time_idx])
-                
-                if all_sizes_at_time:
-                    sizes_array = np.array(all_sizes_at_time)
-                    mean_series.append(float(np.mean(sizes_array)))
-                    std_series.append(float(np.std(sizes_array)))
-                    median_series.append(float(np.median(sizes_array)))
-                else:
-                    mean_series.append(0.0)
-                    std_series.append(0.0)
-                    median_series.append(0.0)
-            
-            # Add to result data
-            result_data[f"{legend_name}_Mean"] = mean_series
-            result_data[f"{legend_name}_Std"] = std_series
-            result_data[f"{legend_name}_Median"] = median_series
         
-        # Create DataFrame
-        stats_df = pd.DataFrame(result_data)
+        # Calculate statistics across simulations for each time point
+        result_stat = {'Time (s)': result_data['Time (s)']}
+        legend_names = [key for key in result_data if key != 'Time (s)']
+        try:
+            for species in legend_names:
+                result_stat[species] = {
+                    'mean':np.mean(result_data[species], axis=0), 
+                    'std':np.std(result_data[species], axis=0), 
+                    'median':np.median(result_data[species], axis=0),
+                }
+        except Exception as e:
+            logger.error(f"Failed calculating stats: {e}")
         
         # Cache the result
-        self._cache[cache_key] = stats_df
+        self._cache[cache_key] = result_stat
         
-        return stats_df
-    
-    def calculate_aggregated_statistics(self, 
-                                      histogram_data: Dict[str, Any], 
-                                      legends: List[List[str]],
-                                      legend_names: Optional[List[str]] = None,
-                                      time_frame: Optional[Tuple[float, float]] = None) -> pd.DataFrame:
-        """
-        Calculate aggregated statistics for legends over a specified time frame.
-        
-        Parameters:
-            histogram_data (Dict[str, Any]): Processed histogram data
-            legends (List[List[str]]): List of legend definitions
-            legend_names (Optional[List[str]]): Custom names for legends
-            time_frame (Optional[Tuple[float, float]]): Time range to aggregate over (start, end)
-        
-        Returns:
-            pd.DataFrame: DataFrame with aggregated statistics for each legend
-        """
-        time_series_df = self.calculate_time_series_statistics(histogram_data, legends, legend_names)
-        
-        if time_series_df.empty:
-            return pd.DataFrame()
-        
-        # Filter by time frame if specified
-        if time_frame is not None:
-            start_time, end_time = time_frame
-            mask = (time_series_df['Time (s)'] >= start_time) & (time_series_df['Time (s)'] <= end_time)
-            filtered_df = time_series_df[mask]
-        else:
-            filtered_df = time_series_df
-        
-        if filtered_df.empty:
-            return pd.DataFrame()
-        
-        # Generate legend names if not provided
-        if legend_names is None:
-            legend_names = []
-            for legend in legends:
-                if len(legend) == 1:
-                    legend_names.append(f"Species_{legend[0]}")
-                else:
-                    legend_names.append(f"Combined_{'_'.join(legend)}")
-        
-        # Calculate aggregated statistics
-        agg_stats = []
-        for legend_name in legend_names:
-            mean_col = f"{legend_name}_Mean"
-            std_col = f"{legend_name}_Std"
-            median_col = f"{legend_name}_Median"
-            
-            if mean_col in filtered_df.columns:
-                stats = {
-                    'Legend': legend_name,
-                    'Overall_Mean': filtered_df[mean_col].mean(),
-                    'Overall_Std': filtered_df[std_col].mean(),
-                    'Overall_Median': filtered_df[median_col].mean(),
-                    'Time_Avg_Mean': filtered_df[mean_col].mean(),
-                    'Time_Avg_Std': filtered_df[mean_col].std(),
-                    'Max_Mean': filtered_df[mean_col].max(),
-                    'Min_Mean': filtered_df[mean_col].min(),
-                    'Final_Mean': filtered_df[mean_col].iloc[-1] if len(filtered_df) > 0 else 0,
-                    'Initial_Mean': filtered_df[mean_col].iloc[0] if len(filtered_df) > 0 else 0,
-                    'Data_Points': len(filtered_df)
-                }
-                agg_stats.append(stats)
-        
-        return pd.DataFrame(agg_stats)
-    
-    def export_time_series_statistics(self, 
-                                    histogram_data: Dict[str, Any], 
-                                    legends: List[List[str]],
-                                    output_path: str,
-                                    legend_names: Optional[List[str]] = None) -> str:
-        """
-        Export time series statistics to CSV file.
-        
-        Parameters:
-            histogram_data (Dict[str, Any]): Processed histogram data
-            legends (List[List[str]]): List of legend definitions
-            output_path (str): Path for output CSV file
-            legend_names (Optional[List[str]]): Custom names for legends
-        
-        Returns:
-            str: Path to the saved CSV file
-        """
-        stats_df = self.calculate_time_series_statistics(histogram_data, legends, legend_names)
-        
-        if stats_df.empty:
-            raise ValueError("No data available to export")
-        
-        # Ensure output directory exists
-        import os
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        
-        # Save to CSV
-        stats_df.to_csv(output_path, index=False)
-        
-        return output_path
-    
-    def get_legend_comparison_stats(self, 
-                                  histogram_data: Dict[str, Any], 
-                                  legends: List[List[str]],
-                                  legend_names: Optional[List[str]] = None) -> Dict[str, Any]:
-        """
-        Compare statistics between different legends.
-        
-        Parameters:
-            histogram_data (Dict[str, Any]): Processed histogram data
-            legends (List[List[str]]): List of legend definitions to compare
-            legend_names (Optional[List[str]]): Custom names for legends
-        
-        Returns:
-            Dict[str, Any]: Comparison statistics between legends
-        """
-        time_series_df = self.calculate_time_series_statistics(histogram_data, legends, legend_names)
-        
-        if time_series_df.empty:
-            return {}
-        
-        # Generate legend names if not provided
-        if legend_names is None:
-            legend_names = []
-            for legend in legends:
-                if len(legend) == 1:
-                    legend_names.append(f"Species_{legend[0]}")
-                else:
-                    legend_names.append(f"Combined_{'_'.join(legend)}")
-        
-        comparison_stats = {
-            'correlations': {},
-            'relative_ratios': {},
-            'dominance_analysis': {}
-        }
-        
-        # Calculate correlations between legend means
-        mean_columns = [f"{name}_Mean" for name in legend_names]
-        available_means = [col for col in mean_columns if col in time_series_df.columns]
-        
-        if len(available_means) > 1:
-            corr_matrix = time_series_df[available_means].corr()
-            comparison_stats['correlations'] = corr_matrix.to_dict()
-        
-        # Calculate relative ratios (if applicable)
-        if len(available_means) == 2:
-            col1, col2 = available_means
-            ratio_series = time_series_df[col1] / (time_series_df[col2] + 1e-10)  # Add small value to avoid division by zero
-            comparison_stats['relative_ratios'] = {
-                f'{col1}_to_{col2}_ratio': {
-                    'mean': float(ratio_series.mean()),
-                    'std': float(ratio_series.std()),
-                    'median': float(ratio_series.median())
-                }
-            }
-        
-        # Dominance analysis (which legend has higher values most of the time)
-        if len(available_means) > 1:
-            dominance = {}
-            for i, col1 in enumerate(available_means):
-                for j, col2 in enumerate(available_means):
-                    if i < j:  # Avoid duplicate comparisons
-                        dominance_count = (time_series_df[col1] > time_series_df[col2]).sum()
-                        total_points = len(time_series_df)
-                        dominance[f'{col1}_dominates_{col2}'] = dominance_count / total_points
-            
-            comparison_stats['dominance_analysis'] = dominance
-        
-        return comparison_stats
+        return result_stat
 
     def clear_cache(self):
         """Clear processor cache."""
         self._cache.clear()
+

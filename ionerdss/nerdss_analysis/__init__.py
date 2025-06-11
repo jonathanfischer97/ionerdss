@@ -23,6 +23,39 @@ Usage:
                         legend=[["A"], ["B"]], simulations=[0,1,2])
 """
 
+# =====================================================================
+# Development Note
+# 2025.06.11 
+# Mankun Sang
+# 
+# Histogram reading and Copynumber reading now have a unified 
+# reading pipeline: Processor.read().
+# Transition matrix reading is not modified.
+# TODO: Based on Histogram reading and Copynumber reading, further 
+# develop data reading for other output files including transition 
+# matrix.
+# TODO: The goal is to remove dependency on DataIO which is a legacy 
+# from the previous refactoring. It violates the structure of analysis 
+# module. The structure should be:
+# \_
+#   |_ __init__.py (handel import)
+#   |_ analysis.py (basic Analysis class)
+#   |_ plot_figures.py (basic plotting class)
+#   |_
+#   |_ data
+#       |_ __init__.py
+#       |_ core.py (data handling class)
+#       |_ processors
+#            |_ data reading modules, each output file has a module
+#            |_ ...
+#   |_ plotting
+#       |_ plotting modules, each type of figure has a module
+#       |_ ...
+#   |_ legacy
+#       |_ API for backward compatibility
+#       |_ ...
+# =====================================================================
+
 # Main interface
 from .analysis import Analysis
 
@@ -142,21 +175,3 @@ free_energy = data.get_free_energy_landscape()
 For detailed documentation, see individual class and method docstrings.
     """
     return help_text.strip()
-
-# Convenience function for quick analysis
-def quick_analysis(simulation_dir: str, **kwargs):
-    """
-    Quick analysis setup for common use cases.
-    
-    Parameters:
-        simulation_dir (str): Path to simulation directory
-        **kwargs: Additional Analysis initialization parameters
-        
-    Returns:
-        Analysis: Configured Analysis object
-        
-    Example:
-        analysis = ion.quick_analysis("/path/to/sims")
-        analysis.plot_figure(figure_type="line", x="time", y="species", legend=[["A"]])
-    """
-    return Analysis(simulation_dir, **kwargs)

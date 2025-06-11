@@ -17,6 +17,10 @@ class TransitionProcessor:
     
     def __init__(self):
         self._cache = {}
+        self._selected_dirs = []
+
+    def configure(self, selected_dirs: List[str]):
+        self._selected_dirs = selected_dirs
     
     def aggregate_matrices(self, transition_data: Dict[str, Any]) -> np.ndarray:
         """Aggregate transition matrices across simulations."""

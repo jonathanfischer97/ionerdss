@@ -122,7 +122,7 @@ class PlotConfigure:
             'user_file_name': kwargs.get('user_file_name', None)
         }
         
-        return plot_line_speciescopy_vs_time(**params)
+        return plot_line_speciescopy_vs_time(data, **params)
     
     def line_assembly_size_vs_time(self, data: 'Data', assembly_type: str = "maximum", 
                                  legend: List[str] = None, **kwargs):
@@ -138,11 +138,11 @@ class PlotConfigure:
         }
         
         if assembly_type == "maximum":
-            return plot_line_maximum_assembly_size_vs_time(legend=legend or [], **base_params)
+            return plot_line_maximum_assembly_size_vs_time(data, legend=legend or [], **base_params)
         elif assembly_type == "average":
-            return plot_line_average_assembly_size_vs_time(legend=legend or [], **base_params)
+            return plot_line_average_assembly_size_vs_time(data, legend=legend or [], **base_params)
         elif assembly_type == "fraction":
-            return plot_line_fraction_of_monomers_assembled_vs_time(legend=legend or [], **base_params)
+            return plot_line_fraction_of_monomers_assembled_vs_time(data, legend=legend or [], **base_params)
         else:
             raise ValueError(f"Unknown assembly_type: {assembly_type}")
     
@@ -159,7 +159,7 @@ class PlotConfigure:
             'show_type': kwargs.get('show_type', 'both')
         }
         
-        return plot_complex_count_vs_time(**params)
+        return plot_complex_count_vs_time(data, **params)
     
     def line_free_energy_vs_size(self, data: 'Data', **kwargs):
         """Create free energy vs cluster size line plot."""
@@ -224,7 +224,7 @@ class PlotConfigure:
             'figure_size': kwargs.get('figure_size', self._config['figure_size'])
         }
         
-        return plot_hist_complex_species_size(**params)
+        return plot_hist_complex_species_size(data, **params)
     
     def histogram_monomer_count(self, data: 'Data', legend: List[str], **kwargs):
         """Create monomer count histogram."""
@@ -262,7 +262,7 @@ class PlotConfigure:
             'figure_size': kwargs.get('figure_size', self._config['figure_size'])
         }
         
-        return plot_stackedhist_complex_species_size(**params)
+        return plot_stackedhist_complex_species_size(data, **params)
     
     # 3D plot methods
     def histogram_3d_complex_size(self, data: 'Data', legend: List[str], **kwargs):
@@ -281,7 +281,7 @@ class PlotConfigure:
             'figure_size': kwargs.get('figure_size', self._config['figure_size'])
         }
         
-        return plot_hist_complex_species_size_3d(**params)
+        return plot_hist_complex_species_size_3d(data, **params)
     
     def histogram_3d_monomer_count(self, data: 'Data', legend: List[str], **kwargs):
         """Create 3D monomer count histogram."""
@@ -299,7 +299,7 @@ class PlotConfigure:
             'figure_size': kwargs.get('figure_size', self._config['figure_size'])
         }
         
-        return plot_hist_monomer_counts_vs_complex_size_3d(**params)
+        return plot_hist_monomer_counts_vs_complex_size_3d(data, **params)
     
     # Heatmap methods
     def heatmap_complex_size_time(self, data: 'Data', legend: List[str], **kwargs):
@@ -318,7 +318,7 @@ class PlotConfigure:
             'figure_size': kwargs.get('figure_size', self._config['figure_size'])
         }
         
-        return plot_heatmap_complex_species_size(**params)
+        return plot_heatmap_complex_species_size(data, **params)
     
     def heatmap_monomer_count_time(self, data: 'Data', legend: List[str], **kwargs):
         """Create monomer count vs time heatmap."""
@@ -336,7 +336,7 @@ class PlotConfigure:
             'figure_size': kwargs.get('figure_size', self._config['figure_size'])
         }
         
-        return plot_heatmap_monomer_counts_vs_complex_size(**params)
+        return plot_heatmap_monomer_counts_vs_complex_size(data, **params)
     
     def heatmap_species_correlation(self, data: 'Data', legend: List[str], **kwargs):
         """Create species A vs species B heatmap."""
@@ -354,7 +354,7 @@ class PlotConfigure:
             'figure_size': kwargs.get('figure_size', self._config['figure_size'])
         }
         
-        return plot_heatmap_species_a_vs_species_b(**params)
+        return plot_heatmap_species_a_vs_species_b(data, **params)
     
     # Utility methods
     def save_current_plot(self, filename: str, **kwargs):
