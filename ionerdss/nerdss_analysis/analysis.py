@@ -18,14 +18,14 @@ class Analysis:
     Provides both new modular API and legacy compatibility.
     """
     
-    def __init__(self, save_dir: str = None):
+    def __init__(self, save_dir: str = None, verbose:bool=False):
         if save_dir is None:
             save_dir = os.getcwd()
         elif save_dir.startswith("~"):
             save_dir = os.path.expanduser(save_dir)
         
         self.save_dir = os.path.abspath(save_dir)
-        self._discover_simulations()
+        self._discover_simulations(verbose)
         self._setup_directories()
         
         # Initialize subsystems
@@ -36,11 +36,11 @@ class Analysis:
         # Configure data reading by default with all possibile directories
         self.get_data()
     
-    def _discover_simulations(self):
+    def _discover_simulations(self, verbose:bool=True):
         """Discover simulation directories containing DATA folders."""
         if os.path.exists(os.path.join(self.save_dir, "DATA")):
             self.simulation_dirs = [self.save_dir]
-            print("Detected a single simulation directory.")
+            if verbose: print("Detected a single simulation directory.")
         else:
             self.simulation_dirs = []
             for root, dirs, _ in os.walk(self.save_dir):
@@ -48,7 +48,7 @@ class Analysis:
                     self.simulation_dirs.append(root)
                     # Don't recurse into directories that contain DATA
                     dirs[:] = [d for d in dirs if d != "DATA"]
-            print(f"Detected {len(self.simulation_dirs)} simulation directories.")
+            if verbose: print(f"Detected {len(self.simulation_dirs)} simulation directories.")
         
         if not self.simulation_dirs:
             raise ValueError(f"No simulation directories found in {self.save_dir}")

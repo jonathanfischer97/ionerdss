@@ -214,7 +214,7 @@ class HistogramProcessor:
         if cache_key in self._cache:
             all_data = self._cache[cache_key]
         else:
-            logger.warning("No data read. Start reading...")
+            logger.info("No data been read. Start reading...")
             try:
                 all_data = self.read_multiple()
             except Exception as e:
