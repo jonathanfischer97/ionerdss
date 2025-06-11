@@ -32,6 +32,9 @@ class Analysis:
         self.data = Data()
         self.plot = PlotConfigure(self.save_dir)
         self._legacy = LegacyPlotInterface(self)
+        
+        # Configure data reading by default with all possibile directories
+        self.get_data()
     
     def _discover_simulations(self):
         """Discover simulation directories containing DATA folders."""

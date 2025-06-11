@@ -11,6 +11,8 @@ import seaborn as sns
 import re
 from typing import List, Optional, Tuple, Dict, Any
 
+from ..data.core import Data
+
 # Import the data reading utilities
 from ..data_readers import (
     DataIO,
@@ -24,6 +26,7 @@ def format_sig(x, sig=3):
 
 
 def plot_heatmap_complex_species_size(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -61,13 +64,13 @@ def plot_heatmap_complex_species_size(
     
     # Read data from each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not data["Time (s)"]:
             continue
         
         sim_data = []
-        for i, time in enumerate(data["time_series"]):
-            for count, species_dict in data["complexes"][i]:
+        for i, time in enumerate(single_data["Time (s)"]):
+            for count, species_dict in single_data["complexes"][i]:
                 size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
                 sim_data.extend([(time, size)] * count)
                 
@@ -121,6 +124,7 @@ def plot_heatmap_complex_species_size(
 
 
 def plot_heatmap_monomer_counts_vs_complex_size(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -158,13 +162,13 @@ def plot_heatmap_monomer_counts_vs_complex_size(
     
     # Read data from each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not data["Time (s)"]:
             continue
         
         sim_data = []
-        for i, time in enumerate(data["time_series"]):
-            for count, species_dict in data["complexes"][i]:
+        for i, time in enumerate(single_data["Time (s)"]):
+            for count, species_dict in single_data["complexes"][i]:
                 size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
                 # Weight by size (number of monomers)
                 sim_data.append((time, size, count * size))
@@ -220,6 +224,7 @@ def plot_heatmap_monomer_counts_vs_complex_size(
 
 
 def plot_heatmap_species_a_vs_species_b(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -260,12 +265,12 @@ def plot_heatmap_species_a_vs_species_b(
     
     # Read data from each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not data["Time (s)"]:
             continue
         
         sim_data = []
-        for complexes in data["complexes"]:
+        for complexes in single_data["complexes"]:
             for count, species_dict in complexes:
                 x = species_dict.get(species_x, 0)
                 y = species_dict.get(species_y, 0)
