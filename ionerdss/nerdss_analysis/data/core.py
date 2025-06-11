@@ -10,6 +10,7 @@ from typing import List, Optional, Dict, Any, Tuple
 from .processors import HistogramProcessor, CopyNumberProcessor, TransitionProcessor
 
 from .processors.utils import align_time_series
+from ..data_readers import DataIO
 
 
 class Data:
@@ -23,6 +24,8 @@ class Data:
     def __init__(self):
         self._config = {}
         self._cache = {}
+
+        self._data_io = DataIO
         
         # Initialize specialized processors
         self.histogram = HistogramProcessor()
@@ -91,120 +94,118 @@ class Data:
         self._cache[cache_key] = result
         return result
     
-    # def get_copy_numbers_data(self, **kwargs) -> Dict[str, Any]:
-    #     """Get processed copy numbers data with enhanced processing."""
-    #     cache_key = self._generate_cache_key('copy_numbers', **kwargs)
+    def get_copy_numbers_data(self, **kwargs) -> Dict[str, Any]:
+        """Get processed copy numbers data with enhanced processing."""
+        cache_key = self._generate_cache_key('copy_numbers', **kwargs)
         
-    #     if cache_key in self._cache:
-    #         return self._cache[cache_key]
+        if cache_key in self._cache:
+            return self._cache[cache_key]
         
-    #     # Load raw data
-    #     dataframes = []
-    #     for sim_dir in self._selected_dirs:
-    #         df = self._data_io.get_copy_numbers(sim_dir)
-    #         if df is not None:
-    #             dataframes.append(df)
+        # Load raw data
+        all_data = self.copy_numbers.read(self._selected_dirs, self._config)
         
-    #     # Process data
-    #     result = {
-    #         'dataframes': dataframes,
-    #         'aligned_data': self.copy_numbers.align_time_series({'dataframes': dataframes}),
-    #         'species_filter': self._config['species'],
-    #         'metadata': {
-    #             'num_simulations': len(dataframes),
-    #             'cache_key': cache_key
-    #         }
-    #     }
+        # Process data
+        result = {
+            'dataframes': all_data,
+            'aligned_data': align_time_series(all_data),
+            'species_filter': self._config['species'],
+            'metadata': {
+                'num_simulations': len(all_data),
+                # 'time_frame': self._config['time_frame'], # TODO: Not applied
+                'cache_key': cache_key
+            }
+        }
         
-    #     self._cache[cache_key] = result
-    #     return result
-    
-    # def get_transition_data(self, **kwargs) -> Dict[str, Any]:
-    #     """Get processed transition matrix and lifetime data."""
-    #     cache_key = self._generate_cache_key('transition', **kwargs)
-        
-    #     if cache_key in self._cache:
-    #         return self._cache[cache_key]
-        
-    #     # Load raw data
-    #     matrices = []
-    #     lifetimes = []
-    #     for sim_dir in self._selected_dirs:
-    #         matrix, lifetime = self._data_io.get_transition_matrix(sim_dir, self._config['time_frame'])
-    #         if matrix is not None:
-    #             matrices.append(matrix)
-    #             lifetimes.append(lifetime)
-        
-    #     result = {
-    #         'matrices': matrices,
-    #         'lifetimes': lifetimes,
-    #         'aggregated_matrix': self.transitions.aggregate_matrices({'matrices': matrices}),
-    #         'metadata': {
-    #             'num_simulations': len(matrices),
-    #             'time_frame': self._config['time_frame'],
-    #             'cache_key': cache_key
-    #         }
-    #     }
-        
-    #     self._cache[cache_key] = result
-    #     return result
-    
-    # # Enhanced methods using processors
-    # def get_time_series_statistics(self, legends: List[List[str]], **kwargs):
-    #     """Get time series statistics for multiple legends."""
-    #     histogram_data = self.get_histogram_data(**kwargs)
-    #     return self.histogram.calculate_time_series_statistics(histogram_data, legends)
+        self._cache[cache_key] = result
 
-    # def get_complex_sizes(self, legend: List[str], **kwargs) -> List[List[int]]:
-    #     """Extract complex sizes using histogram processor."""
-    #     histogram_data = self.get_histogram_data(**kwargs)
-    #     return self.histogram.calculate_complex_sizes(histogram_data, legend)
+        return result
     
-    # def get_size_distribution_stats(self, legend: List[str], **kwargs) -> Dict[str, float]:
-    #     """Get statistical measures of complex size distribution."""
-    #     histogram_data = self.get_histogram_data(**kwargs)
-    #     return self.histogram.get_size_distribution_stats(histogram_data, legend)
-    
-    # def get_species_trends(self, species_groups: List[List[str]], **kwargs) -> Dict[str, Dict[str, Any]]:
-    #     """Get time series trends for species groups."""
-    #     copy_data = self.get_copy_numbers_data(**kwargs)
-    #     return self.copy_numbers.calculate_trends(copy_data, species_groups)
-    
-    # def get_equilibrium_analysis(self, species_groups: List[List[str]], **kwargs) -> Dict[str, Any]:
-    #     """Get equilibrium analysis for species groups."""
-    #     copy_data = self.get_copy_numbers_data(**kwargs)
+    def get_transition_data(self, **kwargs) -> Dict[str, Any]:
+        """Get processed transition matrix and lifetime data."""
+        cache_key = self._generate_cache_key('transition', **kwargs)
         
-    #     return {
-    #         'equilibrium_periods': self.copy_numbers.find_equilibrium_points(copy_data, species_groups),
-    #         'time_to_equilibrium': self.copy_numbers.calculate_time_to_equilibrium(copy_data, species_groups),
-    #         'statistics': self.copy_numbers.compute_statistics(copy_data, species_groups)
-    #     }
-    
-    # def get_free_energy_landscape(self, **kwargs) -> Dict[str, Any]:
-    #     """Get free energy landscape from transition data."""
-    #     transition_data = self.get_transition_data(**kwargs)
-    #     return self.transitions.calculate_free_energy(transition_data)
-    
-    # def get_pathway_analysis(self, **kwargs) -> Dict[str, Any]:
-    #     """Get comprehensive pathway analysis."""
-    #     transition_data = self.get_transition_data(**kwargs)
+        if cache_key in self._cache:
+            return self._cache[cache_key]
         
-    #     return {
-    #         'association_probs': self.transitions.calculate_association_probabilities(transition_data),
-    #         'dissociation_probs': self.transitions.calculate_dissociation_probabilities(transition_data),
-    #         'growth_probs': self.transitions.calculate_growth_probabilities(transition_data),
-    #         'dominant_pathways': self.transitions.find_dominant_pathways(transition_data),
-    #         'pathway_flux': self.transitions.calculate_pathway_flux(transition_data)
-    #     }
-    
-    # def get_lifetime_analysis(self, **kwargs) -> Dict[str, Any]:
-    #     """Get comprehensive lifetime analysis."""
-    #     transition_data = self.get_transition_data(**kwargs)
+        # Load raw data
+        matrices = []
+        lifetimes = []
+        for sim_dir in self._selected_dirs:
+            matrix, lifetime = self._data_io.get_transition_matrix(sim_dir, self._config['time_frame'])
+            if matrix is not None:
+                matrices.append(matrix)
+                lifetimes.append(lifetime)
         
-    #     return {
-    #         'lifetime_stats': self.transitions.calculate_lifetime_statistics(transition_data),
-    #         'aggregated_lifetimes': self.transitions.aggregate_lifetimes(transition_data)
-    #     }
+        result = {
+            'matrices': matrices,
+            'lifetimes': lifetimes,
+            'aggregated_matrix': self.transitions.aggregate_matrices({'matrices': matrices}),
+            'metadata': {
+                'num_simulations': len(matrices),
+                'time_frame': self._config['time_frame'],
+                'cache_key': cache_key
+            }
+        }
+        
+        self._cache[cache_key] = result
+        return result
+    
+    # Enhanced methods using processors
+    def get_time_series_statistics(self, legends: List[List[str]], **kwargs):
+        """Get time series statistics for multiple legends."""
+        histogram_data = self.get_histogram_data(**kwargs)
+        return self.histogram.calculate_time_series_statistics(histogram_data, legends)
+
+    def get_complex_sizes(self, legend: List[str], **kwargs) -> List[List[int]]:
+        """Extract complex sizes using histogram processor."""
+        histogram_data = self.get_histogram_data(**kwargs)
+        return self.histogram.calculate_complex_sizes(histogram_data, legend)
+    
+    def get_size_distribution_stats(self, legend: List[str], **kwargs) -> Dict[str, float]:
+        """Get statistical measures of complex size distribution."""
+        histogram_data = self.get_histogram_data(**kwargs)
+        return self.histogram.get_size_distribution_stats(histogram_data, legend)
+    
+    def get_species_trends(self, species_groups: List[List[str]], **kwargs) -> Dict[str, Dict[str, Any]]:
+        """Get time series trends for species groups."""
+        copy_data = self.get_copy_numbers_data(**kwargs)
+        return self.copy_numbers.calculate_trends(copy_data, species_groups)
+    
+    def get_equilibrium_analysis(self, species_groups: List[List[str]], **kwargs) -> Dict[str, Any]:
+        """Get equilibrium analysis for species groups."""
+        copy_data = self.get_copy_numbers_data(**kwargs)
+        
+        return {
+            'equilibrium_periods': self.copy_numbers.find_equilibrium_points(copy_data, species_groups),
+            'time_to_equilibrium': self.copy_numbers.calculate_time_to_equilibrium(copy_data, species_groups),
+            'statistics': self.copy_numbers.compute_statistics(copy_data, species_groups)
+        }
+    
+    def get_free_energy_landscape(self, **kwargs) -> Dict[str, Any]:
+        """Get free energy landscape from transition data."""
+        transition_data = self.get_transition_data(**kwargs)
+        return self.transitions.calculate_free_energy(transition_data)
+    
+    def get_pathway_analysis(self, **kwargs) -> Dict[str, Any]:
+        """Get comprehensive pathway analysis."""
+        transition_data = self.get_transition_data(**kwargs)
+        
+        return {
+            'association_probs': self.transitions.calculate_association_probabilities(transition_data),
+            'dissociation_probs': self.transitions.calculate_dissociation_probabilities(transition_data),
+            'growth_probs': self.transitions.calculate_growth_probabilities(transition_data),
+            'dominant_pathways': self.transitions.find_dominant_pathways(transition_data),
+            'pathway_flux': self.transitions.calculate_pathway_flux(transition_data)
+        }
+    
+    def get_lifetime_analysis(self, **kwargs) -> Dict[str, Any]:
+        """Get comprehensive lifetime analysis."""
+        transition_data = self.get_transition_data(**kwargs)
+        
+        return {
+            'lifetime_stats': self.transitions.calculate_lifetime_statistics(transition_data),
+            'aggregated_lifetimes': self.transitions.aggregate_lifetimes(transition_data)
+        }
     
     # ============================================
     # Utility methods

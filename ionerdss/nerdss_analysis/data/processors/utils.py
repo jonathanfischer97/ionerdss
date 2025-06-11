@@ -81,13 +81,19 @@ def filter_by_time_frame(data: Dict[str, Any], time_frame: Tuple[float, float]) 
         ]
         
         return {
-            "time_series": [data["time_series"][i] for i in filtered_indices],
+            "time_series": [data["Time (s)"][i] for i in filtered_indices],
             "complexes": [data["complexes"][i] for i in filtered_indices]
         }
 
 def align_time_series(all_data: List[Dict[str, Any]]) -> List[float]:
         """
         Find common time points across simulations.
+        all_data is in the format of:
+        [
+            {'Time (s)':[...], '...':[...]},
+            {'Time (s)':[...], '...':[...]},
+            ...
+        ]
         TODO: Should return the aligned time series and indices for each trajectory.
         """
 

@@ -18,32 +18,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def read_copy_numbers(sim_dir: str) -> Optional[pd.DataFrame]:
-    """
-    Read species copy numbers vs time data from a simulation directory.
-    
-    Parameters:
-        sim_dir (str): Path to the simulation directory
-        
-    Returns:
-        Optional[pd.DataFrame]: DataFrame containing the data, or None if file not found
-    """
-    data_file = os.path.join(sim_dir, "DATA", "copy_numbers_time.dat")
-    
-    if not os.path.exists(data_file):
-        logger.warning(f"Copy numbers file not found: {data_file}")
-        return None
-    
-    try:
-        df = pd.read_csv(data_file)
-        df.rename(columns=lambda x: x.strip(), inplace=True)
-        logger.debug(f"Successfully read copy numbers from {data_file}")
-        return df
-    except Exception as e:
-        logger.error(f"Error reading copy numbers from {data_file}: {e}")
-        return None
-
-
 
 
 
@@ -354,28 +328,6 @@ class DataIO:
         if self._cache_enabled:
             self._cache = {}
             logger.info("DataIO cache cleared")
-        
-    def get_copy_numbers(self, sim_dir: str) -> Optional[pd.DataFrame]:
-        """
-        Get species copy numbers data from a simulation directory, using cache if available.
-        
-        Parameters:
-            sim_dir (str): Path to the simulation directory
-            
-        Returns:
-            Optional[pd.DataFrame]: DataFrame containing the data, or None if file not found
-        """
-        cache_key = (sim_dir, "copy_numbers")
-        if self._cache_enabled and cache_key in self._cache:
-            logger.debug(f"Cache hit for copy numbers: {sim_dir}")
-            return self._cache[cache_key]
-        
-        result = read_copy_numbers(sim_dir)
-        if result is not None and self._cache_enabled:
-            self._cache[cache_key] = result
-            logger.debug(f"Cached copy numbers for: {sim_dir}")
-        
-        return result
     
     def get_transition_matrix(self, sim_dir: str, time_frame: Optional[Tuple[float, float]] = None) -> Tuple[Optional[np.ndarray], Optional[Dict[int, List[float]]]]:
         """

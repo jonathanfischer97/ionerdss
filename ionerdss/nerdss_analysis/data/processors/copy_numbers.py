@@ -5,6 +5,13 @@ Copy numbers data processor for time series analysis.
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Tuple, Optional
+from .utils import align_time_series
+import os
+
+# Configure logging, 
+import logging
+# inherit from the global level (should be setup in main)
+logger = logging.getLogger(__name__)
 
 
 class CopyNumberProcessor:
@@ -21,32 +28,75 @@ class CopyNumberProcessor:
 
     def configure(self, selected_dirs: List[str]):
         self._selected_dirs = selected_dirs
+
+    def read(self, selected_dirs: List[str]) -> List[Dict[str, Any]]:
+        """Nick name for read_multiple"""
+        return self.read_multiple(self, selected_dirs)
     
-    def align_time_series(self, copy_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Align time series across multiple simulations to common time points."""
-        dataframes = copy_data['dataframes']
-        if not dataframes:
-            return {'aligned_df': pd.DataFrame(), 'time_points': np.array([])}
+    def read_single(self, sim_dir: str) -> Dict[str, Any]:
+        """
+        Read species copy numbers vs time data from a simulation directory.
         
-        # Find shortest time series
-        min_length = min(len(df) for df in dataframes)
-        aligned_dfs = [df.iloc[:min_length].copy() for df in dataframes]
+        Parameters:
+            sim_dir (str): Path to the simulation directory
+            
+        Returns:
+            Optional[pd.DataFrame]: DataFrame containing the data, or None if file not found
+        """
+        data_file = os.path.join(sim_dir, "DATA", "copy_numbers_time.dat")
         
-        # Use first simulation's time points as reference
-        time_points = aligned_dfs[0]['Time (s)'].values
+        if not os.path.exists(data_file):
+            logger.warning(f"Copy numbers file not found: {data_file}")
+            return None
         
-        return {
-            'aligned_dataframes': aligned_dfs,
-            'time_points': time_points,
-            'original_lengths': [len(df) for df in dataframes]
-        }
+        try:
+            df = pd.read_csv(data_file)
+            df.rename(columns=lambda x: x.strip(), inplace=True)
+            df = df.rename(columns={'time_points': 'Time (s)'}) # unify the name of time points
+            logger.debug(f"Successfully read copy numbers from {data_file}")
+            return df
+        except Exception as e:
+            logger.error(f"Error reading copy numbers from {data_file}: {e}")
+            return None
+    
+    def read_multiple(
+            self, 
+            selected_dirs: Optional[List[str]] = None, 
+            config:Dict[str,Any] = {"time_frame":None}, # left here for unified format
+        ) -> List[Dict[str, Any]]:
+        
+        # check cache
+        cache_key = "all_data"
+        if cache_key in self._cache:
+            return self._cache[cache_key]
+        
+        # parse selected directories
+        if not selected_dirs:
+            if not self._selected_dirs:
+                raise FileNotFoundError("No directory selected for reading.")
+            selected_dirs = self._selected_dirs
+
+        # Load raw data
+        dataframes = []
+        for sim_dir in selected_dirs:
+            df = self.read_single(sim_dir)
+            if df is not None:
+                # TODO: filter by time frame. 
+                # Now function filter_by_time_frame does not support copy number data
+                # if config['time_frame']:
+                #     df = filter_by_time_frame(df, config['time_frame'])
+                dataframes.append(df)
+
+        self._cache[cache_key] = dataframes
+
+        return dataframes
     
     def calculate_species_groups(self, 
                                copy_data: Dict[str, Any], 
                                species_groups: List[List[str]]) -> Dict[str, np.ndarray]:
         """Calculate combined copy numbers for species groups."""
-        aligned_data = self.align_time_series(copy_data)
-        dataframes = aligned_data['aligned_dataframes']
+
+        dataframes = copy_data['aligned_dataframes']
         
         group_data = {}
         for i, group in enumerate(species_groups):
