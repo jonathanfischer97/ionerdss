@@ -1,5 +1,11 @@
 # ionerdss/__init__.py
 
+# setup logging level
+# TODO: Take user input to setup logging level. 
+# This might be done when creating Analysis instance.
+import logging
+logging.basicConfig(level=logging.WARNING)
+
 class LazyLoader:
     """Transparent lazy module loader"""
     def __init__(self, module_path, attribute=None):
