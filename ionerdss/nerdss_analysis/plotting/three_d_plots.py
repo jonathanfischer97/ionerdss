@@ -11,6 +11,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from typing import List, Optional, Tuple, Dict, Any
 
+from ..data.core import Data
+
 # Import the data reading utilities
 from ..data_readers import (
     DataIO,
@@ -19,6 +21,7 @@ from ..data_readers import (
 data_io = DataIO()
 
 def plot_hist_complex_species_size_3d(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -53,13 +56,13 @@ def plot_hist_complex_species_size_3d(
     
     # First pass to collect all sizes and times
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not data["Time (s)"]:
             continue
         
         sim_data = []
-        for i, time in enumerate(data["time_series"]):
-            for count, species_dict in data["complexes"][i]:
+        for i, time in enumerate(single_data["Time (s)"]):
+            for count, species_dict in single_data["complexes"][i]:
                 size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
                 sim_data.extend([(time, size)] * count)
                 
@@ -130,6 +133,7 @@ def plot_hist_complex_species_size_3d(
 
 
 def plot_hist_monomer_counts_vs_complex_size_3d(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -167,13 +171,13 @@ def plot_hist_monomer_counts_vs_complex_size_3d(
     
     # Read data from each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
+        single_data = data.get_histogram_data(sim_dir)
         if not data["time_series"]:
             continue
         
         sim_data = []
-        for i, time in enumerate(data["time_series"]):
-            for count, species_dict in data["complexes"][i]:
+        for i, time in enumerate(single_data["time_series"]):
+            for count, species_dict in single_data["complexes"][i]:
                 size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
                 # Weight by size (number of monomers)
                 sim_data.append((time, size, count * size))

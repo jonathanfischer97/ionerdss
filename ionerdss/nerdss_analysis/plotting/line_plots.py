@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List, Optional, Tuple, Dict, Any
 
+from ..data.core import Data
+
 # Import the data reading utilities
 from ..data_readers import (
     DataIO,
@@ -20,6 +22,7 @@ from ..data_readers import (
 data_io = DataIO()
 
 def plot_line_speciescopy_vs_time(
+    data: Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -51,7 +54,7 @@ def plot_line_speciescopy_vs_time(
     selected_dirs = [simulations_dir[idx] for idx in simulations_index]
     
     # Read data using the data IO utility
-    all_sim_data = data_io.get_multiple_copy_numbers(selected_dirs)
+    all_sim_data = data.get_copy_numbers_data(selected_dirs)
     
     # Filter out None values (failed reads)
     all_sim_data = [df for df in all_sim_data if df is not None]
@@ -126,6 +129,7 @@ def plot_line_speciescopy_vs_time(
 
 
 def plot_line_maximum_assembly_size_vs_time(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -154,14 +158,14 @@ def plot_line_maximum_assembly_size_vs_time(
     
     # Read histogram complex data for each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not data["Time (s)"]:
             continue
             
-        time_series = data["time_series"]
+        time_series = single_data["Time (s)"]
         max_assembly_sizes = []
         
-        for complexes in data["complexes"]:
+        for complexes in single_data["complexes"]:
             max_size = max([sum(complex_dict.values()) for count, complex_dict in complexes], default=0)
             max_assembly_sizes.append(max_size)
             
@@ -218,6 +222,7 @@ def plot_line_maximum_assembly_size_vs_time(
 
 
 def plot_line_average_assembly_size_vs_time(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -246,14 +251,14 @@ def plot_line_average_assembly_size_vs_time(
     
     # Read data for each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not data["Time (s)"]:
             continue
             
-        time_series = data["time_series"]
+        time_series = single_data["Time (s)"]
         condition_results = {condition: [] for condition in legend}
         
-        for complexes in data["complexes"]:
+        for complexes in single_data["complexes"]:
             avg_sizes = compute_average_assembly_size(complexes, legend)
             for cond in legend:
                 condition_results[cond].append(avg_sizes.get(cond, 0))
@@ -312,6 +317,7 @@ def plot_line_average_assembly_size_vs_time(
 
 
 def plot_line_fraction_of_monomers_assembled_vs_time(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -340,14 +346,14 @@ def plot_line_fraction_of_monomers_assembled_vs_time(
     
     # Read data for each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not single_data["Time (s)"]:
             continue
             
-        time_series = data["time_series"]
+        time_series = single_data["Time (s)"]
         fraction_results = {condition: [] for condition in legend}
         
-        for complexes in data["complexes"]:
+        for complexes in single_data["complexes"]:
             for cond in legend:
                 selected_counts = 0
                 total_counts = 0
@@ -418,6 +424,7 @@ def plot_line_fraction_of_monomers_assembled_vs_time(
 
 
 def plot_complex_count_vs_time(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     target_complexes: list,
@@ -447,14 +454,14 @@ def plot_complex_count_vs_time(
     
     # Read data for each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not single_data["time_series"]:
             continue
             
-        time_series = data["time_series"]
+        time_series = single_data["time_series"]
         complex_counts = {complex_type: [] for complex_type in target_complexes}
         
-        for complexes in data["complexes"]:
+        for complexes in single_data["complexes"]:
             # Initialize counts for this time point
             current_counts = {complex_type: 0 for complex_type in target_complexes}
             

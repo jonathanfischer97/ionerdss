@@ -357,31 +357,6 @@ class DataIO:
         
         return result
     
-    def get_multiple_copy_numbers(self, sim_dirs: List[str]) -> List[Optional[pd.DataFrame]]:
-        """
-        Get copy numbers data from multiple simulation directories.
-        
-        Parameters:
-            sim_dirs (List[str]): List of simulation directories
-            
-        Returns:
-            List[Optional[pd.DataFrame]]: List of DataFrames, with None for simulations that failed
-        """
-        logger.info(f"Reading copy numbers from {len(sim_dirs)} simulations")
-        return [self.get_copy_numbers(sim_dir) for sim_dir in sim_dirs]
-    
-    def get_multiple_histogram_complexes(self, sim_dirs: List[str]) -> List[Dict[str, Any]]:
-        """
-        Get histogram complex data from multiple simulation directories.
-        
-        Parameters:
-            sim_dirs (List[str]): List of simulation directories
-            
-        Returns:
-            List[Dict[str, Any]]: List of dictionaries containing time series and complex data
-        """
-        logger.info(f"Reading histogram complexes from {len(sim_dirs)} simulations")
-        return [self.get_histogram_complexes(sim_dir) for sim_dir in sim_dirs]
     
     def get_multiple_transition_matrices(self, sim_dirs: List[str], time_frame: Optional[Tuple[float, float]] = None) -> List[Tuple[Optional[np.ndarray], Optional[Dict[int, List[float]]]]]:
         """

@@ -33,9 +33,12 @@ class HistogramProcessor:
     def configure(self, selected_dirs: List[str]):
         self._selected_dirs = selected_dirs
 
-    def read(self, selected_dirs: List[str]) -> List[Dict[str, Any]]:
-        """Nick name for read_multiple"""
-        return self.read_multiple(self, selected_dirs)
+    def read(self, selected_dirs, config) -> List[Dict[str, Any]]:
+        """Decide to read multiple or read single"""
+        if isinstance(selected_dirs, list):
+            return self.read_multiple(self, selected_dirs, config)
+        elif isinstance(selected_dirs, str):
+            return self.read_single(selected_dirs)
     
     def read_single(self, sim_dir: str) -> Dict[str, Any]:
         """
@@ -140,10 +143,10 @@ class HistogramProcessor:
         all_sizes = []
         for data in histogram_data['raw_data']:
             sim_sizes = []
-            for complexes in data['complexes']:
-                for count, species_dict in complexes:
-                    size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
-                    sim_sizes.extend([size] * count)
+        for complexes in data["complexes"]:
+            for count, species_dict in complexes:
+                complex_size = sum(species_dict[species] for species in legend if species in species_dict)
+                sim_sizes.extend([complex_size] * count)
             all_sizes.append(sim_sizes)
         
         self._cache[cache_key] = all_sizes

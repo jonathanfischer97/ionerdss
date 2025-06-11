@@ -77,7 +77,7 @@ class Data:
             return self._cache[cache_key]
         
         # Load raw data
-        all_data = self.histogram.read_multiple(self._selected_dirs, self._config)
+        all_data = self.histogram.read(self._selected_dirs, self._config)
         
         # Process and structure data
         result = {
