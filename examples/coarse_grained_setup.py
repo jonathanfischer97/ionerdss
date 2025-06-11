@@ -45,14 +45,14 @@ def parse_pdb_id(default_id="8y7s"):
     else:
         return default_id.lower()
 
-def setup_save_folder(pdb_id: str, folder_format: str = '~/Documents/ionerdss/{pdb_id}_dir') -> str:
+def setup_save_folder(pdb_id: str, folder_format: str = '~/Documents/{pdb_id}_dir') -> str:
     """
     Create and return an absolute save directory for the given PDB ID.
 
     Args:
         pdb_id (str): The 4-character PDB accession code.
         folder_format (str): A format string where '{pdb_id}' will be replaced by the PDB code.
-                             Allows for custom directory structure (default: ~/Documents/ionerdss/{pdb_id}_dir).
+                             Allows for custom directory structure (default: ~/Documents/{pdb_id}_dir).
 
     Returns:
         str: The absolute path to the created save folder.
@@ -106,7 +106,7 @@ def render_pymol_image(save_folder: str, pdb_id: str) -> str:
         FileNotFoundError: If PyMOL is not found in the system PATH.
         subprocess.CalledProcessError: If PyMOL exits with an error.
     """
-    pml_path = os.path.join(save_folder, f"{pdb_id}_regularized_coarse_grained.pml")
+    pml_path = os.path.join(save_folder, "visualize_regularized_coarse_grained.pml")
     try:
         subprocess.run(["pymol", "-cq", pml_path], check=True)
     except FileNotFoundError:
@@ -114,14 +114,14 @@ def render_pymol_image(save_folder: str, pdb_id: str) -> str:
     except subprocess.CalledProcessError as e:
         print(f"PyMOL execution failed: {e}")
 
-    output_image = os.path.join(save_folder, f"{pdb_id}_comparison_regularized.png")
+    output_image = os.path.join(save_folder, f"comparison_regularized.png")
     if os.path.exists(output_image):
         print(f"PyMOL image saved to {output_image}")
     else:
         print("PyMOL did not produce the expected image.")
     return output_image
 
-def process_pdb(pdb_id: str, folder_format: str = '~/Documents/ionerdss/{pdb_id}_dir'):
+def process_pdb(pdb_id: str, folder_format: str = '~/Documents/{pdb_id}_dir'):
     """
     Main pipeline to:
       1. Create save folder
@@ -183,7 +183,7 @@ python coarse_grain_pipeline.py 1hho
 Let me know if you'd like to extend this with `argparse` (e.g., for optional parameters like `--folder_format`).
 
 """
-if __name__ == "main":
+if __name__ == "__main__":
     pdb_id = parse_pdb_id()
     print(f"Running coarse-grain pipeline for PDB ID: {pdb_id}")
     process_pdb(pdb_id)
