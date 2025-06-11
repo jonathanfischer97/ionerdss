@@ -57,7 +57,7 @@ def plot_line_speciescopy_vs_time(
     all_sim_data = data.get_copy_numbers_data(selected_dirs)
     
     # Filter out None values (failed reads)
-    all_sim_data = [df for df in all_sim_data if df is not None]
+    all_sim_data = [df for df in all_sim_data['dataframes'] if df is not None]
 
     if not all_sim_data:
         print("No valid simulation data found.")
@@ -455,10 +455,10 @@ def plot_complex_count_vs_time(
     # Read data for each simulation
     for sim_dir in selected_dirs:
         single_data = data.get_histogram_data(sim_dir)
-        if not single_data["time_series"]:
+        if not single_data["Time (s)"]:
             continue
             
-        time_series = single_data["time_series"]
+        time_series = single_data["Time (s)"]
         complex_counts = {complex_type: [] for complex_type in target_complexes}
         
         for complexes in single_data["complexes"]:

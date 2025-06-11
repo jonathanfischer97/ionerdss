@@ -172,11 +172,11 @@ def plot_hist_monomer_counts_vs_complex_size_3d(
     # Read data from each simulation
     for sim_dir in selected_dirs:
         single_data = data.get_histogram_data(sim_dir)
-        if not data["time_series"]:
+        if not single_data["Time (s)"]:
             continue
         
         sim_data = []
-        for i, time in enumerate(single_data["time_series"]):
+        for i, time in enumerate(single_data["Time (s)"]):
             for count, species_dict in single_data["complexes"][i]:
                 size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
                 # Weight by size (number of monomers)

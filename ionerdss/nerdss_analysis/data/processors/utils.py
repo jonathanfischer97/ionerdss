@@ -89,15 +89,20 @@ def align_time_series(all_data: List[Dict[str, Any]]) -> List[float]:
         """
         Find common time points across simulations.
         all_data is in the format of:
+        ```
         [
             {'Time (s)':[...], '...':[...]},
             {'Time (s)':[...], '...':[...]},
             ...
         ]
-        TODO: Should return the aligned time series and indices for each trajectory.
+        ```
         """
 
-        time_series_list = [data['Time (s)'] for data in all_data if data['Time (s)']]
+        # TODO: Should return the aligned time series and indices for each trajectory.
+        # TODO: Now this function may take inputs of type list or pandas.Dataframe. 
+        #     This should be unified
+
+        time_series_list = [data['Time (s)'] for data in all_data]
         if not time_series_list:
             return []
         

@@ -51,7 +51,7 @@ class Data:
         self.copy_numbers.configure(self._selected_dirs)
         self.transitions.configure(self._selected_dirs)
     
-    def get_histogram_data(self, **kwargs) -> Dict[str, Any]:
+    def get_histogram_data(self, sim_dirs) -> Dict[str, Any]:
         """
         Get histogram complex data from multiple simulation directories.
         
@@ -71,50 +71,56 @@ class Data:
                 }
         }
         """
-        cache_key = self._generate_cache_key('histogram', **kwargs)
+        cache_key = self._generate_cache_key(f"histograms_{hash(tuple(sorted(sim_dirs)))}")
         
         if cache_key in self._cache:
             return self._cache[cache_key]
         
         # Load raw data
-        all_data = self.histogram.read(self._selected_dirs, self._config)
+        all_data, num_dirs = self.histogram.read(sim_dirs, self._config)
         
         # Process and structure data
-        result = {
-            'raw_data': all_data,
-            'time_series': align_time_series(all_data),
-            'species_filter': self._config['species'],
-            'metadata': {
-                'num_simulations': len(all_data),
-                'time_frame': self._config['time_frame'],
-                'cache_key': cache_key
+        if num_dirs == 'Multiple':
+            result = {
+                'raw_data': all_data,
+                'time_series': align_time_series(all_data),
+                'species_filter': self._config['species'],
+                'metadata': {
+                    'num_simulations': len(all_data),
+                    'time_frame': self._config['time_frame'],
+                    'cache_key': cache_key
+                }
             }
-        }
+        elif num_dirs == 'Single':
+            result = all_data
         
         self._cache[cache_key] = result
         return result
     
-    def get_copy_numbers_data(self, **kwargs) -> Dict[str, Any]:
+    def get_copy_numbers_data(self, sim_dirs) -> Dict[str, Any]:
         """Get processed copy numbers data with enhanced processing."""
-        cache_key = self._generate_cache_key('copy_numbers', **kwargs)
+        cache_key = self._generate_cache_key(f"copy_numbers_{hash(tuple(sorted(sim_dirs)))}")
         
         if cache_key in self._cache:
             return self._cache[cache_key]
         
         # Load raw data
-        all_data = self.copy_numbers.read(self._selected_dirs, self._config)
+        all_data, num_dirs = self.copy_numbers.read(sim_dirs, self._config)
         
         # Process data
-        result = {
-            'dataframes': all_data,
-            'aligned_data': align_time_series(all_data),
-            'species_filter': self._config['species'],
-            'metadata': {
-                'num_simulations': len(all_data),
-                # 'time_frame': self._config['time_frame'], # TODO: Not applied
-                'cache_key': cache_key
+        if num_dirs == 'Multiple':
+            result = {
+                'dataframes': all_data,
+                'aligned_data': align_time_series(all_data),
+                'species_filter': self._config['species'],
+                'metadata': {
+                    'num_simulations': len(all_data),
+                    # 'time_frame': self._config['time_frame'], # TODO: Not applied
+                    'cache_key': cache_key
+                }
             }
-        }
+        elif num_dirs == 'Single':
+            result = all_data
         
         self._cache[cache_key] = result
 
@@ -165,21 +171,6 @@ class Data:
         """Get statistical measures of complex size distribution."""
         histogram_data = self.get_histogram_data(**kwargs)
         return self.histogram.get_size_distribution_stats(histogram_data, legend)
-    
-    def get_species_trends(self, species_groups: List[List[str]], **kwargs) -> Dict[str, Dict[str, Any]]:
-        """Get time series trends for species groups."""
-        copy_data = self.get_copy_numbers_data(**kwargs)
-        return self.copy_numbers.calculate_trends(copy_data, species_groups)
-    
-    def get_equilibrium_analysis(self, species_groups: List[List[str]], **kwargs) -> Dict[str, Any]:
-        """Get equilibrium analysis for species groups."""
-        copy_data = self.get_copy_numbers_data(**kwargs)
-        
-        return {
-            'equilibrium_periods': self.copy_numbers.find_equilibrium_points(copy_data, species_groups),
-            'time_to_equilibrium': self.copy_numbers.calculate_time_to_equilibrium(copy_data, species_groups),
-            'statistics': self.copy_numbers.compute_statistics(copy_data, species_groups)
-        }
     
     def get_free_energy_landscape(self, **kwargs) -> Dict[str, Any]:
         """Get free energy landscape from transition data."""

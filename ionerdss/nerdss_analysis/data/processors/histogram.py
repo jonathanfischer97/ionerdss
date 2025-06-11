@@ -33,12 +33,19 @@ class HistogramProcessor:
     def configure(self, selected_dirs: List[str]):
         self._selected_dirs = selected_dirs
 
-    def read(self, selected_dirs, config) -> List[Dict[str, Any]]:
+    def read(self, selected_dirs, config = {"time_frame":None}) -> List[Dict[str, Any]]:
         """Decide to read multiple or read single"""
+
+        # parse selected directories
+        if not selected_dirs:
+            if not self._selected_dirs:
+                raise FileNotFoundError("No directory selected for reading.")
+            selected_dirs = self._selected_dirs
+
         if isinstance(selected_dirs, list):
-            return self.read_multiple(self, selected_dirs, config)
+            return self.read_multiple(selected_dirs, config), 'Multiple'
         elif isinstance(selected_dirs, str):
-            return self.read_single(selected_dirs)
+            return self.read_single(selected_dirs), 'Single'
     
     def read_single(self, sim_dir: str) -> Dict[str, Any]:
         """

@@ -273,7 +273,7 @@ def plot_stackedhist_complex_species_size(
     # Read data from each simulation
     for sim_dir in selected_dirs:
         singledata = data.get_histogram_data(sim_dir)
-        if not singledata["time_series"]:
+        if not singledata["Time (s)"]:
             continue
             
         # Filter by time frame if specified
@@ -393,11 +393,11 @@ def plot_hist_complex_species_size_3d(
     # First pass to collect all sizes and times
     for sim_dir in selected_dirs:
         single_data = data.get_histogram_data(sim_dir)
-        if not single_data["time_series"]:
+        if not single_data["Time (s)"]:
             continue
         
         sim_data = []
-        for i, time in enumerate(single_data["time_series"]):
+        for i, time in enumerate(single_data["Time (s)"]):
             for count, species_dict in single_data["complexes"][i]:
                 size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
                 sim_data.extend([(time, size)] * count)
