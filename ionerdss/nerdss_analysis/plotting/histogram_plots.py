@@ -11,6 +11,9 @@ import seaborn as sns
 import re
 from typing import List, Optional, Tuple, Dict, Any
 
+from ..data.core import Data
+
+
 # Import the data reading utilities
 from ..data_readers import (
     DataIO,
@@ -20,6 +23,7 @@ from ..data_readers import (
 data_io = DataIO()
 
 def plot_hist_complex_species_size(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -49,31 +53,14 @@ def plot_hist_complex_species_size(
     plot_data_dir = os.path.join(save_dir, "figure_plot_data")
     os.makedirs(plot_data_dir, exist_ok=True)
 
-    all_sizes_per_sim = []
-    all_sizes_combined = []
-
     # Get the simulation directories to process
     selected_dirs = [simulations_dir[idx] for idx in simulations_index]
     
     # Read data for each simulation
-    for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
-            continue
-            
-        # Filter by time frame if specified
-        if time_frame:
-            data = filter_by_time_frame(data, time_frame)
-            
-        sim_sizes = []
-        for complexes in data["complexes"]:
-            for count, species_dict in complexes:
-                complex_size = sum(species_dict[species] for species in legend if species in species_dict)
-                sim_sizes.extend([complex_size] * count)
-                
-        if sim_sizes:
-            all_sizes_per_sim.append(sim_sizes)
-            all_sizes_combined.extend(sim_sizes)
+    all_sizes_per_sim = data.get_complex_sizes(selected_dirs)
+    all_sizes_combined = []
+    for sim_sizes in all_sizes_per_sim:
+        all_sizes_combined.extend(sim_sizes)
 
     if not all_sizes_per_sim:
         print("No valid simulation data found.")
@@ -135,6 +122,7 @@ def plot_hist_complex_species_size(
 
 
 def plot_hist_monomer_counts_vs_complex_size(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -166,32 +154,15 @@ def plot_hist_monomer_counts_vs_complex_size(
     """
     plot_data_dir = os.path.join(save_dir, "figure_plot_data")
     os.makedirs(plot_data_dir, exist_ok=True)
-    
-    all_sizes_per_sim = []
-    all_sizes_combined = []
 
     # Get the simulation directories to process
     selected_dirs = [simulations_dir[idx] for idx in simulations_index]
 
     # Step 1: Read data for each simulation
-    for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
-            continue
-            
-        # Filter by time frame if specified
-        if time_frame:
-            data = filter_by_time_frame(data, time_frame)
-            
-        sim_sizes = []
-        for complexes in data["complexes"]:
-            for count, species_dict in complexes:
-                complex_size = sum(species_dict[species] for species in legend if species in species_dict)
-                sim_sizes.extend([complex_size] * count)
-                
-        if sim_sizes:
-            all_sizes_per_sim.append(sim_sizes)
-            all_sizes_combined.extend(sim_sizes)
+    all_sizes_per_sim = data.get_complex_sizes(selected_dirs)
+    all_sizes_combined = []
+    for sim_sizes in all_sizes_per_sim:
+        all_sizes_combined.extend(sim_sizes)
 
     if not all_sizes_per_sim:
         print("No valid simulation data found.")
@@ -254,6 +225,7 @@ def plot_hist_monomer_counts_vs_complex_size(
 
 
 def plot_stackedhist_complex_species_size(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -300,17 +272,17 @@ def plot_stackedhist_complex_species_size(
     
     # Read data from each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        singledata = data.get_histogram_data(sim_dir)
+        if not singledata["Time (s)"]:
             continue
             
         # Filter by time frame if specified
         if time_frame:
-            data = filter_by_time_frame(data, time_frame)
+            singledata = filter_by_time_frame(singledata, time_frame)
             
         histogram = {cond: [] for cond in y_conditions}
         
-        for complexes in data["complexes"]:
+        for complexes in singledata["complexes"]:
             for count, species_dict in complexes:
                 x = species_dict.get(x_species, 0)
                 y = species_dict.get(y_var, 0)
@@ -385,6 +357,7 @@ def plot_stackedhist_complex_species_size(
     print(f"Stacked histogram data saved to {os.path.join(plot_data_dir, 'stacked_hist_complex_species_size.csv')}")
 
 def plot_hist_complex_species_size_3d(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -419,13 +392,13 @@ def plot_hist_complex_species_size_3d(
     
     # First pass to collect all sizes and times
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not single_data["Time (s)"]:
             continue
         
         sim_data = []
-        for i, time in enumerate(data["time_series"]):
-            for count, species_dict in data["complexes"][i]:
+        for i, time in enumerate(single_data["Time (s)"]):
+            for count, species_dict in single_data["complexes"][i]:
                 size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
                 sim_data.extend([(time, size)] * count)
                 
@@ -496,6 +469,7 @@ def plot_hist_complex_species_size_3d(
 
 
 def plot_hist_monomer_counts_vs_complex_size_3d(
+    data:Data,
     save_dir: str,
     simulations_index: list,
     legend: list,
@@ -533,13 +507,13 @@ def plot_hist_monomer_counts_vs_complex_size_3d(
     
     # Read data from each simulation
     for sim_dir in selected_dirs:
-        data = data_io.get_histogram_complexes(sim_dir)
-        if not data["time_series"]:
+        single_data = data.get_histogram_data(sim_dir)
+        if not data["Time (s)"]:
             continue
         
         sim_data = []
-        for i, time in enumerate(data["time_series"]):
-            for count, species_dict in data["complexes"][i]:
+        for i, time in enumerate(single_data["Time (s)"]):
+            for count, species_dict in single_data["complexes"][i]:
                 size = sum(species_dict.get(s, 0) for s in legend if s in species_dict)
                 # Weight by size (number of monomers)
                 sim_data.append((time, size, count * size))
