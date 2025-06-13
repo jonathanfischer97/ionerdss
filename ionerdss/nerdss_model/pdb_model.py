@@ -1072,6 +1072,43 @@ class PDBModel(Model):
         output_cif = os.path.join(self.save_dir, output_cif)
         pymol_script = os.path.join(self.save_dir, pymol_script)
 
+        for group in self.chains_group:
+            for i, chain_id in enumerate(group):
+                # determin the COM and interfaces of the corresponding molecule template
+                molecule_template = [mol_template for mol_template in self.molecules_template_list if mol_template.name == self.chains_map[chain_id]][0]
+                molecule_0 = [mol for mol in self.molecule_list if mol.name == group[0]][0]
+                com_coord = molecule_0.coord
+                interface_coords = [interface_template.coord + com_coord for interface_template in molecule_template.interface_template_list]
+                interface_template_ids = [interface_template.name for interface_template in molecule_template.interface_template_list]
+
+                chain1 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == group[0]][0])]
+                chain2 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
+                R, t = rigid_transform_chains(chain1, chain2)
+                com_coord_transformed = apply_rigid_transform(R, t, np.array([com_coord.x, com_coord.y, com_coord.z]))
+                interface_coords_transformed = []
+                for interface_coord in interface_coords:
+                    interface_coord_transformed = apply_rigid_transform(R, t, np.array([interface_coord.x, interface_coord.y, interface_coord.z]))
+                    interface_coords_transformed.append(interface_coord_transformed)
+
+                # add the interfaces in template but not in the molecule to the molecule
+                molecule = [mol for mol in self.molecule_list if mol.name == chain_id][0]
+                molecule.coord = Coords(com_coord_transformed[0], com_coord_transformed[1], com_coord_transformed[2])
+
+                # Track existing interface template names in the molecule
+                existing_interface_names = {interface.my_template.name for interface in molecule.interface_list}
+
+                for k, interface_template_id in enumerate(interface_template_ids):
+                    if interface_template_id in existing_interface_names:
+                        continue
+                    else:
+                        # Create and add the missing interface
+                        # Find the corresponding interface template
+                        template = [intf for intf in molecule_template.interface_template_list if intf.name == interface_template_id][0]
+                        new_interface = BindingInterface(template.name)
+                        new_interface.my_template = template
+                        new_interface.coord = Coords(*interface_coords_transformed[k])
+                        molecule.interface_list.append(new_interface)
+
         with open(output_cif, 'w') as cif_file:
             atom_id = 1
 
