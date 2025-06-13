@@ -1,67 +1,130 @@
-## ionerdss
+# ionerdss
+[![Documentation Status](https://readthedocs.org/projects/ionerdss/badge/?version=latest)](https://ionerdss.readthedocs.io/en/latest/?badge=latest)
+[![Run Unit Tests](https://github.com/JohnsonBiophysicsLab/ionerdss/actions/workflows/unittest.yml/badge.svg?branch=main&event=push)](https://github.com/JohnsonBiophysicsLab/ionerdss/actions/workflows/unittest.yml)
+![PyPI](https://img.shields.io/pypi/v/ioNERDSS.svg)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/ioNERDSS.svg)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/ioNERDSS.svg)
+[![codecov](https://codecov.io/gh/JohnsonBiophysicsLab/ionerdss/graph/badge.svg?token=IUUUOZT0VJ)](https://codecov.io/gh/JohnsonBiophysicsLab/ionerdss)
 
-This repository primarily contains Python code for creating user-friendly analysis tools for setting up models and analyzing output from the reaction-diffusion simulator NERDSS.
+**ionerdss** is a Python library that provides user‐friendly tools for setting up and analyzing output from the [NERDSS](https://github.com/JohnsonBiophysicsLab/NERDSS) reaction‐diffusion simulator. Its goal is to streamline model building (from PDB files or from scratch), data analysis, and visualization for simulation workflows.
 
-(The user guide in the pdf format is Not up to date. Please refer to the user guide in the docx format for the most up to date version.)
+---
 
-### Folder Descriptions
+## Installation
 
-**IoNERDSSPyPi: Holds the main code of the library + extra files necessary for PyPi**
- - **IoNERDSS:** Holds the actual code. Each function can be find as a seperate file in /functions.
- - **ioNERDSS.egg-info:** text that is necessary for PyPi.
- - Then some text files that are all for PyPi
+1. From PyPI (recommended):
+   - **Python version:** 3.9 or later
 
+Create a conda environment (optional but recommended):
 
-**Tutorial: Holds developer and user tutorials**
- - **DevelopersGuide:** Describes how to edit library, and then upload it to PyPi.
- - **MultiSpeciesTutorial:** Desribes how to create graphs and spreadsheets from a multi-component histogram file outputted by NERDSS.
- - **ReadPDBTutorial:** Describes how to interpret a pdb file from Protein Data Bank & create NERDSS inputs based off of it.
- - **SingleSpeciesTutorial:** Describes how to create inputs for a NERDSS sim & how to create graphs and spreadsheets 
-                              from a single-component histogram file or transition matrix outputted by NERDSS.
+Download and install Anaconda or Miniconda, then create a new conda environment for `ionerdss`:
 
-**unimportant: Holds files that may be useful for ioNERDSS development**
- - **ExamplesIoNERDSS:** Holds a lot of files that (i may be wrong) seem to be environments for using IoNERDSS or examples of it being used
- - **TestingFunctions:** Holds the different files necessary to try out all of ioNERDSS' functions. 
-    - Recommended to be moved to ioNERDSSPyPi folder along with ioNERDSS_profiler.py
- - pre_update_ioNERDSS.py: this is the ioNERDSS from before the update. If there are functions not working, they may be working in this version (just slower).
- - Some python scripts that were helpful for testing / profiling
+```bash
+conda create -n ionerdss python=3.9
+conda activate ionerdss
+```
 
-### Note From Ian 5/18/2023
-This is my last day in the lab, and so my last day (probably) working with ioNERDSS. I have tried to tie up all of the loose ends, however there are still some of note:
- - The ReadRealPDBTutorial is out of date 
- - Certain functions are not in the UserGuide - you can find some of them listed at the bottom under ``2.7 Needs to be added``
-     - Complete List: gag_reshape, sphere_reg_index, merge_files, merge_sim_results, acf_coord, and gui
- - Under certain circumastances functions may break, if you find any issues let me know and if it is before my school starts I will try to fix it
-   - I am especially worried about (1) multi-species transition matrix and (2) multi-species locate position. The rest should be fine outside of the weirdest situations.
- - The docs, docstrings and actual code may be slightly out of sync. If you find any issues please let me know.
- - A couple functions are in the folder, but not incorperated into the library, and are currently unable to be used
-   - The only one truly unincorperated is gag_reshape, though sphere_reg_index also needs some work
+Install the latest release directly from PyPI:
 
-### Note from Yufeng 10/03/2023
-- Updated ReadRealPDBTutorial, now renamed as ReadPDBTutorial
-- Fixed and included left out functions in the user guide
-- Still need to included gag_reshape in the user guide
-- Need to write tutorials for gag_reshape, merge_sim_results, acf_coord, gui, and sphere_reg_index
+```bash
+pip install ioNERDSS
+```
 
-### Install
+2. From GitHub (for the latest development version):
+   - If you want to use the latest features or contribute to the development, you can install directly from the GitHub repository:
 
-To install via pip, use the command: 
-run ``pip install ioNERDSS`` on the command line
+To install from source (e.g., if you’ve cloned this repo and want the most recent changes):
 
-### Syncing PyPi from GitHub
+```bash
+git clone https://github.com/JohnsonBiophysicsLab/ionerdss.git
+cd ionerdss
+pip install -r requirements.txt
+pip install -e .  # Editable mode: updates reflect immediately in the environment
+```
 
-- Navigate to the ioNERDSSPyPi folder
-- Ensure that your package's version number in setup.py matches the version number of the PyPI package you want to sync (It should be a newer version). If not, update the version number.
-- Create a source distribution of your package by running the following command in your terminal: **python setup.py sdist**. This will create a dist directory containing a tarball of your package's source code.
-- Upload the source distribution to PyPI by running the following command: twine upload dist/*
+---
 
-### Best practices
+## Quick Start
 
-- Use docstrings to document your code. Sphinx can extract docstrings from your code to create documentation, so it's important to write clear and concise docstrings that describe the purpose and functionality of your code.
-- Use reStructuredText (reST) markup in your docstrings.
-- Follow the Google-style docstring conventions. This is a popular convention for writing docstrings that is widely used in the Python community. It consists of a one-line summary, followed by a more detailed description, and optional sections for parameters, returns, and other details. You can find more information on this convention in the Sphinx documentation.
-- Organize your code into modules and packages.
-- Use meaningful names for modules, classes, functions, and variables.
-- Include examples and usage instructions in documentation. Sphinx can include examples and usage instructions in your documentation, which can help users understand how to use your code.
-- Use Sphinx to generate documentation.
-- Add tests for each function using unittest.
+```python
+import ionerdss as ion
+ion.some_function()  # Replace with actual function calls to set up model and analyze results
+```
+
+For extended examples, see the [tutorials](https://ionerdss.readthedocs.io/en/latest/ionerdss_tutorials.html).
+
+### Run a quick trial with our server
+
+Go to the [NERDSS server](http://52.15.142.249:5000/).
+
+---
+
+## Documentation
+- **User Guide:** [ionerdss user guide](https://ionerdss.readthedocs.io/en/latest/ionerdss_documentation_v1_1.html).
+
+- **API Reference:** [API](https://ionerdss.readthedocs.io/en/latest/ionerdss.html). You can also build the docs locally using Sphinx:
+```bash
+sphinx-apidoc -o docs/source ionerdss
+cd docs
+make html
+```
+Then open docs/build/html/index.html in your browser.
+
+---
+
+## Repository Structure
+```
+ionerdss/
+├── .github/workflows/     # Continuous Integration workflows
+├── docs/                  # Documentation
+│   ├── source/            # Sphinx source files
+│   ├── make.bat           # Windows build script
+│   └── Makefile           # Unix build script
+├── ionerdss/              # Main Python package
+│   ├── nerdss_model/      # Model building tools (v1.2.0)
+│   ├── nerdss_simulation/ # Simulation tools (v1.2.0)
+│   ├── nerdss_analysis/   # Data analysis tools (v1.2.0)
+│   └── __init__.py 
+├── tests/                 # Unit tests
+├── data/                  # Test and tutorial data
+└── setup.py               # Installation & packaging
+```
+
+---
+
+## Develop using docker container:  
+```bash
+docker build --no-cache -t ionerdss_dev . 
+docker run -it --rm -v $(pwd):/app -p 8888:8888 ionerdss_dev
+```
+
+---
+
+## Best Practices
+
+1. **Docstrings & Sphinx**  
+   - Write clear docstrings in Google‐style to help auto‐generate documentation.
+
+2. **Code Organization**  
+   - Keep related functionality grouped in submodules.
+
+3. **Tests**  
+   - Add or update unit tests in `tests/` for any new function. We use [unittest](https://docs.python.org/3/library/unittest.html).
+
+   - To run the tests locally, in the project root folder, use the following command:
+     ```bash
+     pip install -r requirements.txt
+     export PYTHONPATH=$(pwd)
+     pytest
+     ```
+
+4. **Versioning & Releases**  
+   - Update `setup.py` with a new version number. A GitHub release will auto‐update the PyPI package.
+
+5. **Contributions**  
+   - Fork the repo, create a feature branch, and open a pull request.
+
+---
+
+## License
+This project is licensed under the GPL‐3.0 License.
