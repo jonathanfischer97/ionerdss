@@ -1109,6 +1109,10 @@ class PDBModel(Model):
                         new_interface.coord = Coords(*interface_coords_transformed[k])
                         molecule.interface_list.append(new_interface)
 
+                # Reorder molecule.interface_list to match the template order
+                template_order = [intf.name for intf in molecule_template.interface_template_list]
+                molecule.interface_list.sort(key=lambda intf: template_order.index(intf.my_template.name))
+
         with open(output_cif, 'w') as cif_file:
             atom_id = 1
 
