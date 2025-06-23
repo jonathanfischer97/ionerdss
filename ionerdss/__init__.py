@@ -69,6 +69,7 @@ octa_face = LazyLoader('.nerdss_model.platonic_solids.octa.octa_face', 'octa_fac
 octa_vert = LazyLoader('.nerdss_model.platonic_solids.octa.octa_vert', 'octa_vert')
 tetr_face = LazyLoader('.nerdss_model.platonic_solids.tetr.tetr_face', 'tetr_face')
 tetr_vert = LazyLoader('.nerdss_model.platonic_solids.tetr.tetr_vert', 'tetr_vert')
+convert_simularium = LazyLoader('.simularium_converter.simularium_converter', 'convert_simularium')
 
 
 # Lazily load simulation and analysis modules
