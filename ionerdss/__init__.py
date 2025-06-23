@@ -1,5 +1,11 @@
 # ionerdss/__init__.py
 
+# setup logging level
+# TODO: Take user input to setup logging level. 
+# This might be done when creating Analysis instance.
+import logging
+logging.basicConfig(level=logging.WARNING)
+
 class LazyLoader:
     """Transparent lazy module loader"""
     def __init__(self, module_path, attribute=None):
@@ -42,7 +48,10 @@ Coords = LazyLoader('.nerdss_model.coords', 'Coords')
 PDBModel = LazyLoader('.nerdss_model.pdb_model', 'PDBModel')
 DesignModel = LazyLoader('.nerdss_model.design_model', 'DesignModel')
 PlatonicSolid = LazyLoader('.nerdss_model.PlatonicSolids', 'PlatonicSolid')
-ParseComplexes = LazyLoader('.nerdss_model.complex', 'generate_ode_model_from_pdb')
+# Standard, preferred name
+generate_ode_model_from_pdb = LazyLoader('.nerdss_model.complex', 'generate_ode_model_from_pdb')
+# Backward-compatible alias
+ParseComplexes = generate_ode_model_from_pdb
 ReactionStringParser = LazyLoader('.ode_solver.reaction_string_parser', 'ReactionStringParser')
 solve_reaction_ode = LazyLoader('.ode_solver.reaction_ode_solver', 'solve_reaction_ode')
 reaction_dydt = LazyLoader('.ode_solver.reaction_ode_solver', 'dydt')

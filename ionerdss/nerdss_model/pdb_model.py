@@ -9,6 +9,7 @@ import gzip
 import requests
 import numpy as np
 import math
+import re
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from Bio.PDB import PDBList, MMCIFParser, PDBParser
@@ -153,8 +154,9 @@ class PDBModel(Model):
             save_pymol_script (bool, optional): Whether to save a PyMOL script for visualization. Defaults to False.
             standard_output (bool, optional): Whether to print detected interfaces. Defaults to False.
         """
-        # self.all_chains = list(self.all_atoms_structure.get_chains())
-        self.all_chains = sorted(self.all_atoms_structure.get_chains(), key=lambda chain: chain.id)
+        self.all_chains = sorted([chain for chain in self.all_atoms_structure.get_chains() 
+            if any(is_aa(residue) for residue in chain.get_residues())], 
+            key=lambda chain: chain.id)
         self.all_COM_chains_coords = []
         self.all_interfaces = []
         self.all_interfaces_coords = []
@@ -526,7 +528,7 @@ class PDBModel(Model):
         for group in self.chains_group:
             group.sort()
         self.chains_group.sort()
-        print("Homologous chain groups identified:")
+        print(f"{len(self.chains_group)} homologous chain groups identified:")
         print(self.chains_group)
 
         # check if the structure has homologous chains
@@ -775,20 +777,78 @@ class PDBModel(Model):
                             "thetaA": signature["thetaB"],
                             "thetaB": signature["thetaA"]
                         }
+                        
+                        # Find all matching templates for signature
+                        matching_templates = []
                         for mol_temp in self.molecules_template_list:
                             for interface_temp in mol_temp.interface_template_list:
                                 if self._sig_are_similar(signature, interface_temp.signature, dist_threshold_intra, dist_threshold_inter, angle_threshold):
-                                    interface_template = interface_temp
-                                    molecule_template = mol_temp
-                                    # print(f"using {mol_temp.name} - {interface_temp.name}")
-                                    break
+                                    matching_templates.append((interface_temp, mol_temp))
+
+                        # Check for errors in template matching
+                        if len(matching_templates) == 0:
+                            # Print all available signatures for debugging
+                            available_sigs = []
+                            for mol_temp in self.molecules_template_list:
+                                for interface_temp in mol_temp.interface_template_list:
+                                    available_sigs.append({
+                                        'template': f"{interface_temp.name} ({mol_temp.name})",
+                                        'signature': interface_temp.signature
+                                    })
+                            
+                            print(f"Target signature: {signature}")
+                            print("Available signatures:")
+                            for sig_info in available_sigs:
+                                print(f"  {sig_info['template']}: {sig_info['signature']}")
+                            
+                            raise ValueError(
+                                f"No matching interface template found for signature: {signature}\n"
+                                f"Available templates: {[(mt.name, len(mt.interface_template_list)) for mt in self.molecules_template_list]}\n"
+                                f"Current thresholds: dist_intra={dist_threshold_intra}, dist_inter={dist_threshold_inter}, angle={angle_threshold}\n"
+                                f"Please increase the thresholds to find a match."
+                            )
+                        elif len(matching_templates) > 1:
+                            matching_templates.sort(key=lambda pair: self._sig_difference(signature, pair[0].signature))
+                            interface_template, molecule_template = matching_templates[0]
+                            print(f"Multiple matches found. Using closest match: {interface_template.name} ({molecule_template.name})")
+                        else:
+                            interface_template, molecule_template = matching_templates[0]
+
+                        # Find all matching templates for conjugated signature
+                        matching_partner_templates = []
                         for mol_temp in self.molecules_template_list:
                             for interface_temp in mol_temp.interface_template_list:
                                 if self._sig_are_similar(signature_conjugated, interface_temp.signature, dist_threshold_intra, dist_threshold_inter, angle_threshold):
-                                    partner_interface_template = interface_temp
-                                    partner_molecule_template = mol_temp
-                                    # print(f"using {mol_temp.name} - {interface_temp.name}")
-                                    break
+                                    matching_partner_templates.append((interface_temp, mol_temp))
+
+                        # Check for errors in partner template matching
+                        if len(matching_partner_templates) == 0:
+                            # Print all available signatures for debugging
+                            available_sigs = []
+                            for mol_temp in self.molecules_template_list:
+                                for interface_temp in mol_temp.interface_template_list:
+                                    available_sigs.append({
+                                        'template': f"{interface_temp.name} ({mol_temp.name})",
+                                        'signature': interface_temp.signature
+                                    })
+                            
+                            print(f"Target conjugated signature: {signature_conjugated}")
+                            print("Available signatures:")
+                            for sig_info in available_sigs:
+                                print(f"  {sig_info['template']}: {sig_info['signature']}")
+                            
+                            raise ValueError(
+                                f"No matching partner interface template found for conjugated signature: {signature_conjugated}\n"
+                                f"Available templates: {[(mt.name, len(mt.interface_template_list)) for mt in self.molecules_template_list]}\n"
+                                f"Current thresholds: dist_intra={dist_threshold_intra}, dist_inter={dist_threshold_inter}, angle={angle_threshold}\n"
+                                f"Please adjust the thresholds to find a match."
+                            )
+                        elif len(matching_partner_templates) > 1:
+                            matching_partner_templates.sort(key=lambda pair: self._sig_difference(signature_conjugated, pair[0].signature))
+                            partner_interface_template, partner_molecule_template = matching_partner_templates[0]
+                            print(f"Multiple conjugated matches found. Using closest match: {partner_interface_template.name} ({partner_molecule_template.name})")
+                        else:
+                            partner_interface_template, partner_molecule_template = matching_partner_templates[0]
 
                     # build the interfaces for molecules, link the interface template to interface
 
@@ -1011,6 +1071,47 @@ class PDBModel(Model):
         """
         output_cif = os.path.join(self.save_dir, output_cif)
         pymol_script = os.path.join(self.save_dir, pymol_script)
+
+        for group in self.chains_group:
+            for i, chain_id in enumerate(group):
+                # determin the COM and interfaces of the corresponding molecule template
+                molecule_template = [mol_template for mol_template in self.molecules_template_list if mol_template.name == self.chains_map[chain_id]][0]
+                molecule_0 = [mol for mol in self.molecule_list if mol.name == group[0]][0]
+                com_coord = molecule_0.coord
+                interface_coords = [interface_template.coord + com_coord for interface_template in molecule_template.interface_template_list]
+                interface_template_ids = [interface_template.name for interface_template in molecule_template.interface_template_list]
+
+                chain1 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == group[0]][0])]
+                chain2 = self.all_chains[self.all_chains.index([chain for chain in self.all_chains if chain.id == chain_id][0])]
+                R, t = rigid_transform_chains(chain1, chain2)
+                com_coord_transformed = apply_rigid_transform(R, t, np.array([com_coord.x, com_coord.y, com_coord.z]))
+                interface_coords_transformed = []
+                for interface_coord in interface_coords:
+                    interface_coord_transformed = apply_rigid_transform(R, t, np.array([interface_coord.x, interface_coord.y, interface_coord.z]))
+                    interface_coords_transformed.append(interface_coord_transformed)
+
+                # add the interfaces in template but not in the molecule to the molecule
+                molecule = [mol for mol in self.molecule_list if mol.name == chain_id][0]
+                molecule.coord = Coords(com_coord_transformed[0], com_coord_transformed[1], com_coord_transformed[2])
+
+                # Track existing interface template names in the molecule
+                existing_interface_names = {interface.my_template.name for interface in molecule.interface_list}
+
+                for k, interface_template_id in enumerate(interface_template_ids):
+                    if interface_template_id in existing_interface_names:
+                        continue
+                    else:
+                        # Create and add the missing interface
+                        # Find the corresponding interface template
+                        template = [intf for intf in molecule_template.interface_template_list if intf.name == interface_template_id][0]
+                        new_interface = BindingInterface(template.name)
+                        new_interface.my_template = template
+                        new_interface.coord = Coords(*interface_coords_transformed[k])
+                        molecule.interface_list.append(new_interface)
+
+                # Reorder molecule.interface_list to match the template order
+                template_order = [intf.name for intf in molecule_template.interface_template_list]
+                molecule.interface_list.sort(key=lambda intf: template_order.index(intf.my_template.name))
 
         with open(output_cif, 'w') as cif_file:
             atom_id = 1
@@ -1364,6 +1465,16 @@ class PDBModel(Model):
                 return False
         return True
     
+    def _sig_difference(self, sig1, sig2):
+        """
+        Compute the sum of relative differences between two signatures.
+        """
+        total_diff = 0.0
+        for key in ("dA", "dB", "dAB", "thetaA", "thetaB"):
+            denom = abs(sig1[key]) if abs(sig1[key]) > 1e-6 else 1.0  # avoid divide-by-zero
+            total_diff += abs(sig1[key] - sig2[key]) / denom
+        return total_diff
+    
     def _is_existing_mol_temp(self, mol_temp_name):
         """
         Checks if a molecule template with the given name exists in the molecule template list.
@@ -1512,15 +1623,59 @@ class PDBModel(Model):
     def identify_homologous_chains(self):
         """
         Identifies homologous chains in the molecular structure and populates `self.chain_map` 
-        and `self.chain_groups`. Attempts to parse the header from PDB/CIF files first; 
-        if unsuccessful, falls back to sequence alignment.
+        and `self.chain_groups`. Attempts to parse the header from PDB/CIF files first;
+        if unsuccessful or results are invalid, falls back to sequence alignment.
         """
         if self.pdb_file.endswith('.pdb'):
             self._parse_pdb_header()
         elif self.pdb_file.endswith('.cif'):
             self._parse_cif_header()
-        if not self.chains_map:
+        
+        # Validate the results from header parsing
+        if not self._validate_chain_mapping():
+            print("Header parsing results appear invalid, falling back to sequence alignment...")
+            # Clear invalid results
+            self.chains_map = {}
+            self.chains_group = []
             self._find_homologous_chains_by_alignment()
+
+    def _validate_chain_mapping(self):
+        """
+        Validates the chain mapping results to ensure they make sense.
+        Chain IDs must be letters (A, AB) or letters followed by -number (A-2).
+        
+        Returns:
+            bool: True if the mapping is valid, False otherwise
+        """
+        if not self.chains_map:
+            return False
+        
+        # Pattern for valid chain IDs: letters only OR letters followed by -number
+        valid_chain_pattern = re.compile(r'^[A-Za-z]+(-\d+)?$')
+        
+        # Check for malformed chain identifiers
+        for chain_id in self.chains_map.keys():
+            if not valid_chain_pattern.match(chain_id):
+                print(f"Invalid chain identifier found: '{chain_id}' (must be letters or letters-number format)")
+                return False
+        
+        # Check if we have actual chains from the structure to compare against
+        if hasattr(self, 'all_atoms_structure') and self.all_atoms_structure:
+            try:
+                actual_chain_ids = set(chain.id for chain in self.all_atoms_structure.get_chains())
+                mapped_chain_ids = set(self.chains_map.keys())
+                
+                # Check if mapped chains actually exist in the structure
+                invalid_chains = mapped_chain_ids - actual_chain_ids
+                if invalid_chains:
+                    print(f"Mapped chains not found in structure: {invalid_chains}")
+                    return False
+                    
+            except Exception as e:
+                print(f"Could not validate against structure: {str(e)}")
+        
+        print(f"Chain mapping validation passed: {len(self.chains_map)} chains mapped")
+        return True
 
     def _parse_pdb_header(self):
         """
@@ -1619,7 +1774,8 @@ class PDBModel(Model):
         """
         try:
             similar_chains = []
-            chains = list(self.all_atoms_structure.get_chains())
+            chains = [chain for chain in self.all_atoms_structure.get_chains() 
+                if any(is_aa(residue) for residue in chain.get_residues())]
             chain_sequences = {}
 
             for chain in chains:
