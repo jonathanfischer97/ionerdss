@@ -506,7 +506,7 @@ def plot_complex_count_vs_time(
     print(f"Processed data saved to {save_path}")
     
     # Plot the data
-    plt.figure(figsize=figure_size)
+    plt.figure(figsize=figure_size, dpi=600)
     sns.set_style("ticks")
     
     # Define colors for different complex types
