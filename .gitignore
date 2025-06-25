@@ -112,3 +112,7 @@ cython_debug/
 ~*
 *~
 .DS_Store
+
+
+# Specficially ignore pdbfiles in proaffinity
+proaffinity-gnn/pdbfiles
