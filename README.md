@@ -38,7 +38,7 @@ To install from source (e.g., if you’ve cloned this repo and want the most rec
 ```bash
 git clone https://github.com/JohnsonBiophysicsLab/ionerdss.git
 cd ionerdss
-pip install -r requirements.txt
+pip install -r env/requirements.txt
 pip install -e .  # Editable mode: updates reflect immediately in the environment
 ```
 
