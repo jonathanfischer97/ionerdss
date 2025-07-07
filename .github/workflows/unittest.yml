@@ -14,14 +14,13 @@ on:
       - "tests/**"
       - ".github/workflows/unittest.yml"
 
-#Stop redundant CI runs for superseded commits
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: read            # needed by checkout
-  id-token: write           # required for Codecov OIDC uploads
+  contents: read
+  id-token: write
 
 jobs:
   test:
@@ -31,67 +30,58 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ['3.9', '3.11', '3.13']  
+        python-version: ['3.9', '3.11', '3.13']
 
     steps:
-      - uses: actions/checkout@v4       
-
+      - uses: actions/checkout@v4                                    # latest major version :contentReference[oaicite:0]{index=0}
       - name: Set up Python
-        uses: actions/setup-python@v5    
+        uses: actions/setup-python@v5                                # latest major version :contentReference[oaicite:1]{index=1}
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip                       # built‑in dependency+wheel cache
-          cache-dependency-path: env/requirements.txt
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
-      #Extra cache layer: pre‑built wheels in ~/.cache/pip so can work between OS/versions
       - name: Cache compiled pip wheels
-        uses: actions/cache@v4             
+        uses: actions/cache@v4                                       # recommended upgrade :contentReference[oaicite:2]{index=2}
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('env/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-${{ matrix.python-version }}
             ${{ runner.os }}-pip-
 
-      # Qt/OpenGL runtime (Linux only; no‑op elsewhere as stated in the action repo, mac shouldn't need it)
-      - uses: tlambert03/setup-qt-libs@v1
+      - uses: tlambert03/setup-qt-libs@v1                            # current major version :contentReference[oaicite:3]{index=3}
 
-      - name: Install project dependencies
-        run: pip install -r env/requirements.txt
-
-      - name: Install package in editable mode
-        run: pip install -e .[tests] # optional pytest/pytest-cov deps as defined in toml file
+      - name: Install dependencies (including test extras)
+        run: pip install -e .[tests]
 
       - name: Configure headless Qt
-        run: echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV   #avoids xcb/display errors, according to the web
+        run: echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
 
       - name: Run tests
         run: |
           pytest tests \
-                 --cov=ionerdss --cov-branch \
-                 --cov-report=xml \
-                 --junitxml=report.xml
+            --cov=ionerdss --cov-branch \
+            --cov-report=xml \
+            --junitxml=report.xml
 
       - name: Summarise failing tests
-        if: always()                    # still runs on failures
-        uses: pmeier/pytest-results-action@v0.7.1   # latest tag 
+        if: always()
+        uses: pmeier/pytest-results-action@v0.7.2                    # bumped to latest v0.7.2 :contentReference[oaicite:4]{index=4}
         with:
-          path: report.xml              # JUnit file(s) or glob
-          summary: true                 # add high‑level counts
-          display-options: fEX          # show failed, errored, x‑passed
+          path: report.xml
+          summary: true
+          display-options: fEX
           title: "Test Results"
 
-      #Junit is standard machine readable test output that can then be analyzed by various tools later, we upload as artifact to allow inspection
       - name: Upload JUnit report
         if: always()
-        uses: actions/upload-artifact@v4    
-        with:
-          name: junit-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: report.xml
+        uses: actions/upload-artifact@v4
 
       - name: Upload coverage to Codecov
         if: always()
-        uses: codecov/codecov-action@v5      
+        uses: codecov/codecov-action@v5                             # latest major version :contentReference[oaicite:5]{index=5}
         with:
-          use_oidc: true #required for tokenless apparently
+          use_oidc: true
           fail_ci_if_error: true
+
