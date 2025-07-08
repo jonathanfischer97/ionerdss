@@ -10,5 +10,4 @@ biopython
 scipy
 scikit-learn
 requests
-ipympl
-pytest
+ipymplpytest
