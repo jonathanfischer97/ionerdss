@@ -18,7 +18,7 @@ from Bio.Align import PairwiseAligner
 from Bio.SeqUtils import seq1
 from scipy.spatial import KDTree
 from sklearn.cluster import KMeans
-from .components import MoleculeType, MoleculeInterface, ReactionType, Model
+from .components import MoleculeType, MoleculeInterface, Reaction, Model
 from .coords import Coords
 
 
@@ -1021,7 +1021,7 @@ class PDBModel(Model):
             norm2 = tuple(n for n in norm2)
             ka = getattr(reaction_template, 'ka', 0.0)
             kb = getattr(reaction_template, 'kb', 0.0)
-            reaction = ReactionType(name=reaction_template.expression, binding_radius=brad, binding_angles=bind_anlges, norm1=norm1, norm2=norm2, ka=ka, kb=kb)
+            reaction = Reaction(name=reaction_template.expression, binding_radius=brad, binding_angles=bind_anlges, norm1=norm1, norm2=norm2, ka=ka, kb=kb)
             reactions.append(reaction)
 
         # Step 3: Save model data

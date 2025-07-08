@@ -59,7 +59,7 @@ class MoleculeType:
     diffusion_rotation: float = 0.0
 
 @dataclass
-class ReactionType:
+class Reaction:
     """Represents a reaction in the model.
     
     Attributes:
@@ -88,7 +88,7 @@ class Model:
     """
     name: str
     molecule_types: List[MoleculeType] = field(default_factory=list)
-    reactions: List[ReactionType] = field(default_factory=list)
+    reactions: List[Reaction] = field(default_factory=list)
 
     def save_model(self, file_path: str) -> None:
         """Saves the model to a specified JSON file.
@@ -149,7 +149,7 @@ class Model:
         ]
 
         reactions = [
-            ReactionType(
+            Reaction(
                 name=rxn["name"],
                 binding_radius=rxn["binding_radius"],
                 binding_angles=tuple(rxn["binding_angles"]),

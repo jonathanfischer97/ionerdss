@@ -4,7 +4,7 @@ This module defines the `PlantonicSolidsModel` class, inheriting from the `Model
 """
 
 from .components import Model
-from .components import ReactionType
+from .components import Reaction
 from .components import MoleculeType
 from .components import MoleculeInterface
 from .coords import Coords
@@ -26,7 +26,7 @@ class PlatonicSolid(Model):
     """
     name: str
     molecule_types: List[MoleculeType] = field(default_factory=list)
-    reactions: List[ReactionType] = field(default_factory=list)
+    reactions: List[Reaction] = field(default_factory=list)
   
     @classmethod
     def create_Solid(cls, solid_type: str ,radius:float,sigma: float=None,distances:float = None, mol_name=None) -> Model:
@@ -60,7 +60,7 @@ class PlatonicSolid(Model):
                      float(dode_reaction_parameters['n'][2])]
             
             for i in dode_reactions:
-                reactions_to_return.append(ReactionType(
+                reactions_to_return.append(Reaction(
                     name=i,
                     binding_radius=float(sigma),
                     binding_angles=[dode_reaction_parameters['theta1'],
@@ -102,7 +102,7 @@ class PlatonicSolid(Model):
                      float(cube_reaction_parameters['n'][2])]
             
             for i in cube_reactions:
-                reactions_to_return.append(ReactionType(
+                reactions_to_return.append(Reaction(
                     name=i,
                     binding_radius=float(sigma),
                     binding_angles=[cube_reaction_parameters['theta1'],
@@ -140,7 +140,7 @@ class PlatonicSolid(Model):
                      float(icos_reaction_parameters['n'][2])]
             
             for i in icos_reactions:
-                reactions_to_return.append(ReactionType(
+                reactions_to_return.append(Reaction(
                     name=i,
                     binding_radius=float(sigma),
                     binding_angles=[icos_reaction_parameters['theta1'],
@@ -178,7 +178,7 @@ class PlatonicSolid(Model):
                      float(octa_reaction_parameters['n'][2])]
             
             for i in octa_reactions:
-                reactions_to_return.append(ReactionType(
+                reactions_to_return.append(Reaction(
                     name=i,
                     binding_radius=float(sigma),
                     binding_angles=[octa_reaction_parameters['theta1'],
@@ -216,7 +216,7 @@ class PlatonicSolid(Model):
                      float(tetr_reaction_parameters['n'][2])]
             
             for i in tetr_reactions:
-                reactions_to_return.append(ReactionType(
+                reactions_to_return.append(Reaction(
                     name=i,
                     binding_radius=float(sigma),
                     binding_angles=[tetr_reaction_parameters['theta1'],
