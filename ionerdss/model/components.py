@@ -27,11 +27,10 @@ Dependencies:
     - local module: `coords.py` for Coords class
 """
 
-import os
 import json
 import numpy as np
 from dataclasses import dataclass, field
-from typing import List, Dict, Tuple
+from typing import List, Tuple
 from .coords import Coords
 
 @dataclass
