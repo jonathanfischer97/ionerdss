@@ -18,7 +18,7 @@ from Bio.Align import PairwiseAligner
 from Bio.SeqUtils import seq1
 from scipy.spatial import KDTree
 from sklearn.cluster import KMeans
-from .model import MoleculeType, MoleculeInterface, ReactionType, Model
+from .components import MoleculeType, MoleculeInterface, ReactionType, Model
 from .coords import Coords
 
 

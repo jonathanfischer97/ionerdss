@@ -3,10 +3,10 @@
 This module defines the `PlantonicSolidsModel` class, inheriting from the `Model` class, which is used to generate NERDSS molecule types and reactions, and corresponding files for platonic solid.
 """
 
-from .model import Model
-from .model import ReactionType
-from .model import MoleculeType
-from .model import MoleculeInterface
+from .components import Model
+from .components import ReactionType
+from .components import MoleculeType
+from .components import MoleculeInterface
 from .coords import Coords
 from .platonic_solids.dode.dode_face_write import dode_face_write
 from .platonic_solids.cube.cube_face_write import cube_face_write

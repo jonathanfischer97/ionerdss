@@ -1,5 +1,5 @@
 """
-model.py
+components.py
 
 Author: sikaoguo@gmail.com, yying7@jh.edu
 
