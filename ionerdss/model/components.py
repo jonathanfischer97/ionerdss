@@ -31,7 +31,7 @@ import json
 import numpy as np
 from dataclasses import dataclass, field
 from typing import List, Tuple
-from .coords import Coords
+from ..math.coords import Coords
 
 @dataclass
 class MoleculeInterface:

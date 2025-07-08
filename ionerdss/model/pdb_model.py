@@ -19,7 +19,7 @@ from Bio.SeqUtils import seq1
 from scipy.spatial import KDTree
 from sklearn.cluster import KMeans
 from .components import MoleculeType, MoleculeInterface, Reaction, Model
-from .coords import Coords
+from ..math.coords import Coords
 
 
 class PDBModel(Model):
