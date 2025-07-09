@@ -3,16 +3,8 @@ name: Unit Tests & Coverage
 on:
   push:
     branches: [main]
-    paths:
-      - "ionerdss/**"
-      - "tests/**"
-      - ".github/workflows/unittest.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "ionerdss/**"
-      - "tests/**"
-      - ".github/workflows/unittest.yml"
 
 #Stop redundant CI runs for superseded commits
 concurrency:
