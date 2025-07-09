@@ -3,18 +3,8 @@ name: Unit Tests & Coverage
 on:
   push:
     branches: [main]
-    paths:
-      - "ionerdss/**"
-      - "tests/**"
-      - ".github/workflows/unittest.yml"
-      - "env/requirements.txt" # so triggers on dependabot 
   pull_request:
     branches: [main]
-    paths:
-      - "ionerdss/**"
-      - "tests/**"
-      - ".github/workflows/unittest.yml"
-      - "env/requirements.txt" # so triggers on dependabot 
 
 #Stop redundant CI runs for superseded commits
 concurrency:
