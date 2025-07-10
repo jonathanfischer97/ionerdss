@@ -6,7 +6,7 @@ import json
 from typing import Dict, Any, List
 import time
 import glob
-from ..nerdss_model.model import Model
+from ..model.components import Model
 from ..util import strip_comment
 
 class Simulation:

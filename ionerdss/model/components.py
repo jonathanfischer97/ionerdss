@@ -1,9 +1,37 @@
-import os
+"""
+components.py
+
+Author: sikaoguo@gmail.com, yying7@jh.edu
+
+This module defines the core data structures and utilities for specifying and serializing
+molecular models used in NERDSS (Non-Equilibrium Reaction-Diffusion Self-Assembly Simulator) simulations.
+
+The primary components include:
+- `MoleculeInterface`: Represents a binding or interaction site on a molecule.
+- `MoleculeType`: Represents a coarse-grained molecular unit with defined interfaces and diffusion parameters.
+- `ReactionType`: Represents a bimolecular binding interaction with spatial and angular constraints.
+- `Model`: A container that aggregates molecules and reactions, and provides methods to save/load model definitions to/from JSON.
+
+This file enables structured definition of molecular assemblies and reaction schemas,
+with serialization support for use in automated pipeline generation and simulation input preparation.
+
+Typical Usage:
+    model = Model.load_model("my_model.json")
+    model.save_model("backup_model.json")
+
+Dependencies:
+    - numpy
+    - dataclasses
+    - json
+    - typing
+    - local module: `coords.py` for Coords class
+"""
+
 import json
 import numpy as np
 from dataclasses import dataclass, field
-from typing import List, Dict, Tuple
-from .coords import Coords
+from typing import List, Tuple
+from ..math.coords import Coords
 
 @dataclass
 class MoleculeInterface:
@@ -30,7 +58,7 @@ class MoleculeType:
     diffusion_rotation: float = 0.0
 
 @dataclass
-class ReactionType:
+class Reaction:
     """Represents a reaction in the model.
     
     Attributes:
@@ -59,7 +87,7 @@ class Model:
     """
     name: str
     molecule_types: List[MoleculeType] = field(default_factory=list)
-    reactions: List[ReactionType] = field(default_factory=list)
+    reactions: List[Reaction] = field(default_factory=list)
 
     def save_model(self, file_path: str) -> None:
         """Saves the model to a specified JSON file.
@@ -120,7 +148,7 @@ class Model:
         ]
 
         reactions = [
-            ReactionType(
+            Reaction(
                 name=rxn["name"],
                 binding_radius=rxn["binding_radius"],
                 binding_angles=tuple(rxn["binding_angles"]),

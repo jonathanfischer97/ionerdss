@@ -42,6 +42,52 @@ pip install -r env/requirements.txt
 
 ---
 
+## Additional functionalities
+
+### Automatic Reaction System Generation and ODE / Gillespie Solver
+
+With `conda`:
+
+```bash
+conda env update -f env/environment-ode.yml --prune
+```
+
+With `pip`: 
+
+```bash
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate     # On Windows use: .venv\Scripts\activate
+
+# Install requirements
+pip install -r env/requirements-ode.txt
+```
+
+---
+
+### Enable all optional functionalities
+
+Install all dependencies for all optional functionalities. Use this version if you would like to run `pytest` for the whole repository.
+
+With `conda`:
+
+```bash
+conda env update -f env/environment-full.yml --prune
+```
+
+With `pip`: 
+
+```bash
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate     # On Windows use: .venv\Scripts\activate
+
+# Install requirements
+pip install -r env/requirements-full.txt
+```
+
+---
+
 ## Files in this folder
 
 * `environment.yml` — full Conda environment specification (Python version, dependencies, pip fallback).

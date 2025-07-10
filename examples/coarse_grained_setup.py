@@ -149,7 +149,7 @@ def process_pdb(pdb_id: str, folder_format: str = '~/Documents/{pdb_id}_dir'):
     # set up the coarse grain model from pdb model,
     # by detecting binding interfaces between chains based on atomic distances
     # for all tunable parameters see
-    # https://ionerdss.readthedocs.io/en/latest/ionerdss.nerdss_model.html#ionerdss.nerdss_model.pdb_model.PDBModel.coarse_grain
+    # https://ionerdss.readthedocs.io/en/latest/ionerdss.model.html#ionerdss.model.pdb_model.PDBModel.coarse_grain
     # set standard_output=True to see the determined interfaces
     pdb_model.coarse_grain(distance_cutoff=0.35, 
                         residue_cutoff=3,
@@ -161,7 +161,7 @@ def process_pdb(pdb_id: str, folder_format: str = '~/Documents/{pdb_id}_dir'):
     # the same relative geometry. This method organizes molecule and interface objects 
     # accordingly and sets up reaction objects.
     # for all tunable parameters see
-    # https://ionerdss.readthedocs.io/en/latest/ionerdss.nerdss_model.html#ionerdss.nerdss_model.pdb_model.PDBModel.regularize_homologous_chains
+    # https://ionerdss.readthedocs.io/en/latest/ionerdss.model.html#ionerdss.model.pdb_model.PDBModel.regularize_homologous_chains
     pdb_model.regularize_homologous_chains(dist_threshold_intra=3.5, 
                                         dist_threshold_inter=3.5, 
                                         angle_threshold=25.0, 

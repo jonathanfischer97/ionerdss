@@ -3,7 +3,7 @@
 This module defines the `DesignModel` class, inheriting from the `Model` class, which is used to generate NERDSS molecule types and reactions, and corresponding files by designing.
 """
 
-from .model import Model
+from .components import Model
 
 class DesignModel(Model):
     """"A class for generating NERDSS molecule types and reactions, and corresponding files by designing.
