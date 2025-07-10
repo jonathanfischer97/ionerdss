@@ -1,3 +1,33 @@
+"""
+test_subcomplexes_extraction.py
+
+Unit tests for `get_unique_fully_connected_subgraphs` from
+`ionerdss.model.graph_based.complexes.subcomplexes`.
+
+This test suite validates the correctness and performance of subgraph enumeration
+in various synthetic graph configurations:
+
+1. `TestFullyConnectedSubgraphDetection8y7s`
+   - A small symmetric 4-node complete graph with edge types
+   - Expected to return 6 unique fully connected subgraphs
+
+2. `TestFullyConnectedSubgraphDetectionHetero8mer`
+   - A ring of 8 uniquely typed nodes and edges
+   - Expected to return 57 unique subgraphs (sum of 1 to 8)
+
+3. `TestFullyConnectedSubgraphDetectionAsymmetric`
+   - A 4-node asymmetric graph with repeated node and edge types
+   - Expected to return 10 unique subgraphs
+
+Each test measures performance and emits a warning if runtime exceeds 0.1s,
+and fails if it exceeds 10s.
+
+Author: yying7@jh.edu
+-------
+Auto-generated and maintained as part of the ioNERDSS framework
+for molecular complex modeling and reaction network generation.
+"""
+
 import unittest
 import networkx as nx
 import time

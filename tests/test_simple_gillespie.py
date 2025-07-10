@@ -1,3 +1,36 @@
+"""
+test_simple_gillespie.py
+
+Unit tests for `SimpleGillespieSimulator` in the `ionerdss` package.
+
+Tested Components
+-----------------
+- `convert_to_microscopic_rate_constants`:
+    Converts macroscopic rate constants to molecule-based (microscopic) rates
+    based on Avogadro's number and reaction order.
+
+- `calculate_propensity`:
+    Calculates the reaction propensities for a set of discrete molecular species.
+
+- `gillespie_simulation`:
+    Runs the full stochastic simulation algorithm (SSA) using the Gillespie direct method.
+
+Test Model
+----------
+The test reactions represent the following system:
+    R1: A + B → C        with macroscopic rate k1 = 1.0e6
+    R2: 2C   → A + 2B    with macroscopic rate k2 = 5.0
+
+Initial species concentrations:
+    y = [A, B, C] = [10, 5, 3]
+Simulation volume:
+    1e-18 L
+
+Author: yying7@jh.edu
+-------
+Part of the ioNERDSS modeling framework.
+"""
+
 import unittest
 import numpy as np
 from ionerdss import SimpleGillespieSimulator

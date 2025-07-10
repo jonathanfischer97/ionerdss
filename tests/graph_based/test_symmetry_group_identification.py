@@ -1,7 +1,29 @@
+"""
+test_pointgroup_symmetry.py
+
+Unit tests for symmetry classification using the PointGroup class in
+`ionerdss.model.graph_based.symmetry.pointgroup`.
+
+This test suite verifies point group identification from 3D geometry
+and element types using canonical symmetric structures.
+
+Tests
+-----
+1. Octahedral (Oh) symmetry from an SF6-like configuration
+2. Tetrahedral (Td) symmetry from a regular tetrahedron
+3. Lower symmetry in a flipped tetrahedral dimer (C2 or D2h-like)
+
+Each test ensures the returned point group string is valid and structurally expected.
+
+Author: yying7@jh.edu
+-------
+Auto-generated and maintained as part of the ioNERDSS framework
+for molecular complex modeling and reaction network generation.
+"""
+
 import unittest
 import numpy as np
 from ionerdss.model.graph_based.symmetry.pointgroup import PointGroup
-
 
 class TestPointGroupSymmetry(unittest.TestCase):
     def test_sf6_octrahedral_symmetry(self):
