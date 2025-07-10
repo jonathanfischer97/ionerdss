@@ -1,6 +1,12 @@
 version: 2
+registries:
+  pytorch-cuda:
+    type: python-index
+    url: https://download.pytorch.org/whl/cu121 #so Dependabot retrieves cuda wheels for torch
 updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
+    registries: ["pytorch-cuda"]
+
