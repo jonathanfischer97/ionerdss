@@ -21,6 +21,7 @@ Example:
 """
 
 import math
+import numpy as np
 from typing import Union, Iterable
 
 Number = Union[int, float]
@@ -78,5 +79,42 @@ class Coords:
         """Returns Euclidean distance between self and another point."""
         return math.dist(tuple(self), tuple(other))  # Python 3.8+
 
-    def as_tuple(self):
+    def to_tuple(self):
         return (self.x, self.y, self.z)
+    
+    def to_numpy(self) -> np.ndarray:
+        """
+        Converts the Coords instance to a NumPy array.
+
+        Returns:
+            np.ndarray: A (3,) array representing [x, y, z].
+        """
+        return np.array([self.x, self.y, self.z], dtype=float)
+
+    @classmethod
+    def from_numpy(cls, arr: Union[np.ndarray, list, tuple]) -> "Coords":
+        """
+        Creates a Coords instance from a NumPy array or array-like object.
+
+        Args:
+            arr (np.ndarray or list or tuple): A 3-element array-like object.
+
+        Returns:
+            Coords: The resulting Coords instance.
+
+        Raises:
+            ValueError: If the input does not have exactly 3 elements.
+            TypeError: If input is not array-like or contains invalid types.
+        """
+        if not isinstance(arr, (np.ndarray, list, tuple)):
+            raise TypeError(f"Input must be a list, tuple, or np.ndarray, got {type(arr).__name__}")
+
+        if len(arr) != 3:
+            raise ValueError(f"Input must have exactly 3 elements, got {len(arr)}")
+
+        try:
+            x, y, z = float(arr[0]), float(arr[1]), float(arr[2])
+        except (ValueError, TypeError) as e:
+            raise TypeError("All elements must be numbers convertible to float") from e
+
+        return cls(x, y, z)
