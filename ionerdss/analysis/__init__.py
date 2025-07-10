@@ -13,13 +13,13 @@ Usage:
 ```python
 # New modular API (recommended)
 import ionerdss as ion
-analysis = ion.Analysis("/path/to/simulations")
+analysis = ion.Analyzer("/path/to/simulations")
 data = analysis.get_data(simulations=[0,1,2], species=["A","B"])
 plot = analysis.set_plot(figure_size=(12,8))
 plot.line_speciescopy_vs_time(data=data, legend=[["A"], ["B"]])
 
 # Legacy API (backward compatible)
-analysis = ion.Analysis("/path/to/simulations") 
+analysis = ion.Analyzer("/path/to/simulations") 
 analysis.plot_figure(figure_type="line", x="time", y="species", 
                     legend=[["A"], ["B"]], simulations=[0,1,2])
 ```
@@ -158,7 +158,7 @@ Quick Start:
 import ionerdss as ion
 
 # Initialize analysis 
-analysis = ion.Analysis("/path/to/simulation/directory")
+analysis = ion.Analyzer("/path/to/simulation/directory")
 
 # New modular API (recommended):
 data = analysis.get_data(simulations=[0,1,2])  # Select simulations
