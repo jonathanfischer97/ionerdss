@@ -1,42 +1,11 @@
 """
 angles.py
 
-This module provides utility functions for analyzing geometric and rotational
-symmetries of point-based structures (e.g., molecular assemblies) using inertia tensors
-and vector algebra. These tools are particularly useful for identifying symmetry axes
-and classifying point group symmetries in 3D configurations such as molecular complexes,
-polyhedral assemblies, and coarse-grained models.
+This module provides utility functions for angles related calculateds
 
 Note: This file includes code adapted from the 'pointgroup' package,
 originally authored by Abel Carreras (https://github.com/abelcarreras/pointgroup),
 and is licensed under the MIT License (which is attached to the end of this docstring)
-
-Included Functions
-------------------
-
-1. get_inertia_tensor(coords, tol=1e-12)
-    Computes the normalized moment of inertia tensor for a set of 3D points,
-    assuming uniform mass. Returns a symmetric 3×3 tensor that characterizes
-    how mass is distributed relative to the center of mass.
-
-2. get_degeneracy(eigenvalues, tolerance=0.1)
-    Estimates the degeneracy (repeatedness) of eigenvalues within a specified tolerance.
-    Useful for inferring rotational symmetry based on isotropy of the inertia tensor.
-
-3. get_non_degenerated(eigenvalues, tolerance=0.1)
-    Identifies which eigenvalue in a set of three is non-degenerate, assuming
-    two are nearly equal. Often used to detect symmetry axes.
-
-4. get_perpendicular_vector(vector, normalize=True, tol=1e-8)
-    Computes a vector orthogonal to a given input vector. Supports general n-dimensional input.
-    For 3D vectors, uses the cross product; for nD, falls back to Gram-Schmidt projection.
-
-Use Cases
----------
-- Classifying molecular shapes and point group symmetries from 3D atomic coordinates
-- Determining principal axes of rotation
-- Automatically choosing reference frames based on geometry
-- Computing orientation-aware quantities from molecular subunits
 
 Dependencies
 ------------
