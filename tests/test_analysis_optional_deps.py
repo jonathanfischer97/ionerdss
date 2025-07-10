@@ -8,7 +8,7 @@ import warnings
 # Attempt to import Analysis, but allow tests to run even if it fails at module level
 # due to other reasons, focusing specific tests on visualize_trajectory.
 try:
-    from ionerdss.nerdss_analysis.analysis import Analysis
+    from ionerdss.analysis.analysis import Analysis
     IONERDSS_ANALYSIS_AVAILABLE = True
 except ImportError:
     IONERDSS_ANALYSIS_AVAILABLE = False
