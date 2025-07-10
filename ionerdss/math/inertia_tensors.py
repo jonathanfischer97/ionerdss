@@ -163,65 +163,6 @@ def get_degeneracy(eigenvalues, tolerance=0.1):
             return single_deg
     return 1
 
-def get_perpendicular_vector(vector, normalize=True, tol=1e-8):
-    """
-    Returns a vector that is perpendicular to the input vector.
-
-    Parameters:
-    ----------
-    vector : array_like
-        Input non-zero vector of shape (n,).
-    normalize : bool, optional (default=True)
-        If True, return a unit-length perpendicular vector.
-    tol : float, optional
-        Tolerance for numerical precision when checking orthogonality and normalization.
-
-    Returns:
-    -------
-    perpendicular : ndarray of shape (n,)
-        A vector orthogonal to the input vector. By default, it is normalized to unit length.
-
-    Raises:
-    ------
-    ValueError:
-        If the input vector is zero or if a valid perpendicular cannot be constructed.
-    """
-    vector = np.asarray(vector, dtype=float)
-
-    if vector.ndim != 1:
-        raise ValueError("Input vector must be one-dimensional.")
-    if np.linalg.norm(vector) < tol:
-        raise ValueError("Cannot compute perpendicular vector of a zero vector.")
-
-    dim = vector.size
-
-    # Choose a basis vector least aligned with the input to avoid degeneracy
-    basis_index = np.argmin(np.abs(vector))
-    basis_vector = np.eye(dim)[basis_index]
-
-    # Compute perpendicular using cross product (only defined for 3D)
-    if dim == 3:
-        perpendicular_vector = np.cross(vector, basis_vector)
-    else:
-        # For nD: use Gram-Schmidt-like projection
-        gs_projection = np.dot(vector, basis_vector) / np.dot(vector, vector) * vector
-        perpendicular_vector = basis_vector - gs_projection
-
-    norm = np.linalg.norm(perpendicular_vector)
-    if norm < tol:
-        raise ValueError("Failed to construct a valid perpendicular vector.")
-
-    if normalize:
-        perpendicular_vector = perpendicular_vector / norm
-
-    # Final checks
-    if abs(np.dot(perpendicular_vector, vector)) > tol:
-        raise ValueError("Resulting vector is not orthogonal to input.")
-    if normalize and abs(np.linalg.norm(perpendicular_vector) - 1.0) > tol:
-        raise ValueError("Resulting perpendicular vector is not normalized.")
-
-    return perpendicular_vector
-
 def get_non_degenerated(eigenvalues, tolerance=0.1):
     """
     Identify the index of a non-degenerate eigenvalue in a set of eigenvalues.

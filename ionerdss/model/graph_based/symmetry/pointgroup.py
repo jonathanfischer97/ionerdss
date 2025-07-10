@@ -28,8 +28,9 @@ THE SOFTWARE.
 import numpy as np
 from . import utils
 from .grid import get_cubed_sphere_grid_points
+from ionerdss.math.coords import get_perpendicular_vector
 from ionerdss.math.rotations import Rotation, rotation_matrix
-from ionerdss.math import inertia_tensors, angles, coords
+from ionerdss.math import inertia_tensors, angles
 
 class PointGroup:
     """
@@ -150,7 +151,7 @@ class PointGroup:
         # set orientation
         idx = np.argmin(self._eigenvalues)
         main_axis = self._eigenvectors[idx]
-        p_axis = inertia_tensors.get_perpendicular_vector(main_axis)
+        p_axis = get_perpendicular_vector(main_axis)
         self._set_orientation(main_axis, p_axis)
 
         # not considering reflection / inversion
@@ -222,7 +223,7 @@ class PointGroup:
                 print('increase tolerance')
                 self._tolerance_ang *= 1.01
 
-        p_axis_base = inertia_tensors.get_perpendicular_vector(main_axis)
+        p_axis_base = get_perpendicular_vector(main_axis)
 
         # I
         if self._schoenflies_symbol == 'I':

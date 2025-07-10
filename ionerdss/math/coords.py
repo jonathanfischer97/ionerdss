@@ -22,7 +22,7 @@ Example:
 
 import math
 import numpy as np
-from typing import Union, Iterable
+from typing import Union, Sequence
 
 Number = Union[int, float]
 
@@ -118,3 +118,71 @@ class Coords:
             raise TypeError("All elements must be numbers convertible to float") from e
 
         return cls(x, y, z)
+
+def get_perpendicular_vector(
+    vector: Union["Coords", np.ndarray, Sequence[float]],
+    normalize: bool = True,
+    tol: float = 1e-8) -> np.ndarray:
+    """
+    Returns a vector that is perpendicular to the input vector.
+
+    Parameters
+    ----------
+    vector : Coords, array-like, or np.ndarray
+        Input non-zero vector of shape (n,). Accepted types include Coords, list, tuple, or numpy array.
+    
+    normalize : bool, optional
+        If True, return a unit-length perpendicular vector. Default is True.
+    
+    tol : float, optional
+        Tolerance for numerical precision when checking orthogonality and normalization.
+
+    Returns
+    -------
+    perpendicular : np.ndarray of shape (n,)
+        A vector orthogonal to the input vector. Normalized to unit length if requested.
+
+    Raises
+    ------
+    ValueError
+        If the input vector is zero or a perpendicular vector cannot be computed.
+    """
+    # Convert various input types to numpy array
+    if isinstance(vector, Coords):
+        vector = vector.to_numpy()
+    else:
+        vector = np.asarray(vector, dtype=float)
+        
+    if vector.ndim != 1:
+        raise ValueError("Input vector must be one-dimensional.")
+    if np.linalg.norm(vector) < tol:
+        raise ValueError("Cannot compute perpendicular vector of a zero vector.")
+
+    dim = vector.size
+
+    # Choose a basis vector least aligned with the input to avoid degeneracy
+    basis_index = np.argmin(np.abs(vector))
+    basis_vector = np.eye(dim)[basis_index]
+
+    # Compute perpendicular using cross product (only defined for 3D)
+    if dim == 3:
+        perpendicular_vector = np.cross(vector, basis_vector)
+    else:
+        # For nD: use Gram-Schmidt-like projection
+        gs_projection = np.dot(vector, basis_vector) / np.dot(vector, vector) * vector
+        perpendicular_vector = basis_vector - gs_projection
+
+    norm = np.linalg.norm(perpendicular_vector)
+    if norm < tol:
+        raise ValueError("Failed to construct a valid perpendicular vector.")
+
+    if normalize:
+        perpendicular_vector = perpendicular_vector / norm
+
+    # Final checks
+    if abs(np.dot(perpendicular_vector, vector)) > tol:
+        raise ValueError("Resulting vector is not orthogonal to input.")
+    if normalize and abs(np.linalg.norm(perpendicular_vector) - 1.0) > tol:
+        raise ValueError("Resulting perpendicular vector is not normalized.")
+
+    return perpendicular_vector
