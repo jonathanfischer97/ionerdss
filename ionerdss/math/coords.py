@@ -57,7 +57,11 @@ class Coords:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Coords):
             return False
-        return math.isclose(self.x, other.x) and math.isclose(self.y, other.y) and math.isclose(self.z, other.z)
+        return (
+            math.isclose(self.x, other.x, rel_tol=1e-6, abs_tol=1e-12) and
+            math.isclose(self.y, other.y, rel_tol=1e-6, abs_tol=1e-12) and
+            math.isclose(self.z, other.z, rel_tol=1e-6, abs_tol=1e-12)
+        )
 
     def __iter__(self):
         yield self.x

@@ -1,3 +1,51 @@
+"""
+angles.py
+
+This module provides utility functions for angles related calculateds
+
+Note: This file includes code adapted from the 'pointgroup' package,
+originally authored by Abel Carreras (https://github.com/abelcarreras/pointgroup),
+and is licensed under the MIT License (which is attached to the end of this docstring)
+
+Dependencies
+------------
+- numpy
+
+Examples
+--------
+>>> coords = np.array([[1,0,0], [-1,0,0], [0,1,0], [0,-1,0]])
+>>> I = get_inertia_tensor(coords)
+>>> eigvals, eigvecs = np.linalg.eigh(I)
+>>> degeneracy = get_degeneracy(eigvals)
+>>> main_axis_idx = get_non_degenerated(eigvals)
+>>> perp = get_perpendicular_vector(eigvecs[:, main_axis_idx])
+
+
+
+
+The MIT License (MIT)
+
+Copyright (c) 2023 Efrem Bernuz and Abel Carreras
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
 import numpy as np
 
 def absolute_error_to_angle(error, points, tol=1e-8):
