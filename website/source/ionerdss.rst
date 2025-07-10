@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   ionerdss.nerdss_model
+   ionerdss.model
    ionerdss.nerdss_simulation
    ionerdss.nerdss_analysis
    ionerdss.model_setup

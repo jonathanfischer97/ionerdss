@@ -25,7 +25,7 @@ ionerdss
 
 - **Version 1.1.0 (Mar 22, 2025)**  
 
-  - Refactored the code into `nerdss_model`, `nerdss_simulation`, and `nerdss_analysis` modules.
+  - Refactored the code into `model`, `nerdss_simulation`, and `nerdss_analysis` modules.
 
   - Unified figure plotting with the `plot_figure()` function in the `analysis` class.
 
