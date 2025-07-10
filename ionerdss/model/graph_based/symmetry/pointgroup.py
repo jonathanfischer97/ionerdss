@@ -26,10 +26,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 import numpy as np
-from . import tensors
 from . import utils
-from .rotations import Rotation, rotation_matrix
 from .grid import get_cubed_sphere_grid_points
+from ionerdss.math.rotations import Rotation, rotation_matrix
+from ionerdss.math import inertia_tensors, angles, coords
 
 class PointGroup:
     """
@@ -52,7 +52,7 @@ class PointGroup:
         self._ref_orientation = np.identity(3)
 
         # determine inertia tensor
-        inertia_tensor = tensors.get_inertia_tensor(self._cent_coord)
+        inertia_tensor = inertia_tensors.get_inertia_tensor(self._cent_coord)
         eigenvalues, eigenvectors = np.linalg.eigh(inertia_tensor)
         self._eigenvalues = eigenvalues
         self._eigenvectors = eigenvectors.T
@@ -61,7 +61,7 @@ class PointGroup:
         self._schoenflies_symbol = ''
         self._max_order = 1
 
-        eig_degeneracy = tensors.get_degeneracy(self._eigenvalues, self._tolerance_eig)
+        eig_degeneracy = inertia_tensors.get_degeneracy(self._eigenvalues, self._tolerance_eig)
 
         # Linear groups
         if np.min(abs(self._eigenvalues)) < self._tolerance_eig:
@@ -150,7 +150,7 @@ class PointGroup:
         # set orientation
         idx = np.argmin(self._eigenvalues)
         main_axis = self._eigenvectors[idx]
-        p_axis = utils.get_perpendicular_vector(main_axis)
+        p_axis = inertia_tensors.get_perpendicular_vector(main_axis)
         self._set_orientation(main_axis, p_axis)
 
         # not considering reflection / inversion
@@ -222,7 +222,7 @@ class PointGroup:
                 print('increase tolerance')
                 self._tolerance_ang *= 1.01
 
-        p_axis_base = utils.get_perpendicular_vector(main_axis)
+        p_axis_base = inertia_tensors.get_perpendicular_vector(main_axis)
 
         # I
         if self._schoenflies_symbol == 'I':
@@ -329,13 +329,13 @@ class PointGroup:
         :return: True or False
         """
         sym_matrix = operation.get_matrix()
-        error_abs_rad = utils.absolute_error_to_angle(self._tolerance_eig, points=self._cent_coord)
+        error_abs_rad = angles.absolute_error_to_angle(self._tolerance_eig, points=self._cent_coord)
 
         op_coordinates = np.dot(self._cent_coord, sym_matrix.T)
         for idx, op_coord in enumerate(op_coordinates):
 
             difference_rad = utils.normalized_radius_difference(op_coord, self._cent_coord, self._tolerance_eig)
-            difference_ang = utils.angles_between_vector_and_vectors(op_coord, self._cent_coord, self._tolerance_eig)
+            difference_ang = angles.angles_between_vector_and_vectors(op_coord, self._cent_coord, self._tolerance_eig)
 
             def check_diff(diff, diff2):
                 for idx_2, (d1, d2) in enumerate(zip(diff, diff2)):
