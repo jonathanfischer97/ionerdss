@@ -8,7 +8,7 @@ import warnings
 # Attempt to import Analysis, but allow tests to run even if it fails at module level
 # due to other reasons, focusing specific tests on visualize_trajectory.
 try:
-    from ionerdss.analysis.analysis import Analysis
+    from ionerdss.analysis.core import Analyzer
     IONERDSS_ANALYSIS_AVAILABLE = True
 except ImportError:
     IONERDSS_ANALYSIS_AVAILABLE = False
@@ -47,7 +47,7 @@ class TestAnalysisOptionalDeps(unittest.TestCase):
             f.write(DUMMY_XYZ_CONTENT)
             
         # Initialize Analysis instance pointing to the parent of DATA
-        self.analysis_instance = Analysis(save_dir=self.save_folder)
+        self.analysis_instance = Analyzer(save_dir=self.save_folder)
 
     def tearDown(self):
         self.temp_dir.cleanup()

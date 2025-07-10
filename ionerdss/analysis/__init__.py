@@ -59,7 +59,7 @@ analysis.plot_figure(figure_type="line", x="time", y="species",
 # =====================================================================
 
 # Main interface
-from .analysis import Analysis
+from .core import Analyzer
 
 # Core components for advanced usage
 from .data import Data
@@ -105,7 +105,7 @@ __version__ = "2.0.0"
 __author__ = "ionerdss development team"
 
 # Primary exports - most users only need Analysis
-__all__ = ["Analysis"]
+__all__ = ["Analyzer"]
 
 # Advanced API exports for power users
 __all__.extend(["Data", "PlotConfigure"])
