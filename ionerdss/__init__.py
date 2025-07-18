@@ -40,25 +40,25 @@ class LazyLoader:
         return getattr(self.loaded_module, name)
 
 # Lazily load core classes
-Model = LazyLoader('.model.model', 'Model')
-MoleculeType = LazyLoader('.model.model', 'MoleculeType')
-MoleculeInterface = LazyLoader('.model.model', 'MoleculeInterface')
-ReactionType = LazyLoader('.model.model', 'ReactionType')
-Coords = LazyLoader('.model.coords', 'Coords')
+Model = LazyLoader('.model.components', 'Model')
+MoleculeType = LazyLoader('.model.components', 'MoleculeType')
+MoleculeInterface = LazyLoader('.model.components', 'MoleculeInterface')
+ReactionType = LazyLoader('.model.components', 'Reaction')
+Coords = LazyLoader('.math.coords', 'Coords')
 PDBModel = LazyLoader('.model.pdb_model', 'PDBModel')
 DesignModel = LazyLoader('.model.design_model', 'DesignModel')
-PlatonicSolid = LazyLoader('.model.PlatonicSolids', 'PlatonicSolid')
+PlatonicSolid = LazyLoader('.model.platonic_solids_main', 'PlatonicSolid')
 # Standard, preferred name
 generate_ode_model_from_pdb = LazyLoader('.model.complex', 'generate_ode_model_from_pdb')
 # Backward-compatible alias
 ParseComplexes = generate_ode_model_from_pdb
-ReactionStringParser = LazyLoader('.ode_solver.reaction_string_parser', 'ReactionStringParser')
-solve_reaction_ode = LazyLoader('.ode_solver.reaction_ode_solver', 'solve_reaction_ode')
-reaction_dydt = LazyLoader('.ode_solver.reaction_ode_solver', 'dydt')
-calculate_macroscopic_reaction_rates = LazyLoader('.ode_solver.reaction_ode_solver', 'calculate_macroscopic_reaction_rates')
-SimpleGillespieSimulator = LazyLoader('.gillespie_simulation.simple_gillespie', 'SimpleGillespieSimulator')
-gui = LazyLoader('.nerdss_guis.gui', 'gui')
-pdb_gui = LazyLoader('.nerdss_guis.nerdss', 'nerdss')
+ReactionStringParser = LazyLoader('.solvers.reaction_string_parser', 'ReactionStringParser')
+solve_reaction_ode = LazyLoader('.solvers.reaction_ode_solver', 'solve_reaction_ode')
+reaction_dydt = LazyLoader('.solvers.reaction_ode_solver', 'dydt')
+calculate_macroscopic_reaction_rates = LazyLoader('.solvers.reaction_ode_solver', 'calculate_macroscopic_reaction_rates')
+SimpleGillespieSimulator = LazyLoader('.simulation.simple_gillespie', 'SimpleGillespieSimulator')
+gui = LazyLoader('.gui.gui', 'gui')
+pdb_gui = LazyLoader('.gui.nerdss', 'nerdss')
 cube_face = LazyLoader('.model.platonic_solids.cube.cube_face', 'cube_face')
 cube_vert = LazyLoader('.model.platonic_solids.cube.cube_vert', 'cube_vert')
 dode_face = LazyLoader('.model.platonic_solids.dode.dode_face', 'dode_face')
@@ -69,13 +69,13 @@ octa_face = LazyLoader('.model.platonic_solids.octa.octa_face', 'octa_face')
 octa_vert = LazyLoader('.model.platonic_solids.octa.octa_vert', 'octa_vert')
 tetr_face = LazyLoader('.model.platonic_solids.tetr.tetr_face', 'tetr_face')
 tetr_vert = LazyLoader('.model.platonic_solids.tetr.tetr_vert', 'tetr_vert')
-convert_simularium = LazyLoader('.simularium_converter.simularium_converter', 'convert_simularium')
+convert_simularium = LazyLoader('.io.simularium.simularium_converter', 'convert_simularium')
 
 
 # Lazily load simulation and analysis modules
-Simulation = LazyLoader('.nerdss_simulation.simulation', 'Simulation')
-Analysis = LazyLoader('.nerdss_analysis.analysis', 'Analysis')
-DataIO = LazyLoader('.nerdss_analysis.data_readers', 'DataIO')
+Simulation = LazyLoader('.simulation.simulation', 'Simulation')
+Analysis = LazyLoader('.analysis.core', 'Analyzer')  # Updated to use the correct class name
+DataIO = LazyLoader('.analysis.data_readers', 'DataIO')
 
 def configure_plotting():
     """Configure plotting styles - only call this when you're ready to plot."""
