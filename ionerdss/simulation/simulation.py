@@ -7,7 +7,7 @@ from typing import Dict, Any, List
 import time
 import glob
 from ..model.components import Model
-from ..util import strip_comment
+from ..utils.core import strip_comment
 
 class Simulation:
     """Class for handling NERDSS simulation configurations and running simulations.

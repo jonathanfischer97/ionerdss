@@ -81,13 +81,19 @@ ionerdss/
 │   ├── make.bat           # Windows build script
 │   └── Makefile           # Unix build script
 ├── ionerdss/              # Main Python package
-│   ├── model/      # Model building tools (v1.2.0)
-│   ├── nerdss_simulation/ # Simulation tools (v1.2.0)
-│   ├── nerdss_analysis/   # Data analysis tools (v1.2.0)
+│   ├── analysis/          # Data analysis and visualization tools
+│   ├── gui/               # Graphical user interface components
+│   ├── io/                # Input/output and data conversion
+│   ├── math/              # Mathematical utilities and functions
+│   ├── model/             # Model building and molecular structures
+│   ├── simulation/        # Simulation engines (NERDSS, Gillespie)
+│   ├── solvers/           # Mathematical solvers (ODE, reaction kinetics)
+│   ├── utils/             # General utility functions
 │   └── __init__.py 
 ├── tests/                 # Unit tests
+├── examples/              # Example notebooks and scripts
 ├── data/                  # Test and tutorial data
-└── setup.py               # Installation & packaging
+└── pyproject.toml         # Project configuration and packaging
 ```
 
 ---
