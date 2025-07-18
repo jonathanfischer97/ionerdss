@@ -43,7 +43,7 @@ class LazyLoader:
 Model = LazyLoader('.model.components', 'Model')
 MoleculeType = LazyLoader('.model.components', 'MoleculeType')
 MoleculeInterface = LazyLoader('.model.components', 'MoleculeInterface')
-ReactionType = LazyLoader('.model.components', 'ReactionType')
+ReactionType = LazyLoader('.model.components', 'Reaction')
 Coords = LazyLoader('.math.coords', 'Coords')
 PDBModel = LazyLoader('.model.pdb_model', 'PDBModel')
 DesignModel = LazyLoader('.model.design_model', 'DesignModel')
