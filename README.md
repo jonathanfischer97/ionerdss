@@ -64,7 +64,7 @@ Go to the [NERDSS server](http://52.15.142.249:5000/).
 
 - **API Reference:** [API](https://ionerdss.readthedocs.io/en/latest/ionerdss.html). You can also build the docs locally using Sphinx:
 ```bash
-sphinx-apidoc -o docs/source ionerdss
+sphinx-apidoc -o docs/source src/ionerdss
 cd docs
 make html
 ```
@@ -80,14 +80,15 @@ ionerdss/
 │   ├── source/            # Sphinx source files
 │   ├── make.bat           # Windows build script
 │   └── Makefile           # Unix build script
-├── ionerdss/              # Main Python package
-│   ├── model/      # Model building tools (v1.2.0)
-│   ├── nerdss_simulation/ # Simulation tools (v1.2.0)
-│   ├── nerdss_analysis/   # Data analysis tools (v1.2.0)
-│   └── __init__.py 
+├── src/ionerdss/          # Main Python package
+│   ├── model/             # Model building tools
+│   ├── nerdss_simulation/ # Simulation tools
+│   ├── analysis/          # Data analysis tools
+│   └── __init__.py
 ├── tests/                 # Unit tests
 ├── data/                  # Test and tutorial data
-└── setup.py               # Installation & packaging
+├── pyproject.toml         # Build configuration
+└── setup.py               # Compatibility shim for build
 ```
 
 ---
@@ -114,12 +115,12 @@ docker run -it --rm -v $(pwd):/app -p 8888:8888 ionerdss_dev
    - To run the tests locally, in the project root folder, use the following command:
      ```bash
      pip install -r requirements.txt
-     export PYTHONPATH=$(pwd)
+    export PYTHONPATH=$(pwd)/src
      pytest
      ```
 
-4. **Versioning & Releases**  
-   - Update `setup.py` with a new version number. A GitHub release will auto‐update the PyPI package.
+4. **Versioning & Releases**
+   - Update `pyproject.toml` with a new version number. A GitHub release will auto‐update the PyPI package.
 
 5. **Contributions**  
    - Fork the repo, create a feature branch, and open a pull request.

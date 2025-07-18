@@ -9,8 +9,6 @@ Subpackages
 
    ionerdss.model
    ionerdss.nerdss_simulation
-   ionerdss.nerdss_analysis
-   ionerdss.model_setup
    ionerdss.analysis
 
 Module contents

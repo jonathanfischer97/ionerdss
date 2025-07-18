@@ -30,7 +30,7 @@ MISSING_MODULES_CONFIG = {
     # 'IPython.display': None # We don't mock IPython.display as it's handled gracefully
 }
 
-@unittest.skipIf(not IONERDSS_ANALYSIS_AVAILABLE, "ionerdss.nerdss_analysis.analysis module not available")
+@unittest.skipIf(not IONERDSS_ANALYSIS_AVAILABLE, "ionerdss.analysis.analysis module not available")
 class TestAnalysisOptionalDeps(unittest.TestCase):
     def setUp(self):
         # Create a temporary directory for saving outputs, if any
