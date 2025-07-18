@@ -16,7 +16,7 @@ try:
     __all__.extend(core_all)
 except (ImportError, AttributeError):
     # If core doesn't define __all__, import everything
-    import inspect
     from . import core
-    __all__.extend([name for name, obj in inspect.getmembers(core) 
-                   if not name.startswith('_')])
+    # Manually specify public members to include in __all__ if not defined
+    core_public_members = [name for name in dir(core) if not name.startswith('_')]
+    __all__.extend(core_public_members)
