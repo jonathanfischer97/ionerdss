@@ -17,14 +17,9 @@ from .inertia_tensors import *
 
 __all__ = ['Coords']
 
-# Add all exports from submodules
-import inspect
+# Import submodules and extend __all__ with their exports
 from . import angles, rotations, inertia_tensors
 
-for module in [angles, rotations, inertia_tensors]:
-    if hasattr(module, '__all__'):
-        __all__.extend(module.__all__)
-    else:
-        # If no __all__ defined, export non-private functions
-        __all__.extend([name for name, obj in inspect.getmembers(module)
-                       if not name.startswith('_') and callable(obj)])
+__all__.extend(angles.__all__)
+__all__.extend(rotations.__all__)
+__all__.extend(inertia_tensors.__all__)
