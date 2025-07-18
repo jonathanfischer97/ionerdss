@@ -11,7 +11,7 @@ from .plotting import PlotConfigure
 from .legacy import LegacyPlotInterface
 
 
-class Analyzer:
+class Analysis:
     """
     Main interface for analyzing and visualizing NERDSS simulation results.
     
