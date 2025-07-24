@@ -74,8 +74,8 @@ convert_simularium = LazyLoader('.simularium_converter.simularium_converter', 'c
 
 # Lazily load simulation and analysis modules
 Simulation = LazyLoader('.nerdss_simulation.simulation', 'Simulation')
-Analysis = LazyLoader('.nerdss_analysis.analysis', 'Analysis')
-DataIO = LazyLoader('.nerdss_analysis.data_readers', 'DataIO')
+Analysis = LazyLoader('.analysis.analysis', 'Analysis')
+DataIO = LazyLoader('.analysis.data_readers', 'DataIO')
 
 def configure_plotting():
     """Configure plotting styles - only call this when you're ready to plot."""

@@ -1,5 +1,5 @@
 """
-ionerdss.nerdss_analysis package - Enhanced analysis tools for NERDSS simulations.
+ionerdss.analysis package - Enhanced analysis tools for NERDSS simulations.
 
 This package provides comprehensive tools for analyzing and visualizing NERDSS 
 simulation results with both modern modular API and legacy compatibility.
@@ -13,13 +13,13 @@ Usage:
 ```python
 # New modular API (recommended)
 import ionerdss as ion
-analysis = ion.Analyzer("/path/to/simulations")
+analysis = ion.Analysis("/path/to/simulations")
 data = analysis.get_data(simulations=[0,1,2], species=["A","B"])
 plot = analysis.set_plot(figure_size=(12,8))
 plot.line_speciescopy_vs_time(data=data, legend=[["A"], ["B"]])
 
 # Legacy API (backward compatible)
-analysis = ion.Analyzer("/path/to/simulations") 
+analysis = ion.Analysis("/path/to/simulations")
 analysis.plot_figure(figure_type="line", x="time", y="species", 
                     legend=[["A"], ["B"]], simulations=[0,1,2])
 ```
@@ -59,7 +59,7 @@ analysis.plot_figure(figure_type="line", x="time", y="species",
 # =====================================================================
 
 # Main interface
-from .core import Analyzer
+from .analysis import Analysis
 
 # Core components for advanced usage
 from .data import Data
@@ -105,7 +105,7 @@ __version__ = "2.0.0"
 __author__ = "ionerdss development team"
 
 # Primary exports - most users only need Analysis
-__all__ = ["Analyzer"]
+__all__ = ["Analysis"]
 
 # Advanced API exports for power users
 __all__.extend(["Data", "PlotConfigure"])
@@ -150,7 +150,7 @@ def get_version():
 def get_help():
     """Get basic usage help."""
     help_text = """
-ionerdss.nerdss_analysis - NERDSS Simulation Analysis Tools
+ionerdss.analysis - NERDSS Simulation Analysis Tools
 
 Quick Start:
 -----------
@@ -158,7 +158,7 @@ Quick Start:
 import ionerdss as ion
 
 # Initialize analysis 
-analysis = ion.Analyzer("/path/to/simulation/directory")
+analysis = ion.Analysis("/path/to/simulation/directory")
 
 # New modular API (recommended):
 data = analysis.get_data(simulations=[0,1,2])  # Select simulations
